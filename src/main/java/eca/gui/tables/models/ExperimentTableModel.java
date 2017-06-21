@@ -1,0 +1,123 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package eca.gui.tables.models;
+
+import java.text.DecimalFormat;
+import javax.swing.table.AbstractTableModel;
+
+import eca.experiment.ClassifierComparator;
+import weka.classifiers.Classifier;
+import java.util.ArrayList;
+import javax.swing.*;
+import eca.beans.ClassifierDescriptor;
+import eca.gui.text.NumericFormat;
+
+/**
+ *
+ * @author Roman93
+ */
+public class ExperimentTableModel extends AbstractTableModel {
+
+    private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
+
+    private final String[] titles = {"№", "Классификатор", "Точность, %", "Результаты"};
+    private ArrayList<ClassifierDescriptor> experiment;
+
+    public static final String RESULT_TITLE = "Посмотреть";
+    private final DecimalFormat format = NumericFormat.getInstance();
+
+    public ExperimentTableModel(ArrayList<ClassifierDescriptor> experiment, int digits) throws Exception {
+        this.experiment = experiment;
+        format.setMaximumFractionDigits(digits);
+    }
+
+    public Classifier getClassifier(int i) {
+        return experiment.get(i).getClassifier();
+    }
+
+    public ArrayList<ClassifierDescriptor> getExperiment() {
+        return experiment;
+    }
+
+    public void setExperiment(ArrayList<ClassifierDescriptor> experiment) {
+        this.experiment = experiment;
+        fireTableDataChanged();
+    }
+
+    public ClassifierDescriptor get(int i) {
+        return experiment.get(i);
+    }
+
+    public int digits() {
+        return format.getMaximumFractionDigits();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return titles.length;
+    }
+
+    @Override
+    public int getRowCount() {
+        return experiment.size();
+    }
+
+    public void add(ClassifierDescriptor val) {
+        experiment.add(val);
+        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+    }
+
+    public void clear() {
+        experiment.clear();
+        fireTableDataChanged();
+    }
+
+    public void sort() {
+        experiment.sort(CLASSIFIER_COMPARATOR);
+        fireTableDataChanged();
+    }
+
+    @Override
+    public Object getValueAt(int row, int column) {
+        switch (column) {
+            case 0:
+                return row;
+            case 1:
+                return experiment.get(row).getClassifier().getClass().getSimpleName();
+            case 2:
+                return format.format(experiment.get(row).getEvaluation().pctCorrect());
+            default:
+                return RESULT_TITLE;
+        }
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return titles[column];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int column) {
+        switch (column) {
+            case 0:
+                return Integer.class;
+            case 1:
+                return JTextField.class;
+            case 2:
+                return JButton.class;
+            case 3:
+                return String.class;
+            default:
+                return String.class;
+        }
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return column == 3;
+    }
+
+}
