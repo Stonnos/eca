@@ -5,9 +5,6 @@
  */
 package eca.gui.choosers;
 
-import eca.io.SerializedObject;
-
-import java.io.File;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -18,7 +15,7 @@ public class OpenModelChooser extends OpenFileChooser {
     
     public OpenModelChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Txt getData files (*.txt)","txt"));
+                new FileNameExtensionFilter("Txt data files (*.txt)","txt"));
     }
 
 }

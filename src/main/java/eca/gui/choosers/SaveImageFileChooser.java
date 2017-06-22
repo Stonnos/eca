@@ -20,7 +20,7 @@ public class SaveImageFileChooser extends SaveFileChooser {
 
     public SaveImageFileChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("PNG getData files (*.png)", "png"));
+                new FileNameExtensionFilter("PNG data files (*.png)", "png"));
     }
 
 }
