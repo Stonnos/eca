@@ -9,36 +9,42 @@ import weka.core.Attribute;
 import weka.core.Instance;
 
 /**
- * Abstract basic class for node spliting rule
+ * Abstract class for generating model of node split rule.
  * @author Рома
  */
 public abstract class AbstractRule implements java.io.Serializable {
 
     private Attribute attribute;
 
+    /**
+     * Creates rule object.
+     * @param attribute split attribute
+     * @exception IllegalArgumentException if the value of split attribute is null
+     */
     protected AbstractRule(Attribute attribute) {
         if (attribute == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         this.attribute = attribute;
     }
 
     /**
+     * Returns child node index.
      * @param obj instance
      * @return child node index
      */
     public abstract int getChild(Instance obj);
 
     /**
-     *
+     * Returns string representation of rule.
      * @param i child index
-     * @return
+     * @return string representation of rule
      */
     public abstract String rule(int i);
 
     /**
-     *
-     * @return spliting attribute
+     * Returns split attribute.
+     * @return split attribute
      */
     public final Attribute attribute() {
         return attribute;

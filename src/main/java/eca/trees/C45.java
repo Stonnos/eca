@@ -6,7 +6,7 @@
 package eca.trees;
 
 /**
- *
+ * Class for generating C4.5 decision tree model.
  * @author Рома
  */
 public class C45 extends ID3 {

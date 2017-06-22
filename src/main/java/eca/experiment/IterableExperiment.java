@@ -9,7 +9,7 @@ package eca.experiment;
  *
  * @author Roman93
  */
-public interface IterativeableExperiment {
+public interface IterableExperiment {
 
     IterativeExperiment getIterativeExperiment();
 }

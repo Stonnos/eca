@@ -8,7 +8,7 @@ package eca.metrics.distances;
 import weka.core.Instance;
 
 /**
- *
+ * Chebychev distance function model.
  * @author Рома
  */
 public class ChebyshevDistance implements Distance {

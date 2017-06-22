@@ -7,27 +7,46 @@ package eca.ensemble;
 
 import weka.core.Instance;
 import java.util.ArrayList;
+
 /**
- *
+ * Implements weighted voting method.
  * @author Рома
  */
-public class WeightedVotes extends VotesMethod {
-       
+public class WeightedVoting extends VotingMethod {
+
+    /** Weights list **/
     private ArrayList<Double> weights;
-    
-    public WeightedVotes(Aggregator aggregator, int size) {
+
+    /**
+     * Creates <code>MajorityVoting</code> object.
+     * @param aggregator <code>Aggregator</code>
+     */
+    public WeightedVoting(Aggregator aggregator, int size) {
         super(aggregator);
         weights = new ArrayList<>(size);
     }
-    
+
+    /**
+     * Sets the weight value.
+     * @param weight the weight value
+     */
     public void setWeight(double weight) {
         weights.add(weight);
     }
-    
+
+    /**
+     * Return the weight value by index.
+     * @param i index
+     * @return the weight value
+     */
     public double getWeight(int i) {
         return weights.get(i);
     }
-    
+
+    /**
+     * Returns the weights list size.
+     * @return the weights list size
+     */
     public int size() {
         return weights.size();
     }

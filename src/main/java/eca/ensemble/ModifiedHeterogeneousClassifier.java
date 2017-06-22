@@ -28,8 +28,8 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
         aggregator = new SubspacesAggregator(this, numIterations);
         votes = (getUseWeightedVotesMethod())
-                ? new WeightedVotes(aggregator, numIterations)
-                : new MajorityVotes(aggregator);
+                ? new WeightedVoting(aggregator, numIterations)
+                : new MajorityVoting(aggregator);
         return new SpaceBuilder(data);
     }
 
@@ -60,7 +60,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
                 classifiers.add(model);
                 aggregator.setInstances(subSample);
                 if (getUseWeightedVotesMethod()) {
-                    ((WeightedVotes) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
+                    ((WeightedVoting) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
                 }
             }
             if (index == numIterations - 1) {

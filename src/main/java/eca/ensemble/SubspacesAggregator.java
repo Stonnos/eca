@@ -50,7 +50,7 @@ public class SubspacesAggregator extends Aggregator {
         o.setDataset(sample);
         for (int j = 0; j < sample.numAttributes(); j++) {
             Attribute a = sample.attribute(j);
-            o.setValue(a, obj.value(classifier().data().attribute(a.name())));
+            o.setValue(a, obj.value(classifier().getData().attribute(a.name())));
         }
         return o;
     }

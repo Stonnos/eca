@@ -1,0 +1,57 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package eca.ensemble;
+
+import weka.core.Instance;
+
+/**
+ * Abstract class that implements voting method.
+ * @author Рома
+ */
+public abstract class VotingMethod implements java.io.Serializable {
+
+    /** Aggregator object**/
+    private Aggregator aggregator;
+
+    /**
+     * Creates <code>VotingMethod</code> object.
+     * @param aggregator <code>Aggregator</code>
+     */
+    protected VotingMethod(Aggregator aggregator) {
+        this.aggregator = aggregator;
+    }
+
+    /**
+     * Returns <code>Aggregator</code> object.
+     * @return <code>Aggregator</code> object
+     */
+    public Aggregator aggregator() {
+        return aggregator;
+    }
+
+    /**
+     * Returns the class value of given instance.
+     * @param obj instance object
+     * @return the class value of given instance
+     * @throws Exception
+     */
+    public abstract double classifyInstance(Instance obj) throws Exception;
+
+    /**
+     * Returns the array of classes probabilities.
+     * @param obj instance object
+     * @return the array of classes probabilities
+     * @throws Exception
+     */
+    public abstract double[] distributionForInstance(Instance obj) throws Exception;
+
+    /**
+     * Returns voting method description.
+     * @return voting method description
+     */
+    public abstract String getDescription();
+    
+}

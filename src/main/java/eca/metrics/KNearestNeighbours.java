@@ -20,6 +20,15 @@ import eca.core.InstancesHandler;
 import java.util.Arrays;
 
 /**
+ * Class for generating k - nearest neighbours model. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Set nearest neighbour weight (Default: 1) <p>
+ *
+ * Set number of nearest neighbours (Default: 10) <p>
+ *
+ * Set distance function (Default: <code>EuclidDistance</code>) <p>
  *
  * @author Рома
  */
@@ -29,20 +38,37 @@ public class KNearestNeighbours extends AbstractClassifier
     public static final double MIN_WEIGHT = 0.5;
     public static final double MAX_WEIGHT = 1.0;
 
+    /** Initial training set **/
     private Instances data;
+
+    /** Normalized training set **/
     private Instances normalizedData;
+
+    /** Number of nearest neighbours **/
     private int numNeighbours = 10;
+
+    /** Nearest neighbour weight **/
     private double weight = 1.0;
+
+    /** Distance function **/
     private Distance metric;
+
     private MinMaxNormalizer normalizer;
     private InstanceDistance[] distances;
     private final NominalToBinary ntbFilter = new NominalToBinary();
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
+    /**
+     * Creates <code>KNearestNeighbours</code> object.
+     * @param metric distance function
+     */
     public KNearestNeighbours(Distance metric) {
         this.metric = metric;
     }
 
+    /**
+     * Creates <code>KNearestNeighbours</code> object.
+     */
     public KNearestNeighbours() {
         this(new EuclidDistance());
     }
@@ -60,14 +86,27 @@ public class KNearestNeighbours extends AbstractClassifier
         return options;
     }
 
+    /**
+     * Returns the number of nearest neighbours.
+     * @return the number of nearest neighbours
+     */
     public int getNumNeighbours() {
         return numNeighbours;
     }
 
+    /**
+     * Returns the value of nearest neighbour weight.
+     * @return the value of nearest neighbour weight
+     */
     public double getWeight() {
         return weight;
     }
 
+    /**
+     * Sets the number of nearest neighbours.
+     * @param numNeighbours the number of nearest neighbours
+     * @exception IllegalArgumentException if the number of nearest neighbours is less than 1
+     */
     public void setNumNeighbours(int numNeighbours) {
         if (numNeighbours < 1) {
             throw new IllegalArgumentException("Чило ближайших соседей должно быть не менее 1!");
@@ -75,6 +114,12 @@ public class KNearestNeighbours extends AbstractClassifier
         this.numNeighbours = numNeighbours;
     }
 
+    /**
+     * Sets the value of nearest neighbour weight.
+     * @param weight the value of nearest neighbour weight
+     * @exception IllegalArgumentException if the value of nearest neighbour weight is less
+     * than <code>MIN_WEIGHT</code> or greater than <code>MAX_WEIGHT</code>
+     */
     public void setWeight(double weight) {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
             throw new IllegalArgumentException("Вес должен лежать в интервале от "
@@ -83,10 +128,18 @@ public class KNearestNeighbours extends AbstractClassifier
         this.weight = weight;
     }
 
+    /**
+     * Returns the distance function object.
+     * @return the distance function object
+     */
     public Distance distance() {
         return metric;
     }
 
+    /**
+     * Sets the distance function object.
+     * @param metric the distance function object
+     */
     public void setDistance(Distance metric) {
         this.metric = metric;
     }

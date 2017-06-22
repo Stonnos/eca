@@ -11,45 +11,94 @@ import weka.core.Instances;
 import eca.trees.CART;
 
 /**
+ * Class for generating Random forests model. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Set minimum number of instances per leaf. (Default: 2) <p>
+ *
+ * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
+ *
+ * Set number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  *
  * @author Рома
  */
 public class RandomForests extends IterativeEnsembleClassifier {
-     
+
+    /** Number of random attributes at each split **/
     private int numRandomAttr;
+
+    /** Number of instances per leaf **/
     private int minObj = 2;
+
+    /** Maximum tree depth **/
     private int maxDepth;
-    
+
+    /**
+     * Creates <code>RandomForests</code> object with K / 3 random attributes
+     * at each split, where K is the number of input attributes.
+     * @param data <code>Instances</code> object
+     */
     public RandomForests(Instances data) {
         numRandomAttr = (data.numAttributes() - 1) / 3;
     }
-    
+
+    /**
+     * Creates <code>RandomForests</code> object
+     */
     public RandomForests() {
     }
-    
+
+    /**
+     * Sets the value of random attributes number
+     * @param numRandomAttr the value of random attributes number
+     * @exception IllegalArgumentException if the value of random attributes number is less than zero
+     */
     public final void setNumRandomAttr(int numRandomAttr) {
         checkForNegative(numRandomAttr);
         this.numRandomAttr = numRandomAttr;
     }
-    
+
+    /**
+     * Returns the value of random attributes number.
+     * @return the value of random attributes number
+     */
     public final int getNumRandomAttr() {
         return numRandomAttr;
     }
-    
+
+    /**
+     * Sets the value of minimum objects per leaf.
+     * @param minObj the value of minimum objects per leaf
+     * @exception IllegalArgumentException if the value of minimum objects per leaf is less than zero
+     */
     public final void setMinObj(int minObj) {
         checkForNegative(minObj);
         this.minObj = minObj;
     }
-    
+
+    /**
+     * Sets the value of maximum tree depth.
+     * @param maxDepth the value of maximum tree depth.
+     * @exception IllegalArgumentException if the value of maximum tree depth is less than zero
+     */
     public final void setMaxDepth(int maxDepth) {
         checkForNegative(maxDepth);
         this.maxDepth = maxDepth;
     }
-    
+
+    /**
+     * Returns the value of minimum objects per leaf.
+     * @return the value of minimum objects per leaf
+     */
     public final int getMinObj() {
         return minObj;
     }
-    
+
+    /**
+     * Returns the value of maximum tree depth.
+     * @return the value of maximum tree depth
+     */
     public final int getMaxDepth() {
         return maxDepth;
     }
@@ -61,7 +110,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
     
     @Override
     public String[] getOptions() {
-        String[] options = {"Число деревьев:",String.valueOf(numIterations),
+        String[] options = {"Число деревьев:", String.valueOf(numIterations),
                             "Минимальное число объектов в листе:",  String.valueOf(minObj),
                             "Максиальная глубина дерева:", String.valueOf(maxDepth),
                             "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
@@ -84,8 +133,9 @@ public class RandomForests extends IterativeEnsembleClassifier {
         
         @Override
         public int next()  throws Exception {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             Instances bag = sampler.bootstrap(data);
             DecisionTreeClassifier model = new CART();
             model.setRandomTree(true);

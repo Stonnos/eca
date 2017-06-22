@@ -18,7 +18,7 @@ import weka.core.Instances;
  *
  * @author Рома
  */
-public class ClassifiersSet implements Iterable<Classifier>, java.io.Serializable, Cloneable {
+public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable, Cloneable {
 
     private ArrayList<Classifier> classifiers = new ArrayList<>();
     private Random r = new Random();

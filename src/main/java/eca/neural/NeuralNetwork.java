@@ -7,7 +7,7 @@ package eca.neural;
 
 import java.util.Arrays;
 import eca.core.converters.MinMaxNormalizer;
-import eca.ensemble.Iterativeable;
+import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.neural.functions.ActivationFunction;
 import java.util.NoSuchElementException;
@@ -24,7 +24,7 @@ import eca.core.InstancesHandler;
  *
  * @author Рома
  */
-public class NeuralNetwork extends AbstractClassifier implements Iterativeable, InstancesHandler {
+public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler {
 
     private Instances data;
     private final MultilayerPerceptron network;

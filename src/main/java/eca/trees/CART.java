@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import weka.core.Attribute;
 
 /**
- *
+ * Class for generating CART decision tree model.
  * @author Рома
  */
 public class CART extends DecisionTreeClassifier {

@@ -10,7 +10,7 @@ import weka.core.Attribute;
 import weka.core.Utils;
 
 /**
- *
+ * Class for generating Id3 decision tree model.
  * @author Рома
  */
 public class ID3 extends DecisionTreeClassifier {

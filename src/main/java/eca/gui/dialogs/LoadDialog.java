@@ -9,21 +9,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
-import eca.gui.actions.Actionable;
+import eca.gui.actions.CallbackAction;
+
 /**
  *
  * @author Рома
  */
 public class LoadDialog extends JDialog implements ExecutorDialog {
     
-    private final Actionable action;
+    private final CallbackAction action;
     private final JProgressBar progress;
     private SwingWorkerConstruction worker;
     
     private boolean isSuccess = true;
     private String errorMessage;
    
-    public LoadDialog(Window parent, Actionable action, String msg) {
+    public LoadDialog(Window parent, CallbackAction action, String msg) {
         super(parent,"");
         this.setModal(true);
         this.action = action;
@@ -80,7 +81,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
         @Override
         protected Void doInBackground() {
             try {
-                action.action();
+                action.apply();
             }
             catch (Throwable e) {
                 e.printStackTrace();

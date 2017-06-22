@@ -13,7 +13,7 @@ import eca.core.converters.ModelConverter;
  *
  * @author Рома
  */
-public class ModelLoader implements Actionable {
+public class ModelLoader implements CallbackAction {
 
     private ModelDescriptor model;
     private final File file;
@@ -27,7 +27,7 @@ public class ModelLoader implements Actionable {
     }
 
     @Override
-    public void action() throws Exception {
+    public void apply() throws Exception {
         model = (ModelDescriptor) ModelConverter.loadModel(file);
     }
 }

@@ -8,11 +8,15 @@ package eca.core;
 import weka.core.Instances;
 
 /**
- *
+ * Interface for handling training set.
  * @author Roman93
  */
 public interface InstancesHandler {
 
+    /**
+     * Returns initial training set object.
+     * @return initial training set object.
+     */
     Instances getData();
 
 }

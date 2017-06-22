@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class CVIterativeBuilder extends IterativeBuilder {
 
-    private final Iterativeable classifier;
+    private final Iterable classifier;
     private final Instances data;
     private final int numFolds;
     private final int numValidations;
@@ -30,7 +30,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private Random r = new Random();
     private double[] error;
 
-    public CVIterativeBuilder(Iterativeable classifier,
+    public CVIterativeBuilder(Iterable classifier,
                               Instances data, int numFolds, int numValidations) throws Exception {
         this.classifier = classifier;
         this.data = new Instances(data);

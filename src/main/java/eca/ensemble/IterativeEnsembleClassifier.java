@@ -5,41 +5,70 @@
  */
 package eca.ensemble;
 
+import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
 import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
 import java.util.ArrayList;
-import java.util.Enumeration;
+
 import weka.core.Instance;
 import weka.core.Instances;
 import eca.core.evaluation.Evaluation;
+
 /**
+ * Class for generating iterative ensemble classification model. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Set number of iterations (Default: 10) <p>
  *
  * @author Рома
  */
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
-    implements Iterativeable, EnsembleClassifier {
-    
+    implements Iterable, EnsembleClassifier, InstancesHandler {
+
+    /** Classifiers list **/
     protected ArrayList<Classifier> classifiers;
-    protected VotesMethod votes = new MajorityVotes(new Aggregator(this));
+
+    /** Voting object **/
+    protected VotingMethod votes = new MajorityVoting(new Aggregator(this));
+
+    /** Initial training set **/
     protected Instances data;
+
+    /** Number of iterations **/
     protected int numIterations = 10;
+
     protected MissingValuesFilter filter = new MissingValuesFilter();
-      
+
+    /**
+     * Sets the values of iterations number.
+     * @param numIterations the values of iterations number
+     * @exception IllegalArgumentException if the values of iterations number is less than 1
+     */
     public final void setIterationsNum(int numIterations) {
         if (numIterations < 1)
             throw new IllegalArgumentException("Число итераций должно быть больше 1!");  
         this.numIterations = numIterations;
     }
-    
-    public final Instances data() {
+
+    @Override
+    public final Instances getData() {
         return data;
     }
 
+    /**
+     * Returns the values of iterations number.
+     * @return the values of iterations number
+     */
     public final int getIterationsNum() {
         return numIterations;
     }
-    
+
+    /**
+     * Returns the values of classifiers number.
+     * @return the values of classifiers number.
+     */
     public final int numClassifiers() {
         return classifiers.size();
     }

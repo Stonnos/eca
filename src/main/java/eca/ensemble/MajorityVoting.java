@@ -8,12 +8,16 @@ package eca.ensemble;
 import weka.core.Instance;
 
 /**
- *
+ * Implements majority voting method.
  * @author Рома
  */
-public class MajorityVotes extends VotesMethod {
-       
-    public MajorityVotes(Aggregator aggregator) {
+public class MajorityVoting extends VotingMethod {
+
+    /**
+     * Creates <code>MajorityVoting</code> object.
+     * @param aggregator <code>Aggregator</code>
+     */
+    public MajorityVoting(Aggregator aggregator) {
         super(aggregator);
     }
     

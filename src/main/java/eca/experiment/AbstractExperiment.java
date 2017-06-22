@@ -21,7 +21,7 @@ import weka.classifiers.Classifier;
  * @param <T> 
  */
 public abstract class AbstractExperiment<T extends Classifier>
-        implements Experiment<T>, IterativeableExperiment {
+        implements Experiment<T>, IterableExperiment {
 
     private final ArrayList<ClassifierDescriptor> experiment;
     private int numFolds = 10;

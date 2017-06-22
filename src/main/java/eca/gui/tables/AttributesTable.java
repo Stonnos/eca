@@ -257,12 +257,12 @@ public class AttributesTable extends JDataTableBase {
             dataSet.add(obj);
         }
         dataSet.setClass(dataSet.attribute(data.classAttribute().name()));
-        //System.out.println(data);
+        //System.out.println(getData);
         //System.out.println(dataSet);
         /*RemoveUseless filter = new RemoveUseless();
         filter.setInputFormat(dataSet);
         dataSet = Filter.useFilter(dataSet, filter);
-        dataSet.setRelationName(data.relationName());*/
+        dataSet.setRelationName(getData.relationName());*/
         return dataSet;
     }
 

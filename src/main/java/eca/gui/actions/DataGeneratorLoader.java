@@ -7,7 +7,7 @@ import weka.core.Instances;
  * @author Roman Batygin
  */
 
-public class DataGeneratorLoader implements Actionable {
+public class DataGeneratorLoader implements CallbackAction {
 
     private DataGenerator dataGenerator;
 
@@ -18,7 +18,7 @@ public class DataGeneratorLoader implements Actionable {
     }
 
     @Override
-    public void action() {
+    public void apply() {
         result = dataGenerator.generate();
     }
 

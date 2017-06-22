@@ -24,22 +24,51 @@ import weka.core.Utils;
 import eca.core.InstancesHandler;
 
 /**
+ * Abstract class for generating decision tree model. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Set minimum number of instances per leaf. (Default: 2) <p>
+ *
+ * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
+ *
+ * Use random tree. <p>
+ *
+ * Set number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  *
  * @author Рома
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
         implements InstancesHandler {
 
+    /** Initial training set **/
     protected Instances data;
+
+    /** Tree root **/
     protected TreeNode root;
+
+    /** Number of tree nodes **/
     protected int numNodes;
+
+    /** Number of tree leaves **/
     protected int numLeaves;
+
+    /** Number of instances per leaf **/
     protected int minObj = 2;
+
+    /** Maximum tree depth **/
     protected int maxDepth;
+
+    /** Number of random attributes at each split **/
     protected int numRandomAttr;
+
+    /** Random tree? **/
     protected boolean isRandom;
+
+    /** Tree depth **/
     protected int depth;
 
+    /** Node split algorithm **/
     protected SplitAlgorithm splitAlgorithm;
 
     protected double[] probabilities;
@@ -49,7 +78,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
-     *
+     * Tree node model.
      */
     protected static class TreeNode implements java.io.Serializable {
 
@@ -170,7 +199,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
 
     /**
-     *
+     * Class for storage node split results.
      */
     protected static class SplitDescriptor {
 
@@ -180,6 +209,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     }
 
+    /**
+     * Split algorithm interface.
+     */
     protected interface SplitAlgorithm extends Serializable {
 
         double getMeasure(TreeNode x);
@@ -256,48 +288,95 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         rule.setValues(optValues);
     }
 
+    /**
+     * Returns the value of random tree.
+     * @return the value of random tree
+     */
     public final boolean isRandomTree() {
         return isRandom;
     }
 
+    /**
+     * Sets the value of random tree.
+     * @param isRandom the value of random tree
+     */
     public final void setRandomTree(boolean isRandom) {
         this.isRandom = isRandom;
     }
 
+    /**
+     * Sets the value of minimum objects per leaf.
+     * @param minObj the value of minimum objects per leaf
+     * @exception IllegalArgumentException if the value of minimum objects per leaf is less than zero
+     */
     public final void setMinObj(int minObj) {
         checkForNegative(minObj);
         this.minObj = minObj;
     }
 
+    /**
+     * Returns the value of minimum objects per leaf.
+     * @return the value of minimum objects per leaf
+     */
     public final int getMinObj() {
         return minObj;
     }
 
+    /**
+     * Returns the value of maximum tree depth.
+     * @return the value of maximum tree depth
+     */
     public final int getMaxDepth() {
         return maxDepth;
     }
 
+    /**
+     * Sets the value of maximum tree depth.
+     * @param maxDepth the value of maximum tree depth.
+     * @exception IllegalArgumentException if the value of maximum tree depth is less than zero
+     */
     public void setMaxDepth(int maxDepth) {
         checkForNegative(maxDepth);
         this.maxDepth = maxDepth;
     }
 
+    /**
+     * Returns leaves number.
+     * @return leaves number
+     */
     public final int numLeaves() {
         return numLeaves;
     }
 
+    /**
+     * Returns nodes number
+     * @return nodes number
+     */
     public final int numNodes() {
         return numNodes;
     }
 
+    /**
+     * Returns tree depth.
+     * @return tree depth
+     */
     public final int depth() {
         return depth;
     }
 
+    /**
+     * Returns the value of random attributes number.
+     * @return the value of random attributes number
+     */
     public final int numRandomAttr() {
         return numRandomAttr;
     }
 
+    /**
+     * Sets the value of random attributes number
+     * @param numRandomAttr the value of random attributes number
+     * @exception IllegalArgumentException if the value of random attributes number is less than zero
+     */
     public final void setNumRandomAttr(int numRandomAttr) {
         checkForNegative(numRandomAttr);
         this.numRandomAttr = numRandomAttr;

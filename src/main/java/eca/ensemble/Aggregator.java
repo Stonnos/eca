@@ -73,8 +73,9 @@ public class Aggregator implements java.io.Serializable {
     }
     
     public double aggregate(Instance obj, ArrayList<Double> weights) throws Exception {
-        if (obj == null)
-            throw new NullPointerException();
+        if (obj == null) {
+            throw new IllegalArgumentException();
+        }
         double[] voices = getVoices(obj, weights);  
         double classValue = 0.0, maxVoices = 0.0;
         for (int i = 0; i < voices.length; i++) {

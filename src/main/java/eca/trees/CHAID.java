@@ -12,31 +12,52 @@ import weka.core.Instances;
 import eca.statistics.Statistics;
 
 /**
- *
+ * Class for generating CHAID decision tree model.
  * @author Рома
  */
 public class CHAID extends DecisionTreeClassifier {
 
+    /** Contingency table **/
     private double[][] contingency_table;
+
+    /** Significance level for hi square test **/
     private double alpha = 0.05;
+
+    /** Use binary splits? **/
     private boolean use_binary_splits = true;
 
     public CHAID() {
         splitAlgorithm = new ChaidSplitAlgorithm();
     }
 
+    /**
+     * Returns the value of significance level for hi square test.
+     * @return the value of significance level for hi square test
+     */
     public double getAlpha() {
         return alpha;
     }
 
+    /**
+     * Sets the value of significance level for hi square test.
+     * @param alpha the value of significance level for hi square test
+     */
     public void setAlpha(double alpha) {
         this.alpha = alpha;
     }
 
+    /**
+     * Sets the value of binary splits.
+     * @param flag the value of binary splits
+     */
     public void setUseBinarySplits(boolean flag) {
         this.use_binary_splits = flag;
     }
 
+    /**
+     * Returns the value of binary splits.
+     * @return the value of binary splits
+     */
     public boolean getUseBinarySplits() {
         return use_binary_splits;
     }

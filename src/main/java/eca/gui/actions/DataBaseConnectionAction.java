@@ -10,7 +10,7 @@ import eca.jdbc.DataBaseConnection;
  *
  * @author Roman93
  */
-public class DataBaseConnectionAction implements Actionable {
+public class DataBaseConnectionAction implements CallbackAction {
     
     private final DataBaseConnection connection;
     
@@ -23,7 +23,7 @@ public class DataBaseConnectionAction implements Actionable {
     }
     
     @Override
-    public void action() throws Exception {
+    public void apply() throws Exception {
         connection.open();
     }
 }

@@ -26,7 +26,7 @@ public class ROCThresholdTableModel extends AbstractTableModel {
 
     public ROCThresholdTableModel(Instances data, int digits, String className) {
         this.data = data;
-        //System.out.println(data);
+        //System.out.println(getData);
         this.className = className;
         //------------------------------------
         this.createNames();

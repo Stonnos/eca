@@ -35,8 +35,8 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
             numIterations = set.size();
         }
         votes = (getUseWeightedVotesMethod())
-                ? new WeightedVotes(new Aggregator(this), numIterations)
-                : new MajorityVotes(new Aggregator(this));
+                ? new WeightedVoting(new Aggregator(this), numIterations)
+                : new MajorityVoting(new Aggregator(this));
         return new HeterogeneousBuilder(data);
     }
 
@@ -114,7 +114,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
             if (error > min_error && error < max_error) {
                 classifiers.add(model);
                 if (getUseWeightedVotesMethod()) {
-                    ((WeightedVotes) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
+                    ((WeightedVoting) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
                 }
             }
             if (index == numIterations - 1) {

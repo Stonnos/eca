@@ -7,12 +7,18 @@ package eca.ensemble;
 
 import java.util.ArrayList;
 import weka.classifiers.Classifier;
+
 /**
- *
+ * Basic interface for ensemble classification models.
  * @author Рома
  */
 public interface EnsembleClassifier {
 
+    /**
+     * Returns the structure of ensemble model as <code>ArrayList</code> object.
+     * @return the structure of ensemble model as <code>ArrayList</code> object.
+     * @throws Exception
+     */
     ArrayList<Classifier> getStructure() throws Exception;
 
 }

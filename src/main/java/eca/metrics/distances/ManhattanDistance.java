@@ -8,7 +8,7 @@ package eca.metrics.distances;
 import weka.core.Instance;
 
 /**
- *
+ * Manhattan distance function model.
  * @author Рома
  */
 public class ManhattanDistance implements Distance {

@@ -11,7 +11,8 @@ import eca.experiment.AutomatedStacking;
 import eca.experiment.AutomatedHeterogeneousEnsemble;
 import eca.experiment.ClassifiersSetBuilder;
 import eca.experiment.AutomatedNeuralNetwork;
-import eca.gui.actions.Actionable;
+import eca.gui.ExecutorService;
+import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataGeneratorLoader;
 import eca.gui.dialogs.BaseOptionsDialog;
 import eca.gui.dialogs.ClassifierBuilderDialog;
@@ -44,7 +45,7 @@ import eca.ensemble.AdaBoostClassifier;
 import eca.ensemble.ModifiedHeterogeneousClassifier;
 import eca.ensemble.RandomForests;
 import eca.ensemble.IterativeBuilder;
-import eca.ensemble.Iterativeable;
+import eca.ensemble.Iterable;
 import eca.ensemble.CVIterativeBuilder;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.StackingClassifier;
@@ -101,19 +102,17 @@ public class JMainFrame extends JFrame {
     
     private JMenu algorithmsMenu;
 
-    private JMenu intilligenceMenu;
+    private JMenu dataMinerMenu;
 
     private JMenuItem saveFileMenu;
 
-    private JMenuItem attrStatMenu;
+    private JMenuItem attrStatisticsMenu;
     
     private JMenu windowsMenu;
 
     private static final double widthCoefficient = 0.8;
 
     private static final double heightCoefficient = 0.9;
-
-    private Executor executor = new Executor();
 
     private ResultsHistory resultsHistory = new ResultsHistory();
     
@@ -134,8 +133,8 @@ public class JMainFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.algorithmsMenu.setEnabled(false);
         this.saveFileMenu.setEnabled(false);
-        this.attrStatMenu.setEnabled(false);
-        this.intilligenceMenu.setEnabled(false);
+        this.attrStatisticsMenu.setEnabled(false);
+        this.dataMinerMenu.setEnabled(false);
         this.createWindowListener();
         this.setLocationRelativeTo(null);
     }
@@ -447,7 +446,7 @@ public class JMainFrame extends JFrame {
     /**
      *
      */
-    private class ModelBuilder implements Actionable {
+    private class ModelBuilder implements CallbackAction {
         
         Classifier model;
         Instances data;
@@ -459,7 +458,7 @@ public class JMainFrame extends JFrame {
         }
         
         @Override
-        public void action() throws Exception {
+        public void apply() throws Exception {
             evaluation = createEvaluation(model, data);
         }
         
@@ -468,34 +467,6 @@ public class JMainFrame extends JFrame {
         }
 
     } //End of class ModelBuilder
-
-
-    /**
-     *
-     */
-    private interface SuccessAction {
-
-        void done() throws Exception;
-    }
-
-    /**
-     *
-     */
-    private class Executor {
-
-        void process(ExecutorDialog progress, SuccessAction successAction) throws Exception {
-            progress.execute();
-            if (!progress.isCancelled()) {
-                if (progress.isSuccess()) {
-                    successAction.done();
-                } else {
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            progress.getErrorMessageText(),
-                            "", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        }
-    }
 
     /**
      *
@@ -535,6 +506,16 @@ public class JMainFrame extends JFrame {
 
     }
 
+    public void process(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
+        ExecutorService.process(executorDialog, successAction, new CallbackAction() {
+            @Override
+            public void apply() {
+                JOptionPane.showMessageDialog(JMainFrame.this,
+                       executorDialog.getErrorMessageText(), "", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
+
     private void createAndShowLoaderFrame(BaseOptionsDialog frame) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
@@ -542,9 +523,9 @@ public class JMainFrame extends JFrame {
             LoadDialog progress = new LoadDialog(JMainFrame.this,
                     builder, "Пожалуйста подождите, идет построение модели...");
 
-            executor.process(progress, new SuccessAction() {
+            process(progress, new CallbackAction() {
                 @Override
-                public void done() throws Exception {
+                public void apply() throws Exception {
                     resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
                             builder.evaluation(), maximumFractionDigits);
                 }
@@ -582,8 +563,8 @@ public class JMainFrame extends JFrame {
                 if (panels.getComponentCount() == 0) {
                     algorithmsMenu.setEnabled(false);
                     saveFileMenu.setEnabled(false);
-                    intilligenceMenu.setEnabled(false);
-                    attrStatMenu.setEnabled(false);
+                    dataMinerMenu.setEnabled(false);
+                    attrStatisticsMenu.setEnabled(false);
                 }
             }
             
@@ -613,8 +594,8 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
         algorithmsMenu.setEnabled(true);
         saveFileMenu.setEnabled(true);
-        intilligenceMenu.setEnabled(true);
-        attrStatMenu.setEnabled(true);
+        dataMinerMenu.setEnabled(true);
+        attrStatisticsMenu.setEnabled(true);
         windowsMenu.add(frame.getMenu());
         isStarted = true;
     }
@@ -623,14 +604,14 @@ public class JMainFrame extends JFrame {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu("Файл");
         algorithmsMenu = new JMenu("Классификаторы");
-        intilligenceMenu = new JMenu("Data Miner");
+        dataMinerMenu = new JMenu("Data Miner");
         JMenu optionsMenu = new JMenu("Настройки");
         JMenu serviceMenu = new JMenu("Сервис");
         windowsMenu = new JMenu("Окна");
         JMenu referenceMenu = new JMenu("Справка");
         menu.add(fileMenu);
         menu.add(algorithmsMenu);
-        menu.add(intilligenceMenu);
+        menu.add(dataMinerMenu);
         menu.add(optionsMenu);
         menu.add(serviceMenu);
         menu.add(windowsMenu);
@@ -646,9 +627,6 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    //ConverterUtils.DataSource source = 
-                    //   new ConverterUtils.DataSource("D:/med_data.arff");
-                    // Instances data = source.getDataSet();
                     if (fileChooser == null) {
                         fileChooser = new OpenDataFileChooser();
                     }
@@ -659,9 +637,9 @@ public class JMainFrame extends JFrame {
                                 loader,
                                 "Пожалуйста подождите, идет загрузка данных...");
 
-                        executor.process(progress, new SuccessAction() {
+                        process(progress, new CallbackAction() {
                             @Override
-                            public void done() throws Exception {
+                            public void apply() throws Exception {
                                 createDataFrame(loader.data());
                             }
                         });
@@ -746,9 +724,9 @@ public class JMainFrame extends JFrame {
                                 new DataBaseConnectionAction(connection),
                                 "Пожалуйста подождите, идет подключение к базе данных...");
 
-                        executor.process(progress, new SuccessAction() {
+                        process(progress, new CallbackAction() {
                             @Override
-                            public void done() throws Exception {
+                            public void apply() throws Exception {
                                 QueryFrame dbframe = new QueryFrame(JMainFrame.this, connection);
                                 dbframe.setVisible(true);
                             }
@@ -784,9 +762,9 @@ public class JMainFrame extends JFrame {
                                 loader,
                                 "Пожалуйста подождите, идет загрузка данных...");
 
-                        executor.process(progress, new SuccessAction() {
+                        process(progress, new CallbackAction() {
                             @Override
-                            public void done() throws Exception {
+                            public void apply() throws Exception {
                                 createDataFrame(loader.data());
                             }
                         });
@@ -821,9 +799,9 @@ public class JMainFrame extends JFrame {
                                 loader,
                                 "Пожалуйста подождите, идет загрузка модели...");
 
-                        executor.process(progress, new SuccessAction() {
+                        process(progress, new CallbackAction() {
                             @Override
-                            public void done() throws Exception {
+                            public void apply() throws Exception {
                                 ModelDescriptor model = loader.model();
                                 resultsHistory.createResultFrame(model.description, model.classifier,
                                         model.data, model.evaluation, model.digits);
@@ -855,9 +833,9 @@ public class JMainFrame extends JFrame {
                                 loader,
                                 "Пожалуйста подождите, идет генерация данных...");
 
-                        executor.process(progress, new SuccessAction() {
+                        process(progress, new CallbackAction() {
                             @Override
-                            public void done() throws Exception {
+                            public void apply() throws Exception {
                                 createDataFrame(loader.getResult());
                             }
                         });
@@ -1014,11 +992,11 @@ public class JMainFrame extends JFrame {
             }
         });
         //----------------------------------------
-        intilligenceMenu.add(aNeuralMenu);
-        intilligenceMenu.add(aHeteroEnsMenu);
-        intilligenceMenu.add(aRndSubspMenu);
-        intilligenceMenu.add(aAdaBoostMenu);
-        intilligenceMenu.add(aStackingMenu);
+        dataMinerMenu.add(aNeuralMenu);
+        dataMinerMenu.add(aHeteroEnsMenu);
+        dataMinerMenu.add(aRndSubspMenu);
+        dataMinerMenu.add(aAdaBoostMenu);
+        dataMinerMenu.add(aStackingMenu);
         //-------------------------------
         JMenu classifiersMenu = new JMenu("Индувидуальные алгоритмы");
         JMenu ensembleMenu = new JMenu("Ансамблевые алгоритмы");
@@ -1230,8 +1208,8 @@ public class JMainFrame extends JFrame {
         });
         serviceMenu.add(historyMenu);
 
-        attrStatMenu = new JMenuItem("Статистика по атрибутам");
-        attrStatMenu.addActionListener(new ActionListener() {
+        attrStatisticsMenu = new JMenuItem("Статистика по атрибутам");
+        attrStatisticsMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
@@ -1249,7 +1227,7 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
-        serviceMenu.add(attrStatMenu);
+        serviceMenu.add(attrStatisticsMenu);
         //----------------------------------
         this.setJMenuBar(menu);
     }
@@ -1257,15 +1235,15 @@ public class JMainFrame extends JFrame {
     private void computeResults(BaseOptionsDialog frame, String msg) throws Exception {
         if (frame.dialogResult()) {
             try {
-                IterativeBuilder itCls = itClassifier((Iterativeable) frame.classifier(),
+                IterativeBuilder itCls = itClassifier((Iterable) frame.classifier(),
                         frame.data());
 
                 ClassifierBuilderDialog progress
                         = new ClassifierBuilderDialog(JMainFrame.this, itCls, msg);
 
-                executor.process(progress, new SuccessAction() {
+                process(progress, new CallbackAction() {
                     @Override
-                    public void done() throws Exception {
+                    public void apply() throws Exception {
                         resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
                                 frame.data(), itCls.evaluation(), maximumFractionDigits);
                     }
@@ -1324,7 +1302,7 @@ public class JMainFrame extends JFrame {
         }
     }
     
-    private IterativeBuilder itClassifier(Iterativeable model, Instances data)
+    private IterativeBuilder itClassifier(Iterable model, Instances data)
             throws Exception {
         IterativeBuilder itCls = null;
         switch (testingSetFrame.getTestingSetType()) {

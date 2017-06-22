@@ -13,7 +13,7 @@ import java.io.File;
  *
  * @author Рома
  */
-public class InstancesLoader implements Actionable {
+public class InstancesLoader implements CallbackAction {
 
     private Instances data;
     private final File file;
@@ -27,7 +27,7 @@ public class InstancesLoader implements Actionable {
     }
     
     @Override
-    public void action() throws Exception {
+    public void apply() throws Exception {
         data = DataLoader.getDataSet(file);
     }
     

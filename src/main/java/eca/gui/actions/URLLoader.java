@@ -12,7 +12,7 @@ import eca.net.DataLoaderImpl;
  *
  * @author Roman93
  */
-public class URLLoader implements Actionable {
+public class URLLoader implements CallbackAction {
     
     private Instances data;
     private final DataLoaderImpl loader;
@@ -26,7 +26,7 @@ public class URLLoader implements Actionable {
     }
     
     @Override
-    public void action() throws Exception {
+    public void apply() throws Exception {
         data = loader.loadInstances();
     }
 }

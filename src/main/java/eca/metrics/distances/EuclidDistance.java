@@ -8,7 +8,7 @@ package eca.metrics.distances;
 import weka.core.Instance;
 
 /**
- *
+ * Euclid distance function model.
  * @author Рома
  */
 public class EuclidDistance extends SquareEuclidDistance {

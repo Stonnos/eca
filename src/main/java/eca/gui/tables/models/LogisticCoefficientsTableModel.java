@@ -67,7 +67,7 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
         data = Filter.useFilter(data, uselessFilter);
         ntbFilter.setInputFormat(data);
         data = Filter.useFilter(data, ntbFilter);
-        //System.out.println(data);
+        //System.out.println(getData);
     }
     
     private void createNames() {

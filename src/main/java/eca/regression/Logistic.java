@@ -9,7 +9,7 @@ import eca.core.InstancesHandler;
 import weka.core.Instances;
 
 /**
- *
+ * Class for generating logistic regression model.
  * @author Roman93
  */
 public class Logistic extends weka.classifiers.functions.Logistic

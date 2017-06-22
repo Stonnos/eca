@@ -26,10 +26,11 @@ import eca.beans.ClassifierDescriptor;
 import eca.core.TestMethod;
 import eca.core.converters.ModelConverter;
 import eca.experiment.IterativeExperiment;
+import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
 import eca.experiment.AbstractExperiment;
 import eca.core.ClassifierIndexer;
-import eca.gui.actions.Actionable;
+import eca.gui.actions.CallbackAction;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.tables.ExperimentTable;
@@ -298,21 +299,33 @@ public abstract class ExperimentFrame extends JFrame {
                 }
                 File file = fileChooser.openFile(ExperimentFrame.this);
                 if (file != null) {
-                    ExperimentLoader loader = new ExperimentLoader(file);
-                    LoadDialog progress = new LoadDialog(ExperimentFrame.this,
-                            loader, loadExperimentTitle);
-                    progress.execute();
-                    if (!progress.isCancelled()) {
-                        if (progress.isSuccess()) {
-                            table.setRenderer(Color.RED);
-                            ExperimentHistory history = loader.getExperiment();
-                            table.experimentModel().setExperiment(history.getExperiment());
-                            setResults(history.getDataSet());
-                        } else {
-                            JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                    progress.getErrorMessageText(),
-                                    null, JOptionPane.ERROR_MESSAGE);
-                        }
+                    try {
+                        ExperimentLoader loader = new ExperimentLoader(file);
+                        LoadDialog progress = new LoadDialog(ExperimentFrame.this,
+                                loader, loadExperimentTitle);
+
+                        ExecutorService.process(progress, new CallbackAction() {
+                            @Override
+                            public void apply() throws Exception {
+                                table.setRenderer(Color.RED);
+                                ExperimentHistory history = loader.getExperiment();
+                                table.experimentModel().setExperiment(history.getExperiment());
+                                setResults(history.getDataSet());
+                            }
+                        }, new CallbackAction() {
+                            @Override
+                            public void apply() throws Exception {
+                                JOptionPane.showMessageDialog(ExperimentFrame.this,
+                                        progress.getErrorMessageText(),
+                                        null, JOptionPane.WARNING_MESSAGE);
+                            }
+                        });
+
+                    }
+                    catch (Throwable e) {
+                        JOptionPane.showMessageDialog(ExperimentFrame.this,
+                                e.getMessage(),
+                                null, JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -391,7 +404,9 @@ public abstract class ExperimentFrame extends JFrame {
                     }
                     catch (Exception e) {}
 
-                    setProgress(object.getPercent());
+                    if (!isCancelled()) {
+                        setProgress(object.getPercent());
+                    }
                 }
             } catch (Throwable e) {
                 error = true;
@@ -418,7 +433,7 @@ public abstract class ExperimentFrame extends JFrame {
     /**
      *
      */
-    private static class ExperimentLoader implements Actionable {
+    private static class ExperimentLoader implements CallbackAction {
 
         ExperimentHistory experiment;
         final File file;
@@ -432,7 +447,7 @@ public abstract class ExperimentFrame extends JFrame {
         }
 
         @Override
-        public void action() throws Exception {
+        public void apply() throws Exception {
             experiment = (ExperimentHistory) ModelConverter.loadModel(file);
         }
     }
