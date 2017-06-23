@@ -6,7 +6,7 @@
 package eca.jdbc;
 
 /**
- *
+ * Datasource descriptor.
  * @author Roman93
  */
 public abstract class ConnectionDescriptor implements java.io.Serializable {
@@ -17,10 +17,21 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
     private String login = "";
     private String password = "";
 
-    public ConnectionDescriptor() {
+    /**
+     * Creates <tt>ConnectionDescriptor</tt> object with default parameters.
+     */
+    protected ConnectionDescriptor() {
     }
 
-    public ConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
+    /**
+     * Creates <tt>ConnectionDescriptor</tt> object with given parameters.
+     * @param host datasource host
+     * @param port datasource port number
+     * @param dataBaseName database name
+     * @param login user login
+     * @param password user password
+     */
+    protected ConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
         this.host = host;
         this.port = port;
         this.dataBaseName = dataBaseName;
@@ -28,52 +39,104 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
         this.password = password;
     }
 
+    /**
+     * Return <tt>true</tt> if database is embedded.
+     * @return <tt>true</tt> if database is embedded
+     */
     public boolean isEmbedded() {
         return false;
     }
 
+    /**
+     * Returns datasource host.
+     * @return datasource host
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Sets datasource host.
+     * @param host datasource host
+     */
     public void setHost(String host) {
         this.host = host;
     }
 
+    /**
+     * Returns datasource port number.
+     * @return datasource port number
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * Sets datasource port number.
+     * @param port datasource port number
+     */
     public void setPort(int port) {
         this.port = port;
     }
 
+    /**
+     * Returns user login.
+     * @return user login
+     */
     public String getLogin() {
         return login;
     }
 
+    /**
+     * Sets  user login.
+     * @param login  user login
+     */
     public void setLogin(String login) {
         this.login = login;
     }
 
+    /**
+     * Returns user password.
+     * @return user password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets user password.
+     * @param password user password
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * Returns database name.
+     * @return database name
+     */
     public String getDataBaseName() {
         return dataBaseName;
     }
 
+    /**
+     * Sets database name.
+     * @param dataBaseName database name
+     */
     public void setDataBaseName(String dataBaseName) {
         this.dataBaseName = dataBaseName;
     }
 
+    /**
+     * Returns url string of datasource.
+     * @return url string of datasource
+     */
     public abstract String getUrl();
 
+    /**
+     * Returns connection protocol.
+     * @return connection protocol
+     */
     public abstract String getProtocol();
 
 }

@@ -15,8 +15,8 @@ import weka.classifiers.Classifier;
 public interface EnsembleClassifier {
 
     /**
-     * Returns the structure of ensemble model as <code>ArrayList</code> object.
-     * @return the structure of ensemble model as <code>ArrayList</code> object.
+     * Returns the structure of ensemble model as <tt>ArrayList</tt> object.
+     * @return the structure of ensemble model as <tt>ArrayList</tt> object.
      * @throws Exception
      */
     ArrayList<Classifier> getStructure() throws Exception;

@@ -28,7 +28,7 @@ import java.util.Arrays;
  *
  * Set number of nearest neighbours (Default: 10) <p>
  *
- * Set distance function (Default: <code>EuclidDistance</code>) <p>
+ * Set distance function (Default: {@link EuclidDistance}) <p>
  *
  * @author Рома
  */
@@ -59,7 +59,7 @@ public class KNearestNeighbours extends AbstractClassifier
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
-     * Creates <code>KNearestNeighbours</code> object.
+     * Creates <tt>KNearestNeighbours</tt> object.
      * @param metric distance function
      */
     public KNearestNeighbours(Distance metric) {
@@ -67,7 +67,7 @@ public class KNearestNeighbours extends AbstractClassifier
     }
 
     /**
-     * Creates <code>KNearestNeighbours</code> object.
+     * Creates <tt>KNearestNeighbours</tt> object.
      */
     public KNearestNeighbours() {
         this(new EuclidDistance());
@@ -118,7 +118,7 @@ public class KNearestNeighbours extends AbstractClassifier
      * Sets the value of nearest neighbour weight.
      * @param weight the value of nearest neighbour weight
      * @exception IllegalArgumentException if the value of nearest neighbour weight is less
-     * than <code>MIN_WEIGHT</code> or greater than <code>MAX_WEIGHT</code>
+     * than {@value MIN_WEIGHT} or greater than {@value MAX_WEIGHT}
      */
     public void setWeight(double weight) {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {

@@ -15,29 +15,40 @@ import java.util.ArrayList;
 import weka.core.Utils;
 
 /**
- *
+ * Implements loading data from database.
  * @author Рома
  */
 public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 
+    /** Default relation name **/
     private static final String defaultRelationName = "Relation";
 
+    /** Available column types of numeric attribute **/
     private static final int[] NUMERIC_TYPES = {Types.DOUBLE, Types.FLOAT,
                 Types.INTEGER, Types.SMALLINT,
                 Types.DECIMAL, Types.NUMERIC,
                 Types.REAL,  Types.TINYINT,
                 Types.BIGINT};
-    
+
+    /** Available column types of nominal attribute **/
     private static final int[] NOMINAL_TYPES = {Types.CHAR, Types.VARCHAR,
                 Types.NCHAR, Types.NVARCHAR,
                 Types.BOOLEAN, Types.BIT};
 
+    /** Available column types of date attribute **/
     private static final int[] DATES_TYPES = {Types.DATE, Types.TIME,
             Types.TIMESTAMP};
-    
+
+    /** Database connection object **/
     private Connection connection;
+
+    /** Datasource descriptor **/
     private ConnectionDescriptor connectionDescriptor;
 
+    /**
+     * Creates <tt>DataBaseConnection</tt> object.
+     * @throws Exception
+     */
     public DataBaseConnection() throws Exception {
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
         DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
@@ -47,6 +58,10 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
         DriverManager.registerDriver(new org.sqlite.JDBC());
     }
 
+    /**
+     * Opens connection with database.
+     * @throws SQLException
+     */
     public void open() throws SQLException {
         connection = DriverManager.getConnection(connectionDescriptor.getUrl(),
                 connectionDescriptor.getLogin(), connectionDescriptor.getPassword());
@@ -60,10 +75,18 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
         }
     }
 
+    /**
+     * Returns <tt>ConnectionDescriptor</tt> object.
+     * @return <tt>ConnectionDescriptor</tt> object
+     */
     public ConnectionDescriptor getConnectionDescriptor() {
         return connectionDescriptor;
     }
 
+    /**
+     * Sets <tt>ConnectionDescriptor</tt> object.
+     * @param connectionDescriptor <tt>ConnectionDescriptor</tt> object
+     */
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
         this.connectionDescriptor = connectionDescriptor;
     }

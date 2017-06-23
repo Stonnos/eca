@@ -8,6 +8,16 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
+ * Class for generating data with given properties.
+ *
+ * Valid options are: <p>
+ *
+ * Set number of classes (Default: 2) <p>
+ *
+ * Set number of attributes (Default: 12) <p>
+ *
+ * Set number of instances (Default: 100) <p>
+ *
  * Created by Roman93 on 15.04.2017.
  */
 public class SimpleDataGenerator implements DataGenerator {
@@ -26,10 +36,13 @@ public class SimpleDataGenerator implements DataGenerator {
 
     private static final int[] ATTRIBUTE_TYPES = {Attribute.NOMINAL, Attribute.NUMERIC};
 
+    /** Number of classes **/
     private int numClasses = 2;
 
+    /** Number of attributes **/
     private int numAttributes = 12;
 
+    /** Number of instances **/
     private int numInstances = 100;
 
     private Random random = new Random();
@@ -38,34 +51,66 @@ public class SimpleDataGenerator implements DataGenerator {
 
     private double[] variances;
 
+    /**
+     * Returns the number of classes.
+     * @return the number of classes
+     */
     public int getNumClasses() {
         return numClasses;
     }
 
+    /**
+     * Sets the number of classes.
+     * @param numClasses the number of classes
+     */
     public void setNumClasses(int numClasses) {
         this.numClasses = numClasses;
     }
 
+    /**
+     * Returns the number of attributes.
+     * @return the number of attributes
+     */
     public int getNumAttributes() {
         return numAttributes;
     }
 
+    /**
+     * Sets the number of attributes.
+     * @param numAttributes the number of attributes
+     */
     public void setNumAttributes(int numAttributes) {
         this.numAttributes = numAttributes;
     }
 
+    /**
+     * Returns the number of instances.
+     * @return the number of instances
+     */
     public int getNumInstances() {
         return numInstances;
     }
 
+    /**
+     * Sets the number of instances.
+     * @param numInstances the number of instances
+     */
     public void setNumInstances(int numInstances) {
         this.numInstances = numInstances;
     }
 
+    /**
+     * Returns <tt>Random</tt> object.
+     * @return <tt>Random</tt> object
+     */
     public Random getRandom() {
         return random;
     }
 
+    /**
+     * Sets <tt>Random</tt> object.
+     * @param random <tt>Random</tt> object
+     */
     public void setRandom(Random random) {
         this.random = random;
     }

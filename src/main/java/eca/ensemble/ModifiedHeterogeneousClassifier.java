@@ -13,13 +13,17 @@ import java.util.NoSuchElementException;
 import weka.classifiers.Classifier;
 
 /**
- *
+ * Implements modified heterogeneous ensemble algorithm.
  * @author Рома
  */
 public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     private SubspacesAggregator aggregator;
 
+    /**
+     * Creates <tt>ModifiedHeterogeneousClassifier</tt> with given classifiers set.
+     * @param set classifiers set
+     */
     public ModifiedHeterogeneousClassifier(ClassifiersSet set) {
         super(set);
     }

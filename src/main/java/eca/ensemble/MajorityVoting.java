@@ -14,8 +14,8 @@ import weka.core.Instance;
 public class MajorityVoting extends VotingMethod {
 
     /**
-     * Creates <code>MajorityVoting</code> object.
-     * @param aggregator <code>Aggregator</code>
+     * Creates <tt>MajorityVoting</tt> object.
+     * @param aggregator <tt>Aggregator</tt>
      */
     public MajorityVoting(Aggregator aggregator) {
         super(aggregator);

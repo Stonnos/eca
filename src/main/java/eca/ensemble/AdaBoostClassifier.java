@@ -13,14 +13,22 @@ import java.util.Random;
 import java.util.NoSuchElementException;
 
 /**
- *
+ * Implements AdaBoost algorithm. For more information see <p>
+ * Yoav Freund, Robert E. Schapire. A decision-theoretic generalization of online learning
+ * and an application to boosting // Second European Conference on Computational Learning Theory. – 1995. <p>
  * @author Рома
  */
 public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
+    /** Instances weights **/
     private double[] weights;
+
     private final Random random = new Random();
 
+    /**
+     * Creates <tt>AdaBoostClassifier</tt> object with given classifiers set.
+     * @param set classifiers set
+     */
     public AdaBoostClassifier(ClassifiersSet set) {
         super(set);
     }

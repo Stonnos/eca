@@ -15,7 +15,7 @@ import weka.core.Instance;
 public class NominalRule extends AbstractRule {
 
     /**
-     * Creates <code>NominalRule</code> object.
+     * Creates <tt>NominalRule</tt> object.
      * @param attribute split attribute
      * @exception IllegalArgumentException if split attribute is not nominal
      */

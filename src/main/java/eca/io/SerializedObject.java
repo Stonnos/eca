@@ -5,15 +5,20 @@
  */
 package eca.io;
 
-import java.io.*;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+
 /**
- *
+ * Implements objects serialization.
  * @author Рома
  */
 public class SerializedObject implements Serializable {
     
     /**
-     * Writes serialized object in file
+     * Writes serialized object to file.
      * @param obj object
      * @param fileName file name
      * @throws Exception 
@@ -29,7 +34,7 @@ public class SerializedObject implements Serializable {
     }
     
     /**
-     * Reads object from file
+     * Reads object from file.
      * @param fileName file name
      * @return object
      * @throws Exception 

@@ -15,46 +15,100 @@ import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
 
 /**
+ * Implements stacking algorithm.
+ *
+ * Valid options are: <p>
+ *
+ * Set meta classifier. <p>
+ *
+ * Set number of folds for k - cross validation. (Default: 10) <p>
+ *
+ * Use k - cross validation method for creating meta data. <p>
+ *
+ * Set individual classifiers collection  <p>
  *
  * @author Рома
  */
 public class StackingClassifier extends AbstractClassifier implements EnsembleClassifier {
 
+    /** Meta data **/
     private Instances metaSet;
+
+    /** Meta classifier **/
     private Classifier metaClassifier;
+
+    /** Classifiers set **/
     private ClassifiersSet classifiers;
+
+    /** Training set **/
     private Instances data;
+
+    /** Use k - cross validation method? **/
     private boolean use_Cross_Validation;
+
+    /** Number of folds **/
     private int numFolds = 10;
+
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
+    /**
+     * Creates <tt>StackingClassifier</tt> object.
+     */
     public StackingClassifier() {
     }
 
+    /**
+     * Creates <tt>StackingClassifier</tt> object.
+     * @param flag the value of use cross validation.
+     */
     public StackingClassifier(boolean flag) {
         this.setUseCrossValidation(flag);
     }
 
+    /**
+     * Sets the value of use cross validation.
+     * @param flag the value of use cross validation
+     */
     public final void setUseCrossValidation(boolean flag) {
         this.use_Cross_Validation = flag;
     }
 
+    /**
+     * Returns the value of use cross validation.
+     * @return the value of use cross validation
+     */
     public final boolean getUseCrossValidation() {
         return use_Cross_Validation;
     }
 
+    /**
+     * Sets the number of folds.
+     * @param numFolds the number of folds
+     */
     public void setNumFolds(int numFolds) {
         this.numFolds = numFolds;
     }
 
+    /**
+     * Returns the number of folds.
+     * @return the number of folds
+     */
     public int getNumFolds() {
         return numFolds;
     }
 
+    /**
+     * Returns classifiers collection.
+     * @return classifiers collection
+     */
     public ClassifiersSet getClassifiers() {
         return classifiers;
     }
 
+    /**
+     * Sets classifiers collection.
+     * @param classifiers classifiers collection
+     */
     public void setClassifiers(ClassifiersSet classifiers) {
         this.classifiers = classifiers;
     }
@@ -64,6 +118,10 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
         return metaClassifier.distributionForInstance(createInstance(filter.filterInstance(obj)));
     }
 
+    /**
+     * Returns the number of classifiers.
+     * @return the number of classifiers
+     */
     public int numClassifiers() {
         return classifiers.size() + 1;
     }
@@ -100,10 +158,18 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
         createMetaClassifier();
     }
 
+    /**
+     * Sets meta classifier.
+     * @param classifier the number of classifiers
+     */
     public void setMetaClassifier(Classifier classifier) {
         this.metaClassifier = classifier;
     }
 
+    /**
+     * Returns meta classifier.
+     * @return meta classifier
+     */
     public Classifier getMetaClassifier() {
         return metaClassifier;
     }
@@ -146,15 +212,18 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
         ArrayList<Attribute> attr = new ArrayList<>(classifiers.size() + 1);
         ArrayList<String> values = new ArrayList<>(data.numClasses());
         Attribute classAttr = data.classAttribute();
+
         for (int k = 0; k < classAttr.numValues(); k++) {
             values.add(classAttr.value(k));
         }
+
         for (int k = 0; k < classifiers.size(); k++) {
             attr.add(new Attribute(classifiers.getClassifier(k).getClass().getSimpleName() + " "
                     + String.valueOf(k), (ArrayList<String>) values.clone()));
         }
+
         attr.add((Attribute) classAttr.copy());
-        //---------------------------------------------
+
         metaSet = new Instances("MetaSet", attr, data.numInstances());
         metaSet.setClassIndex(metaSet.numAttributes() - 1);
     }

@@ -11,20 +11,42 @@ import weka.classifiers.Classifier;
 import java.util.NoSuchElementException;
 
 /**
+ * Implements heterogeneous ensemble algorithm.
+ *
+ * Valid options are: <p>
+ *
+ * Use weighted votes method. (Default: <tt>false</tt>) <p>
+ *
+ * Use randomly classifiers selection. (Default: <tt>true</tt>) <p>
+ *
+ * Sets {@link Sampler} object. <p>
  *
  * @author Рома
  */
 public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         implements Voteable {
 
+    /** Use weighted votes method? **/
     private boolean use_Weighted_Votes;
+
+    /** Use randomly classifiers selection? **/
     private boolean use_Random_Classifier = true;
+
+    /** Sampling object **/
     private final Sampler sampler = new Sampler();
 
+    /**
+     * Creates <tt>HeterogeneousClassifier</tt> with given classifiers set.
+     * @param set classifiers set
+     */
     public HeterogeneousClassifier(ClassifiersSet set) {
         super(set);
     }
 
+    /**
+     * Returns <tt>Sampler</tt> object.
+     * @return <tt>Sampler</tt> object
+     */
     public final Sampler sampler() {
         return sampler;
     }
@@ -50,10 +72,18 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         this.use_Weighted_Votes = flag;
     }
 
+    /**
+     * Returns the value of use random classifier.
+     * @return the value of use random classifier
+     */
     public boolean getUseRandomClassifier() {
         return use_Random_Classifier;
     }
 
+    /**
+     * Sets the value of use random classifier.
+     * @param flag the value of use random classifier
+     */
     public void setUseRandomClassifier(boolean flag) {
         this.use_Random_Classifier = flag;
     }

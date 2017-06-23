@@ -13,18 +13,27 @@ import weka.core.converters.AbstractFileLoader;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ArffLoader;
 import eca.core.converters.XLSLoader;
+
 /**
- *
+ * Class for loading data from network using http and ftp protocols.
  * @author Roman93
  */
 public class DataLoaderImpl implements DataLoader {
 
+    /** Available protocols **/
     private static final String[] PROTOCOLS = {"http", "ftp"};
 
+    /** Available files extensions **/
     private static final String[] FILE_EXTENSIONS = {".xls", ".xlsx", ".csv", ".arff"};
 
+    /** Source url **/
     private URL url;
-    
+
+    /**
+     * Creates object with given <tt>URL</tt>
+     * @param url source url
+     * @throws Exception if given url contains incorrect protocol or file extension
+     */
     public DataLoaderImpl(URL url) throws Exception {
         this.setURL(url);
     }
@@ -47,6 +56,11 @@ public class DataLoaderImpl implements DataLoader {
         return data;
     }
 
+    /**
+     * Sets source url.
+     * @param url source url
+     * @throws Exception if given url contains incorrect protocol or file extension
+     */
     public final void setURL(URL url) throws Exception {
         if (url == null) {
             throw new IllegalArgumentException();

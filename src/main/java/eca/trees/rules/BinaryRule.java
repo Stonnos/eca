@@ -19,7 +19,7 @@ public class BinaryRule extends NominalRule {
     private int[] values;
 
     /**
-     * Creates <code>BinaryRule</code> object.
+     * Creates <tt>BinaryRule</tt> object.
      * @param attribute split attribute
      * @param values the array of binary codes for nominal attribute values
      */

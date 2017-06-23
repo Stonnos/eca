@@ -8,15 +8,15 @@ package eca.ensemble;
 import weka.core.Instances;
 
 /**
- * Class for generating <code>IterativeBuilder</code> objects.
+ * Class for generating {@link IterativeBuilder} objects.
  * @author Рома
  */
 public interface Iterable {
 
     /**
-     * Returns <code>IterativeBuilder</code> object.
-     * @param data <code>Instances</code> object
-     * @return <code>IterativeBuilder</code> object
+     * Returns <tt>IterativeBuilder</tt> object.
+     * @param data <tt>Instances</tt> object
+     * @return <tt>IterativeBuilder</t> object
      * @throws Exception
      */
     IterativeBuilder getIterativeBuilder(Instances data) throws Exception;

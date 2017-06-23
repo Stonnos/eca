@@ -19,7 +19,7 @@ public class NumericRule extends AbstractRule {
     private double meanValue;
 
     /**
-     * Creates <code>NumericRule</code> object.
+     * Creates <tt>NumericRule</tt> object.
      * @param attribute split attribute
      * @exception IllegalArgumentException if split attribute is not numeric
      */
@@ -28,7 +28,7 @@ public class NumericRule extends AbstractRule {
     }
 
     /**
-     * Creates <code>NumericRule</code> object.
+     * Creates <tt>NumericRule</tt> object.
      * @param attribute split attribute
      * @param meanValue threshold value
      * @exception IllegalArgumentException if split attribute is not numeric
@@ -68,7 +68,7 @@ public class NumericRule extends AbstractRule {
     /**
      * Returns string representation of rule.
      * @param i child index
-     * @param fmt <code>DecimalFormat</code> object
+     * @param fmt <tt>DecimalFormat</tt> object
      * @return string representation of rule
      */
     public String rule(int i, DecimalFormat fmt) {

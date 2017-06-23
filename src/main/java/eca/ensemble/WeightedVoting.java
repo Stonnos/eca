@@ -18,8 +18,8 @@ public class WeightedVoting extends VotingMethod {
     private ArrayList<Double> weights;
 
     /**
-     * Creates <code>MajorityVoting</code> object.
-     * @param aggregator <code>Aggregator</code>
+     * Creates <tt>MajorityVoting</tt> object.
+     * @param aggregator <tt>Aggregator</tt>
      */
     public WeightedVoting(Aggregator aggregator, int size) {
         super(aggregator);

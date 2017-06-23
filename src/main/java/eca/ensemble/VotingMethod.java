@@ -17,16 +17,16 @@ public abstract class VotingMethod implements java.io.Serializable {
     private Aggregator aggregator;
 
     /**
-     * Creates <code>VotingMethod</code> object.
-     * @param aggregator <code>Aggregator</code>
+     * Creates <tt>VotingMethod</tt> object.
+     * @param aggregator <tt>Aggregator</tt>
      */
     protected VotingMethod(Aggregator aggregator) {
         this.aggregator = aggregator;
     }
 
     /**
-     * Returns <code>Aggregator</code> object.
-     * @return <code>Aggregator</code> object
+     * Returns <tt>Aggregator</tt> object.
+     * @return <tt>Aggregator</tt> object
      */
     public Aggregator aggregator() {
         return aggregator;

@@ -35,16 +35,16 @@ public class RandomForests extends IterativeEnsembleClassifier {
     private int maxDepth;
 
     /**
-     * Creates <code>RandomForests</code> object with K / 3 random attributes
+     * Creates <tt>RandomForests</tt> object with K / 3 random attributes
      * at each split, where K is the number of input attributes.
-     * @param data <code>Instances</code> object
+     * @param data <tt>Instances</tt> object
      */
     public RandomForests(Instances data) {
         numRandomAttr = (data.numAttributes() - 1) / 3;
     }
 
     /**
-     * Creates <code>RandomForests</code> object
+     * Creates <tt>RandomForests</tt> object
      */
     public RandomForests() {
     }
