@@ -30,7 +30,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        aggregator = new SubspacesAggregator(this, numIterations);
+        aggregator = new SubspacesAggregator(this);
         votes = (getUseWeightedVotesMethod())
                 ? new WeightedVoting(aggregator, numIterations)
                 : new MajorityVoting(aggregator);

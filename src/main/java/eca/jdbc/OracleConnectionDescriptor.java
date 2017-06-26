@@ -12,7 +12,7 @@ package eca.jdbc;
 public class OracleConnectionDescriptor extends ConnectionDescriptor {
 
     /**
-     * Creates <tt>OracleConnectionDescriptor</tt> object with given parameters.
+     * Creates <tt>OracleConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param port datasource port number
      * @param dataBaseName database name
@@ -24,7 +24,7 @@ public class OracleConnectionDescriptor extends ConnectionDescriptor {
     }
 
     /**
-     * Creates <tt>OracleConnectionDescriptor</tt> object with default parameters.
+     * Creates <tt>OracleConnectionDescriptor</tt> object with default options.
      */
     public OracleConnectionDescriptor() {
         

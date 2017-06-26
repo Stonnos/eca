@@ -13,15 +13,31 @@ import weka.classifiers.AbstractClassifier;
 import java.util.Random;
 
 /**
+ * Evaluates classifier using k * V - folds cross - validation method. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Sets the number of folds <p>
+ *
+ * Sets the number of validations <p>
  *
  * @author Рома
  */
 public class CVIterativeBuilder extends IterativeBuilder {
 
+    /** Iterable classifier **/
     private final Iterable classifier;
+
+    /** Training set **/
     private final Instances data;
+
+    /** Number of folds **/
     private final int numFolds;
+
+    /** Number of validations **/
     private final int numValidations;
+
+    /** Evaluation object **/
     private final Evaluation evaluation;
 
     private int cvIndex = -1;
@@ -30,6 +46,14 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private Random r = new Random();
     private double[] error;
 
+    /**
+     * Creates <tt>CVIterativeBuilder</tt> object with given options.
+     * @param classifier iterable classifier object.
+     * @param data <tt>Instances</tt> object (training set)
+     * @param numFolds number of folds
+     * @param numValidations number of validations
+     * @throws Exception
+     */
     public CVIterativeBuilder(Iterable classifier,
                               Instances data, int numFolds, int numValidations) throws Exception {
         this.classifier = classifier;

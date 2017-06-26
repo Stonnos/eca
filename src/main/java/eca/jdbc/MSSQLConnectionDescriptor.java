@@ -7,7 +7,7 @@ package eca.jdbc;
 public class MSSQLConnectionDescriptor extends ConnectionDescriptor {
 
     /**
-     * Creates <tt>MSSQLConnectionDescriptor</tt> object with given parameters.
+     * Creates <tt>MSSQLConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param port datasource port number
      * @param dataBaseName database name
@@ -19,7 +19,7 @@ public class MSSQLConnectionDescriptor extends ConnectionDescriptor {
     }
 
     /**
-     * Creates <tt>MSSQLConnectionDescriptor</tt> object with default parameters.
+     * Creates <tt>MSSQLConnectionDescriptor</tt> object with default options.
      */
     public MSSQLConnectionDescriptor() {
 

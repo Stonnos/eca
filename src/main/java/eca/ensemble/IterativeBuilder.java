@@ -12,11 +12,30 @@ import eca.core.evaluation.Evaluation;
  * @author Рома
  */
 public abstract class IterativeBuilder {
-    
+
+    /** Current index **/
     protected int index;
+
+    /** Step between iterations **/
     protected int step = 1;
+
+    /**
+     * Performs the next iteration.
+     * @return the next iteration index
+     * @throws Exception
+     */
     public abstract int next() throws Exception;
+
+    /**
+     * Returns <tt>true</tt> if the next iteration is exist.
+     * @return <tt>true</tt> if the next iteration is exist
+     */
     public abstract boolean hasNext();
+
+    /**
+     * Returns the number of iterations.
+     * @return the number of iterations
+     */
     public abstract int numIterations();
 
     /**

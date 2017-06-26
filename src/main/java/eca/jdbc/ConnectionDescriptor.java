@@ -18,13 +18,13 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
     private String password = "";
 
     /**
-     * Creates <tt>ConnectionDescriptor</tt> object with default parameters.
+     * Creates <tt>ConnectionDescriptor</tt> object with default options.
      */
     protected ConnectionDescriptor() {
     }
 
     /**
-     * Creates <tt>ConnectionDescriptor</tt> object with given parameters.
+     * Creates <tt>ConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param port datasource port number
      * @param dataBaseName database name

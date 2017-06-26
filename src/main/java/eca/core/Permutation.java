@@ -6,11 +6,16 @@
 package eca.core;
 
 /**
- *
+ * Implements the <tt>next_permutation</tt> algorithm.
  * @author Рома
  */
 public class Permutation {
 
+    /**
+     * Returns the next permutation in array.
+     * @param a input array
+     * @return <tt>true</tt> if the next permutation is exist
+     */
     public static boolean nextPermutation(int[] a) {
         int j = a.length - 2;
         while (j != -1 && a[j] <= a[j + 1]) {

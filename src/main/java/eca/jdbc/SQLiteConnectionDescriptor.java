@@ -7,7 +7,7 @@ package eca.jdbc;
 public class SQLiteConnectionDescriptor extends MSAccessConnectionDescriptor {
 
     /**
-     * Creates <tt>SQLiteConnectionDescriptor</tt> object with given parameters.
+     * Creates <tt>SQLiteConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param dataBaseName database name
      * @param login user login
@@ -18,7 +18,7 @@ public class SQLiteConnectionDescriptor extends MSAccessConnectionDescriptor {
     }
 
     /**
-     * Creates <tt>SQLiteConnectionDescriptor</tt> object with default parameters.
+     * Creates <tt>SQLiteConnectionDescriptor</tt> object with default options.
      */
     public SQLiteConnectionDescriptor() {
 

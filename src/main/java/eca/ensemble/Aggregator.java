@@ -8,38 +8,82 @@ package eca.ensemble;
 import weka.core.Instance;
 import java.util.ArrayList;
 import weka.core.Utils;
+
 /**
- *
+ * Implements ensemble classification results aggregating.
  * @author Рома
  */
 public class Aggregator implements java.io.Serializable {
-    
+
+    /** Iterative ensemble model **/
     private IterativeEnsembleClassifier classifier;
-    
+
+    /**
+     * Creates <tt>Aggregator</tt> object.
+     * @param classifier <tt>IterativeEnsembleClassifier</tt> object
+     */
     public Aggregator(IterativeEnsembleClassifier classifier) {
         this.classifier = classifier;
     }
-    
+
+    /**
+     * Returns <tt>IterativeEnsembleClassifier</tt> object.
+     * @return <tt>IterativeEnsembleClassifier</tt> object
+     */
     public IterativeEnsembleClassifier classifier() {
         return classifier;
     }
-    
+
+    /**
+     * Classify instance by classifier at the specified position.
+     * @param i index of the classifier
+     * @param obj instance object
+     * @return class value
+     * @throws Exception
+     */
     public double classifyInstance(int i, Instance obj) throws Exception {
         return classifier.classifiers.get(i).classifyInstance(obj);
     }
-    
+
+    /**
+     * Returns the array of classes probabilities.
+     * @param i index of the classifier
+     * @param obj instance object
+     * @return the array of classes probabilities
+     * @throws Exception
+     */
     public double[] distributionForInstance(int i, Instance obj) throws Exception {
         return classifier.classifiers.get(i).distributionForInstance(obj);
     }
-    
+
+    /**
+     * Aggregate classification results of individual models
+     * using majority votes method.
+     * @param obj instance object
+     * @return class value
+     * @throws Exception
+     */
     public double aggregate(Instance obj) throws Exception {
         return aggregate(obj, null); 
     }
-    
+
+    /**
+     * Returns the array of classes probabilities.
+     * @param obj instance object
+     * @return the array of classes probabilities
+     * @throws Exception
+     */
     public double[] distributionForInstance(Instance obj) throws Exception {
         return distributionForInstance(obj, null);
     }
 
+    /**
+     * Returns the array of classes probabilities.
+     * @param obj instance object
+     * @param weights classifiers weight
+     * @return the array of classes probabilities
+     * @throws Exception
+     */
     public double[] distributionForInstance(Instance obj, ArrayList<Double> weights) throws Exception {
         double[] sums;
         if (classifier.classifiers.size() == 1) {
@@ -62,7 +106,14 @@ public class Aggregator implements java.io.Serializable {
         else Utils.normalize(sums);
         return sums;
     }
-    
+
+    /**
+     * Returns the voices array for given instance.
+     * @param obj instance object
+     * @param weights classifiers weight
+     * @return the voices array for given instance
+     * @throws Exception
+     */
     public double[] getVoices(Instance obj, ArrayList<Double> weights) throws Exception {
         double[] voices = new double[obj.numClasses()];
         for (int i = 0; i < classifier.classifiers.size(); i++) {
@@ -71,7 +122,15 @@ public class Aggregator implements java.io.Serializable {
         }     
         return voices;
     }
-    
+
+    /**
+     * Aggregate classification results of individual models
+     * using weighted votes method.
+     * @param obj instance object
+     * @param weights instance object
+     * @return class value
+     * @throws Exception
+     */
     public double aggregate(Instance obj, ArrayList<Double> weights) throws Exception {
         if (obj == null) {
             throw new IllegalArgumentException();

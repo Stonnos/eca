@@ -11,14 +11,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.Random;
+
 /**
- *
+ * Implements iterations over set of the random attributes.
  * @author Рома
  */
 public class AttributesEnumeration implements Enumeration<Attribute> {
     
-    private final Iterator<Attribute> iter;
-     
+    private final Iterator<Attribute> iterator;
+
+    /**
+     * Creates <tt>AttributesEnumeration</tt> object.
+     * @param data <tt>Instances</tt> object.
+     * @param count random attributes number
+     */
     public AttributesEnumeration(Instances data, int count) {
         ArrayList<Attribute> attributes = new ArrayList<>(count);
         Random random = new Random();
@@ -30,17 +36,17 @@ public class AttributesEnumeration implements Enumeration<Attribute> {
                 count--;
             }
         }
-        iter = attributes.iterator();
+        iterator = attributes.iterator();
     }
      
     @Override
     public boolean hasMoreElements() {
-         return iter.hasNext();
+         return iterator.hasNext();
     }
      
     @Override
     public Attribute nextElement() {
-        return iter.next();
+        return iterator.next();
     }
     
 } //End of class AttributesEnumeration

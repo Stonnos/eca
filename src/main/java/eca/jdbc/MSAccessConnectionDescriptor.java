@@ -9,7 +9,7 @@ import net.ucanaccess.jdbc.UcanaccessDriver;
 public class MSAccessConnectionDescriptor extends ConnectionDescriptor {
 
     /**
-     * Creates <tt>MSAccessConnectionDescriptor</tt> object with given parameters.
+     * Creates <tt>MSAccessConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param dataBaseName database name
      * @param login user login
@@ -20,7 +20,7 @@ public class MSAccessConnectionDescriptor extends ConnectionDescriptor {
     }
 
     /**
-     * Creates <tt>MSAccessConnectionDescriptor</tt> object with default parameters.
+     * Creates <tt>MSAccessConnectionDescriptor</tt> object with default options.
      */
     public MSAccessConnectionDescriptor() {
 

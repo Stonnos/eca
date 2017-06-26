@@ -6,12 +6,20 @@
 package eca.ensemble;
 
 /**
- *
+ * Weighted votes method interface.
  * @author Рома
  */
 public interface Voteable {
 
+    /**
+     * Returns <tt>true</tt> if weighted votes method is selected.
+     * @return <tt>true</tt> if weighted votes method is selected
+     */
     boolean getUseWeightedVotesMethod();
 
+    /**
+     * Sets weighted votes method flag.
+     * @param flag weighted votes method flag
+     */
     void setUseWeightedVotesMethod(boolean flag);
 }

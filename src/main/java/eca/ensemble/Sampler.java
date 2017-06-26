@@ -14,23 +14,40 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 
 /**
- *
+ * Class for generating training data.
  * @author Рома
  */
 public class Sampler implements java.io.Serializable {
-    
+
+    /** Initial sample type **/
     public static final int INITIAL = 0;
+
+    /** Bootstrap sample type **/
     public static final int BAGGING = 1;
+
+    /** Random sub sample type **/
     public static final int RANDOM = 2;
+
+    /** Random bootstrap sub sample type **/
     public static final int RANDOM_BAGGING = 3;
-    
+
+    /** Sampling type **/
     private int sampling = INITIAL;
+
     private Random random = new Random();
-    
+
+    /**
+     * Returns sampling method type.
+     * @return sampling method type
+     */
     public int getSampling() {
         return sampling;
     }
 
+    /**
+     * Returns sampling method description.
+     * @return sampling method description
+     */
     public String getDescription() {
         String info = null;
         switch (sampling) {
@@ -41,7 +58,13 @@ public class Sampler implements java.io.Serializable {
         }
         return info;
     }
-    
+
+    /**
+     * Sets sampling method type.
+     * @param sampling sampling method type
+     * @exception IllegalArgumentException if the specified sampling type
+     * is invalid
+     */
     public void setSampling(int sampling) {
         if (sampling != INITIAL && sampling != BAGGING
             && sampling != RANDOM && sampling != RANDOM_BAGGING)
@@ -49,14 +72,27 @@ public class Sampler implements java.io.Serializable {
         this.sampling = sampling;
     }
 
+    /**
+     * Returns <tt>Random</tt> object.
+     * @return <tt>Random</tt> object
+     */
     public Random getRandom() {
         return random;
     }
 
+    /**
+     * Sets <tt>Random</tt> object.
+     * @param random <tt>Random</tt> object
+     */
     public void setRandom(Random random) {
         this.random = random;
     }
-    
+
+    /**
+     * Generates training sub sample based on sampling type.
+     * @param data <tt>Instances</tt> object
+     * @return training sub sample based on sampling type
+     */
     public Instances instances(Instances data) {
         Instances sample = null;
         switch (sampling) {
@@ -67,7 +103,14 @@ public class Sampler implements java.io.Serializable {
         }
         return sample;
     }
-    
+
+    /**
+     * Generates training sub sample with <tt>K</tt> input attributes
+     * based on sampling type.
+     * @param data <tt>Instances</tt> object
+     * @param numAttr number of input attributes
+     * @return
+     */
     public Instances instances(Instances data, int numAttr) {
         Instances sample = null;
         switch (sampling) {
@@ -78,19 +121,41 @@ public class Sampler implements java.io.Serializable {
         }
         return sample;
     }
-    
+
+    /**
+     * Returns initial training set.
+     * @param data <tt>Instances</tt> object
+     * @return initial training set
+     */
     public Instances initial(Instances data) {
         return data;
     }
-    
+
+    /**
+     * Returns bootstrap sample based on training set.
+     * @param data <tt>Instances</tt> object
+     * @return bootstrap sample based on training set
+     */
     public Instances bootstrap(Instances data) {
         return createBag(data, data.numInstances());
     }
-    
+
+    /**
+     * Generates sub sample of random size uniformly distributed in interval [1, N],
+     * where N is training set size.
+     * @param data <tt>Instances</tt> object
+     * @return sub sample of random size
+     */
     public Instances random(Instances data) {
         return createRandom(data, size(data));
     }
-           
+
+    /**
+     * Generates initial sub sample with K random attributes.
+     * @param data <tt>Instances</tt> object
+     * @param numAttr number of input attributes
+     * @return
+     */
     public Instances initial(Instances data, int numAttr) {
         ArrayList<Attribute> attr = randomAttributes(data, numAttr);
         Instances sample = new Instances(data.relationName(), attr, data.numInstances());
@@ -100,7 +165,14 @@ public class Sampler implements java.io.Serializable {
         sample.setClass(sample.attribute(data.classAttribute().name()));
         return sample;
     }
-    
+
+    /**
+     * Generates bootstrap sample with K random attributes and given size.
+     * @param data <tt>Instances</tt> object
+     * @param numAttr number of input attributes
+     * @param size bootstrap sample size
+     * @return bootstrap sample with K random attributes and given size
+     */
     public Instances bootstrap(Instances data, int numAttr, int size) {
         ArrayList<Attribute> attr = randomAttributes(data, numAttr);
         Instances sample = new Instances(data.relationName(), attr, size);
@@ -110,7 +182,14 @@ public class Sampler implements java.io.Serializable {
         sample.setClass(sample.attribute(data.classAttribute().name()));
         return sample;
     }
-    
+
+    /**
+     * Generates sub sample with K random attributes and random size uniformly
+     * distributed in interval [1, N], where N is training set size.
+     * @param data <tt>Instances</tt> object
+     * @param numAttr number of input attributes
+     * @return sub sample with K random attributes and random size
+     */
     public Instances random(Instances data, int numAttr) {
         ArrayList<Attribute> attr = randomAttributes(data, numAttr);
         int size = size(data);
@@ -126,8 +205,8 @@ public class Sampler implements java.io.Serializable {
         sample.setClass(sample.attribute(data.classAttribute().name()));
         return sample;
     }
-    
-    public ArrayList<Attribute> randomAttributes(Instances data, int numAttr) {
+
+    private ArrayList<Attribute> randomAttributes(Instances data, int numAttr) {
         ArrayList<Attribute> attr = new ArrayList<>(numAttr);
         while (numAttr != 0) {
             int i = random.nextInt(data.numAttributes());

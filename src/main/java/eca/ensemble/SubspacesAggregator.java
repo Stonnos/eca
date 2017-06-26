@@ -12,22 +12,37 @@ import weka.core.Attribute;
 import java.util.ArrayList;
 
 /**
- *
+ * Implements ensemble classification results aggregating for
+ * random subspaces method (random attributes).
  * @author Рома
  */
 public class SubspacesAggregator extends Aggregator {
 
+    /** Instances list **/
     private ArrayList<Instances> instances;
 
-    public SubspacesAggregator(IterativeEnsembleClassifier classifier, int size) {
+    /**
+     * Creates <tt>SubspacesAggregator</tt> object.
+     * @param classifier <tt>IterativeEnsembleClassifier</tt> object
+     */
+    public SubspacesAggregator(IterativeEnsembleClassifier classifier) {
         super(classifier);
-        instances = new ArrayList<>(size);
+        instances = new ArrayList<>(classifier.getIterationsNum());
     }
 
+    /**
+     * Adds <tt>Instances</tt> object to collection.
+     * @param ins <tt>Instances</tt> object
+     */
     public void setInstances(Instances ins) {
         instances.add(ins);
     }
 
+    /**
+     * Return <tt>Instances</tt> object at the specified position in this collection.
+     * @param i index of the element
+     * @return tt>Instances</tt> object at the specified position in this collection
+     */
     public Instances getInstances(int i) {
         return instances.get(i);
     }
