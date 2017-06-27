@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
  * @author Рома
  */
 public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
-        implements Voteable {
+        implements WeightedVotesAvailable {
 
     /** Use weighted votes method? **/
     private boolean use_Weighted_Votes;

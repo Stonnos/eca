@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.experiment;
+package eca.dataminer;
 
 import eca.trees.ID3;
 import eca.trees.C45;
@@ -16,11 +16,16 @@ import eca.regression.Logistic;
 import weka.core.Instances;
 
 /**
- *
+ * Class for creation default individual classifiers set,
  * @author Roman93
  */
 public class ClassifiersSetBuilder {
 
+    /**
+     * Creates <tt>ClassifiersSet</tt> object.
+     * @param data <tt>Instances</tt> object (training data)
+     * @return <tt>ClassifiersSet</tt> object
+     */
     public static ClassifiersSet createClassifiersSet(Instances data) {
         ClassifiersSet set = new ClassifiersSet();
         set.addClassifier(new CART());

@@ -25,10 +25,10 @@ import javax.swing.*;
 import eca.beans.ClassifierDescriptor;
 import eca.core.TestMethod;
 import eca.core.converters.ModelConverter;
-import eca.experiment.IterativeExperiment;
+import eca.dataminer.IterativeExperiment;
 import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
-import eca.experiment.AbstractExperiment;
+import eca.dataminer.AbstractExperiment;
 import eca.core.ClassifierIndexer;
 import eca.gui.actions.CallbackAction;
 import eca.gui.dialogs.LoadDialog;
@@ -38,7 +38,7 @@ import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.OpenModelChooser;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
-import eca.experiment.ExperimentHistory;
+import eca.dataminer.ExperimentHistory;
 
 /**
  *

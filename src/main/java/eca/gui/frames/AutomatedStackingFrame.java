@@ -6,8 +6,8 @@
 package eca.gui.frames;
 
 import javax.swing.JFrame;
-import eca.experiment.AbstractExperiment;
-import eca.experiment.AutomatedStacking;
+import eca.dataminer.AbstractExperiment;
+import eca.dataminer.AutomatedStacking;
 import eca.gui.dialogs.StackingOptionsDialog;
 
 import javax.swing.JOptionPane;

@@ -5,8 +5,8 @@
  */
 package eca.gui.frames;
 
-import eca.experiment.AutomatedHeterogeneousEnsemble;
-import eca.experiment.AbstractExperiment;
+import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.dataminer.AbstractExperiment;
 import javax.swing.JFrame;
 import eca.gui.dialogs.EnsembleOptionsDialog;
 

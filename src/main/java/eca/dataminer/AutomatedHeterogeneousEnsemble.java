@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.experiment;
+package eca.dataminer;
 
 import eca.beans.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
@@ -16,11 +16,13 @@ import weka.classifiers.AbstractClassifier;
 import java.util.NoSuchElementException;
 
 /**
- *
+ * Implements automatic selection of optimal options
+ * for heterogeneous ensemble algorithms based on experiment series.
  * @author Roman93
  */
 public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractHeterogeneousClassifier> {
 
+    /** Available sampling methods **/
     private static final int[] SAMPLE_METHOD = {
             Sampler.BAGGING,
             Sampler.INITIAL,
@@ -28,9 +30,17 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
             Sampler.RANDOM_BAGGING
     };
 
-    private static final boolean[] VOTES_METHOD = {true, false};
-    private static final boolean[] CLASSIFIER_CHOICE_METHOD = {true, false};
+    /** Available voting methods **/
+    private static final boolean[] VOTING_METHOD = {true, false};
 
+    /** Available classifier selection methods **/
+    private static final boolean[] CLASSIFIER_SELECTION_METHOD = {true, false};
+
+    /**
+     * Creates <tt>AutomatedHeterogeneousEnsemble</tt> object with given options.
+     * @param classifier heterogeneous classifier algorithm
+     * @param data training set
+     */
     public AutomatedHeterogeneousEnsemble(AbstractHeterogeneousClassifier classifier, Instances data) {
         super(data, classifier);
     }
@@ -116,13 +126,13 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                 case 2: {
                     if (classifier instanceof HeterogeneousClassifier) {
                         for (; s < SAMPLE_METHOD.length; s++) {
-                            for (; i < CLASSIFIER_CHOICE_METHOD.length; i++) {
-                                for (++a; a < VOTES_METHOD.length;) {
+                            for (; i < CLASSIFIER_SELECTION_METHOD.length; i++) {
+                                for (++a; a < VOTING_METHOD.length;) {
                                     HeterogeneousClassifier m_Model =
                                             (HeterogeneousClassifier) AbstractClassifier.makeCopy(classifier);
                                     m_Model.sampler().setSampling(SAMPLE_METHOD[s]);
-                                    m_Model.setUseRandomClassifier(CLASSIFIER_CHOICE_METHOD[i]);
-                                    m_Model.setUseWeightedVotesMethod(VOTES_METHOD[a]);
+                                    m_Model.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
+                                    m_Model.setUseWeightedVotesMethod(VOTING_METHOD[a]);
                                     m_Model.setClassifiersSet(currentSet.clone());
                                     index++;
                                     return evaluateModel(m_Model);
@@ -159,7 +169,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
 
         int getAdditionalParamCombinationsNum() {
             if (classifier instanceof HeterogeneousClassifier) {
-                return SAMPLE_METHOD.length * CLASSIFIER_CHOICE_METHOD.length * VOTES_METHOD.length;
+                return SAMPLE_METHOD.length * CLASSIFIER_SELECTION_METHOD.length * VOTING_METHOD.length;
             }
             else return 1;
         }

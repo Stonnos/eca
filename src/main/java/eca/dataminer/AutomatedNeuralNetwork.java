@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.experiment;
+package eca.dataminer;
 
 import eca.neural.functions.ActivationFunction;
 import weka.core.Instances;

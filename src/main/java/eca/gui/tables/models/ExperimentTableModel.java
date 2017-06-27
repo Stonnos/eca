@@ -7,8 +7,7 @@ package eca.gui.tables.models;
 
 import java.text.DecimalFormat;
 import javax.swing.table.AbstractTableModel;
-
-import eca.experiment.ClassifierComparator;
+import eca.dataminer.ClassifierComparator;
 import weka.classifiers.Classifier;
 import java.util.ArrayList;
 import javax.swing.*;

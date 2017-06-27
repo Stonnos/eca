@@ -9,7 +9,7 @@ package eca.ensemble;
  * Weighted votes method interface.
  * @author Рома
  */
-public interface Voteable {
+public interface WeightedVotesAvailable {
 
     /**
      * Returns <tt>true</tt> if weighted votes method is selected.

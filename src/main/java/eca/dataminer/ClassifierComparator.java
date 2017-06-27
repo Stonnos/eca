@@ -1,10 +1,11 @@
-package eca.experiment;
+package eca.dataminer;
 
 import eca.beans.ClassifierDescriptor;
 
 import java.util.Comparator;
 
 /**
+ * Class for comparing classifiers accuracy.
  * @author Roman Batygin
  */
 public class ClassifierComparator implements Comparator<ClassifierDescriptor> {

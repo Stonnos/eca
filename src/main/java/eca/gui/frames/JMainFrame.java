@@ -7,10 +7,10 @@ package eca.gui.frames;
 
 import eca.ApplicationProperties;
 import eca.core.converters.DataSaver;
-import eca.experiment.AutomatedStacking;
-import eca.experiment.AutomatedHeterogeneousEnsemble;
-import eca.experiment.ClassifiersSetBuilder;
-import eca.experiment.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedStacking;
+import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.dataminer.ClassifiersSetBuilder;
+import eca.dataminer.AutomatedNeuralNetwork;
 import eca.gui.ExecutorService;
 import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataGeneratorLoader;

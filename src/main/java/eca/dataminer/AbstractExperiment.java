@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.experiment;
+package eca.dataminer;
 
 import java.util.ArrayList;
 import eca.beans.ClassifierDescriptor;
@@ -16,20 +16,46 @@ import weka.core.Instances;
 import weka.classifiers.Classifier;
 
 /**
- * 
+ * Abstract class for automatic selection of optimal options
+ * for classifiers based on experiment series.
+ *
+ * Valid options are: <p>
+ *
+ * Sets the number of folds (Default: 10) <p>
+ *
+ * Sets the number of validations (Default: 10) <p>
+ *
+ * Sets the number of iterations (Default: 100) <p>
+ *
+ * Sets evaluation test method (Default: {@value TestMethod#TRAINING_SET}) <p>
+ *
  * @author Roman93
- * @param <T> 
+ * @param <T> classifier type
  */
 public abstract class AbstractExperiment<T extends Classifier>
         implements Experiment<T>, IterableExperiment {
 
+    /** Experiment history **/
     private final ArrayList<ClassifierDescriptor> experiment;
+
+    /** Number of folds **/
     private int numFolds = 10;
+
+    /** Number of validations **/
     private int numValidations = 10;
+
+    /** Number of iterations **/
     private int numIterations = 100;
+
+    /** Evaluation test method **/
     private int mode = TestMethod.TRAINING_SET;
+
+    /** Training set **/
     private final Instances data;
+
+    /** Classifier object **/
     protected T classifier;
+
     protected final Random r = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
@@ -65,26 +91,52 @@ public abstract class AbstractExperiment<T extends Classifier>
         this.numIterations = numIterations;
     }
 
+    /**
+     * Returns the number of folds.
+     * @return TestMethod.TRAINING_SET
+     */
     public int getNumFolds() {
         return numFolds;
     }
 
+    /**
+     * Return the evaluation method type.
+     * @return the evaluation method type
+     */
     public int getTestMethod() {
         return mode;
     }
 
+    /**
+     * Sets the number of folds.
+     * @param numFolds the number of folds
+     */
     public void setNumFolds(int numFolds) {
         this.numFolds = numFolds;
     }
 
+    /**
+     * Returns the number of validations.
+     * @return the number of validations
+     */
     public int getNumValidations() {
         return numValidations;
     }
 
+    /**
+     * Sets the number of validations.
+     * @param numValidations the number of validations
+     */
     public void setNumValidations(int numValidations) {
         this.numValidations = numValidations;
     }
 
+    /**
+     * Sets the evaluation method type
+     * @param mode the evaluation method type
+     * @exception IllegalArgumentException if the specified method type
+     * is invalid
+     */
     public void setTestMethod(int mode) {
         if (mode != TestMethod.TRAINING_SET && mode != TestMethod.CROSS_VALIDATION) {
             throw new IllegalArgumentException("Wrong mode value!");
