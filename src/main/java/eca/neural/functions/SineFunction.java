@@ -6,25 +6,34 @@
 package eca.neural.functions;
 
 /**
+ * Implements sine activation function: <p>
+ * <code>f(s) = sin(a*s)</code>
  *
  * @author Рома
  */
 public class SineFunction extends AbstractFunction {
-    
+
+    /**
+     * Creates <tt>SineFunction</tt> object.
+     */
     public SineFunction() {}
 
+    /**
+     * Creates <tt>SineFunction</tt> object with given coefficient.
+     * @param a the value of coefficient
+     */
     public SineFunction(double a) {
         super(a);
     }
 
     @Override
     public double process(double s) {
-	return Math.sin(coefficient()*s);
+	return Math.sin(getCoefficient() * s);
     }
 
     @Override
     public double derivative(double s) {
-	return coefficient()*Math.cos(coefficient()*s);
+	    return getCoefficient() * Math.cos(getCoefficient() * s);
     }
     
 }

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import eca.core.converters.MinMaxNormalizer;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
+import eca.generators.NumberGenerator;
 import eca.neural.functions.ActivationFunction;
 import java.util.NoSuchElementException;
 import weka.classifiers.AbstractClassifier;
@@ -17,11 +18,10 @@ import eca.filter.MissingValuesFilter;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
-import java.util.Random;
 import eca.core.InstancesHandler;
 
 /**
- *
+ * Class for generating neural network for classification task.
  * @author Рома
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler {
@@ -31,37 +31,70 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     private MinMaxNormalizer normalizer;
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
+    /**
+     * Creates <tt>NeuralNetwork</tt> object and sets the initial
+     * values for input and output neurons number.
+     * @param data training data
+     */
     public NeuralNetwork(Instances data) {
         this.data = data;
         network = new MultilayerPerceptron(data.numAttributes() - 1,
                 data.numClasses());
-        network.setHiddenLayer(getMinNumNeuronsInHiddenLayer() < 1 ? "1" : String.valueOf(getMinNumNeuronsInHiddenLayer()));
+        String hiddenLayer = getMinNumNeuronsInHiddenLayer() < 1 ?
+                "1" : String.valueOf(getMinNumNeuronsInHiddenLayer());
+        network.setHiddenLayer(hiddenLayer);
     }
 
+    /**
+     * Creates <tt>NeuralNetwork</tt> object with given options.
+     * @param data training data
+     * @param function the neurons activation function in hidden layer
+     */
     public NeuralNetwork(Instances data, ActivationFunction function) {
         this(data);
         network.setActivationFunction(function);
     }
 
-    public void setRandomHiddenLayer(Random r) {
-        int n = (int) (Math.abs(r.nextDouble()) * (getMaxNumNeuronsInHiddenLayer()
-                - getMinNumNeuronsInHiddenLayer()) + getMinNumNeuronsInHiddenLayer());
+    /**
+     * Sets one hidden layer with random neurons number
+     * in interval [a, b). Where: <p>
+     * a - minimum neurons number in hidden layer <p>
+     * b - maximum neurons number in hidden layer <p>
+     */
+    public void setRandomHiddenLayer() {
+        int n = (int) NumberGenerator.random(getMinNumNeuronsInHiddenLayer(), getMaxNumNeuronsInHiddenLayer());
         network.setHiddenLayer(String.valueOf(n));
     }
 
+    /**
+     * Returns the minimum number of links in hidden layers.
+     * @return the minimum number of links in hidden layers
+     */
     public final int getMinLinksNum() {
         return (int) (data.numClasses() * data.numInstances() / (1 + Utils.log2(data.numInstances())));
     }
 
+    /**
+     * Returns the maximum number of links in hidden layers.
+     * @return the maximum number of links in hidden layers
+     */
     public final int getMaxLinksNum() {
         return  data.numClasses() * (1 + data.numInstances() / (data.numAttributes() - 1))
                 * (data.numAttributes() + data.numClasses()) + data.numClasses();
     }
 
+    /**
+     * Returns the minimum number of neurons in hidden layers.
+     * @return the minimum number of neurons in hidden layers
+     */
     public final int getMinNumNeuronsInHiddenLayer() {
         return getMinLinksNum() / (data.numAttributes() + data.numClasses() - 1);
     }
 
+    /**
+     * Returns the maximum number of neurons in hidden layers.
+     * @return the maximum number of neurons in hidden layers
+     */
     public final int getMaxNumNeuronsInHiddenLayer() {
         return getMaxLinksNum() / (data.numAttributes() + data.numClasses() - 1);
     }
@@ -87,6 +120,10 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         return options;
     }
 
+    /**
+     * Returns <tt>MultilayerPerceptron</tt> object.
+     * @return <tt>MultilayerPerceptron</tt> object
+     */
     public MultilayerPerceptron network() {
         return network;
     }
@@ -96,6 +133,9 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         return data;
     }
 
+    /**
+     * Builds neural network structure.
+     */
     public void buildNetwork() {
         network.build();
     }
@@ -136,8 +176,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         this.data = data;
         network.setInLayerNeuronsNum(data.numAttributes() - 1);
         network.setOutLayerNeuronsNum(data.numClasses());
-        buildNetwork();
         normalizer = new MinMaxNormalizer(filter.filterInstances(data));
+        buildNetwork();
     }
 
     private double classValue(double[] y) {
@@ -157,13 +197,13 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      */
     private class NetworkBuilder extends IterativeBuilder {
 
-        MultilayerPerceptron.IterativeBuilder trn;
+        MultilayerPerceptron.IterativeBuilder iterativeBuilder;
 
         NetworkBuilder(Instances data) throws Exception {
             initialize(data);
             double[][] x = normalizer.normalizeInputValues();
             double[][] y = normalizer.normalizeOutputValues();
-            trn = network().getIterativeBuilder(x, y);
+            iterativeBuilder = network().getIterativeBuilder(x, y);
         }
 
         @Override
@@ -171,8 +211,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            index = trn.next();
-            step = trn.step();
+            index = iterativeBuilder.next();
+            step = iterativeBuilder.step();
             return index;
         }
 
@@ -194,7 +234,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         @Override
         public boolean hasNext() {
-            return trn.isNext();
+            return iterativeBuilder.isNext();
         }
     }
 

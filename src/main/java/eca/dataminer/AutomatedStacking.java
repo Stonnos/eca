@@ -15,11 +15,17 @@ import weka.classifiers.Classifier;
 import java.util.NoSuchElementException;
 
 /**
- *
+ * Implements automatic selection of optimal options
+ * for stacking algorithm based on experiment series.
  * @author Roman93
  */
 public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 
+    /**
+     * Creates <tt>AutomatedStacking</tt> object with given options.
+     * @param classifier classifier object
+     * @param data training data
+     */
     public AutomatedStacking(StackingClassifier classifier, Instances data) {
         super(data, classifier);
     }

@@ -328,7 +328,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     }
 
     public double actFuncCoefficient() {
-        return actFunction().coefficient();
+        return actFunction().getCoefficient();
     }
 
     @Override

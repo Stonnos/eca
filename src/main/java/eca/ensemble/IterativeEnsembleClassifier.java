@@ -20,7 +20,7 @@ import eca.core.evaluation.Evaluation;
  *
  * Valid options are: <p>
  *
- * Set number of iterations (Default: 10) <p>
+ * Set the number of iterations (Default: 10) <p>
  *
  * @author Рома
  */

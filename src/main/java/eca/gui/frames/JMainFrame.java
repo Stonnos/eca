@@ -92,6 +92,8 @@ import eca.Reference;
  */
 public class JMainFrame extends JFrame {
 
+    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+
     private static final Color frameColor = new Color(198, 226, 255);
     
     private static final String ensembleBuildingProgressTitle = "Пожалуйста подождите, идет построение ансамбля...";
@@ -150,11 +152,10 @@ public class JMainFrame extends JFrame {
 
     private void init() {
         try {
-            ApplicationProperties applicationProperties = ApplicationProperties.getInstance();
-            this.setTitle(applicationProperties.getTitle());
-            this.maximumFractionDigits = applicationProperties.getMaximumFractionDigits();
-            this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource(applicationProperties.getIconUrl())));
-            ToolTipManager.sharedInstance().setDismissDelay(applicationProperties.getTooltipDismissTime());
+            this.setTitle(APPLICATION_PROPERTIES.getTitle());
+            this.maximumFractionDigits = APPLICATION_PROPERTIES.getMaximumFractionDigits();
+            this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl())));
+            ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
         } catch (Exception e) {
         }
     }
@@ -215,7 +216,6 @@ public class JMainFrame extends JFrame {
         
         public DataInternalFrame(Instances data, JMenuItem menu) throws Exception {
             this.setLayout(new GridBagLayout());
-            //----------------------------------------------
             this.makeUpperPanel();
             this.makeLowerPanel();
             this.setFrameColor(frameColor);
@@ -554,7 +554,7 @@ public class JMainFrame extends JFrame {
     
     public void createDataFrame(Instances data) throws Exception {
         final DataInternalFrame frame = new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
-        //-----------------------------
+
         frame.addInternalFrameListener(new InternalFrameAdapter() {
             
             @Override

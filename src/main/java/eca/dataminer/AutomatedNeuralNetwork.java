@@ -15,23 +15,40 @@ import eca.neural.NeuralNetwork;
 import weka.classifiers.AbstractClassifier;
 
 /**
- *
+ * Implements automatic selection of optimal options
+ * for neural networks based on experiment series.
  * @author Roman93
  */
 public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
+    /** Available activation functions **/
     private ActivationFunction[] activationFunctions;
 
+    /**
+     * Creates <tt>AutomatedNeuralNetwork</tt> object with given options
+     * @param numExperiments experiments number
+     * @param activationFunctions available activation functions
+     * @param data training set
+     * @param classifier classifier object
+     */
     public AutomatedNeuralNetwork(int numExperiments, ActivationFunction[] activationFunctions, Instances data, NeuralNetwork classifier) {
         super(data, classifier, numExperiments);
         this.setNumIterations(numExperiments);
         this.setActivationFunctions(activationFunctions);
     }
 
+    /**
+     * Returns available activation functions.
+     * @return available activation functions
+     */
     public final ActivationFunction[] getActivationFunctions() {
         return activationFunctions;
     }
 
+    /**
+     * Sets available activation functions.
+     * @param activationFunctions available activation functions
+     */
     public final void setActivationFunctions(ActivationFunction[] activationFunctions) {
         this.activationFunctions = activationFunctions;
     }
@@ -60,7 +77,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
             model.network().setActivationFunction(activationFunctions[r.nextInt(activationFunctions.length)]);
-            model.setRandomHiddenLayer(r);
+            model.setRandomHiddenLayer();
             ++index;
             return evaluateModel(model);
         }

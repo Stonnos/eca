@@ -8,14 +8,28 @@ package eca.neural;
 import java.util.Iterator;
 
 /**
+ * Implements back propagation algorithm. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Sets the value of learning rate (Default: 0.1) <p>
+ *
+ * Sets the value of momentum (Default: 0.2) <p>
  *
  * @author Рома
  */
 public class BackPropagation extends LearningAlgorithm {
 
+    /** Learning rate value **/
     private double learningRate = 0.1;
+
+    /** Momentum value **/
     private double momentum = 0.2;
 
+    /**
+     * Creates <tt>BackPropagation</tt> object.
+     * @param network <tt>MultilayerPerceptron</tt> object.
+     */
     public BackPropagation(MultilayerPerceptron network) {
         super(network);
     }

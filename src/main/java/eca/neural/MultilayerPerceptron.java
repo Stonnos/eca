@@ -11,25 +11,75 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 /**
+ * Class for generation neural network of type multilayer perceptron. <p>
+ *
+ * Valid options are: <p>
+ *
+ * Sets the number of neurons in input layer <p>
+ *
+ * Sets the number of neurons in output layer <p>
+ *
+ * Sets the hidden layer structure <p>
+ *
+ * Sets the neurons activation function in hidden layer <p>
+ *
+ * Sets the neurons activation function in output layer (Default: {@link LogisticFunction}) <p>
+ *
+ * Sets the learning algorithm (Default: {@link BackPropagation}) <p>
+ *
+ * Sets the maximum number of iterations for learning (Default: 1000000) <p>
+ *
+ * Sets the value of minimum error threshold (Default: 0.00001) <p>
  *
  * @author Рома
  */
 public class MultilayerPerceptron implements java.io.Serializable {
 
+    /** Input neurons **/
     protected Neuron[] inLayerNeurons;
+
+    /** Hidden neurons **/
     protected Neuron[][] hiddenLayerNeurons;
+
+    /** Output neurons **/
     protected Neuron[] outLayerNeurons;
+
+    /** Neurons activation function in hidden layer **/
     private ActivationFunction hiddenFunction;
+
+    /** Neurons activation function in output layer **/
     private ActivationFunction outerFunction = new LogisticFunction();
+
+    /** Learning algorithm **/
     private LearningAlgorithm algorithm = new BackPropagation(this);
+
+    /** Number of neurons in input layer **/
     private int inLayerNeuronsNum;
+
+    /** Number of neurons in output layer **/
     private int outLayerNeuronsNum;
-    private int linksNum;
-    private int hiddenLayersNum = 1;
-    private double minError = 0.00001;
-    private int maxIterationsNum = 1000000;
+
+    /** Hidden layer structure **/
     private String hiddenLayer;
 
+    /** Number of hidden layers **/
+    private int hiddenLayersNum = 1;
+
+    /** The value of minimum error threshold **/
+    private double minError = 0.00001;
+
+    /** The maximum number of iterations for learning **/
+    private int maxIterationsNum = 1000000;
+
+    /** Number of neural links **/
+    private int linksNum;
+
+    /**
+     * Creates <tt>MultilayerPerceptron</tt> with given options.
+     * @param inLayerNeuronsNum the number of neurons in input layer
+     * @param outLayerNeuronsNum the number of neurons in output layer
+     * @param function the neurons activation function in hidden layer
+     */
     public MultilayerPerceptron(int inLayerNeuronsNum, int outLayerNeuronsNum,
             ActivationFunction function) {
         this.setInLayerNeuronsNum(inLayerNeuronsNum);
@@ -37,14 +87,28 @@ public class MultilayerPerceptron implements java.io.Serializable {
         this.setActivationFunction(function);
     }
 
+    /**
+     * Creates <tt>MultilayerPerceptron</tt> with given options.
+     * @param inLayerNeuronsNum the number of neurons in input layer
+     * @param outLayerNeuronsNum the number of neurons in output layer
+     */
     public MultilayerPerceptron(int inLayerNeuronsNum, int outLayerNeuronsNum) {
         this(inLayerNeuronsNum, outLayerNeuronsNum, new LogisticFunction());
     }
 
+    /**
+     * Returns the hidden layer structure.
+     * @return the hidden layer structure
+     */
     public String getHiddenLayer() {
         return hiddenLayer;
     }
 
+    /**
+     * Sets the hidden layer structure.
+     * @param hiddenLayer the hidden layer structure
+     * @exception IllegalArgumentException if the hidden layer structure is invalid
+     */
     public void setHiddenLayer(String hiddenLayer) {
         hiddenLayersNum = 0;
         StringTokenizer tokenizer = new StringTokenizer(hiddenLayer, ",");
@@ -64,60 +128,120 @@ public class MultilayerPerceptron implements java.io.Serializable {
         this.hiddenLayer = hiddenLayer;
     }
 
+    /**
+     * Returns the number of neurons in input layer.
+     * @return the number of neurons in input layer
+     */
     public int inLayerNeuronsNum() {
         return inLayerNeuronsNum;
     }
 
+    /**
+     * Returns the number of neurons in output layer.
+     * @return the number of neurons in output layer
+     */
     public int outLayerNeuronsNum() {
         return outLayerNeuronsNum;
     }
 
+    /**
+     * Returns the number of hidden layers.
+     * @return the number of hidden layers
+     */
     public int hiddenLayersNum() {
         return hiddenLayersNum;
     }
 
+    /**
+     * Sets the number of neurons in input layer.
+     * @param inLayerNeuronsNum the number of neurons in input layer
+     * @exception IllegalArgumentException if the the number of neurons in input layer
+     * is less than 1
+     */
     public final void setInLayerNeuronsNum(int inLayerNeuronsNum) {
         checkValue(inLayerNeuronsNum);
         this.inLayerNeuronsNum = inLayerNeuronsNum;
     }
 
+    /**
+     * Sets the number of neurons in output layer.
+     * @param outLayerNeuronsNum the number of neurons in output layer
+     * @exception IllegalArgumentException if the the number of neurons in output layer
+     * is less than 1
+     */
     public final void setOutLayerNeuronsNum(int outLayerNeuronsNum) {
         checkValue(outLayerNeuronsNum);
         this.outLayerNeuronsNum = outLayerNeuronsNum;
     }
 
+    /**
+     * Returns the number of neural links.
+     * @return the number of neural links
+     */
     public int getLinksNum() {
         return linksNum;
     }
 
+    /**
+     * Returns the common number of layers.
+     * @return the common number of layers.
+     */
     public int layersNum() {
         return hiddenLayersNum() + 2;
     }
 
+    /**
+     * Sets the value of minimum error threshold.
+     * @param min_error the value of minimum error threshold
+     */
     public void setMinError(double min_error) {
         this.minError = min_error;
     }
 
+    /**
+     * Return the value of the value of minimum error threshold.
+     * @return the value of the value of minimum error threshold
+     */
     public double getMinError() {
         return minError;
     }
 
+    /**
+     * Sets the maximum number of iterations for learning.
+     * @param max_iterations_num the maximum number of iterations for learning
+     */
     public void setMaxIterationsNum(int max_iterations_num) {
         this.maxIterationsNum = max_iterations_num;
     }
 
+    /**
+     * Returns the maximum number of iterations for learning.
+     * @return the maximum number of iterations for learning
+     */
     public int getMaxIterationsNum() {
         return maxIterationsNum;
     }
 
+    /**
+     * Returns the neurons activation function in hidden layer.
+     * @return the neurons activation function in hidden layer
+     */
     public ActivationFunction getActivationFunction() {
         return hiddenFunction;
     }
 
+    /**
+     * Sets the neurons activation function in output layer.
+     * @return the neurons activation function in output layer
+     */
     public ActivationFunction getOutActivationFunction() {
         return outerFunction;
     }
 
+    /**
+     * Sets the neurons activation function in hidden layer.
+     * @param function the neurons activation function in hidden layer
+     */
     public final void setActivationFunction(ActivationFunction function) {
         if (function == null) {
             throw new IllegalArgumentException();
@@ -125,6 +249,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
         this.hiddenFunction = function;
     }
 
+    /**
+     * Sets the neurons activation function in output layer.
+     * @param function the neurons activation function in output layer
+     */
     public final void setOutActivationFunction(ActivationFunction function) {
         if (function == null) {
             throw new IllegalArgumentException();
@@ -132,6 +260,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
         this.outerFunction = function;
     }
 
+    /**
+     * Sets the learning algorithm.
+     * @param algorithm the learning algorithm object
+     */
     public void setLearningAlgorithm(LearningAlgorithm algorithm) {
         if (algorithm == null) {
             throw new IllegalArgumentException();
@@ -142,10 +274,17 @@ public class MultilayerPerceptron implements java.io.Serializable {
         this.algorithm = algorithm;
     }
 
+    /**
+     * Returns the learning algorithm.
+     * @return the learning algorithm object
+     */
     public LearningAlgorithm getLearningAlgorithm() {
         return algorithm;
     }
 
+    /**
+     * Builds the multilayer perceptron structure.
+     */
     public void build() {
         inLayerNeurons = new Neuron[inLayerNeuronsNum];
         StringTokenizer tokenizer = new StringTokenizer(hiddenLayer, ",");
@@ -158,6 +297,11 @@ public class MultilayerPerceptron implements java.io.Serializable {
         createLinks();
     }
 
+    /**
+     * Calculates the output vector.
+     * @param x input vector
+     * @return the output vector
+     */
     public double[] computeOutputVector(double[] x) {
         checkVector(x, inLayerNeuronsNum());
         double[] y = new double[outLayerNeuronsNum()];
@@ -173,6 +317,12 @@ public class MultilayerPerceptron implements java.io.Serializable {
         return y;
     }
 
+    /**
+     * Trains network with training data.
+     * @param input input values
+     * @param output output values
+     * @throws Exception
+     */
     public void train(double[][] input, double[][] output) throws Exception {
         checkInputVectors(input, output);
         int i = 0;
@@ -188,6 +338,12 @@ public class MultilayerPerceptron implements java.io.Serializable {
         }
     }
 
+    /**
+     * Returns an <tt>IterativeBuilder</tt> object.
+     * @param input input values
+     * @param output output values
+     * @return
+     */
     public IterativeBuilder getIterativeBuilder(double[][] input, double[][] output) {
         return new IterativeBuilder(input, output);
     }

@@ -13,7 +13,7 @@ import java.util.Enumeration;
 import java.util.Random;
 
 /**
- * Implements iterations over set of the random attributes.
+ * Implements iterations over the set of the random attributes.
  * @author Рома
  */
 public class AttributesEnumeration implements Enumeration<Attribute> {

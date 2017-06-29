@@ -13,8 +13,8 @@ public class PermutationsSearch {
     private boolean initial;
 
     /**
-     * Sets input array order by decrease.
-     * @param values input array order by decrease
+     * Sets input array ordering by decrease.
+     * @param values input array ordering by decrease
      */
     public void setValues(int[] values) {
         this.values = values;

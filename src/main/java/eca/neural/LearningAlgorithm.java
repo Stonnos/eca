@@ -10,7 +10,7 @@ import eca.generators.NumberGenerator;
 import java.util.Iterator;
 
 /**
- *
+ * Implements multilayer perceptron learning algorithm.
  * @author Рома
  */
 public abstract class LearningAlgorithm implements java.io.Serializable {
@@ -23,11 +23,23 @@ public abstract class LearningAlgorithm implements java.io.Serializable {
         }
         this.network = network;
     }
-    
+
+    /**
+     * Performs one iteration of learning algorithm.
+     * @param actual actual outer values
+     * @param expected expected outer values
+     */
     public abstract void train(double[] actual, double[] expected);
 
+    /**
+     * Returns options list.
+     * @return options list
+     */
     public abstract String[] getOptions();
-    
+
+    /**
+     * Initialize all weight by initial values.
+     */
     public void initializeWeights() {
         for (int i = 0; i < network.hiddenLayersNum(); i++) {
             for (Neuron neuron : network.hiddenLayerNeurons[i]) {
