@@ -93,7 +93,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Returns the number of folds.
-     * @return TestMethod.TRAINING_SET
+     * @return the number of folds
      */
     public int getNumFolds() {
         return numFolds;

@@ -157,7 +157,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>eca.gui.frames.JMainFrame</mainClass>
+                            <mainClass>eca.Eca</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -210,7 +210,7 @@
                                 <mutexName>${exe.file.name}</mutexName>
                             </singleInstance>
                             <classPath>
-                                <mainClass>eca.gui.frames.JMainFrame</mainClass>
+                                <mainClass>eca.Eca</mainClass>
                                 <addDependencies>true</addDependencies>
                                 <preCp>anything</preCp>
                             </classPath>

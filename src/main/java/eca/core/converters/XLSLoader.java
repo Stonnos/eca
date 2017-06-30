@@ -8,6 +8,7 @@ package eca.core.converters;
 import java.io.*;
 
 import eca.gui.text.DateFormat;
+import org.apache.http.util.Asserts;
 import weka.core.Instances;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -16,39 +17,63 @@ import java.util.ArrayList;
 import weka.core.Utils;
 
 /**
- *
+ * Class for loading xls/xlsx files. <p>
+ * Input data must satisfy to following requirements: <p>
+ * - Cells of the following formats are allowed: numeric formats, date, text, boolean; <p>
+ * - Data should not contain extraneous records; <p>
+ * - Data can not contain empty columns; <p>
+ * - Each column must contain data of the same type. <p>
  * @author Рома
  */
 public class XLSLoader {
 
     private InputStream inputStream;
+
     private File file;
 
+    /**
+     * Sets the file object.
+     * @param file file object
+     * @throws Exception if a file object is null or has invalid extension
+     */
     public void setFile(File file) throws Exception {
-        if (file == null) {
-            throw new NullPointerException();
-        }
+        Asserts.notNull(file, "file");
         if (!file.getName().endsWith(".xls") && !file.getName().endsWith(".xlsx")) {
             throw new Exception("Wrong file extension!");
         }
         this.file = file;
     }
 
+    /**
+     * Returns file object.
+     * @return file object
+     */
     public File getFile() {
         return file;
     }
 
+    /**
+     * Sets <tt>InputStream</tt> object.
+     * @param inputStream <tt>InputStream</tt> object
+     */
     public void setInputStream(InputStream inputStream) {
-        if (inputStream == null) {
-            throw new IllegalArgumentException();
-        }
+        Asserts.notNull(inputStream, "inputStream");
         this.inputStream = inputStream;
     }
 
+    /**
+     * Returns <tt>InputStream</tt> object.
+     * @return <tt>InputStream</tt> object
+     */
     public InputStream getInputStream() {
         return inputStream;
     }
 
+    /**
+     * Reads data from xls/xlsx file.
+     * @return <tt>Instances</tt> object
+     * @throws Exception
+     */
     public Instances getDataSet() throws Exception {
         Instances data;
         try {
@@ -56,10 +81,9 @@ public class XLSLoader {
                     new FileInputStream(file) : inputStream);
             Sheet sheet = book.getSheetAt(0);
             checkData(sheet);
-            //-----------------------------
             data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
                     sheet.getLastRowNum());
-            //------------------------------
+
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 DenseInstance o = new DenseInstance(data.numAttributes());
                 o.setDataset(data);

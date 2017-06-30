@@ -9,11 +9,17 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
+ * Class for converting {@link Instances} objects to lists.
  * @author Roman Batygin
  */
-
 public class InstancesConverter {
 
+    /**
+     * Converts <tt>Instances</tt> object to list.
+     * @param data <tt>Instances</tt>
+     * @param format <tt> DecimalFormat</tt> object
+     * @return list representation of <tt>Instances</tt> object
+     */
     public static ArrayList<ArrayList<Object>> toArray(Instances data, DecimalFormat format) {
         ArrayList<ArrayList<Object>> values = new ArrayList<>(data.numInstances());
         for (int i = 0; i < data.numInstances(); i++) {

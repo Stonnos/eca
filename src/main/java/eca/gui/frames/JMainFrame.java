@@ -140,15 +140,6 @@ public class JMainFrame extends JFrame {
         this.createWindowListener();
         this.setLocationRelativeTo(null);
     }
-    
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new JMainFrame().setVisible(true);
-            }
-        });
-    }
 
     private void init() {
         try {

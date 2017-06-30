@@ -18,8 +18,9 @@ public class LengthDocument extends PlainDocument {
     private int length;
     
     public LengthDocument(int length) {
-        if (length < 0)
+        if (length < 0) {
             throw new IllegalArgumentException("Length must be positive!");
+        }
         this.length = length;
     }
     
@@ -33,8 +34,9 @@ public class LengthDocument extends PlainDocument {
     
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {        
-        if (this.getContent().length() <= length())
+        if (this.getContent().length() <= length()) {
             super.insertString(offs, str, a);
+        }
     }
     
 }
