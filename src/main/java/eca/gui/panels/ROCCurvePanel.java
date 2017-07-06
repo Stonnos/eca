@@ -6,7 +6,7 @@
 package eca.gui.panels;
 
 import eca.gui.ButtonUtils;
-import eca.roc.ROCCurve;
+import eca.roc.RocCurve;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,7 +21,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import java.awt.image.BufferedImage;
 import java.util.Enumeration;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -36,14 +35,14 @@ public class ROCCurvePanel extends JPanel {
     private static final String X_AXIS_TITLE = "100 - Специфичность (Specifity), %";
     private static final String Y_AXIS_TITLE = "Чувствительность (Sensivity), %";
     
-    private final ROCCurve curve;
+    private final RocCurve curve;
     private ChartPanel panel;
     private JFreeChart[] plots;
     private JFrame[] frames;
     private JComboBox<String> plotBox;
     private final JFrame frame;
     
-    public ROCCurvePanel(ROCCurve curve, JFrame frame, final int digits) {
+    public ROCCurvePanel(RocCurve curve, JFrame frame, final int digits) {
         this.curve = curve;
         this.frame = frame;
         this.createPlots();

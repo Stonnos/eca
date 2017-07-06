@@ -10,7 +10,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import eca.gui.ButtonUtils;
-import eca.jdbc.*;
+import eca.db.*;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.*;
 

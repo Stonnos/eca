@@ -20,6 +20,7 @@ package eca.ensemble;
 public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleClassifier {
 
     public static final double MIN_ERROR_THRESHOLD = 0.0;
+
     public static final double MAX_ERROR_THRESHOLD = 0.5;
 
     /** Classifiers set **/
@@ -96,4 +97,5 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
         }
         this.min_error = min_error;
     }
+
 }

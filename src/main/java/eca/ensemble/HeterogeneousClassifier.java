@@ -11,7 +11,7 @@ import weka.classifiers.Classifier;
 import java.util.NoSuchElementException;
 
 /**
- * Implements heterogeneous ensemble algorithm.
+ * Implements heterogeneous ensemble algorithm. <p>
  *
  * Valid options are: <p>
  *
@@ -56,9 +56,13 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         if (sampler.getSampling() == Sampler.INITIAL) {
             numIterations = set.size();
         }
-        votes = (getUseWeightedVotesMethod())
-                ? new WeightedVoting(new Aggregator(this), numIterations)
-                : new MajorityVoting(new Aggregator(this));
+
+        if (getUseWeightedVotesMethod()) {
+            votes = new WeightedVoting(new Aggregator(this), numIterations);
+        } else {
+            votes = new MajorityVoting(new Aggregator(this));
+        }
+
         return new HeterogeneousBuilder(data);
     }
 

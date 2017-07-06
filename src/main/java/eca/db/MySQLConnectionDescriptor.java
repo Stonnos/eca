@@ -3,40 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.jdbc;
+package eca.db;
 
 /**
- * Implements Oracle connection descriptor.
+ * Implements MySQL datasource descriptor.
  * @author Roman93
  */
-public class OracleConnectionDescriptor extends ConnectionDescriptor {
+public class MySQLConnectionDescriptor extends ConnectionDescriptor {
 
     /**
-     * Creates <tt>OracleConnectionDescriptor</tt> object with given options.
+     * Creates <tt>MySQLConnectionDescriptor</tt> object with given options.
      * @param host datasource host
      * @param port datasource port number
      * @param dataBaseName database name
      * @param login user login
      * @param password user password
      */
-    public OracleConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
+    public MySQLConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
         super(host, port, dataBaseName, login, password);
     }
 
     /**
-     * Creates <tt>OracleConnectionDescriptor</tt> object with default options.
+     * Creates <tt>MySQLConnectionDescriptor</tt> object with default options.
      */
-    public OracleConnectionDescriptor() {
-        
+    public MySQLConnectionDescriptor() {
+
     }
-    
+
     @Override
     public String getUrl() {
-        return getProtocol() + getHost() + ":" + getPort() + ":" + getDataBaseName();
+        return getProtocol() + getHost() + ":" + getPort() + "/" + getDataBaseName();
     }
-    
+
     @Override
     public String getProtocol() {
-        return "jdbc:oracle:thin:@";
+        return "jdbc:mysql://";
     }
 }

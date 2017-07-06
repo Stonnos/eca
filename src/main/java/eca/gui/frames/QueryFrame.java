@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import eca.gui.ButtonUtils;
-import eca.jdbc.DataBaseConnection;
+import eca.db.DataBaseConnection;
 import eca.gui.PanelBorderUtils;
 import weka.core.Instances;
 

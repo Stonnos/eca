@@ -5,7 +5,7 @@
  */
 package eca.gui.actions;
 
-import eca.jdbc.DataBaseConnection;
+import eca.db.DataBaseConnection;
 /**
  *
  * @author Roman93

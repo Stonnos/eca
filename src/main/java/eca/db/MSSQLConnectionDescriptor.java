@@ -1,4 +1,4 @@
-package eca.jdbc;
+package eca.db;
 
 /**
  * Implements Microsoft SQL Server datasource descriptor.

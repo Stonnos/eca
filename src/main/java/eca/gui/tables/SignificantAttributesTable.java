@@ -11,14 +11,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import eca.gui.tables.models.SignificantAttributesTableModel;
-import eca.roc.ROCSelectedAttributes;
+import eca.roc.AttributesSelection;
 /**
  *
  * @author Рома
  */
 public class SignificantAttributesTable extends JDataTableBase {
     
-    public SignificantAttributesTable(ROCSelectedAttributes roc, int digits) {
+    public SignificantAttributesTable(AttributesSelection roc, int digits) {
         super(new SignificantAttributesTableModel(roc, digits));
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {

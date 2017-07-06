@@ -1,4 +1,4 @@
-package eca.jdbc;
+package eca.db;
 
 /**
  * Implements PostreSQL  datasource descriptor.

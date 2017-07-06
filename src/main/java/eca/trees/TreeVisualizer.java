@@ -10,6 +10,7 @@ import eca.gui.ButtonUtils;
 import eca.trees.rules.NumericRule;
 import eca.trees.rules.AbstractRule;
 import eca.trees.DecisionTreeClassifier.TreeNode;
+
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
@@ -19,6 +20,7 @@ import javax.swing.*;
 import java.text.DecimalFormat;
 import java.io.IOException;
 import java.io.File;
+
 import eca.gui.PanelBorderUtils;
 import eca.io.buffer.ImageCopier;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -27,7 +29,6 @@ import eca.gui.dialogs.JFontChooser;
 import eca.core.ClassifierIndexer;
 
 /**
- *
  * @author Рома
  */
 public class TreeVisualizer extends JPanel {
@@ -71,7 +72,7 @@ public class TreeVisualizer extends JPanel {
         this.setLayout(null);
     }
 
-    public final DecisionTreeClassifier tree() {
+    public final DecisionTreeClassifier getTree() {
         return tree;
     }
 
@@ -487,9 +488,9 @@ public class TreeVisualizer extends JPanel {
             info.setSize((int) nodeWidth, (int) nodeHeight);
             info.setLocation((int) x1(), (int) y1());
             g.drawString(size, (float) x1()
-                    + ((float) width() - fm.stringWidth(size)) / 2.0f,
+                            + ((float) width() - fm.stringWidth(size)) / 2.0f,
                     (float) y1() + fm.getAscent()
-                    + ((float) height() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+                            + ((float) height() - (fm.getAscent() + fm.getDescent())) / 2.0f);
         }
 
         void paintClass(Graphics2D g) {
@@ -546,7 +547,6 @@ public class TreeVisualizer extends JPanel {
         g.setStroke(linkStroke);
         double x = p.x1() + index * (p.width() / (p.childrenNum() - 1));
         g.draw(new Line2D.Double(x, p.y2(), child.centerX(), child.y1()));
-        //----------------------------------------------------
         double xt = (x + child.centerX()) / 2.0;
         double yt = (p.y2() + child.y1()) / 2.0;
         g.setColor(ruleColor);
@@ -812,7 +812,7 @@ public class TreeVisualizer extends JPanel {
         public Color getBorderColor() {
             return borderC;
         }
-        
+
         public Color getBackgroundColor() {
             return backgroundColor;
         }

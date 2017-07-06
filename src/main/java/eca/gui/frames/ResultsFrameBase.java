@@ -16,7 +16,7 @@ import java.awt.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import eca.gui.PanelBorderUtils;
-import eca.roc.ROCCurve;
+import eca.roc.RocCurve;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -45,7 +45,7 @@ import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
-import eca.roc.ROCSelectedAttributes;
+import eca.roc.AttributesSelection;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
 import java.util.ArrayList;
@@ -327,7 +327,7 @@ public class ResultsFrameBase extends JFrame {
             }
         });
         //---------------------------------
-        rocCurvePanel = new ROCCurvePanel(new ROCCurve(ev), this, digits);
+        rocCurvePanel = new ROCCurvePanel(new RocCurve(ev), this, digits);
 
         pane.add(RESULTS_TEXT, resultPanel);
         pane.add("Классификация", new ClassifyInstancePanel(
@@ -360,7 +360,7 @@ public class ResultsFrameBase extends JFrame {
                 JScrollPane pane = new JScrollPane(table);
                 res.addPanel("Оценки коэффициентов", pane);
                 //-----------------------------------------
-                ROCSelectedAttributes roc = new ROCSelectedAttributes(res.data());
+                AttributesSelection roc = new AttributesSelection(res.data());
                 roc.calculate();
                 SignificantAttributesTable signTable
                         = new SignificantAttributesTable(roc, digits);

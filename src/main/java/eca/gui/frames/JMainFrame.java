@@ -35,7 +35,7 @@ import eca.neural.functions.TanhFunction;
 import eca.neural.functions.LogisticFunction;
 import eca.neural.functions.ExponentialFunction;
 import eca.neural.functions.ActivationFunction;
-import eca.jdbc.DataBaseConnection;
+import eca.db.DataBaseConnection;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.URLLoader;
 import eca.gui.actions.InstancesLoader;

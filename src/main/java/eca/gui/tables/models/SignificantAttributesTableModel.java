@@ -7,7 +7,7 @@ package eca.gui.tables.models;
 
 import java.text.DecimalFormat;
 import javax.swing.table.AbstractTableModel;
-import eca.roc.ROCSelectedAttributes;
+import eca.roc.AttributesSelection;
 import eca.gui.text.NumericFormat;
 
 /**
@@ -16,11 +16,11 @@ import eca.gui.text.NumericFormat;
  */
 public class SignificantAttributesTableModel extends AbstractTableModel {
     
-    private final ROCSelectedAttributes roc;
+    private final AttributesSelection roc;
     private String[] titles;
     private final DecimalFormat format = NumericFormat.getInstance();
     
-    public SignificantAttributesTableModel(ROCSelectedAttributes roc, int digits) {
+    public SignificantAttributesTableModel(AttributesSelection roc, int digits) {
         this.roc = roc;
         this.createNames();
         format.setMaximumFractionDigits(digits);

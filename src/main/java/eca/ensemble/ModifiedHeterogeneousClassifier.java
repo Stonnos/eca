@@ -31,9 +31,13 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
         aggregator = new SubspacesAggregator(this);
-        votes = (getUseWeightedVotesMethod())
-                ? new WeightedVoting(aggregator, numIterations)
-                : new MajorityVoting(aggregator);
+
+        if (getUseWeightedVotesMethod()) {
+            votes = new WeightedVoting(aggregator, numIterations);
+        } else {
+            votes = new MajorityVoting(aggregator);
+        }
+
         return new SpaceBuilder(data);
     }
 
