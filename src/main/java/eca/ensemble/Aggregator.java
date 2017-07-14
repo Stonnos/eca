@@ -90,7 +90,7 @@ public class Aggregator implements java.io.Serializable {
             return classifier.classifiers.get(0).distributionForInstance(obj);
         }
         else if (weights == null) {
-            sums = new double[classifier.data.numClasses()];
+            sums = new double[classifier.filteredData.numClasses()];
             for (int i = 0; i < classifier.classifiers.size(); i++) {
                 double[] distr = distributionForInstance(i, obj);
                 for (int j = 0; j < distr.length; j++)
@@ -118,7 +118,7 @@ public class Aggregator implements java.io.Serializable {
         double[] voices = new double[obj.numClasses()];
         for (int i = 0; i < classifier.classifiers.size(); i++) {
             int classIndex = (int)classifyInstance(i, obj);
-            if (weights == null) voices[classIndex]++; else voices[classIndex] += weights.get(i);
+            voices[classIndex] += weights == null ? 1.0 : weights.get(i);
         }     
         return voices;
     }

@@ -1,7 +1,6 @@
 package eca;
 
 import eca.gui.frames.JMainFrame;
-
 import java.awt.EventQueue;
 
 /**

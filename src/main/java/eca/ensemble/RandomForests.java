@@ -116,6 +116,11 @@ public class RandomForests extends IterativeEnsembleClassifier {
                             "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
         return options;
     }
+
+    @Override
+    protected void initialize() {
+        votes = new MajorityVoting(new Aggregator(this));
+    }
     
     /**
      * 
@@ -126,9 +131,10 @@ public class RandomForests extends IterativeEnsembleClassifier {
         
         public ForestBuilder(Instances dataSet) throws Exception {
             super(dataSet);
-            if (numRandomAttr > data.numAttributes() - 1)
+            if (numRandomAttr > filteredData.numAttributes() - 1) {
                 throw new IllegalArgumentException("Illegal value of randomAttrNum: " +
-                           String.valueOf(numRandomAttr));
+                        String.valueOf(numRandomAttr));
+            }
         }
         
         @Override
@@ -136,7 +142,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances bag = sampler.bootstrap(data);
+            Instances bag = sampler.bootstrap(filteredData);
             DecisionTreeClassifier model = new CART();
             model.setRandomTree(true);
             model.setNumRandomAttr(numRandomAttr);

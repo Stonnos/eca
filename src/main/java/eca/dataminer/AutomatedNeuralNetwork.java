@@ -78,8 +78,9 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
             model.network().setActivationFunction(activationFunctions[r.nextInt(activationFunctions.length)]);
             model.setRandomHiddenLayer();
+            ClassifierDescriptor classifierDescriptor = evaluateModel(model);
             ++index;
-            return evaluateModel(model);
+            return classifierDescriptor;
         }
 
         @Override

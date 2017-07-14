@@ -6,6 +6,8 @@
 package eca.ensemble;
 
 import java.util.ArrayList;
+
+import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
 import weka.core.Instances;
 import weka.core.DenseInstance;
@@ -23,15 +25,19 @@ import weka.classifiers.AbstractClassifier;
  *
  * Set number of folds for k - cross validation. (Default: 10) <p>
  *
- * Use k - cross validation method for creating meta data. <p>
+ * Use k - cross validation method for creating meta filteredData. <p>
  *
  * Set individual classifiers collection  <p>
  *
  * @author Рома
  */
-public class StackingClassifier extends AbstractClassifier implements EnsembleClassifier {
+public class StackingClassifier extends AbstractClassifier
+        implements EnsembleClassifier, InstancesHandler {
 
-    /** Meta data **/
+    /** Initial training set **/
+    private Instances initialData;
+
+    /** Meta filteredData **/
     private Instances metaSet;
 
     /** Meta classifier **/
@@ -40,8 +46,8 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
     /** Classifiers set **/
     private ClassifiersSet classifiers;
 
-    /** Training set **/
-    private Instances data;
+    /** Filtered training set **/
+    private Instances filteredData;
 
     /** Use k - cross validation method? **/
     private boolean use_Cross_Validation;
@@ -115,7 +121,8 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
 
     @Override
     public double[] distributionForInstance(Instance obj) throws Exception {
-        return metaClassifier.distributionForInstance(createInstance(filter.filterInstance(obj)));
+        Instance filtered = createInstance(filter.filterInstance(obj));
+        return metaClassifier.distributionForInstance(filtered);
     }
 
     /**
@@ -127,11 +134,17 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
     }
 
     @Override
-    public void buildClassifier(Instances set) throws Exception {
-        data = filter.filterInstances(set);
+    public Instances getData() {
+        return initialData;
+    }
+
+    @Override
+    public void buildClassifier(Instances dataSet) throws Exception {
+        initialData = dataSet;
+        filteredData = filter.filterInstances(initialData);
         createMetaFormat();
         if (getUseCrossValidation()) {
-            Instances newData = new Instances(data);
+            Instances newData = new Instances(filteredData);
             newData.stratify(numFolds);
             ClassifiersSet copies = classifiers.clone();
             for (int i = 0; i < numFolds; i++) {
@@ -147,13 +160,13 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
             }
             //Rebuilt all classifiers
             for (Classifier classifier : classifiers) {
-                classifier.buildClassifier(data);
+                classifier.buildClassifier(filteredData);
             }
         } else {
             for (Classifier classifier : classifiers) {
-                classifier.buildClassifier(data);
+                classifier.buildClassifier(filteredData);
             }
-            addInstances(data);
+            addInstances(filteredData);
         }
         createMetaClassifier();
     }
@@ -176,7 +189,8 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
 
     @Override
     public double classifyInstance(Instance obj) throws Exception {
-        return metaClassifier.classifyInstance(createInstance(filter.filterInstance(obj)));
+        Instance filtered = createInstance(filter.filterInstance(obj));
+        return metaClassifier.classifyInstance(filtered);
     }
 
     @Override
@@ -210,8 +224,8 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
 
     private void createMetaFormat() {
         ArrayList<Attribute> attr = new ArrayList<>(classifiers.size() + 1);
-        ArrayList<String> values = new ArrayList<>(data.numClasses());
-        Attribute classAttr = data.classAttribute();
+        ArrayList<String> values = new ArrayList<>(filteredData.numClasses());
+        Attribute classAttr = filteredData.classAttribute();
 
         for (int k = 0; k < classAttr.numValues(); k++) {
             values.add(classAttr.value(k));
@@ -224,7 +238,7 @@ public class StackingClassifier extends AbstractClassifier implements EnsembleCl
 
         attr.add((Attribute) classAttr.copy());
 
-        metaSet = new Instances("MetaSet", attr, data.numInstances());
+        metaSet = new Instances("MetaSet", attr, filteredData.numInstances());
         metaSet.setClassIndex(metaSet.numAttributes() - 1);
     }
 

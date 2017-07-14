@@ -794,8 +794,10 @@ public class JMainFrame extends JFrame {
                             @Override
                             public void apply() throws Exception {
                                 ModelDescriptor model = loader.model();
-                                resultsHistory.createResultFrame(model.description, model.classifier,
-                                        model.data, model.evaluation, model.digits);
+                                resultsHistory.createResultFrame(model.getDescription(),
+                                        model.getInputData().getClassifier(),
+                                        model.getInputData().getData(),
+                                        model.getEvaluation(), model.getDigits());
                             }
                         });
 

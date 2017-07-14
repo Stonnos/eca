@@ -53,16 +53,6 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        if (sampler.getSampling() == Sampler.INITIAL) {
-            numIterations = set.size();
-        }
-
-        if (getUseWeightedVotesMethod()) {
-            votes = new WeightedVoting(new Aggregator(this), numIterations);
-        } else {
-            votes = new MajorityVoting(new Aggregator(this));
-        }
-
         return new HeterogeneousBuilder(data);
     }
 
@@ -116,6 +106,19 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         return options;
     }
 
+    @Override
+    protected void initialize() {
+        if (sampler.getSampling() == Sampler.INITIAL) {
+            numIterations = set.size();
+        }
+
+        if (getUseWeightedVotesMethod()) {
+            votes = new WeightedVoting(new Aggregator(this), numIterations);
+        } else {
+            votes = new MajorityVoting(new Aggregator(this));
+        }
+    }
+
     /**
      *
      */
@@ -131,7 +134,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
                 throw new NoSuchElementException();
             }
 
-            Instances bag = sampler.instances(data);
+            Instances bag = sampler.instances(filteredData);
             Classifier model;
             if (sampler.getSampling() == Sampler.INITIAL) {
                 model = set.buildClassifier(index, bag);

@@ -36,6 +36,7 @@ public class KNearestNeighbours extends AbstractClassifier
         implements InstancesHandler {
 
     public static final double MIN_WEIGHT = 0.5;
+
     public static final double MAX_WEIGHT = 1.0;
 
     /** Initial training set **/

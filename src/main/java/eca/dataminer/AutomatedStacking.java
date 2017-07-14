@@ -24,7 +24,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
     /**
      * Creates <tt>AutomatedStacking</tt> object with given options.
      * @param classifier classifier object
-     * @param data training data
+     * @param data training filteredData
      */
     public AutomatedStacking(StackingClassifier classifier, Instances data) {
         super(data, classifier);
@@ -126,9 +126,10 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     StackingClassifier model
                             = (StackingClassifier) AbstractClassifier.makeCopy(classifier);
                     model.setClassifiers(currentSet.clone());
+                    ClassifierDescriptor classifierDescriptor = evaluateModel(model);
                     state = 2;
                     index++;
-                    return evaluateModel(model);
+                    return classifierDescriptor;
                 }
 
             }

@@ -30,6 +30,11 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
+        return new SpaceBuilder(data);
+    }
+
+    @Override
+    protected void initialize() {
         aggregator = new SubspacesAggregator(this);
 
         if (getUseWeightedVotesMethod()) {
@@ -37,8 +42,6 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
         } else {
             votes = new MajorityVoting(aggregator);
         }
-
-        return new SpaceBuilder(data);
     }
 
     /**
@@ -57,7 +60,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances subSample = sampler().instances(data, random.nextInt(data.numAttributes() - 1) + 1);
+            Instances subSample = sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
 
             Classifier model = getUseRandomClassifier() ? set.buildRandomClassifier(subSample)
                     : set.builtOptimalClassifier(subSample);

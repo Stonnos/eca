@@ -14,19 +14,48 @@ import weka.core.Instances;
  */
 public class ModelDescriptor implements java.io.Serializable {
     
-    public AbstractClassifier classifier;
-    public Instances data;
-    public Evaluation evaluation;
-    public String description;
-    public int digits;
+    private InputData inputData;
+    private Evaluation evaluation;
+    private String description;
+    private int digits;
     
-    public ModelDescriptor(AbstractClassifier classifier, Instances data,
+    public ModelDescriptor(InputData inputData,
             Evaluation evaluation, String description, int digits) {
-        this.classifier = classifier;
-        this.data = data;
+        this.inputData = inputData;
         this.evaluation = evaluation;
         this.description = description;
         this.digits = digits;
     }
-    
+
+    public InputData getInputData() {
+        return inputData;
+    }
+
+    public void setInputData(InputData inputData) {
+        this.inputData = inputData;
+    }
+
+    public Evaluation getEvaluation() {
+        return evaluation;
+    }
+
+    public void setEvaluation(Evaluation evaluation) {
+        this.evaluation = evaluation;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getDigits() {
+        return digits;
+    }
+
+    public void setDigits(int digits) {
+        this.digits = digits;
+    }
 }

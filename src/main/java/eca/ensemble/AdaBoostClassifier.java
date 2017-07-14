@@ -57,8 +57,8 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     private double weightedError(Classifier model) throws Exception {
         double error = 0.0;
-        for (int i = 0; i < data.numInstances(); i++) {
-            Instance obj = data.instance(i);
+        for (int i = 0; i < filteredData.numInstances(); i++) {
+            Instance obj = filteredData.instance(i);
             if (obj.classValue() != model.classifyInstance(obj)) {
                 error += weights[i];
             }
@@ -67,7 +67,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     private void initializeWeights() {
-        double w0 = 1.0 / data.numInstances();
+        double w0 = 1.0 / filteredData.numInstances();
         for (int i = 0; i < weights.length; i++) {
             weights[i] = w0;
         }
@@ -77,7 +77,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         double sumWeights = 0.0;
         WeightedVoting v = (WeightedVoting) votes;
         for (int i = 0; i < weights.length; i++) {
-            Instance obj = data.instance(i);
+            Instance obj = filteredData.instance(i);
             int sign = obj.classValue() == classifiers.get(t).classifyInstance(obj) ? 1 : -1;
             weights[i] = weights[i] * Math.exp(-v.getWeight(t) * sign);
             sumWeights += weights[i];
@@ -88,7 +88,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     private boolean nextIteration(int t) throws Exception {
-        Instances sample = data.resampleWithWeights(random, weights);
+        Instances sample = filteredData.resampleWithWeights(random, weights);
         Classifier model = null;
         double minError = Double.MAX_VALUE;
         for (int i = 0; i < set.size(); i++) {
@@ -110,9 +110,10 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         }
     }
 
-    private void initialize() {
+    @Override
+    protected void initialize() {
         votes = new WeightedVoting(new Aggregator(this), numIterations);
-        weights = new double[data.numInstances()];
+        weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
 
@@ -123,7 +124,6 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
         public AdaBoostBuilder(Instances dataSet) throws Exception {
             super(dataSet);
-            initialize();
         }
 
         @Override

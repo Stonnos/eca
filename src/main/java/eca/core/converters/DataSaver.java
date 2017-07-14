@@ -16,7 +16,7 @@ import java.io.IOException;
 public class DataSaver {
 
     /**
-     * Saves data to file.
+     * Saves filteredData to file.
      * @param file file object
      * @param data <tt>Instances</tt> object
      * @throws IOException

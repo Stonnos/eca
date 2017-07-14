@@ -23,7 +23,7 @@ public class ClassifiersSetBuilder {
 
     /**
      * Creates <tt>ClassifiersSet</tt> object.
-     * @param data <tt>Instances</tt> object (training data)
+     * @param data <tt>Instances</tt> object (training filteredData)
      * @return <tt>ClassifiersSet</tt> object
      */
     public static ClassifiersSet createClassifiersSet(Instances data) {

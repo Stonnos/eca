@@ -26,15 +26,19 @@ import eca.core.InstancesHandler;
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler {
 
+    /** Initial training set **/
     private Instances data;
+
+    /** Multilayer perceptron **/
     private final MultilayerPerceptron network;
+
     private MinMaxNormalizer normalizer;
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
      * Creates <tt>NeuralNetwork</tt> object and sets the initial
      * values for input and output neurons number.
-     * @param data training data
+     * @param data training filteredData
      */
     public NeuralNetwork(Instances data) {
         this.data = data;
@@ -47,7 +51,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Creates <tt>NeuralNetwork</tt> object with given options.
-     * @param data training data
+     * @param data training filteredData
      * @param function the neurons activation function in hidden layer
      */
     public NeuralNetwork(Instances data, ActivationFunction function) {

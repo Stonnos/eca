@@ -5,6 +5,7 @@
  */
 package eca.core.evaluation;
 
+import eca.core.InstancesHandler;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
@@ -17,7 +18,7 @@ import weka.classifiers.AbstractClassifier;
  * Implements evaluation of the classification results.
  * @author Рома
  */
-public class Evaluation extends weka.classifiers.evaluation.Evaluation {
+public class Evaluation extends weka.classifiers.evaluation.Evaluation implements InstancesHandler {
 
     private int validationsNum;
 
@@ -25,16 +26,16 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation {
 
     private double[] error;
 
-    private final Instances initialSet;
+    private final Instances initialData;
 
     /**
      * Creates <tt>Evaluation</tt> object.
-     * @param initialSet <tt>Instances</tt> object (training data)
+     * @param initialData <tt>Instances</tt> object (training filteredData)
      * @throws Exception
      */
-    public Evaluation(Instances initialSet) throws Exception {
-        super(initialSet);
-        this.initialSet = initialSet;
+    public Evaluation(Instances initialData) throws Exception {
+        super(initialData);
+        this.initialData = initialData;
     }
 
     /**
@@ -70,11 +71,12 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation {
     }
 
     /**
-     * Returns <tt>Instances</tt> object (training data).
-     * @return <tt>Instances</tt> object (training data)
+     * Returns <tt>Instances</tt> object (training filteredData).
+     * @return <tt>Instances</tt> object (training filteredData)
      */
-    public Instances getInitialSet() {
-        return initialSet;
+    @Override
+    public Instances getData() {
+        return initialData;
     }
 
     /**
@@ -88,7 +90,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation {
     /**
      * Evaluates model using k * V - folds cross - validation method.
      * @param classifier classifier object.
-     * @param data training data
+     * @param data training filteredData
      * @param numFolds the number of folds
      * @param validationsNum the number of validations
      * @param r <tt>Random</tt> object
@@ -174,14 +176,14 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation {
      */
     public double maxAreaUnderROC() {
         double maxVal = -Double.MAX_VALUE;
-        for (int i = 0; i < getInitialSet().numClasses(); i++) {
+        for (int i = 0; i < getData().numClasses(); i++) {
             maxVal = Double.max(maxVal, areaUnderROC(i));
         }
         return maxVal;
     }
 
     /**
-     * Calculates classifier error on given data.
+     * Calculates classifier error on given filteredData.
      * @param classifier classifier object
      * @param data <tt>Instances</tt> object
      * @return the value of classifier error

@@ -27,19 +27,22 @@ import eca.core.evaluation.Evaluation;
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     implements Iterable, EnsembleClassifier, InstancesHandler {
 
+    /** Initial training set **/
+    private Instances initialData;
+
     /** Classifiers list **/
     protected ArrayList<Classifier> classifiers;
 
     /** Voting object **/
-    protected VotingMethod votes = new MajorityVoting(new Aggregator(this));
+    protected VotingMethod votes;
 
-    /** Initial training set **/
-    protected Instances data;
+    /** Filtered training set **/
+    protected Instances filteredData;
 
     /** Number of iterations **/
     protected int numIterations = 10;
 
-    protected MissingValuesFilter filter = new MissingValuesFilter();
+    private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
      * Sets the values of iterations number.
@@ -50,11 +53,6 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         if (numIterations < 1)
             throw new IllegalArgumentException("Число итераций должно быть больше 1!");  
         this.numIterations = numIterations;
-    }
-
-    @Override
-    public final Instances getData() {
-        return data;
     }
 
     /**
@@ -85,6 +83,11 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             i.next();
         }
     }
+
+    @Override
+    public Instances getData() {
+        return initialData;
+    }
     
     @Override
     public double classifyInstance(Instance obj) throws Exception {
@@ -98,6 +101,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             copies.add(AbstractClassifier.makeCopy(c));
         return copies;
     }
+
+    protected abstract void initialize();
     
     protected final void checkModel() throws Exception {
         if (classifiers.isEmpty()) {
@@ -118,8 +123,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     protected abstract class AbstractBuilder extends IterativeBuilder {
         
         protected AbstractBuilder(Instances dataSet) throws Exception {
-            data = filter.filterInstances(dataSet);
+            initialData = dataSet;
+            filteredData = filter.filterInstances(initialData);
             classifiers = new ArrayList<>(numIterations);
+            initialize();
         }
         
         @Override
@@ -130,8 +137,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         @Override
         public Evaluation evaluation() throws Exception {
             if (!hasNext()) {
-                Evaluation e = new Evaluation(data);
-                e.evaluateModel(IterativeEnsembleClassifier.this, data);
+                Evaluation e = new Evaluation(initialData);
+                e.evaluateModel(IterativeEnsembleClassifier.this, initialData);
                 return e;
             }
             else return null;

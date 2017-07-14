@@ -39,9 +39,9 @@ public class StatisticsTableBuilder {
 
         public ResultsModel(Evaluation e, Classifier classifier) {
             results.add(new Entry("Исходные данные", e.getHeader().relationName()));
-            results.add(new Entry("Число объектов", FORMAT.format(e.getInitialSet().numInstances())));
-            results.add(new Entry("Число атрибутов", FORMAT.format(e.getInitialSet().numAttributes())));
-            results.add(new Entry("Число классов", FORMAT.format(e.getInitialSet().numClasses())));
+            results.add(new Entry("Число объектов", FORMAT.format(e.getData().numInstances())));
+            results.add(new Entry("Число атрибутов", FORMAT.format(e.getData().numAttributes())));
+            results.add(new Entry("Число классов", FORMAT.format(e.getData().numClasses())));
             results.add(new Entry("Классификатор", classifier.getClass().getSimpleName()));
             results.add(new Entry("Метод оценки точности",
                     !e.isKCrossValidationMethod() ? "Использование обучающей выборки"

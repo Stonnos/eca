@@ -5,6 +5,7 @@
  */
 package eca.gui.frames;
 
+import eca.beans.InputData;
 import eca.core.converters.ModelConverter;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.panels.ClassifyInstancePanel;
@@ -150,8 +151,9 @@ public class ResultsFrameBase extends JFrame {
                     fileChooser.setSelectedFile(new File(indexer.getIndex(classifier())));
                     File file = fileChooser.saveFile(ResultsFrameBase.this);
                     if (file != null) {
+                        InputData inputData = new InputData((AbstractClassifier) classifier, data);
                         ModelConverter.saveModel(file,
-                                new ModelDescriptor((AbstractClassifier) classifier, data, ev, getTitle(), digits));
+                                new ModelDescriptor(inputData, ev, getTitle(), digits));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

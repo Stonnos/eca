@@ -15,7 +15,7 @@ import java.io.FileInputStream;
  * Implements objects serialization.
  * @author Рома
  */
-public class SerializedObject implements Serializable {
+public class SerializedObject {
     
     /**
      * Writes serialized object to file.

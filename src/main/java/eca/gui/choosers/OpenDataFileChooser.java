@@ -20,13 +20,13 @@ public class OpenDataFileChooser extends OpenFileChooser {
 
     public OpenDataFileChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xls)", "xls"));
+                new FileNameExtensionFilter("Xls filteredData files (*.xls)", "xls"));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xlsx)", "xlsx"));
+                new FileNameExtensionFilter("Xls filteredData files (*.xlsx)", "xlsx"));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Csv data files (*.csv)", "csv"));
+                new FileNameExtensionFilter("Csv filteredData files (*.csv)", "csv"));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Arff data files (*.arff)", "arff"));
+                new FileNameExtensionFilter("Arff filteredData files (*.arff)", "arff"));
     }
 
 }

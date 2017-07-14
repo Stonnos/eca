@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import weka.core.Utils;
 
 /**
- * Implements loading data from database.
+ * Implements loading filteredData from database.
  * @author Рома
  */
 public class DataBaseConnection implements QueryExecutor, AutoCloseable {

@@ -18,11 +18,11 @@ import weka.core.Utils;
 
 /**
  * Class for loading xls/xlsx files. <p>
- * Input data must satisfy to following requirements: <p>
+ * Input filteredData must satisfy to following requirements: <p>
  * - Cells of the following formats are allowed: numeric formats, date, text, boolean; <p>
  * - Data should not contain extraneous records; <p>
  * - Data can not contain empty columns; <p>
- * - Each column must contain data of the same type. <p>
+ * - Each column must contain filteredData of the same type. <p>
  * @author Рома
  */
 public class XLSLoader {
@@ -70,7 +70,7 @@ public class XLSLoader {
     }
 
     /**
-     * Reads data from xls/xlsx file.
+     * Reads filteredData from xls/xlsx file.
      * @return <tt>Instances</tt> object
      * @throws Exception
      */

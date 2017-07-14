@@ -151,8 +151,9 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                 = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(classifier);
                         model.setClassifiersSet(currentSet.clone());
                         index++;
+                        ClassifierDescriptor classifierDescriptor = evaluateModel(model);
                         state = 1;
-                        return evaluateModel(model);
+                        return classifierDescriptor;
                     }
 
                     break;
