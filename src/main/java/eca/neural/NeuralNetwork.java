@@ -38,7 +38,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     /**
      * Creates <tt>NeuralNetwork</tt> object and sets the initial
      * values for input and output neurons number.
-     * @param data training filteredData
+     * @param data training data
      */
     public NeuralNetwork(Instances data) {
         this.data = data;
@@ -51,7 +51,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Creates <tt>NeuralNetwork</tt> object with given options.
-     * @param data training filteredData
+     * @param data training data
      * @param function the neurons activation function in hidden layer
      */
     public NeuralNetwork(Instances data, ActivationFunction function) {

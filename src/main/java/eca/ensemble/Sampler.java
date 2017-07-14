@@ -14,7 +14,7 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 
 /**
- * Class for generating training filteredData.
+ * Class for generating training data.
  * @author Рома
  */
 public class Sampler implements java.io.Serializable {

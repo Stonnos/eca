@@ -18,7 +18,7 @@ public class SaveModelChooser extends SaveFileChooser {
 
     public SaveModelChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Txt filteredData files (*.txt)", "txt"));
+                new FileNameExtensionFilter("Txt data files (*.txt)", "txt"));
     }
 
 }

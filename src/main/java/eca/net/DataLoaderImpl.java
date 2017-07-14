@@ -15,7 +15,7 @@ import weka.core.converters.ArffLoader;
 import eca.core.converters.XLSLoader;
 
 /**
- * Class for loading filteredData from network using http and ftp protocols.
+ * Class for loading data from network using http and ftp protocols.
  * @author Roman93
  */
 public class DataLoaderImpl implements DataLoader {

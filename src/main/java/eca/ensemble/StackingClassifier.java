@@ -25,7 +25,7 @@ import weka.classifiers.AbstractClassifier;
  *
  * Set number of folds for k - cross validation. (Default: 10) <p>
  *
- * Use k - cross validation method for creating meta filteredData. <p>
+ * Use k - cross validation method for creating meta data. <p>
  *
  * Set individual classifiers collection  <p>
  *
@@ -37,7 +37,7 @@ public class StackingClassifier extends AbstractClassifier
     /** Initial training set **/
     private Instances initialData;
 
-    /** Meta filteredData **/
+    /** Meta data **/
     private Instances metaSet;
 
     /** Meta classifier **/

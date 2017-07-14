@@ -15,7 +15,7 @@ public class OpenModelChooser extends OpenFileChooser {
     
     public OpenModelChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Txt filteredData files (*.txt)","txt"));
+                new FileNameExtensionFilter("Txt data files (*.txt)","txt"));
     }
 
 }

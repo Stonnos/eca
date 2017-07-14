@@ -30,7 +30,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Creates <tt>Evaluation</tt> object.
-     * @param initialData <tt>Instances</tt> object (training filteredData)
+     * @param initialData <tt>Instances</tt> object (training data)
      * @throws Exception
      */
     public Evaluation(Instances initialData) throws Exception {
@@ -71,8 +71,8 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     }
 
     /**
-     * Returns <tt>Instances</tt> object (training filteredData).
-     * @return <tt>Instances</tt> object (training filteredData)
+     * Returns <tt>Instances</tt> object (training data).
+     * @return <tt>Instances</tt> object (training data)
      */
     @Override
     public Instances getData() {
@@ -90,7 +90,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     /**
      * Evaluates model using k * V - folds cross - validation method.
      * @param classifier classifier object.
-     * @param data training filteredData
+     * @param data training data
      * @param numFolds the number of folds
      * @param validationsNum the number of validations
      * @param r <tt>Random</tt> object
@@ -183,7 +183,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     }
 
     /**
-     * Calculates classifier error on given filteredData.
+     * Calculates classifier error on given data.
      * @param classifier classifier object
      * @param data <tt>Instances</tt> object
      * @return the value of classifier error

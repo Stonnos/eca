@@ -24,7 +24,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
     /**
      * Creates <tt>AutomatedStacking</tt> object with given options.
      * @param classifier classifier object
-     * @param data training filteredData
+     * @param data training data
      */
     public AutomatedStacking(StackingClassifier classifier, Instances data) {
         super(data, classifier);
