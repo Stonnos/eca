@@ -9,6 +9,8 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
+
+import eca.ApplicationProperties;
 import eca.core.TestMethod;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
@@ -18,6 +20,8 @@ import eca.gui.PanelBorderUtils;
  * @author Рома
  */
 public class TestingSetOptionsDialog extends JDialog {
+
+    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
 
     public static final String methodTitle = "Метод оценки точности";
     public static final String initialMethodTitle = "Использование обучающего множества";
@@ -32,8 +36,8 @@ public class TestingSetOptionsDialog extends JDialog {
 
     private boolean dialogResult;
     private int type = TestMethod.TRAINING_SET;
-    private int numFolds = 10;
-    private int numValids = 10;
+    private int numFolds = APPLICATION_PROPERTIES.getNumFolds();
+    private int numValids = APPLICATION_PROPERTIES.getNumTests();
 
     public TestingSetOptionsDialog(Window parent) {
         super(parent, "Настройки");

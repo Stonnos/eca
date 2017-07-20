@@ -139,7 +139,7 @@ public abstract class AbstractExperiment<T extends Classifier>
      */
     public void setTestMethod(int mode) {
         if (mode != TestMethod.TRAINING_SET && mode != TestMethod.CROSS_VALIDATION) {
-            throw new IllegalArgumentException("Wrong mode value!");
+            throw new IllegalArgumentException("Invalid test method value!");
         }
         this.mode = mode;
     }

@@ -6,6 +6,11 @@
 package eca.gui.frames;
 
 import eca.ApplicationProperties;
+import eca.EcaServiceProperties;
+import eca.beans.ClassifierDescriptor;
+import eca.beans.InputData;
+import eca.client.RestClient;
+import eca.client.RestClientImpl;
 import eca.core.converters.DataSaver;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
@@ -19,6 +24,7 @@ import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.DatabaseConnectionDialog;
 import eca.gui.dialogs.DataGeneratorDialog;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.EcaServiceOptionsDialog;
 import eca.gui.dialogs.EnsembleOptionsDialog;
 import eca.gui.dialogs.ExecutorDialog;
 import eca.gui.dialogs.KNNOptionDialog;
@@ -93,6 +99,8 @@ import eca.Reference;
 public class JMainFrame extends JFrame {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+
+    private static final EcaServiceProperties ECA_SERVICE_PROPERTIES = EcaServiceProperties.getInstance();
 
     private static final Color frameColor = new Color(198, 226, 255);
     
@@ -462,6 +470,30 @@ public class JMainFrame extends JFrame {
     /**
      *
      */
+    private class EcaServiceAction implements CallbackAction {
+
+        RestClient restClient;
+        InputData inputData;
+        ClassifierDescriptor classifierDescriptor;
+
+        EcaServiceAction(RestClient restClient, InputData inputData) {
+            this.restClient = restClient;
+            this.inputData = inputData;
+        }
+
+        @Override
+        public void apply() throws Exception {
+            classifierDescriptor = restClient.execute(inputData);
+        }
+
+        ClassifierDescriptor getClassifierDescriptor() {
+            return classifierDescriptor;
+        }
+    }
+
+    /**
+     *
+     */
     public class ResultsHistory extends DefaultListModel<String> {
 
         private ArrayList<ResultsFrameBase> resultsFrameBases = new ArrayList<>();
@@ -497,6 +529,32 @@ public class JMainFrame extends JFrame {
 
     }
 
+    private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
+        InputData inputData = new InputData((AbstractClassifier) frame.classifier(),
+                frame.data());
+
+        RestClientImpl restClient = new RestClientImpl();
+        restClient.setTestMethod(testingSetFrame.getTestingSetType());
+
+        if (restClient.getTestMethod() == TestMethod.CROSS_VALIDATION) {
+            restClient.setNumFolds(testingSetFrame.numFolds());
+            restClient.setNumTests(testingSetFrame.numValids());
+        }
+
+        EcaServiceAction ecaServiceAction = new EcaServiceAction(restClient, inputData);
+
+        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                ecaServiceAction, "Пожалуйста подождите, идет построение модели...");
+
+        process(progress, new CallbackAction() {
+            @Override
+            public void apply() throws Exception {
+                resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
+                        ecaServiceAction.getClassifierDescriptor().getEvaluation(), maximumFractionDigits);
+            }
+        });
+    }
+
     public void process(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
         ExecutorService.process(executorDialog, successAction, new CallbackAction() {
             @Override
@@ -510,17 +568,22 @@ public class JMainFrame extends JFrame {
     private void createAndShowLoaderFrame(BaseOptionsDialog frame) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
-            ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
-            LoadDialog progress = new LoadDialog(JMainFrame.this,
-                    builder, "Пожалуйста подождите, идет построение модели...");
 
-            process(progress, new CallbackAction() {
-                @Override
-                public void apply() throws Exception {
-                    resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
-                            builder.evaluation(), maximumFractionDigits);
-                }
-            });
+            if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
+                executeWithEcaService(frame);
+            } else {
+                ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
+                LoadDialog progress = new LoadDialog(JMainFrame.this,
+                        builder, "Пожалуйста подождите, идет построение модели...");
+
+                process(progress, new CallbackAction() {
+                    @Override
+                    public void apply() throws Exception {
+                        resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
+                                builder.evaluation(), maximumFractionDigits);
+                    }
+                });
+            }
 
         }
         frame.dispose();
@@ -668,6 +731,21 @@ public class JMainFrame extends JFrame {
         });
         optionsMenu.add(digitsMenu);
         //-------------------------------
+
+        JMenuItem ecaServiceOptionsMenu = new JMenuItem("Настройки сервиса ECA");
+        ecaServiceOptionsMenu.addActionListener(new ActionListener() {
+
+            EcaServiceOptionsDialog ecaServiceOptionsDialog;
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+
+                EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
+                ecaServiceOptionsDialog.setVisible(true);
+            }
+        });
+        optionsMenu.add(ecaServiceOptionsMenu);
+
         fileMenu.add(openFileMenu);
         saveFileMenu = new JMenuItem("Сохранить...");
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
@@ -1095,12 +1173,7 @@ public class JMainFrame extends JFrame {
                     try {
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNames.KNN,
                                 new KNearestNeighbours(), data());
-                        frame.showDialog();
-                        if (frame.dialogResult()) {
-                            Evaluation e = createEvaluation(frame.classifier(), frame.data());
-                            resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
-                                    frame.data(), e, maximumFractionDigits);
-                        }
+
                         frame.dispose();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1227,27 +1300,34 @@ public class JMainFrame extends JFrame {
     
     private void computeResults(BaseOptionsDialog frame, String msg) throws Exception {
         if (frame.dialogResult()) {
+
             try {
-                IterativeBuilder itCls = itClassifier((Iterable) frame.classifier(),
+
+                if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
+                    executeWithEcaService(frame);
+                } else {
+
+                    IterativeBuilder itCls = itClassifier((Iterable) frame.classifier(),
                         frame.data());
 
-                ClassifierBuilderDialog progress
-                        = new ClassifierBuilderDialog(JMainFrame.this, itCls, msg);
+                    ClassifierBuilderDialog progress
+                            = new ClassifierBuilderDialog(JMainFrame.this, itCls, msg);
 
-                process(progress, new CallbackAction() {
-                    @Override
-                    public void apply() throws Exception {
-                        resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
+                    process(progress, new CallbackAction() {
+                        @Override
+                        public void apply() throws Exception {
+                            resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
                                 frame.data(), itCls.evaluation(), maximumFractionDigits);
-                    }
-                });
-
+                        }
+                    });
+                }
             } catch (Throwable e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(JMainFrame.this,
                         e.getMessage(),
                         "", JOptionPane.WARNING_MESSAGE);
             }
+
         }
     }
     

@@ -1,6 +1,9 @@
 package eca;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.Properties;
 
 /**
@@ -31,6 +34,10 @@ public class ApplicationProperties {
 
     private static final String ECA_TOOLTIP_DISMISS_TIME = "eca.tooltip.dismiss.time";
 
+    private static final String CROSS_VALIDATION_FOLDS = "cross.validation.folds";
+
+    private static final String CROSS_VALIDATION_TESTS = "cross.validation.tests";
+
     private static Properties PROPERTIES = new Properties();
 
     private static ApplicationProperties INSTANCE;
@@ -43,7 +50,6 @@ public class ApplicationProperties {
     }
 
     private ApplicationProperties() {}
-
 
     public static ApplicationProperties getInstance() {
         if (INSTANCE == null) {
@@ -90,6 +96,14 @@ public class ApplicationProperties {
 
     public int getTooltipDismissTime() {
         return Integer.parseInt(PROPERTIES.getProperty(ECA_TOOLTIP_DISMISS_TIME));
+    }
+
+    public int getNumFolds() {
+        return Integer.valueOf(PROPERTIES.getProperty(CROSS_VALIDATION_FOLDS));
+    }
+
+    public int getNumTests() {
+        return Integer.valueOf(PROPERTIES.getProperty(CROSS_VALIDATION_TESTS));
     }
 
 }

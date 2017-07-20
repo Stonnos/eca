@@ -34,7 +34,8 @@ import eca.gui.text.NumericFormat;
  */
 public class ClassifyInstanceTable extends JDataTableBase {
 
-    private static final int DOUBLE_FIELD_LENGTH = 9;
+    private static final int DOUBLE_FIELD_LENGTH = 12;
+    private static final int MAX_FIELD_LENGTH = 255;
     private static final int ROW_HEIGHT = 18;
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
     private AttributeStatistics attributeStatistics;
@@ -48,7 +49,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         this.getColumnModel().getColumn(0).setMaxWidth(50);
         this.getColumnModel().getColumn(0).setMinWidth(50);
         JTextField text = new JTextField(DOUBLE_FIELD_LENGTH);
-        text.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
+        text.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
         column.setCellEditor(new DefaultCellEditor(text));
         this.getColumnModel().getColumn(1).setCellRenderer(new AttributeRenderer(data));
         this.setRowHeight(ROW_HEIGHT);
@@ -56,9 +57,9 @@ public class ClassifyInstanceTable extends JDataTableBase {
             @Override
             public void mouseMoved(MouseEvent evt) {
                 Point p = new Point(evt.getX(), evt.getY());
-                int i = ClassifyInstanceTable.this.rowAtPoint(p);
-                int j = ClassifyInstanceTable.this.columnAtPoint(p);
-                ClassifyInstanceTable.this.changeSelection(i, j, false, false);
+                int i = rowAtPoint(p);
+                int j = columnAtPoint(p);
+                changeSelection(i, j, false, false);
             }
         });
         this.setAutoResizeOff(false);
@@ -87,11 +88,11 @@ public class ClassifyInstanceTable extends JDataTableBase {
                 Attribute a = en.nextElement();
                 String strValue = (String) vector[a.index()];
                 if (strValue == null || strValue.isEmpty()) {
-                    throw new Exception("Не задано значение атрибута '" + a.name() + "'");
+                    throw new Exception(String.format("Не задано значение атрибута '%s'", a.name()));
                 }
                 double value = decimalFormat.parse(strValue).doubleValue();
                 if (a.isNominal() && (!strValue.matches("^[0-9]+$") || !a.isInRange(value))) {
-                    throw new Exception("Недопустимое значение атрибута '" + a.name() + "'");
+                    throw new Exception(String.format("Недопустимое значение атрибута '%s'", a.name()));
                 }
                 ins.setValue(a, value);
             }

@@ -184,10 +184,6 @@ public class AttributesTable extends JDataTableBase {
         return model().data();
     }
 
-    //public int type(int i) {
-       // return model().type(i);
-   // }
-
     public boolean isSelected(int i) {
         return model().isAttributeSelected(i);
     }
@@ -257,12 +253,7 @@ public class AttributesTable extends JDataTableBase {
             dataSet.add(obj);
         }
         dataSet.setClass(dataSet.attribute(data.classAttribute().name()));
-        //System.out.println(getData);
-        //System.out.println(dataSet);
-        /*RemoveUseless filter = new RemoveUseless();
-        filter.setInputFormat(dataSet);
-        dataSet = Filter.useFilter(dataSet, filter);
-        dataSet.setRelationName(getData.relationName());*/
+
         return dataSet;
     }
 
