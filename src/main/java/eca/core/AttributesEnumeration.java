@@ -7,9 +7,10 @@ package eca.core;
 
 import weka.core.Attribute;
 import weka.core.Instances;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Random;
 
 /**

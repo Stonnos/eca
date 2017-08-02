@@ -6,12 +6,6 @@
 package eca.gui.dialogs;
 
 import eca.ensemble.ClassifiersSet;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
@@ -19,13 +13,24 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.enums.ClassifiersNames;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
+import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
-import eca.regression.Logistic;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *

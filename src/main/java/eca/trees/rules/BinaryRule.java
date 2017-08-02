@@ -7,7 +7,6 @@ package eca.trees.rules;
 
 import weka.core.Attribute;
 import weka.core.Instance;
-import java.util.ArrayList;
 
 /**
  * Class for generating model of nominal attribute binary split rule.

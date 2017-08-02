@@ -5,10 +5,11 @@
  */
 package eca.gui.tables.models;
 
-import java.text.DecimalFormat;
-import javax.swing.table.AbstractTableModel;
-import eca.roc.AttributesSelection;
 import eca.gui.text.NumericFormat;
+import eca.roc.AttributesSelection;
+
+import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
 
 /**
  *

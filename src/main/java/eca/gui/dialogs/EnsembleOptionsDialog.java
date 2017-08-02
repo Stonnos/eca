@@ -5,26 +5,32 @@
  */
 package eca.gui.dialogs;
 
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.event.*;
-
+import eca.ensemble.AbstractHeterogeneousClassifier;
+import eca.ensemble.ClassifiersSet;
+import eca.ensemble.HeterogeneousClassifier;
+import eca.ensemble.Sampler;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import java.text.DecimalFormat;
-import eca.gui.text.IntegerDocument;
-import eca.gui.text.EstimateDocument;
-import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.ClassifiersSet;
 import eca.gui.enums.ClassifiersNames;
-import eca.ensemble.Sampler;
-import weka.core.Instances;
+import eca.gui.text.EstimateDocument;
+import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 
 /**
  *

@@ -5,9 +5,8 @@
  */
 package eca.gui.actions;
 
-import weka.core.Instances;
-
 import eca.net.DataLoaderImpl;
+import weka.core.Instances;
 /**
  *
  * @author Roman93

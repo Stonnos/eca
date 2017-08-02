@@ -6,6 +6,7 @@
 package eca.ensemble;
 
 import weka.core.Instance;
+
 import java.util.ArrayList;
 
 /**

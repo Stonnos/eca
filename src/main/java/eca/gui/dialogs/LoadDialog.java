@@ -5,11 +5,12 @@
  */
 package eca.gui.dialogs;
 
+import eca.gui.actions.CallbackAction;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
-import eca.gui.actions.CallbackAction;
+import java.awt.event.WindowEvent;
 
 /**
  *

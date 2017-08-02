@@ -6,14 +6,6 @@
 package eca.gui.choosers;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
-import java.io.IOException;
-
-import eca.core.converters.XLSSaver;
-import weka.core.Instances;
-import weka.core.converters.AbstractFileSaver;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVSaver;
 
 /**
  *

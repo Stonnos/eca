@@ -5,8 +5,9 @@
  */
 package eca.trees;
 
-import java.util.Enumeration;
 import weka.core.Attribute;
+
+import java.util.Enumeration;
 
 /**
  * Class for generating CART decision tree model.

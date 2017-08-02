@@ -5,32 +5,26 @@
  */
 package eca.gui.tables;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JTable;
-import javax.swing.JComboBox;
-import javax.swing.DefaultCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
+import eca.gui.enums.AttributesTypes;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DateFormat;
-import weka.core.Instances;
+import eca.gui.text.DoubleDocument;
 import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.DenseInstance;
-import java.util.ArrayList;
-import java.text.DecimalFormat;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Utils;
+
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import eca.gui.enums.AttributesTypes;
-import eca.gui.text.DoubleDocument;
-import weka.core.Utils;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  *

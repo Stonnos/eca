@@ -5,8 +5,8 @@
  */
 package eca.core.converters;
 
-import weka.core.Instance;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 /**
  *

@@ -5,14 +5,16 @@
  */
 package eca.gui.panels;
 
+import eca.gui.PanelBorderUtils;
+import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
 import weka.classifiers.Classifier;
+import weka.core.Instance;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import eca.gui.tables.ClassifyInstanceTable;
-import eca.gui.PanelBorderUtils;
-import weka.core.Instance;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  *

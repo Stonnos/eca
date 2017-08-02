@@ -5,10 +5,11 @@
  */
 package eca.gui.tables.models;
 
-import javax.swing.table.AbstractTableModel;
-import weka.core.Instances;
-import weka.classifiers.Classifier;
 import eca.core.evaluation.Evaluation;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import javax.swing.table.AbstractTableModel;
 
 /**
  *

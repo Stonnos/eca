@@ -5,10 +5,9 @@
  */
 package eca.gui.text;
 
-import java.util.regex.Pattern;
-import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import java.util.regex.Pattern;
 
 /**
  *

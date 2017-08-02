@@ -5,9 +5,10 @@
  */
 package eca.dataminer;
 
-import java.util.ArrayList;
 import eca.beans.ClassifierDescriptor;
 import weka.core.Instances;
+
+import java.util.ArrayList;
 
 /**
  * Experiment unit model.

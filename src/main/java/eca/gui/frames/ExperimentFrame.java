@@ -5,12 +5,26 @@
  */
 package eca.gui.frames;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import eca.beans.ClassifierDescriptor;
+import eca.core.ClassifierIndexer;
+import eca.core.TestMethod;
+import eca.core.converters.ModelConverter;
+import eca.dataminer.AbstractExperiment;
+import eca.dataminer.ExperimentHistory;
+import eca.dataminer.IterativeExperiment;
+import eca.gui.ExecutorService;
+import eca.gui.PanelBorderUtils;
+import eca.gui.actions.CallbackAction;
+import eca.gui.choosers.OpenModelChooser;
+import eca.gui.choosers.SaveModelChooser;
+import eca.gui.dialogs.LoadDialog;
+import eca.gui.dialogs.TestingSetOptionsDialog;
+import eca.gui.tables.ExperimentTable;
+import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -20,25 +34,6 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import javax.swing.*;
-
-import eca.beans.ClassifierDescriptor;
-import eca.core.TestMethod;
-import eca.core.converters.ModelConverter;
-import eca.dataminer.IterativeExperiment;
-import eca.gui.ExecutorService;
-import eca.gui.PanelBorderUtils;
-import eca.dataminer.AbstractExperiment;
-import eca.core.ClassifierIndexer;
-import eca.gui.actions.CallbackAction;
-import eca.gui.dialogs.LoadDialog;
-import eca.gui.dialogs.TestingSetOptionsDialog;
-import eca.gui.tables.ExperimentTable;
-import eca.gui.choosers.SaveModelChooser;
-import eca.gui.choosers.OpenModelChooser;
-import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
-import eca.dataminer.ExperimentHistory;
 
 /**
  *

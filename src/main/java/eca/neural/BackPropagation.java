@@ -52,7 +52,7 @@ public class BackPropagation extends LearningAlgorithm {
     @Override
     public String[] getOptions() {
         String[] options = {"Коэффициент скорости обучения:", String.valueOf(learningRate),
-                            "Коэффициент момента:",String.valueOf(momentum)};
+                            "Коэффициент момента:", String.valueOf(momentum)};
         return options;
     }
 

@@ -5,14 +5,21 @@
  */
 package eca.db;
 
-import java.sql.*;
 import eca.gui.text.DateFormat;
-import weka.core.Instances;
 import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.DenseInstance;
-import java.util.ArrayList;
+import weka.core.Instance;
+import weka.core.Instances;
 import weka.core.Utils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
 
 /**
  * Implements loading data from database.

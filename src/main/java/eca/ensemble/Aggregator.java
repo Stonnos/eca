@@ -6,8 +6,9 @@
 package eca.ensemble;
 
 import weka.core.Instance;
-import java.util.ArrayList;
 import weka.core.Utils;
+
+import java.util.ArrayList;
 
 /**
  * Implements ensemble classification results aggregating.

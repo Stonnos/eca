@@ -1,28 +1,11 @@
 package eca.gui.frames;
 
-import eca.gui.dialogs.BaseOptionsDialog;
-import eca.gui.dialogs.DecisionTreeOptionsDialog;
-import eca.gui.dialogs.EnsembleOptionsDialog;
-import eca.gui.dialogs.KNNOptionDialog;
-import eca.gui.dialogs.LogisticOptionsDialogBase;
-import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.enums.ClassifiersNames;
-import eca.metrics.KNearestNeighbours;
-import eca.neural.NeuralNetwork;
-import eca.regression.Logistic;
-import eca.trees.C45;
-import eca.trees.CART;
-import eca.trees.CHAID;
-import eca.trees.ID3;
-import weka.classifiers.Classifier;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 /**
  * @author Roman Batygin

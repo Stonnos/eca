@@ -3,9 +3,6 @@ package eca.filter;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.RemoveUseless;
-import weka.filters.unsupervised.attribute.ReplaceMissingValues;
-
-import java.io.Serializable;
 
 /**
  * @author Roman Batygin

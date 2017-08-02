@@ -5,14 +5,15 @@
  */
 package eca.gui.tables.models;
 
-import java.text.DecimalFormat;
-import javax.swing.table.AbstractTableModel;
-import eca.dataminer.ClassifierComparator;
-import weka.classifiers.Classifier;
-import java.util.ArrayList;
-import javax.swing.*;
 import eca.beans.ClassifierDescriptor;
+import eca.dataminer.ClassifierComparator;
 import eca.gui.text.NumericFormat;
+import weka.classifiers.Classifier;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  *

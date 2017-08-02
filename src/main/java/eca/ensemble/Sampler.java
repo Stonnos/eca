@@ -5,13 +5,14 @@
  */
 package eca.ensemble;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import weka.core.Instances;
-import java.util.Random;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
+import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 /**
  * Class for generating training data.

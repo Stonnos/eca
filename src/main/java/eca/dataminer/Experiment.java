@@ -6,9 +6,10 @@
 package eca.dataminer;
 
 import eca.beans.ClassifierDescriptor;
-import java.util.ArrayList;
-import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import java.util.ArrayList;
 
 /**
  * Basic interface for automatic selection of optimal options

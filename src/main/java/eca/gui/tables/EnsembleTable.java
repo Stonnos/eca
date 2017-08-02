@@ -5,24 +5,22 @@
  */
 package eca.gui.tables;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import eca.core.InstancesHandler;
+import eca.core.evaluation.Evaluation;
+import eca.ensemble.EnsembleClassifier;
+import eca.gui.ClassifierInputInfo;
+import eca.gui.frames.ResultsFrameBase;
+import eca.gui.tables.models.EnsembleTableModel;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.JButton;
-import javax.swing.DefaultCellEditor;
-import eca.gui.ClassifierInputInfo;
-import eca.gui.tables.models.EnsembleTableModel;
-import weka.core.Instances;
 import java.awt.*;
-import java.awt.event.*;
-import eca.core.evaluation.Evaluation;
-import eca.gui.frames.ResultsFrameBase;
-import weka.classifiers.Classifier;
-import eca.core.InstancesHandler;
-import eca.ensemble.EnsembleClassifier;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 /**
  *

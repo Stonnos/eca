@@ -5,13 +5,11 @@
  */
 package eca.gui.tables.models;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import javax.swing.table.AbstractTableModel;
 import eca.gui.text.NumericFormat;
-import eca.regression.Logistic;
 import weka.core.Instances;
-import weka.filters.Filter;
+
+import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
 
 /**
  *

@@ -1,9 +1,10 @@
 package eca.generators;
 
-import weka.core.Instances;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -23,6 +24,14 @@ import java.util.Random;
 public class SimpleDataGenerator implements DataGenerator {
 
     private static final String RELATION_NAME = "GeneratedData";
+
+    private static final String CLASS_NAME = "class";
+
+    private static final String CLASS_PREFIX = "c";
+
+    private static final String ATTRIBUTE_PREFIX = "a";
+
+    private static final String ATTRIBUTE_VALUE = "value";
 
     private static final int MAXIMUM_NUMBER_OF_CATEGORIES = 6;
 
@@ -149,10 +158,10 @@ public class SimpleDataGenerator implements DataGenerator {
         for (int i = 0; i < numAttributes - 1; i++) {
             means[i] = NumberGenerator.random(MIN_MEAN_THRESHOLD, MAX_MEAN_THRESHOLD);
             variances[i] = NumberGenerator.random(MIN_VARIANCE_THRESHOLD, MAX_VARIANCE_THRESHOLD);
-            attributes.add(generateAttribute("a" + i, random.nextInt(ATTRIBUTE_TYPES.length)));
+            attributes.add(generateAttribute(ATTRIBUTE_PREFIX + i, random.nextInt(ATTRIBUTE_TYPES.length)));
         }
 
-        attributes.add(createNominalAttribute("class", "c", numClasses));
+        attributes.add(createNominalAttribute(CLASS_NAME, CLASS_PREFIX, numClasses));
         return attributes;
     }
 
@@ -164,7 +173,7 @@ public class SimpleDataGenerator implements DataGenerator {
                 break;
             }
             case Attribute.NOMINAL: {
-                attribute = createNominalAttribute(name, "value",
+                attribute = createNominalAttribute(name, ATTRIBUTE_VALUE,
                         random.nextInt(MAXIMUM_NUMBER_OF_CATEGORIES - 1) + 2);
                 break;
             }

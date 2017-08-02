@@ -9,8 +9,8 @@ import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.util.Random;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Implements AdaBoost algorithm. For more information see <p>

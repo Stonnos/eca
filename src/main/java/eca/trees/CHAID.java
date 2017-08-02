@@ -5,11 +5,11 @@
  */
 package eca.trees;
 
-import java.util.Enumeration;
-
+import eca.statistics.Statistics;
 import weka.core.Attribute;
 import weka.core.Instances;
-import eca.statistics.Statistics;
+
+import java.util.Enumeration;
 
 /**
  * Class for generating CHAID decision tree model.

@@ -7,6 +7,7 @@ package eca.neural;
 
 import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.LogisticFunction;
+
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 

@@ -5,9 +5,6 @@
  */
 package eca.gui.choosers;
 
-import eca.io.SerializedObject;
-
-import java.io.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**

@@ -1,7 +1,7 @@
 package eca.gui;
 
-import javax.swing.JButton;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Roman Batygin

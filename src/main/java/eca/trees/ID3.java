@@ -5,9 +5,10 @@
  */
 package eca.trees;
 
-import java.util.Enumeration;
 import weka.core.Attribute;
 import weka.core.Utils;
+
+import java.util.Enumeration;
 
 /**
  * Class for generating Id3 decision tree model.

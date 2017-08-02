@@ -5,9 +5,10 @@
  */
 package eca.gui.frames;
 
-import javax.swing.JFrame;
 import eca.dataminer.AbstractExperiment;
 import eca.gui.dialogs.NumberFormatDialog;
+
+import javax.swing.*;
 
 /**
  *

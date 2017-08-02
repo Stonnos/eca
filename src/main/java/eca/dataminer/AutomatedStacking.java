@@ -7,11 +7,12 @@ package eca.dataminer;
 
 import eca.beans.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
-import eca.ensemble.StackingClassifier;
 import eca.ensemble.ClassifiersSet;
-import weka.core.Instances;
+import eca.ensemble.StackingClassifier;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
 import java.util.NoSuchElementException;
 
 /**

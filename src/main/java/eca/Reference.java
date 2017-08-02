@@ -5,7 +5,7 @@
  */
 package eca;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.File;
 
 /**

@@ -2,7 +2,6 @@ package eca.gui.tables.models;
 
 import eca.statistics.AttributeStatistics;
 import weka.core.Attribute;
-import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
 

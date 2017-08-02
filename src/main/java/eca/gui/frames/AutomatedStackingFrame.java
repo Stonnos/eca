@@ -5,12 +5,11 @@
  */
 package eca.gui.frames;
 
-import javax.swing.JFrame;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedStacking;
 import eca.gui.dialogs.StackingOptionsDialog;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 /**
  *

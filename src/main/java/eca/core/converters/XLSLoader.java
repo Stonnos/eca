@@ -5,16 +5,24 @@
  */
 package eca.core.converters;
 
-import java.io.*;
-
 import eca.gui.text.DateFormat;
 import org.apache.http.util.Asserts;
-import weka.core.Instances;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import org.apache.poi.ss.usermodel.*;
-import java.util.ArrayList;
+import weka.core.Instances;
 import weka.core.Utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Class for loading xls/xlsx files. <p>

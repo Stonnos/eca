@@ -5,11 +5,11 @@
  */
 package eca.gui.dialogs;
 
-import javax.swing.JDialog;
-import java.awt.Window;
-import javax.swing.JTextField;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *

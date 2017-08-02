@@ -6,14 +6,14 @@
 package eca.ensemble;
 
 import eca.core.InstancesHandler;
+import eca.core.evaluation.Evaluation;
 import eca.filter.MissingValuesFilter;
-import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
-import java.util.ArrayList;
-
+import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
-import eca.core.evaluation.Evaluation;
+
+import java.util.ArrayList;
 
 /**
  * Class for generating iterative ensemble classification model. <p>

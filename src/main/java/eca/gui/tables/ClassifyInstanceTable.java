@@ -6,27 +6,23 @@
 package eca.gui.tables;
 
 import eca.gui.enums.AttributesTypes;
-import java.awt.Component;
-import javax.swing.JTable;
-
 import eca.gui.tables.models.ClassifyInstanceTableModel;
-import eca.statistics.AttributeStatistics;
-import weka.core.Instances;
-import weka.core.DenseInstance;
-import weka.core.Attribute;
-import weka.core.Instance;
-import java.util.Enumeration;
-import javax.swing.JTextField;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.DefaultCellEditor;
-import javax.swing.table.TableColumn;
 import eca.gui.text.DoubleDocument;
+import eca.gui.text.NumericFormat;
+import eca.statistics.AttributeStatistics;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
 
-import java.awt.Point;
+import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
-import eca.gui.text.NumericFormat;
+import java.util.Enumeration;
 
 /**
  *

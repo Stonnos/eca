@@ -5,14 +5,19 @@
  */
 package eca.gui.dialogs;
 
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-
+import eca.db.ConnectionDescriptor;
+import eca.db.ConnectionDescriptorFactory;
 import eca.gui.ButtonUtils;
-import eca.db.*;
 import eca.gui.PanelBorderUtils;
-import eca.gui.text.*;
+import eca.gui.text.IntegerDocument;
+import eca.gui.text.LengthDocument;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  *

@@ -6,8 +6,9 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
-import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
 import java.util.NoSuchElementException;
 
 /**

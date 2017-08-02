@@ -6,8 +6,6 @@
 package eca.beans;
 
 import eca.core.evaluation.Evaluation;
-import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
 /**
  *
  * @author Рома

@@ -6,10 +6,11 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
-import weka.core.Instances;
-import java.util.NoSuchElementException;
-import weka.classifiers.Classifier;
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**

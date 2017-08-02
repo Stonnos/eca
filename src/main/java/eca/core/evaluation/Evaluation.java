@@ -6,13 +6,13 @@
 package eca.core.evaluation;
 
 import eca.core.InstancesHandler;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.classifiers.Classifier;
 
 import java.util.Enumeration;
 import java.util.Random;
-import weka.classifiers.AbstractClassifier;
 
 /**
  * Implements evaluation of the classification results.

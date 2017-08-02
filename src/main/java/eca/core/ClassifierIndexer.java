@@ -5,9 +5,10 @@
  */
 package eca.core;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import weka.classifiers.Classifier;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *

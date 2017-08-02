@@ -5,8 +5,9 @@
  */
 package eca.ensemble;
 
-import java.util.ArrayList;
 import weka.classifiers.Classifier;
+
+import java.util.ArrayList;
 
 /**
  * Basic interface for ensemble classification models.

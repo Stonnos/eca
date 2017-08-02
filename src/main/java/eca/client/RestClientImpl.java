@@ -120,7 +120,7 @@ public class RestClientImpl implements RestClient {
         if (httpStatus.equals(HttpStatus.OK)) {
             return (ClassifierDescriptor) SerializationUtils.deserialize(response.getBody().getByteArray());
         } else {
-            throw new RuntimeException(String.format("Error: %d %s", httpStatus.value(),
+            throw new RuntimeException(String.format("Error from server: %d %s", httpStatus.value(),
                     httpStatus.getReasonPhrase()));
         }
 

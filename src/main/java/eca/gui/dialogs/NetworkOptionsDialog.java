@@ -7,26 +7,28 @@ package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
-import eca.neural.functions.SineFunction;
-import eca.neural.functions.TanhFunction;
-import eca.neural.functions.LogisticFunction;
-import eca.neural.functions.ExponentialFunction;
-import eca.neural.functions.ActivationFunction;
-import eca.neural.functions.AbstractFunction;
+import eca.gui.PanelBorderUtils;
+import eca.gui.text.DoubleDocument;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
-import eca.gui.text.DoubleDocument;
 import eca.gui.text.ListDocument;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-import eca.neural.NeuralNetwork;
-import eca.neural.MultilayerPerceptron;
-import eca.neural.BackPropagation;
-import eca.gui.PanelBorderUtils;
-import java.text.DecimalFormat;
-import weka.core.Instances;
 import eca.gui.text.NumericFormat;
+import eca.neural.BackPropagation;
+import eca.neural.MultilayerPerceptron;
+import eca.neural.NeuralNetwork;
+import eca.neural.functions.AbstractFunction;
+import eca.neural.functions.ActivationFunction;
+import eca.neural.functions.ExponentialFunction;
+import eca.neural.functions.LogisticFunction;
+import eca.neural.functions.SineFunction;
+import eca.neural.functions.TanhFunction;
+import weka.core.Instances;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 /**
  *

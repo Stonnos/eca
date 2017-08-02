@@ -75,7 +75,7 @@ public class EcaServiceOptionsDialog extends JDialog {
 
         this.add(scrollPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new Insets(5, 5, 10, 5), 0, 0));
         this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 3), 0, 0));

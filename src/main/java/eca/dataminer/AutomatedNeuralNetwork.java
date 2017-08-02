@@ -5,14 +5,13 @@
  */
 package eca.dataminer;
 
+import eca.beans.ClassifierDescriptor;
+import eca.neural.NeuralNetwork;
 import eca.neural.functions.ActivationFunction;
+import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.util.NoSuchElementException;
-
-import eca.beans.ClassifierDescriptor;
-import eca.neural.NeuralNetwork;
-import weka.classifiers.AbstractClassifier;
 
 /**
  * Implements automatic selection of optimal options

@@ -5,14 +5,14 @@
  */
 package eca.dataminer;
 
-import eca.trees.ID3;
+import eca.ensemble.ClassifiersSet;
+import eca.metrics.KNearestNeighbours;
+import eca.neural.NeuralNetwork;
+import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
-import eca.neural.NeuralNetwork;
-import eca.metrics.KNearestNeighbours;
-import eca.ensemble.ClassifiersSet;
-import eca.regression.Logistic;
+import eca.trees.ID3;
 import weka.core.Instances;
 
 /**

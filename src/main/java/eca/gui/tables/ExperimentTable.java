@@ -5,31 +5,21 @@
  */
 package eca.gui.tables;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.table.TableCellRenderer;
-
+import eca.beans.ClassifierDescriptor;
 import eca.gui.ClassifierInputInfo;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.ExperimentTableModel;
 import weka.core.Instances;
-import eca.beans.ClassifierDescriptor;
-import java.util.ArrayList;
+
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
 
 /**
  *

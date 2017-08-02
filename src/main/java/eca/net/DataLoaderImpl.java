@@ -5,14 +5,15 @@
  */
 package eca.net;
 
+import eca.core.converters.XLSLoader;
 import weka.core.Instances;
+import weka.core.converters.AbstractFileLoader;
+import weka.core.converters.ArffLoader;
+import weka.core.converters.CSVLoader;
+
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.function.BiPredicate;
-import java.net.URL;
-import weka.core.converters.AbstractFileLoader;
-import weka.core.converters.CSVLoader;
-import weka.core.converters.ArffLoader;
-import eca.core.converters.XLSLoader;
 
 /**
  * Class for loading data from network using http and ftp protocols.

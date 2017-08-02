@@ -5,24 +5,17 @@
  */
 package eca.gui.dialogs;
 
+import eca.ensemble.RandomForests;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
-import eca.ensemble.RandomForests;
+import weka.core.Instances;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import weka.core.Instances;
 
 /**
  *

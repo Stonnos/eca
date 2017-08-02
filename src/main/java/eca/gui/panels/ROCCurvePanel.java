@@ -6,24 +6,27 @@
 package eca.gui.panels;
 
 import eca.gui.ButtonUtils;
-import eca.roc.RocCurve;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import eca.gui.tables.ROCThresholdTable;
-import weka.core.Instances;
-import weka.core.Instance;
-import weka.core.Attribute;
+import eca.roc.RocCurve;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import weka.core.Attribute;
+import weka.core.Instance;
+import weka.core.Instances;
 
-import java.util.Enumeration;
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Enumeration;
 
 /**
  *

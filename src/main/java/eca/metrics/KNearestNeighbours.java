@@ -5,18 +5,19 @@
  */
 package eca.metrics;
 
+import eca.core.InstancesHandler;
 import eca.core.converters.MinMaxNormalizer;
+import eca.filter.MissingValuesFilter;
 import eca.metrics.distances.Distance;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.InstanceDistance;
-import weka.core.Instances;
-import weka.core.Instance;
 import weka.classifiers.AbstractClassifier;
-import eca.filter.MissingValuesFilter;
+import weka.core.Instance;
+import weka.core.Instances;
 import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
-import eca.core.InstancesHandler;
+
 import java.util.Arrays;
 
 /**

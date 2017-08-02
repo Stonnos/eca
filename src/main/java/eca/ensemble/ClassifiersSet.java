@@ -5,13 +5,14 @@
  */
 package eca.ensemble;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Iterator;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Implements collection of individual classifiers models.

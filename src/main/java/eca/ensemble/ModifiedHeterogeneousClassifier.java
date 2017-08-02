@@ -5,12 +5,12 @@
  */
 package eca.ensemble;
 
-import java.util.Random;
-
 import eca.core.evaluation.Evaluation;
-import weka.core.Instances;
-import java.util.NoSuchElementException;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Implements modified heterogeneous ensemble algorithm.

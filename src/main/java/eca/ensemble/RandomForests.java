@@ -5,10 +5,11 @@
  */
 package eca.ensemble;
 
-import eca.trees.DecisionTreeClassifier;
-import java.util.NoSuchElementException;
-import weka.core.Instances;
 import eca.trees.CART;
+import eca.trees.DecisionTreeClassifier;
+import weka.core.Instances;
+
+import java.util.NoSuchElementException;
 
 /**
  * Class for generating Random forests model. <p>

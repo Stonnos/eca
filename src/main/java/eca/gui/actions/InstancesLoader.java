@@ -7,7 +7,7 @@ package eca.gui.actions;
 
 import eca.core.converters.DataLoader;
 import weka.core.Instances;
-import eca.gui.choosers.OpenDataFileChooser;
+
 import java.io.File;
 /**
  *

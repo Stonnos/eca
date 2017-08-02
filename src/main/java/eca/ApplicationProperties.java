@@ -1,9 +1,6 @@
 package eca;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.util.Properties;
 
 /**

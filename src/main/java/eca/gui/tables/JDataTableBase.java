@@ -6,21 +6,17 @@
 package eca.gui.tables;
 
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import javax.swing.BorderFactory;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import java.awt.event.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
 import eca.gui.dialogs.JFontChooser;
 import eca.io.buffer.StringCopier;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  *

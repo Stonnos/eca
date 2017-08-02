@@ -5,8 +5,8 @@
  */
 package eca.filter;
 
-import weka.core.Instances;
 import weka.core.Instance;
+import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 /**
  *

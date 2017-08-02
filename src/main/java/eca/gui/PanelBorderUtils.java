@@ -6,10 +6,9 @@
 package eca.gui;
 
 
-import java.awt.Color;
-import java.awt.Font;
-import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
 /**
  *
  * @author Рома

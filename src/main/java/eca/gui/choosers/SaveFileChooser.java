@@ -5,11 +5,11 @@
  */
 package eca.gui.choosers;
 
-import java.awt.Component;
-import java.io.File;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.File;
 
 /**
  *

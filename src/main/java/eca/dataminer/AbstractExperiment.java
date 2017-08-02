@@ -5,15 +5,15 @@
  */
 package eca.dataminer;
 
-import java.util.ArrayList;
 import eca.beans.ClassifierDescriptor;
 import eca.core.TestMethod;
-import java.util.Random;
-
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
 import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Abstract class for automatic selection of optimal options

@@ -5,9 +5,10 @@
  */
 package eca.trees.rules;
 
-import java.text.DecimalFormat;
 import weka.core.Attribute;
 import weka.core.Instance;
+
+import java.text.DecimalFormat;
 
 /**
  * Class for generating model of numeric attribute split rule.

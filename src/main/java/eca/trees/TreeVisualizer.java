@@ -5,28 +5,29 @@
  */
 package eca.trees;
 
+import eca.core.ClassifierIndexer;
 import eca.core.converters.ImageSaver;
 import eca.gui.ButtonUtils;
-import eca.trees.rules.NumericRule;
-import eca.trees.rules.AbstractRule;
+import eca.gui.PanelBorderUtils;
+import eca.gui.choosers.SaveImageFileChooser;
+import eca.gui.dialogs.JFontChooser;
+import eca.gui.text.NumericFormat;
+import eca.io.buffer.ImageCopier;
 import eca.trees.DecisionTreeClassifier.TreeNode;
+import eca.trees.rules.AbstractRule;
+import eca.trees.rules.NumericRule;
 
+import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import javax.swing.*;
-import java.text.DecimalFormat;
-import java.io.IOException;
-import java.io.File;
-
-import eca.gui.PanelBorderUtils;
-import eca.io.buffer.ImageCopier;
-import eca.gui.choosers.SaveImageFileChooser;
-import eca.gui.text.NumericFormat;
-import eca.gui.dialogs.JFontChooser;
-import eca.core.ClassifierIndexer;
 
 /**
  * @author Рома

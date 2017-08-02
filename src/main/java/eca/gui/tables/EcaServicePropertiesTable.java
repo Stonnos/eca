@@ -1,8 +1,6 @@
 package eca.gui.tables;
 
-import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;
-import eca.gui.text.DoubleDocument;
 import eca.gui.text.LengthDocument;
 
 import javax.swing.*;

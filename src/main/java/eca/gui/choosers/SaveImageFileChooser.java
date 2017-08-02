@@ -5,12 +5,7 @@
  */
 package eca.gui.choosers;
 
-import java.io.File;
-import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.image.BufferedImage;
-import java.awt.Image;
-import javax.imageio.ImageIO;
 
 /**
  *

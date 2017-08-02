@@ -5,12 +5,12 @@
  */
 package eca.gui.tables.models;
 
-import javax.swing.table.AbstractTableModel;
-
-import weka.classifiers.Classifier;
-import java.util.ArrayList;
-import javax.swing.*;
 import eca.ensemble.EnsembleClassifier;
+import weka.classifiers.Classifier;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
 
 /**
  *

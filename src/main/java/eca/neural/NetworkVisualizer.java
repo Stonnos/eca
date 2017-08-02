@@ -6,27 +6,33 @@
 package eca.neural;
 
 import eca.core.ClassifierIndexer;
-
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.ArrayList;
-import javax.swing.*;
-import java.awt.event.*;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.Enumeration;
-
 import eca.core.converters.ImageSaver;
 import eca.gui.ButtonUtils;
-import weka.core.Attribute;
-import eca.io.buffer.ImageCopier;
-import eca.gui.choosers.SaveImageFileChooser;
-import java.io.File;
-import java.io.IOException;
 import eca.gui.PanelBorderUtils;
+import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.gui.text.NumericFormat;
+import eca.io.buffer.ImageCopier;
 import eca.neural.functions.AbstractFunction;
+import weka.core.Attribute;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  *

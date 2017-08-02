@@ -6,7 +6,6 @@
 package eca.net;
 
 import weka.core.Instances;
-import java.net.URL;
 
 /**
  * Interface for loading data from network resource.

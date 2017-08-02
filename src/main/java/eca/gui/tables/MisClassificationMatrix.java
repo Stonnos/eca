@@ -5,12 +5,12 @@
  */
 package eca.gui.tables;
 
-import javax.swing.JTable;
-
-import eca.gui.tables.models.MisClassificationTableModel;
-import weka.core.Instances;
-import weka.classifiers.Classifier;
 import eca.core.evaluation.Evaluation;
+import eca.gui.tables.models.MisClassificationTableModel;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import javax.swing.*;
 
 /**
  *

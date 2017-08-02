@@ -7,22 +7,45 @@ package eca.gui.frames;
 
 import eca.ApplicationProperties;
 import eca.EcaServiceProperties;
+import eca.Reference;
 import eca.beans.ClassifierDescriptor;
 import eca.beans.InputData;
+import eca.beans.ModelDescriptor;
 import eca.client.RestClient;
 import eca.client.RestClientImpl;
+import eca.core.TestMethod;
 import eca.core.converters.DataSaver;
-import eca.dataminer.AutomatedStacking;
+import eca.core.evaluation.Evaluation;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
-import eca.dataminer.ClassifiersSetBuilder;
 import eca.dataminer.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedStacking;
+import eca.dataminer.ClassifiersSetBuilder;
+import eca.db.DataBaseConnection;
+import eca.ensemble.AbstractHeterogeneousClassifier;
+import eca.ensemble.AdaBoostClassifier;
+import eca.ensemble.CVIterativeBuilder;
+import eca.ensemble.HeterogeneousClassifier;
+import eca.ensemble.Iterable;
+import eca.ensemble.IterativeBuilder;
+import eca.ensemble.ModifiedHeterogeneousClassifier;
+import eca.ensemble.RandomForests;
+import eca.ensemble.StackingClassifier;
 import eca.gui.ExecutorService;
+import eca.gui.GuiUtils;
+import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
+import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorLoader;
+import eca.gui.actions.InstancesLoader;
+import eca.gui.actions.ModelLoader;
+import eca.gui.actions.URLLoader;
+import eca.gui.choosers.OpenDataFileChooser;
+import eca.gui.choosers.OpenModelChooser;
+import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.dialogs.BaseOptionsDialog;
 import eca.gui.dialogs.ClassifierBuilderDialog;
-import eca.gui.dialogs.DatabaseConnectionDialog;
 import eca.gui.dialogs.DataGeneratorDialog;
+import eca.gui.dialogs.DatabaseConnectionDialog;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
 import eca.gui.dialogs.EcaServiceOptionsDialog;
 import eca.gui.dialogs.EnsembleOptionsDialog;
@@ -35,62 +58,45 @@ import eca.gui.dialogs.NumberFormatDialog;
 import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
+import eca.gui.enums.ClassifiersNames;
+import eca.gui.enums.EnsemblesNames;
+import eca.gui.tables.AttributesTable;
+import eca.gui.tables.InstancesTable;
+import eca.gui.tables.StatisticsTableBuilder;
 import eca.gui.text.DateFormat;
+import eca.metrics.KNearestNeighbours;
+import eca.net.DataLoaderImpl;
+import eca.neural.NeuralNetwork;
+import eca.neural.functions.ActivationFunction;
+import eca.neural.functions.ExponentialFunction;
+import eca.neural.functions.LogisticFunction;
 import eca.neural.functions.SineFunction;
 import eca.neural.functions.TanhFunction;
-import eca.neural.functions.LogisticFunction;
-import eca.neural.functions.ExponentialFunction;
-import eca.neural.functions.ActivationFunction;
-import eca.db.DataBaseConnection;
-import eca.gui.actions.DataBaseConnectionAction;
-import eca.gui.actions.URLLoader;
-import eca.gui.actions.InstancesLoader;
-import eca.gui.PanelBorderUtils;
-import eca.gui.actions.ModelLoader;
-import eca.ensemble.AdaBoostClassifier;
-import eca.ensemble.ModifiedHeterogeneousClassifier;
-import eca.ensemble.RandomForests;
-import eca.ensemble.IterativeBuilder;
-import eca.ensemble.Iterable;
-import eca.ensemble.CVIterativeBuilder;
-import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.StackingClassifier;
-import eca.trees.DecisionTreeClassifier;
-import eca.trees.ID3;
+import eca.regression.Logistic;
+import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
-import eca.trees.C45;
-import eca.gui.choosers.OpenDataFileChooser;
-import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.tables.InstancesTable;
-import eca.gui.tables.AttributesTable;
-import eca.gui.tables.StatisticsTableBuilder;
-import eca.gui.choosers.OpenModelChooser;
-import eca.gui.enums.ClassifiersNames;
-import eca.neural.NeuralNetwork;
-import eca.gui.enums.EnsemblesNames;
-import eca.metrics.KNearestNeighbours;
-import java.awt.*;
-import java.awt.event.*;
+import eca.trees.DecisionTreeClassifier;
+import eca.trees.ID3;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import weka.core.Instances;
-import java.io.*;
+import javax.swing.plaf.FontUIResource;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
-import javax.imageio.ImageIO;
-import eca.core.evaluation.Evaluation;
-import weka.classifiers.Classifier;
-import weka.classifiers.AbstractClassifier;
-import eca.regression.Logistic;
-import eca.beans.ModelDescriptor;
-import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.net.DataLoaderImpl;
-import java.net.*;
-import eca.core.TestMethod;
-import eca.Reference;
 
 /**
  *
@@ -549,8 +555,9 @@ public class JMainFrame extends JFrame {
         process(progress, new CallbackAction() {
             @Override
             public void apply() throws Exception {
-                resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
-                        ecaServiceAction.getClassifierDescriptor().getEvaluation(), maximumFractionDigits);
+                ClassifierDescriptor classifierDescriptor = ecaServiceAction.getClassifierDescriptor();
+                resultsHistory.createResultFrame(frame.getTitle(), classifierDescriptor.getClassifier(),
+                        frame.data(), classifierDescriptor.getEvaluation(), maximumFractionDigits);
             }
         });
     }
@@ -734,8 +741,6 @@ public class JMainFrame extends JFrame {
 
         JMenuItem ecaServiceOptionsMenu = new JMenuItem("Настройки сервиса ECA");
         ecaServiceOptionsMenu.addActionListener(new ActionListener() {
-
-            EcaServiceOptionsDialog ecaServiceOptionsDialog;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1173,8 +1178,7 @@ public class JMainFrame extends JFrame {
                     try {
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNames.KNN,
                                 new KNearestNeighbours(), data());
-
-                        frame.dispose();
+                        createAndShowLoaderFrame(frame);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,

@@ -5,20 +5,21 @@
  */
 package eca.gui.tables;
 
-import javax.swing.JTable;
-import java.text.DecimalFormat;
-import javax.swing.table.AbstractTableModel;
-import eca.trees.DecisionTreeClassifier;
-import eca.neural.NeuralNetwork;
-import eca.metrics.KNearestNeighbours;
+import eca.beans.Entry;
+import eca.core.evaluation.Evaluation;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.StackingClassifier;
-import eca.regression.Logistic;
-import weka.classifiers.Classifier;
-import eca.core.evaluation.Evaluation;
-import java.util.ArrayList;
-import eca.beans.Entry;
 import eca.gui.text.NumericFormat;
+import eca.metrics.KNearestNeighbours;
+import eca.neural.NeuralNetwork;
+import eca.regression.Logistic;
+import eca.trees.DecisionTreeClassifier;
+import weka.classifiers.Classifier;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  *

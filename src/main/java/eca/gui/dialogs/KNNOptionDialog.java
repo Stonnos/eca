@@ -7,20 +7,22 @@ package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
+import eca.gui.PanelBorderUtils;
+import eca.gui.text.DoubleDocument;
+import eca.gui.text.IntegerDocument;
+import eca.gui.text.NumericFormat;
+import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.ChebyshevDistance;
 import eca.metrics.distances.EuclidDistance;
-import eca.metrics.distances.SquareEuclidDistance;
 import eca.metrics.distances.ManhattanDistance;
-import eca.metrics.KNearestNeighbours;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
-import eca.gui.PanelBorderUtils;
-import eca.gui.text.IntegerDocument;
-import eca.gui.text.DoubleDocument;
-import java.text.DecimalFormat;
-import eca.gui.text.NumericFormat;
+import eca.metrics.distances.SquareEuclidDistance;
 import weka.core.Instances;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 /**
  *
  * @author Рома

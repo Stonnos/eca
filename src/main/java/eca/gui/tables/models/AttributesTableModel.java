@@ -5,10 +5,10 @@
  */
 package eca.gui.tables.models;
 
-import javax.swing.table.AbstractTableModel;
-import weka.core.Instances;
 import eca.gui.enums.AttributesTypes;
-import weka.core.Attribute;
+import weka.core.Instances;
+
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 /**

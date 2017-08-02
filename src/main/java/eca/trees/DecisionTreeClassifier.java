@@ -6,22 +6,22 @@
 package eca.trees;
 
 import eca.core.AttributesEnumeration;
+import eca.core.InstancesHandler;
 import eca.core.PermutationsSearch;
 import eca.filter.MissingValuesFilter;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.BinaryRule;
 import eca.trees.rules.NominalRule;
 import eca.trees.rules.NumericRule;
+import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Enumeration;
-import weka.classifiers.AbstractClassifier;
-import weka.core.Utils;
-import eca.core.InstancesHandler;
 
 /**
  * Abstract class for generating decision tree model. <p>

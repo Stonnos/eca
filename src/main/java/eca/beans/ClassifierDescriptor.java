@@ -7,6 +7,7 @@ package eca.beans;
 
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.Classifier;
+
 import java.io.Serializable;
 
 /**

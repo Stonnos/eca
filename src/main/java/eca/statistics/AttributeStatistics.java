@@ -1,6 +1,5 @@
 package eca.statistics;
 
-import eca.gui.text.NumericFormat;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;

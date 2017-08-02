@@ -5,10 +5,14 @@
  */
 package eca.roc;
 
-import weka.core.*;
-import eca.regression.Logistic;
-import java.util.*;
 import eca.core.evaluation.Evaluation;
+import eca.regression.Logistic;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import java.util.ArrayList;
 /**
  * Implements significant attributes selection based on ROC - analysis.
  * @author Рома

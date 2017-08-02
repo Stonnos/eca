@@ -5,16 +5,16 @@
  */
 package eca.ensemble;
 
-import java.util.ArrayList;
-
 import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
-import weka.core.Instances;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
+import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
-import weka.core.Attribute;
-import weka.classifiers.Classifier;
-import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
+
+import java.util.ArrayList;
 
 /**
  * Implements stacking algorithm.

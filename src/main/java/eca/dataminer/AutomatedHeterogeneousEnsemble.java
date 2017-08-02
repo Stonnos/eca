@@ -8,11 +8,12 @@ package eca.dataminer;
 import eca.beans.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
 import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
-import weka.core.Instances;
+import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Sampler;
 import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
+
 import java.util.NoSuchElementException;
 
 /**

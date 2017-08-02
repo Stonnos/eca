@@ -5,12 +5,12 @@
  */
 package eca.gui.tables.models;
 
-import javax.swing.table.AbstractTableModel;
-import weka.core.Instances;
 import eca.core.evaluation.Evaluation;
-import java.text.DecimalFormat;
-
 import eca.gui.text.NumericFormat;
+import weka.core.Instances;
+
+import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
 
 /**
  *

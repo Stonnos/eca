@@ -5,9 +5,9 @@
  */
 package eca.roc;
 
-import weka.core.Instances;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.evaluation.ThresholdCurve;
+import weka.core.Instances;
 /**
  * Class for providing ROC - curve results.
  * @author Рома

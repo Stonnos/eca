@@ -5,13 +5,12 @@
  */
 package eca.gui.tables;
 
-import java.awt.Color;
-import java.awt.Component;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import eca.gui.tables.models.SignificantAttributesTableModel;
 import eca.roc.AttributesSelection;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
 /**
  *
  * @author Рома

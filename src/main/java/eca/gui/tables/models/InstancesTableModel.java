@@ -5,16 +5,14 @@
  */
 package eca.gui.tables.models;
 
-import javax.swing.table.AbstractTableModel;
-
 import eca.core.converters.InstancesConverter;
+import eca.gui.text.NumericFormat;
 import weka.core.Instances;
-import weka.core.Attribute;
+
+import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.ListIterator;
-import eca.gui.text.NumericFormat;
 /**
  *
  * @author Рома

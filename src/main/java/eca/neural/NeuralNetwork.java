@@ -5,20 +5,21 @@
  */
 package eca.neural;
 
-import java.util.Arrays;
+import eca.core.InstancesHandler;
 import eca.core.converters.MinMaxNormalizer;
+import eca.core.evaluation.Evaluation;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
+import eca.filter.MissingValuesFilter;
 import eca.generators.NumberGenerator;
 import eca.neural.functions.ActivationFunction;
-import java.util.NoSuchElementException;
 import weka.classifiers.AbstractClassifier;
-import eca.core.evaluation.Evaluation;
-import eca.filter.MissingValuesFilter;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
-import eca.core.InstancesHandler;
+
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * Class for generating neural network for classification task.

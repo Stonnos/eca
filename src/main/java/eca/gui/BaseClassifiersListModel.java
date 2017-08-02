@@ -5,7 +5,6 @@ import eca.gui.dialogs.DecisionTreeOptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
 import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.enums.ClassifiersNames;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;

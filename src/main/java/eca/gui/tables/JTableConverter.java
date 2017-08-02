@@ -1,6 +1,6 @@
 package eca.gui.tables;
 
-import javax.swing.JTable;
+import javax.swing.*;
 
 /**
  * @author Roman Batygin
