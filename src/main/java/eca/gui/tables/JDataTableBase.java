@@ -19,32 +19,31 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- *
  * @author Рома
  */
 public class JDataTableBase extends JTable {
-    
+
     private JCheckBoxMenuItem resizeMenu;
-    
+
     public JDataTableBase(Object[][] data, Object[] title) {
         super(data, title);
         makeView();
     }
-    
+
     public final void setAutoResizeOff(boolean flag) {
         setAutoResizeOffMode(flag);
         resizeMenu.setSelected(!flag);
     }
-    
+
     public JDataTableBase(TableModel model) {
         super(model);
         this.makeView();
     }
-    
+
     public JDataTableBase() {
         this.makeView();
-    }   
-    
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -52,7 +51,7 @@ public class JDataTableBase extends JTable {
         for (int i = 0; i < getColumnCount(); i++) {
             if (!resizeMenu.getState()) {
                 getColumnModel().getColumn(i).setMinWidth(getPrefferedWidth(i, metric));
-                
+
             } else {
                 getColumnModel().getColumn(i).setMinWidth(15);
             }
@@ -62,23 +61,23 @@ public class JDataTableBase extends JTable {
     private void setAutoResizeOffMode(boolean flag) {
         if (flag) {
             this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        }
-        else {
+        } else {
             this.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         }
     }
-    
+
     private int getPrefferedWidth(int column, FontMetrics metric) {
         int max = metric.stringWidth(this.getColumnName(column)) + 10;
         for (int i = 0; i < this.getRowCount(); i++) {
             Object val = this.getValueAt(i, column);
-            if (val != null)
+            if (val != null) {
                 max = Integer.max(max, metric.stringWidth(val.toString()) + 10);
+            }
         }
         return max;
     }
-    
-        
+
+
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem fontMenu = new JMenuItem("Выбор шрифта");
@@ -112,7 +111,7 @@ public class JDataTableBase extends JTable {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-               jTableClipboard.copy(false);
+                jTableClipboard.copy(false);
             }
         });
 
@@ -132,7 +131,7 @@ public class JDataTableBase extends JTable {
         popMenu.add(copyWithHeaderMenu);
         this.setComponentPopupMenu(popMenu);
     }
-    
+
     private void makeView() {
         if (getColumnCount() > 0) {
             this.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
@@ -148,19 +147,19 @@ public class JDataTableBase extends JTable {
             });
         }
         this.getTableHeader().setReorderingAllowed(false);
-        this.getTableHeader().setBackground(new Color(192,192,192));
+        this.getTableHeader().setBackground(new Color(192, 192, 192));
         this.getTableHeader().setBorder(BorderFactory.
-                createEtchedBorder(new Color(133,133,133), null));
+                createEtchedBorder(new Color(133, 133, 133), null));
         //-------------------------------------------------
         this.createPopupMenu();
-        this.font(new Font("Arial",Font.PLAIN, 12));
+        this.font(new Font("Arial", Font.PLAIN, 12));
         this.setAutoResizeOff(true);
     }
-    
+
     private void font(Font font) {
         this.setFont(font);
         this.setRowHeight(this.getFont().getSize() + 6);
-        this.getTableHeader().setFont(new Font(font.getName(),Font.BOLD, font.getSize() + 2));
+        this.getTableHeader().setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 2));
     }
 
     private class JTableClipboard {
@@ -175,5 +174,5 @@ public class JDataTableBase extends JTable {
             stringCopier.copy();
         }
     }
-    
+
 }

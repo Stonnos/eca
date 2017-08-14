@@ -7,11 +7,14 @@ package eca.neural.functions;
 
 /**
  * Implements abstract activation function with getCoefficient.
+ *
  * @author Рома
  */
 public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable {
 
-    /** Coefficient value **/
+    /**
+     * Coefficient value
+     **/
     private double a = 1.0;
 
     protected AbstractFunction() {
@@ -23,6 +26,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
 
     /**
      * Returns the value of getCoefficient.
+     *
      * @return the value of getCoefficient
      */
     public final double getCoefficient() {
@@ -31,8 +35,9 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
 
     /**
      * Sets the value of getCoefficient.
+     *
      * @param a the value of getCoefficient
-     * @exception IllegalArgumentException if the value of getCoefficient is equal to zero
+     * @throws IllegalArgumentException if the value of getCoefficient is equal to zero
      */
     public final void setCoefficient(double a) {
         if (a == 0) {
@@ -43,6 +48,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
 
     /**
      * Returns the string representation of getCoefficient value.
+     *
      * @return the string representation of getCoefficient value
      */
     public final String coefficientToString() {

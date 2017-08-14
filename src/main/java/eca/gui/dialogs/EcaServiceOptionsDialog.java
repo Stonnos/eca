@@ -1,7 +1,7 @@
 package eca.gui.dialogs;
 
 import eca.EcaServiceProperties;
-import eca.beans.Entry;
+import eca.model.Entry;
 import eca.gui.ButtonUtils;
 import eca.gui.tables.EcaServicePropertiesTable;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;
@@ -30,7 +30,7 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.setResizable(false);
 
         JScrollPane scrollPanel = new JScrollPane(new EcaServicePropertiesTable(model));
-        scrollPanel.setPreferredSize(new Dimension(500,200));
+        scrollPanel.setPreferredSize(new Dimension(500, 200));
 
         JButton okButton = ButtonUtils.createOkButton();
 
@@ -61,7 +61,7 @@ public class EcaServiceOptionsDialog extends JDialog {
                     setVisible(false);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
-                            e.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });

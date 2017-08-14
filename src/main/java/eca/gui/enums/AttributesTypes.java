@@ -8,7 +8,6 @@ package eca.gui.enums;
 import weka.core.Attribute;
 
 /**
- *
  * @author Рома
  */
 public class AttributesTypes {
@@ -20,11 +19,11 @@ public class AttributesTypes {
         String type;
         if (a.isDate()) {
             type = AttributesTypes.DATE;
-        }
-        else if (a.isNumeric()) {
+        } else if (a.isNumeric()) {
             type = AttributesTypes.NUMERIC;
+        } else {
+            type = AttributesTypes.NOMINAL;
         }
-        else type = AttributesTypes.NOMINAL;
         return type;
     }
 }

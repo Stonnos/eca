@@ -25,15 +25,15 @@ import java.util.Enumeration;
 
 /**
  * Abstract class for generating decision tree model. <p>
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Set minimum number of instances per leaf. (Default: 2) <p>
- *
+ * <p>
  * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
- *
+ * <p>
  * Use random tree. <p>
- *
+ * <p>
  * Set number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  *
  * @author Рома
@@ -41,34 +41,54 @@ import java.util.Enumeration;
 public abstract class DecisionTreeClassifier extends AbstractClassifier
         implements InstancesHandler {
 
-    /** Initial training set **/
+    /**
+     * Initial training set
+     **/
     protected Instances data;
 
-    /** Tree root **/
+    /**
+     * Tree root
+     **/
     protected TreeNode root;
 
-    /** Number of tree nodes **/
+    /**
+     * Number of tree nodes
+     **/
     protected int numNodes;
 
-    /** Number of tree leaves **/
+    /**
+     * Number of tree leaves
+     **/
     protected int numLeaves;
 
-    /** Number of instances per leaf **/
+    /**
+     * Number of instances per leaf
+     **/
     protected int minObj = 2;
 
-    /** Maximum tree depth **/
+    /**
+     * Maximum tree depth
+     **/
     protected int maxDepth;
 
-    /** Number of random attributes at each split **/
+    /**
+     * Number of random attributes at each split
+     **/
     protected int numRandomAttr;
 
-    /** Random tree? **/
+    /**
+     * Random tree?
+     **/
     protected boolean isRandom;
 
-    /** Tree depth **/
+    /**
+     * Tree depth
+     **/
     protected int depth;
 
-    /** Node split algorithm **/
+    /**
+     * Node split algorithm
+     **/
     protected SplitAlgorithm splitAlgorithm;
 
     protected double[] probabilities;
@@ -290,6 +310,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the value of random tree.
+     *
      * @return the value of random tree
      */
     public final boolean isRandomTree() {
@@ -298,6 +319,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the value of random tree.
+     *
      * @param isRandom the value of random tree
      */
     public final void setRandomTree(boolean isRandom) {
@@ -306,8 +328,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the value of minimum objects per leaf.
+     *
      * @param minObj the value of minimum objects per leaf
-     * @exception IllegalArgumentException if the value of minimum objects per leaf is less than zero
+     * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
     public final void setMinObj(int minObj) {
         checkForNegative(minObj);
@@ -316,6 +339,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the value of minimum objects per leaf.
+     *
      * @return the value of minimum objects per leaf
      */
     public final int getMinObj() {
@@ -324,6 +348,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the value of maximum tree depth.
+     *
      * @return the value of maximum tree depth
      */
     public final int getMaxDepth() {
@@ -332,8 +357,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the value of maximum tree depth.
+     *
      * @param maxDepth the value of maximum tree depth.
-     * @exception IllegalArgumentException if the value of maximum tree depth is less than zero
+     * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
     public void setMaxDepth(int maxDepth) {
         checkForNegative(maxDepth);
@@ -342,6 +368,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns leaves number.
+     *
      * @return leaves number
      */
     public final int numLeaves() {
@@ -350,6 +377,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns nodes number
+     *
      * @return nodes number
      */
     public final int numNodes() {
@@ -358,6 +386,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns tree depth.
+     *
      * @return tree depth
      */
     public final int depth() {
@@ -366,6 +395,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the value of random attributes number.
+     *
      * @return the value of random attributes number
      */
     public final int numRandomAttr() {
@@ -374,8 +404,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the value of random attributes number
+     *
      * @param numRandomAttr the value of random attributes number
-     * @exception IllegalArgumentException if the value of random attributes number is less than zero
+     * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
     public final void setNumRandomAttr(int numRandomAttr) {
         checkForNegative(numRandomAttr);
@@ -401,9 +432,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     @Override
     public String[] getOptions() {
         String[] options = {"Минимальное число объектов в листе:", String.valueOf(minObj),
-            "Максиальная глубина дерева:", String.valueOf(maxDepth),
-            "Случайное дерево:", String.valueOf(isRandom),
-            "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
+                "Максиальная глубина дерева:", String.valueOf(maxDepth),
+                "Случайное дерево:", String.valueOf(isRandom),
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
         return options;
     }
 
@@ -555,8 +586,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         if (isRandomTree()) {
             if (numRandomAttr == 0 || numRandomAttr == data.numAttributes() - 1) {
                 return data.enumerateAttributes();
+            } else {
+                return new AttributesEnumeration(data, numRandomAttr);
             }
-            else return new AttributesEnumeration(data, numRandomAttr);
         } else {
             return data.enumerateAttributes();
         }

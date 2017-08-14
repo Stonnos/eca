@@ -20,7 +20,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- *
  * @author Рома
  */
 public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeClassifier> {
@@ -39,7 +38,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     private JTextField numRandomAttrText;
 
     public DecisionTreeOptionsDialog(Window parent, String title,
-            DecisionTreeClassifier tree, Instances data) {
+                                     DecisionTreeClassifier tree, Instances data) {
         super(parent, title, tree, data);
         this.data = data;
         this.setLayout(new GridBagLayout());
@@ -105,7 +104,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                         && Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
                             "Число случайных атрибутов должно быть не больше "
-                            + String.valueOf(data.numAttributes() - 1),
+                                    + String.valueOf(data.numAttributes() - 1),
                             "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
                     numRandomAttrText.requestFocusInWindow();
                 } else {
@@ -128,8 +127,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             optionPanel.add(new JLabel("<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>"),
                     new GridBagConstraints(0, 5, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-            String[] alphas = {"0.995","0.99","0.975","0.95","0.75","0.5","0.25",
-                "0.1","0.05","0.025","0.01","0.005"};    
+            String[] alphas = {"0.995", "0.99", "0.975", "0.95", "0.75", "0.5", "0.25",
+                    "0.1", "0.05", "0.025", "0.01", "0.005"};
             final JComboBox<String> values = new JComboBox<>(alphas);
             okButton.addActionListener(new ActionListener() {
                 @Override

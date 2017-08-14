@@ -7,12 +7,12 @@ package eca.gui.tables;
 
 import eca.gui.tables.models.ROCThresholdTableModel;
 import weka.core.Instances;
+
 /**
- *
  * @author Roman93
  */
 public class ROCThresholdTable extends JDataTableBase {
-    
+
     public ROCThresholdTable(Instances data, int digits, String className) {
         super(new ROCThresholdTableModel(data, digits, className));
     }

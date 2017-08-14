@@ -6,7 +6,6 @@
 package eca.statistics;
 
 /**
- *
  * @author Roman93
  */
 public class Statistics {

@@ -5,7 +5,7 @@
  */
 package eca.dataminer;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
@@ -18,14 +18,16 @@ import java.util.NoSuchElementException;
 /**
  * Implements automatic selection of optimal options
  * for stacking algorithm based on experiment series.
+ *
  * @author Roman93
  */
 public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 
     /**
      * Creates <tt>AutomatedStacking</tt> object with given options.
+     *
      * @param classifier classifier object
-     * @param data training data
+     * @param data       training data
      */
     public AutomatedStacking(StackingClassifier classifier, Instances data) {
         super(data, classifier);
@@ -92,8 +94,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                         metaClsIndex++;
                         it = 0;
                         state = 0;
-                    }
-                    else {
+                    } else {
                         for (int j = 0; j < marks.length; j++) {
                             marks[j] = j <= it ? 1 : 0;
                         }
@@ -114,8 +115,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                         }
 
                         state = 3;
-                    }
-                    else {
+                    } else {
                         it++;
                         state = 1;
                     }

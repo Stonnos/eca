@@ -5,7 +5,7 @@
  */
 package eca.gui.tables.models;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.dataminer.ClassifierComparator;
 import eca.gui.text.NumericFormat;
 import weka.classifiers.Classifier;
@@ -16,7 +16,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- *
  * @author Roman93
  */
 public class ExperimentTableModel extends AbstractTableModel {

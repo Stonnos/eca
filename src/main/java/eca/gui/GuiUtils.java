@@ -19,7 +19,7 @@ public class GuiUtils {
         return null;
     }
 
-    public static void setUIFont(FontUIResource f){
+    public static void setUIFont(FontUIResource f) {
         java.util.Enumeration keys = UIManager.getLookAndFeelDefaults().keys();
         while (keys.hasMoreElements()) {
             Object key = keys.nextElement();

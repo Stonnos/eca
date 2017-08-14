@@ -10,14 +10,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- *
  * @author Roman93
  */
 public class MissingCellRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
+                                                   boolean isSelected, boolean hasFocus, int row, int column) {
         Component comp = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
         if (value == null) {

@@ -16,6 +16,7 @@ import java.util.Random;
 
 /**
  * Implements evaluation of the classification results.
+ *
  * @author Рома
  */
 public class Evaluation extends weka.classifiers.evaluation.Evaluation implements InstancesHandler {
@@ -30,6 +31,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Creates <tt>Evaluation</tt> object.
+     *
      * @param initialData <tt>Instances</tt> object (training data)
      * @throws Exception
      */
@@ -40,6 +42,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the number of validations.
+     *
      * @return the number of validations
      */
     public int getValidationsNum() {
@@ -48,6 +51,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the number of validations.
+     *
      * @return the number of validations
      */
     public void setValidationsNum(int validationsNum) {
@@ -56,6 +60,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the number of folds.
+     *
      * @return the number of folds
      */
     public int numFolds() {
@@ -64,6 +69,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Sets the number of folds.
+     *
      * @param m_NumFolds the number of folds
      */
     public void setFolds(int m_NumFolds) {
@@ -72,6 +78,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns <tt>Instances</tt> object (training data).
+     *
      * @return <tt>Instances</tt> object (training data)
      */
     @Override
@@ -81,6 +88,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns using of k * V - folds cross - validation method.
+     *
      * @return using of k * V - folds cross - validation method
      */
     public boolean isKCrossValidationMethod() {
@@ -89,15 +97,16 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Evaluates model using k * V - folds cross - validation method.
-     * @param classifier classifier object.
-     * @param data training data
-     * @param numFolds the number of folds
+     *
+     * @param classifier     classifier object.
+     * @param data           training data
+     * @param numFolds       the number of folds
      * @param validationsNum the number of validations
-     * @param r <tt>Random</tt> object
+     * @param r              <tt>Random</tt> object
      * @throws Exception
      */
     public void kCrossValidateModel(Classifier classifier, Instances data, int numFolds,
-            int validationsNum, Random r) throws Exception {
+                                    int validationsNum, Random r) throws Exception {
 
         error = new double[validationsNum * numFolds];
 
@@ -125,6 +134,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Calculates the variance of mean error.
+     *
      * @param error errors array
      */
     public void computeErrorVariance(double[] error) {
@@ -139,6 +149,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the value of Student confidence interval for classifier mean error.
+     *
      * @return the value of Student confidence interval for classifier mean error
      */
     public double errorConfidenceValue() {
@@ -147,6 +158,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the variance of error.
+     *
      * @return the variance of error
      */
     public double varianceError() {
@@ -155,6 +167,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the standard deviation of error.
+     *
      * @return the standard deviation of error
      */
     public double stdDeviationError() {
@@ -163,6 +176,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the Student confidence interval for classifier mean error.
+     *
      * @return the Student confidence interval for classifier mean error
      */
     public double[] errorConfidenceInterval() {
@@ -172,6 +186,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Returns the value of maximum area under ROC - curve.
+     *
      * @return the value of maximum area under ROC - curve
      */
     public double maxAreaUnderROC() {
@@ -184,8 +199,9 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     /**
      * Calculates classifier error on given data.
+     *
      * @param classifier classifier object
-     * @param data <tt>Instances</tt> object
+     * @param data       <tt>Instances</tt> object
      * @return the value of classifier error
      * @throws Exception
      */

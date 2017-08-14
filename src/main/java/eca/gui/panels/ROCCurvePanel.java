@@ -29,22 +29,21 @@ import java.awt.event.WindowEvent;
 import java.util.Enumeration;
 
 /**
- *
  * @author Рома
  */
 public class ROCCurvePanel extends JPanel {
-    
+
     private static final String TITLE = "График ROC кривой";
     private static final String X_AXIS_TITLE = "100 - Специфичность (Specifity), %";
     private static final String Y_AXIS_TITLE = "Чувствительность (Sensivity), %";
-    
+
     private final RocCurve curve;
     private ChartPanel panel;
     private JFreeChart[] plots;
     private JFrame[] frames;
     private JComboBox<String> plotBox;
     private final JFrame frame;
-    
+
     public ROCCurvePanel(RocCurve curve, JFrame frame, final int digits) {
         this.curve = curve;
         this.frame = frame;
@@ -58,7 +57,7 @@ public class ROCCurvePanel extends JPanel {
         plotBox.setMaximumSize(dim);
         plotBox.setMinimumSize(dim);
         Attribute classAttr = curve.data().classAttribute();
-        for (Enumeration i = classAttr.enumerateValues(); i.hasMoreElements();) {
+        for (Enumeration i = classAttr.enumerateValues(); i.hasMoreElements(); ) {
             plotBox.addItem("Класс " + i.nextElement());
         }
         plotBox.addItem("Все классы");
@@ -86,20 +85,20 @@ public class ROCCurvePanel extends JPanel {
         });
         //-----------------------------------------
         panel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
-            
+
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 dataMenu.setEnabled(plotBox.getSelectedIndex() < plots.length - 1);
             }
-            
+
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                
+
             }
-            
+
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-                
+
             }
         });
         panel.getPopupMenu().add(dataMenu);
@@ -120,11 +119,11 @@ public class ROCCurvePanel extends JPanel {
         this.add(plotBox, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 5, 0), 0, 0));
     }
-    
+
     private void createFrames() {
         frames = new DataFrame[curve.data().numClasses()];
     }
-    
+
     private void createPlots() {
         plots = new JFreeChart[curve.data().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
@@ -156,14 +155,14 @@ public class ROCCurvePanel extends JPanel {
 
     public Image createImage() {
         JFreeChart chart = panel.getChart();
-        return chart.createBufferedImage(650,500);
+        return chart.createBufferedImage(650, 500);
     }
 
     /**
      *
      */
     private class DataFrame extends JFrame {
-        
+
         DataFrame(Instances data, int digits, String className) {
             this.setTitle("Данные ROC - кривой");
             this.setLayout(new GridBagLayout());
@@ -191,5 +190,5 @@ public class ROCCurvePanel extends JPanel {
             this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         }
     }
-    
+
 }

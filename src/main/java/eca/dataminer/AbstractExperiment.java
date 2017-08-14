@@ -5,7 +5,7 @@
  */
 package eca.dataminer;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.core.TestMethod;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.AbstractClassifier;
@@ -18,42 +18,56 @@ import java.util.Random;
 /**
  * Abstract class for automatic selection of optimal options
  * for classifiers based on experiment series.
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Sets the number of folds (Default: 10) <p>
- *
+ * <p>
  * Sets the number of validations (Default: 10) <p>
- *
+ * <p>
  * Sets the number of iterations (Default: 100) <p>
- *
+ * <p>
  * Sets evaluation test method (Default: {@value TestMethod#TRAINING_SET}) <p>
  *
- * @author Roman93
  * @param <T> classifier type
+ * @author Roman93
  */
 public abstract class AbstractExperiment<T extends Classifier>
         implements Experiment<T>, IterableExperiment {
 
-    /** Experiment history **/
+    /**
+     * Experiment history
+     **/
     private final ArrayList<ClassifierDescriptor> experiment;
 
-    /** Number of folds **/
+    /**
+     * Number of folds
+     **/
     private int numFolds = 10;
 
-    /** Number of validations **/
+    /**
+     * Number of validations
+     **/
     private int numValidations = 10;
 
-    /** Number of iterations **/
+    /**
+     * Number of iterations
+     **/
     private int numIterations = 100;
 
-    /** Evaluation test method **/
+    /**
+     * Evaluation test method
+     **/
     private int mode = TestMethod.TRAINING_SET;
 
-    /** Training set **/
+    /**
+     * Training set
+     **/
     private final Instances data;
 
-    /** Classifier object **/
+    /**
+     * Classifier object
+     **/
     protected T classifier;
 
     protected final Random r = new Random();
@@ -72,7 +86,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     public void clearHistory() {
         getHistory().clear();
     }
-    
+
     @Override
     public T getClassifier() {
         return classifier;
@@ -93,6 +107,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Returns the number of folds.
+     *
      * @return the number of folds
      */
     public int getNumFolds() {
@@ -101,6 +116,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Return the evaluation method type.
+     *
      * @return the evaluation method type
      */
     public int getTestMethod() {
@@ -109,6 +125,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Sets the number of folds.
+     *
      * @param numFolds the number of folds
      */
     public void setNumFolds(int numFolds) {
@@ -117,6 +134,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Returns the number of validations.
+     *
      * @return the number of validations
      */
     public int getNumValidations() {
@@ -125,6 +143,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Sets the number of validations.
+     *
      * @param numValidations the number of validations
      */
     public void setNumValidations(int numValidations) {
@@ -133,9 +152,10 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     /**
      * Sets the evaluation method type
+     *
      * @param mode the evaluation method type
-     * @exception IllegalArgumentException if the specified method type
-     * is invalid
+     * @throws IllegalArgumentException if the specified method type
+     *                                  is invalid
      */
     public void setTestMethod(int mode) {
         if (mode != TestMethod.TRAINING_SET && mode != TestMethod.CROSS_VALIDATION) {
@@ -163,7 +183,8 @@ public abstract class AbstractExperiment<T extends Classifier>
                 ev.evaluateModel(model, data());
                 break;
             case TestMethod.CROSS_VALIDATION:
-                ev.kCrossValidateModel(AbstractClassifier.makeCopy(model), data(), getNumFolds(), getNumValidations(), r);
+                ev.kCrossValidateModel(AbstractClassifier.makeCopy(model), data(), getNumFolds(), getNumValidations(),
+                        r);
                 model.buildClassifier(data());
                 break;
         }

@@ -7,12 +7,14 @@ package eca.dataminer;
 
 /**
  * Class for generating {@link IterableExperiment} objects.
+ *
  * @author Roman93
  */
 public interface IterableExperiment {
 
     /**
      * Returns <tt>IterativeExperiment</tt> object.
+     *
      * @return <tt>IterativeExperiment</tt> object
      */
     IterativeExperiment getIterativeExperiment();

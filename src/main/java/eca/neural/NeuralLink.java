@@ -7,39 +7,47 @@ package eca.neural;
 
 /**
  * Neural link model.
+ *
  * @author Рома
  */
 public class NeuralLink implements java.io.Serializable {
 
-    /** Source and target neurons **/
+    /**
+     * Source and target neurons
+     **/
     private Neuron source, target;
 
-    /** Current weight and previous weight **/
+    /**
+     * Current weight and previous weight
+     **/
     private double weight, previousCorrect;
 
     /**
      * Creates neural link with given neurons.
+     *
      * @param source source neuron
      * @param target target neuron
      */
     public NeuralLink(Neuron source, Neuron target) {
-	    this.source = source;
+        this.source = source;
         this.target = target;
     }
 
     /**
      * Creates neural link with given options
-     * @param u source neuron
-     * @param v target neuron
+     *
+     * @param u      source neuron
+     * @param v      target neuron
      * @param weight neuron weight
      */
     public NeuralLink(Neuron u, Neuron v, double weight) {
-	    this(u,v);
+        this(u, v);
         this.weight = weight;
     }
 
     /**
      * Return the source neuron.
+     *
      * @return the source neuron
      */
     public final Neuron source() {
@@ -48,6 +56,7 @@ public class NeuralLink implements java.io.Serializable {
 
     /**
      * Returns the target neuron.
+     *
      * @return the target neuron
      */
     public final Neuron target() {
@@ -56,6 +65,7 @@ public class NeuralLink implements java.io.Serializable {
 
     /**
      * Sets the value of neuron weight.
+     *
      * @param weight the value of neuron weight
      */
     public final void setWeight(double weight) {
@@ -64,6 +74,7 @@ public class NeuralLink implements java.io.Serializable {
 
     /**
      * Returns the value of neuron weight.
+     *
      * @return the value of neuron weight
      */
     public final double getWeight() {
@@ -72,6 +83,7 @@ public class NeuralLink implements java.io.Serializable {
 
     /**
      * Sets the value of previous neuron weight correct.
+     *
      * @param previousCorrect the value of previous neuron weight correct
      */
     public final void setPreviousCorrect(double previousCorrect) {
@@ -80,6 +92,7 @@ public class NeuralLink implements java.io.Serializable {
 
     /**
      * Returns the value of previous neuron weight correct.
+     *
      * @return the value of previous neuron weight correct
      */
     public final double getPreviousCorrect() {

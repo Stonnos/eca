@@ -13,13 +13,13 @@ import java.util.NoSuchElementException;
 
 /**
  * Implements heterogeneous ensemble algorithm. <p>
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Use weighted votes method. (Default: <tt>false</tt>) <p>
- *
+ * <p>
  * Use randomly classifiers selection. (Default: <tt>true</tt>) <p>
- *
+ * <p>
  * Sets {@link Sampler} object. <p>
  *
  * @author Рома
@@ -27,17 +27,24 @@ import java.util.NoSuchElementException;
 public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         implements WeightedVotesAvailable {
 
-    /** Use weighted votes method? **/
+    /**
+     * Use weighted votes method?
+     **/
     private boolean use_Weighted_Votes;
 
-    /** Use randomly classifiers selection? **/
+    /**
+     * Use randomly classifiers selection?
+     **/
     private boolean use_Random_Classifier = true;
 
-    /** Sampling object **/
+    /**
+     * Sampling object
+     **/
     private final Sampler sampler = new Sampler();
 
     /**
      * Creates <tt>HeterogeneousClassifier</tt> with given classifiers set.
+     *
      * @param set classifiers set
      */
     public HeterogeneousClassifier(ClassifiersSet set) {
@@ -46,6 +53,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     /**
      * Returns <tt>Sampler</tt> object.
+     *
      * @return <tt>Sampler</tt> object
      */
     public final Sampler sampler() {
@@ -69,6 +77,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     /**
      * Returns the value of use random classifier.
+     *
      * @return the value of use random classifier
      */
     public boolean getUseRandomClassifier() {
@@ -77,6 +86,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     /**
      * Sets the value of use random classifier.
+     *
      * @param flag the value of use random classifier
      */
     public void setUseRandomClassifier(boolean flag) {
@@ -139,11 +149,9 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
             Classifier model;
             if (sampler.getSampling() == Sampler.INITIAL) {
                 model = set.buildClassifier(index, bag);
-            }
-            else if (getUseRandomClassifier()) {
+            } else if (getUseRandomClassifier()) {
                 model = set.buildRandomClassifier(bag);
-            }
-            else {
+            } else {
                 model = set.builtOptimalClassifier(bag);
             }
 

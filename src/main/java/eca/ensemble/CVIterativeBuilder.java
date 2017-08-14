@@ -15,30 +15,40 @@ import java.util.Random;
 
 /**
  * Evaluates classifier using k * V - folds cross - validation method. <p>
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Sets the number of folds <p>
- *
+ * <p>
  * Sets the number of validations <p>
  *
  * @author Рома
  */
 public class CVIterativeBuilder extends IterativeBuilder {
 
-    /** Iterable classifier **/
+    /**
+     * Iterable classifier
+     **/
     private final Iterable classifier;
 
-    /** Training set **/
+    /**
+     * Training set
+     **/
     private final Instances data;
 
-    /** Number of folds **/
+    /**
+     * Number of folds
+     **/
     private final int numFolds;
 
-    /** Number of validations **/
+    /**
+     * Number of validations
+     **/
     private final int numValidations;
 
-    /** Evaluation object **/
+    /**
+     * Evaluation object
+     **/
     private final Evaluation evaluation;
 
     private int cvIndex = -1;
@@ -49,9 +59,10 @@ public class CVIterativeBuilder extends IterativeBuilder {
 
     /**
      * Creates <tt>CVIterativeBuilder</tt> object with given options.
-     * @param classifier iterable classifier object.
-     * @param data <tt>Instances</tt> object (training set)
-     * @param numFolds number of folds
+     *
+     * @param classifier     iterable classifier object.
+     * @param data           <tt>Instances</tt> object (training set)
+     * @param numFolds       number of folds
      * @param numValidations number of validations
      * @throws Exception
      */
@@ -85,7 +96,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
         }
         for (; validIndex < numValidations; validIndex++) {
 
-            for (cvIndex++; cvIndex < numFolds;) {
+            for (cvIndex++; cvIndex < numFolds; ) {
                 if (cvIndex == 0) {
                     currentSet = new Instances(data);
                     currentSet.randomize(r);
@@ -104,7 +115,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
         }
 
         evaluation.computeErrorVariance(error);
-        
+
         IterativeBuilder i = classifier.getIterativeBuilder(data);
         while (i.hasNext()) {
             i.next();

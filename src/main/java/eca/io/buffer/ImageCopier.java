@@ -11,8 +11,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+
 /**
- *
  * @author Рома
  */
 public class ImageCopier implements Transferable, Copyable {
@@ -20,45 +20,44 @@ public class ImageCopier implements Transferable, Copyable {
     private Image image;
 
     private static final DataFlavor[] FLAVORS = {
-        DataFlavor.imageFlavor,
+            DataFlavor.imageFlavor,
     };
-    
+
     public ImageCopier(Image image) {
         this.setImage(image);
     }
-    
+
     public ImageCopier() {
     }
-    
+
     public final void setImage(Image image) {
         this.image = image;
     }
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return (DataFlavor[])FLAVORS.clone();
+        return (DataFlavor[]) FLAVORS.clone();
     }
 
     @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
-         return flavor.equals(FLAVORS[0]);
+        return flavor.equals(FLAVORS[0]);
     }
 
     @Override
     public Object getTransferData(DataFlavor flavor)
-        throws UnsupportedFlavorException, IOException
-    {
+            throws UnsupportedFlavorException, IOException {
         if (isDataFlavorSupported(flavor)) {
-            return (Object)image;
+            return (Object) image;
         } else {
             throw new UnsupportedFlavorException(flavor);
         }
-    }    
+    }
 
     @Override
     public void copy() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(this, null);
     }
-    
+
 }

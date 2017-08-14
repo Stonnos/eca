@@ -6,8 +6,8 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.beans.InputData;
-import eca.beans.ModelDescriptor;
+import eca.model.InputData;
+import eca.model.ModelDescriptor;
 import eca.core.ClassifierIndexer;
 import eca.core.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
@@ -68,7 +68,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- *
  * @author Рома
  */
 public class ResultsFrameBase extends JFrame {
@@ -78,7 +77,7 @@ public class ResultsFrameBase extends JFrame {
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
 
-    
+
     private final Classifier classifier;
     private final Instances data;
     private final Evaluation ev;
@@ -94,7 +93,7 @@ public class ResultsFrameBase extends JFrame {
     private ROCCurvePanel rocCurvePanel;
 
     public ResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-            Evaluation ev, final int digits)
+                            Evaluation ev, final int digits)
             throws Exception {
         this.classifier = classifier;
         this.data = data;
@@ -359,7 +358,7 @@ public class ResultsFrameBase extends JFrame {
             if (res.classifier() instanceof DecisionTreeClassifier) {
                 JScrollPane pane
                         = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) res.classifier(),
-                                digits));
+                        digits));
                 res.addPanel("Структура дерева", pane);
                 JScrollBar bar = pane.getHorizontalScrollBar();
                 bar.setValue(bar.getMaximum());
@@ -491,7 +490,7 @@ public class ResultsFrameBase extends JFrame {
 
                 createXlsInputParamSheet(book, style);
                 createXlsResultsSheet(book, style);
-                writePicture(file, book, (BufferedImage) rocCurvePanel.createImage(),ROC_CURVES_TEXT,5,5);
+                writePicture(file, book, (BufferedImage) rocCurvePanel.createImage(), ROC_CURVES_TEXT, 5, 5);
 
                 book.write(stream);
             }
@@ -502,7 +501,7 @@ public class ResultsFrameBase extends JFrame {
             AbstractClassifier cls = (AbstractClassifier) classifier;
 
             createTitle(sheet, style, "Входные параметры классификатора");
-            createPair(sheet, style , "Классификатор", cls.getClass().getSimpleName());
+            createPair(sheet, style, "Классификатор", cls.getClass().getSimpleName());
 
             String[] options = cls.getOptions();
             setXlsClassifierOptions(sheet, options);
@@ -628,7 +627,8 @@ public class ResultsFrameBase extends JFrame {
             }
         }
 
-        void writePicture(File file, Workbook book, BufferedImage bImage, String title, int col, int row) throws Exception {
+        void writePicture(File file, Workbook book, BufferedImage bImage, String title, int col, int row)
+                throws Exception {
             Sheet sheet = book.createSheet(title);
             ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream();
             ImageIO.write(bImage, "PNG", byteArrayImg);
@@ -636,13 +636,12 @@ public class ResultsFrameBase extends JFrame {
                     byteArrayImg.toByteArray(),
                     sheet.getWorkbook().PICTURE_TYPE_PNG);
 
-            short col1=0, col2=0;
+            short col1 = 0, col2 = 0;
             ClientAnchor anchor;
 
             if (file.getName().endsWith(".xls")) {
                 anchor = new HSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
-            }
-            else {
+            } else {
                 anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
             }
 

@@ -10,6 +10,7 @@ import weka.core.Instance;
 
 /**
  * Abstract class for generating model of node split rule.
+ *
  * @author Рома
  */
 public abstract class AbstractRule implements java.io.Serializable {
@@ -18,8 +19,9 @@ public abstract class AbstractRule implements java.io.Serializable {
 
     /**
      * Creates rule object.
+     *
      * @param attribute split attribute
-     * @exception IllegalArgumentException if the value of split attribute is null
+     * @throws IllegalArgumentException if the value of split attribute is null
      */
     protected AbstractRule(Attribute attribute) {
         if (attribute == null) {
@@ -30,6 +32,7 @@ public abstract class AbstractRule implements java.io.Serializable {
 
     /**
      * Returns child node index.
+     *
      * @param obj instance
      * @return child node index
      */
@@ -37,6 +40,7 @@ public abstract class AbstractRule implements java.io.Serializable {
 
     /**
      * Returns string representation of rule.
+     *
      * @param i child index
      * @return string representation of rule
      */
@@ -44,6 +48,7 @@ public abstract class AbstractRule implements java.io.Serializable {
 
     /**
      * Returns split attribute.
+     *
      * @return split attribute
      */
     public final Attribute attribute() {

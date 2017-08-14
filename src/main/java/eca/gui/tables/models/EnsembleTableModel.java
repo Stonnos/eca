@@ -13,7 +13,6 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 /**
- *
  * @author Рома
  */
 public class EnsembleTableModel extends AbstractTableModel {

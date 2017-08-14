@@ -9,11 +9,10 @@ import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 
 /**
- *
  * @author Рома
  */
 public class ClassifierInputInfo {
-    
+
     public static String getInfo(Classifier classifier) {
         StringBuilder info = new StringBuilder("<html><head><style>"
                 + ".attr {font-weight: bold;} th {font-size: 14;}</style></head><body>");
@@ -21,7 +20,7 @@ public class ClassifierInputInfo {
         info.append("<tr>");
         info.append("<th colspan = '2'>Входные параметры классификатора</th>");
         info.append("</tr>");
-        String[] option = ((AbstractClassifier)classifier).getOptions();
+        String[] option = ((AbstractClassifier) classifier).getOptions();
         for (int i = 0; i < option.length; i += 2) {
             info.append("<tr>");
             info.append("<td class = 'attr'>");

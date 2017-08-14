@@ -9,26 +9,26 @@ import eca.core.converters.DataLoader;
 import weka.core.Instances;
 
 import java.io.File;
+
 /**
- *
  * @author Рома
  */
 public class InstancesLoader implements CallbackAction {
 
     private Instances data;
     private final File file;
-    
+
     public InstancesLoader(File file) {
         this.file = file;
     }
-    
+
     public Instances data() {
         return data;
     }
-    
+
     @Override
     public void apply() throws Exception {
         data = DataLoader.getDataSet(file);
     }
-    
+
 }

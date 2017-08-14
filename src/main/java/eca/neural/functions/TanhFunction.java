@@ -16,14 +16,16 @@ public class TanhFunction extends AbstractFunction {
     /**
      * Creates <tt>TanhFunction</tt> object.
      */
-    public TanhFunction() {}
+    public TanhFunction() {
+    }
 
     /**
      * Creates <tt>TanhFunction</tt> object with given coefficient.
+     *
      * @param a the value of coefficient
      */
     public TanhFunction(double a) {
-	super(a);
+        super(a);
     }
 
     @Override
@@ -34,7 +36,7 @@ public class TanhFunction extends AbstractFunction {
 
     @Override
     public double derivative(double s) {
-	return getCoefficient() * (1 - Math.pow(process(s), 2));
+        return getCoefficient() * (1 - Math.pow(process(s), 2));
     }
 
 }

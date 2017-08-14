@@ -8,6 +8,7 @@ package eca.gui.frames;
 import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -21,7 +22,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
- *
  * @author Рома
  */
 public class QueryFrame extends JFrame {
@@ -88,8 +88,7 @@ public class QueryFrame extends JFrame {
     private void closeConnection() {
         try {
             connection.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -143,7 +142,7 @@ public class QueryFrame extends JFrame {
         clear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                queryArea.setText("");
+                queryArea.setText(StringUtils.EMPTY);
             }
         });
         //-----------------------------------------
@@ -203,17 +202,16 @@ public class QueryFrame extends JFrame {
                             parent.createDataFrame(ins);
                         }
                         dispose();
-                    }
-                    catch (Throwable ex) {
+                    } catch (Throwable ex) {
                         JOptionPane.showMessageDialog(parent,
                                 ex.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
 
                 } else {
                     JOptionPane.showMessageDialog(QueryFrame.this,
                             "Необходимо сформировать выборку и выбрать ее в списке!",
-                            "", JOptionPane.WARNING_MESSAGE);
+                            null, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -285,12 +283,11 @@ public class QueryFrame extends JFrame {
             if (data != null) {
                 model.addInstances(data);
                 sets.setSelectedIndex(0);
-            }
-            else {
+            } else {
                 if (errorMessage != null) {
                     JOptionPane.showMessageDialog(QueryFrame.this,
                             errorMessage,
-                            "", JOptionPane.WARNING_MESSAGE);
+                            null, JOptionPane.WARNING_MESSAGE);
                 }
             }
         }

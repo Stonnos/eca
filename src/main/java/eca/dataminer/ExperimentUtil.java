@@ -4,6 +4,7 @@ import eca.core.Utils;
 
 /**
  * Data miner utils class.
+ *
  * @author Roman Batygin
  */
 public class ExperimentUtil {
@@ -11,6 +12,7 @@ public class ExperimentUtil {
     /**
      * Returns the number of individual models combination.
      * The number of combinations is <code>P = sum[t = 1..r]r!/(t!(r-t)!)</code>
+     *
      * @param r the number of individual models combination
      * @return
      */

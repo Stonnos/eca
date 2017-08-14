@@ -9,10 +9,11 @@ import weka.core.Instance;
 
 /**
  * Euclid distance function model.
+ *
  * @author Рома
  */
 public class EuclidDistance extends SquareEuclidDistance {
-    
+
     @Override
     public double distance(Instance x1, Instance x2) {
         return Math.sqrt(super.distance(x1, x2));

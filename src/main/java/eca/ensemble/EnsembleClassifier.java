@@ -11,12 +11,14 @@ import java.util.ArrayList;
 
 /**
  * Basic interface for ensemble classification models.
+ *
  * @author Рома
  */
 public interface EnsembleClassifier {
 
     /**
      * Returns the structure of ensemble model as <tt>ArrayList</tt> object.
+     *
      * @return the structure of ensemble model as <tt>ArrayList</tt> object.
      * @throws Exception
      */

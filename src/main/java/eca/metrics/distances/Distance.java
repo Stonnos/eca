@@ -9,12 +9,14 @@ import weka.core.Instance;
 
 /**
  * Distance function model.
+ *
  * @author Рома
  */
 public interface Distance extends java.io.Serializable {
 
     /**
      * Returns the value of distance between x1 and x2 instances.
+     *
      * @param x1 first instance
      * @param x2 second instance
      * @return the value of distance between x1 and x2 instances

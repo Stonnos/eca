@@ -13,8 +13,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+
 /**
  * Implements significant attributes selection based on ROC - analysis.
+ *
  * @author Рома
  */
 public class AttributesSelection {
@@ -29,6 +31,7 @@ public class AttributesSelection {
 
     /**
      * Creates <tt>AttributesSelection</tt> object.
+     *
      * @param data <tt>Instances</tt> object
      */
     public AttributesSelection(Instances data) {
@@ -45,6 +48,7 @@ public class AttributesSelection {
 
     /**
      * Returns <tt>Instances</tt> object.
+     *
      * @return <tt>Instances</tt> object
      */
     public Instances data() {
@@ -53,6 +57,7 @@ public class AttributesSelection {
 
     /**
      * Calculates all significant attributes.
+     *
      * @throws Exception
      */
     public void calculate() throws Exception {
@@ -74,6 +79,7 @@ public class AttributesSelection {
 
     /**
      * Returns the array of under ROC areas.
+     *
      * @return the array of under ROC areas
      */
     public double[][] underROCValues() {
@@ -82,6 +88,7 @@ public class AttributesSelection {
 
     /**
      * Returns the array of under ROC average areas.
+     *
      * @return the array of under ROC average areas
      */
     public double[] underROCAverageValues() {
@@ -90,6 +97,7 @@ public class AttributesSelection {
 
     /**
      * Returns <tt>true</tt> if attribute is significant.
+     *
      * @param attrIndex attribute index
      * @return <tt>true</tt> if attribute is significant
      */

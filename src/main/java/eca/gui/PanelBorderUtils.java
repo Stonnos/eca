@@ -9,15 +9,15 @@ package eca.gui;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+
 /**
- *
  * @author Рома
  */
 public class PanelBorderUtils {
-    
+
     private static final Font BORDER_FONT = new Font("Arial", 1, 14);
-    private static final Color COLOR = new Color(133,133,133);
-    
+    private static final Color COLOR = new Color(133, 133, 133);
+
     public static final TitledBorder createTitledBorder(String title) {
         TitledBorder border = new TitledBorder(title);
         border.setBorder(new EtchedBorder(COLOR, null));
@@ -26,5 +26,5 @@ public class PanelBorderUtils {
         border.setTitleJustification(TitledBorder.TOP);
         return border;
     }
-    
+
 }

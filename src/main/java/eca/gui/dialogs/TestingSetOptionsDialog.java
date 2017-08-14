@@ -18,7 +18,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- *
  * @author Рома
  */
 public class TestingSetOptionsDialog extends JDialog {

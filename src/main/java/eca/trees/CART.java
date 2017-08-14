@@ -11,6 +11,7 @@ import java.util.Enumeration;
 
 /**
  * Class for generating CART decision tree model.
+ *
  * @author Рома
  */
 public class CART extends DecisionTreeClassifier {
@@ -24,7 +25,7 @@ public class CART extends DecisionTreeClassifier {
         SplitDescriptor split = new SplitDescriptor();
         currentMeasure = Double.MAX_VALUE;
 
-        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements();) {
+        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
                 processNumericSplit(a, x, splitAlgorithm, split);

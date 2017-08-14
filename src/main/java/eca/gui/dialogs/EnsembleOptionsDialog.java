@@ -33,7 +33,6 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author Рома
  */
 public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneousClassifier> {
@@ -47,9 +46,9 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String samplingTitle = "Формирование обучающих выборок";
 
     private static final String[] samplingMethod = {"Использование исходной выборки",
-                                                    "Бутстрэп выборки",
-                                                    "Случайные подвыборки",
-                                                    "Бутстрэп выборки случайного размера"};
+            "Бутстрэп выборки",
+            "Случайные подвыборки",
+            "Бутстрэп выборки случайного размера"};
 
     private static final String clsSelectionTitle = "Выбор классификатора на каждой итерации";
     private static final String[] clsSelectionMethod = {"Случайный классификатор", "Оптимальный классификатор"};
@@ -82,7 +81,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private JRadioButton optimalCls;
 
     public EnsembleOptionsDialog(JFrame parent, String title,
-            AbstractHeterogeneousClassifier classifier, Instances data) {
+                                 AbstractHeterogeneousClassifier classifier, Instances data) {
         super(parent, title, classifier, data);
         this.data = data;
         this.setLayout(new GridBagLayout());
@@ -148,8 +147,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         Dimension dim = new Dimension(320, 265);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
         String[] items = {ClassifiersNames.ID3, ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
-            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
+                ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
+                ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
         algorithms = new JList<>(items);
         algorithms.setPreferredSize(dim);
         algorithms.setMinimumSize(dim);
@@ -394,7 +393,6 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         //-----------------------------------------------
         this.getRootPane().setDefaultButton(okButton);
     }
-
 
 
     private void createFormat() {

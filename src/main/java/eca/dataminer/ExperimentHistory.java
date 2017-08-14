@@ -5,13 +5,14 @@
  */
 package eca.dataminer;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import weka.core.Instances;
 
 import java.util.ArrayList;
 
 /**
  * Experiment unit model.
+ *
  * @author Roman93
  */
 public class ExperimentHistory implements java.io.Serializable {
@@ -22,8 +23,9 @@ public class ExperimentHistory implements java.io.Serializable {
 
     /**
      * Creates <tt>ExperimentHistory</tt> object.
+     *
      * @param experiment experiment history list
-     * @param dataSet training set object
+     * @param dataSet    training set object
      */
     public ExperimentHistory(ArrayList<ClassifierDescriptor> experiment, Instances dataSet) {
         this.experiment = experiment;
@@ -32,6 +34,7 @@ public class ExperimentHistory implements java.io.Serializable {
 
     /**
      * Returns experiment history list.
+     *
      * @return experiment history list
      */
     public ArrayList<ClassifierDescriptor> getExperiment() {
@@ -40,6 +43,7 @@ public class ExperimentHistory implements java.io.Serializable {
 
     /**
      * Sets experiment history list.
+     *
      * @param experiment experiment history list
      */
     public void setExperiment(ArrayList<ClassifierDescriptor> experiment) {
@@ -48,6 +52,7 @@ public class ExperimentHistory implements java.io.Serializable {
 
     /**
      * Returns training set object.
+     *
      * @return training set object
      */
     public Instances getDataSet() {
@@ -56,10 +61,11 @@ public class ExperimentHistory implements java.io.Serializable {
 
     /**
      * Sets training set object.
+     *
      * @param dataSet training set object
      */
     public void setDataSet(Instances dataSet) {
         this.dataSet = dataSet;
     }
-    
+
 }

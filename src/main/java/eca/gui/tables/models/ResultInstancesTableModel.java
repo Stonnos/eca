@@ -8,7 +8,6 @@ package eca.gui.tables.models;
 import weka.core.Instances;
 
 /**
- *
  * @author Roman93
  */
 public class ResultInstancesTableModel extends InstancesTableModel {

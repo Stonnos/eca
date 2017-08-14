@@ -8,11 +8,11 @@ package eca.ensemble;
 /**
  * Abstract class for generating heterogeneous classifier model.
  * Valid options are: <p>
- *
+ * <p>
  * Set individual classifiers collection  <p>
- *
+ * <p>
  * Set minimum error threshold for including classifier in ensemble
- *
+ * <p>
  * Set maximum error threshold for including classifier in ensemble
  *
  * @author Рома
@@ -23,13 +23,19 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     public static final double MAX_ERROR_THRESHOLD = 0.5;
 
-    /** Classifiers set **/
+    /**
+     * Classifiers set
+     **/
     protected ClassifiersSet set;
 
-    /** Minimum error threshold **/
+    /**
+     * Minimum error threshold
+     **/
     protected double max_error = MAX_ERROR_THRESHOLD;
 
-    /** Maximum error threshold **/
+    /**
+     * Maximum error threshold
+     **/
     protected double min_error = MIN_ERROR_THRESHOLD;
 
     protected AbstractHeterogeneousClassifier(ClassifiersSet set) {
@@ -38,6 +44,7 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Returns classifiers collection.
+     *
      * @return classifiers collection
      */
     public final ClassifiersSet getClassifiersSet() {
@@ -46,6 +53,7 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Sets classifiers collection.
+     *
      * @param set <tt>ClassifiersSet</tt> object
      */
     public void setClassifiersSet(ClassifiersSet set) {
@@ -54,9 +62,10 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Sets the value of maximum error threshold for including classifier in ensemble.
+     *
      * @param max_error the value of maximum error threshold for including classifier in ensemble
-     * @exception IllegalArgumentException if the value of maximum error is less or equal to
-     * minimum error threshold or greater than {@value MAX_ERROR_THRESHOLD}
+     * @throws IllegalArgumentException if the value of maximum error is less or equal to
+     *                                  minimum error threshold or greater than {@value MAX_ERROR_THRESHOLD}
      */
     public final void setMaxError(double max_error) {
         if (max_error <= min_error || max_error > MAX_ERROR_THRESHOLD) {
@@ -69,6 +78,7 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Returns the value of maximum error threshold for including classifier in ensemble.
+     *
      * @return the value of maximum error threshold for including classifier in ensemble
      */
     public final double getMaxError() {
@@ -77,6 +87,7 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Returns the value of minimum error threshold for including classifier in ensemble.
+     *
      * @return the value of minimum error threshold for including classifier in ensemble
      */
     public final double getMinError() {
@@ -85,9 +96,10 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
 
     /**
      * Sets the value of minimum error threshold for including classifier in ensemble.
+     *
      * @param min_error the value of minimum error threshold for including classifier in ensemble
-     * @exception IllegalArgumentException if the value of minimum error is less than
-     * {@value MIN_ERROR_THRESHOLD} or greater or equal to maximum error threshold
+     * @throws IllegalArgumentException if the value of minimum error is less than
+     *                                  {@value MIN_ERROR_THRESHOLD} or greater or equal to maximum error threshold
      */
     public void setMinError(double min_error) {
         if (min_error < MIN_ERROR_THRESHOLD || min_error >= max_error) {

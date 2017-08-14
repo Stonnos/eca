@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.core.ClassifierIndexer;
 import eca.core.TestMethod;
 import eca.core.converters.ModelConverter;
@@ -20,6 +20,7 @@ import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.tables.ExperimentTable;
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
@@ -36,7 +37,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 
 /**
- *
  * @author Roman93
  */
 public abstract class ExperimentFrame extends JFrame {
@@ -132,8 +132,10 @@ public abstract class ExperimentFrame extends JFrame {
                 str.append("Использование обучающего множества");
                 break;
             case TestMethod.CROSS_VALIDATION:
-                String s = getExperiment().getNumValidations() > 1 ? getExperiment().getNumValidations() + "*" : "";
-                str.append(s).append(getExperiment().getNumFolds()).append(" - блочная кросс-проверка на тестовой выборке");
+                String s = getExperiment().getNumValidations() > 1 ?
+                        getExperiment().getNumValidations() + "*" : StringUtils.EMPTY;
+                str.append(s).append(getExperiment().getNumFolds()).append(
+                        " - блочная кросс-проверка на тестовой выборке");
                 break;
         }
         str.append("\n\n").append("Наилучшие конфигурации классификаторов:\n");
@@ -143,7 +145,7 @@ public abstract class ExperimentFrame extends JFrame {
             AbstractClassifier cls = (AbstractClassifier) table.experimentModel().getClassifier(i);
             String[] options = cls.getOptions();
             for (int j = 0; j < options.length; j += 2) {
-                str.append(options[j]).append(" ").append(options[j + 1]).append("\n");
+                str.append(options[j]).append(StringUtils.SPACE).append(options[j + 1]).append("\n");
             }
             str.append("\n");
         }
@@ -232,7 +234,8 @@ public abstract class ExperimentFrame extends JFrame {
                         ? TestMethod.CROSS_VALIDATION : TestMethod.TRAINING_SET);
                 if (useTestingSet.isSelected()) {
                     experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                    experiment.setNumValidations(((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
+                    experiment.setNumValidations(
+                            ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
                 }
                 text.setText(buildingProgressTitle);
                 setStateForButtons(false);
@@ -316,8 +319,7 @@ public abstract class ExperimentFrame extends JFrame {
                             }
                         });
 
-                    }
-                    catch (Throwable e) {
+                    } catch (Throwable e) {
                         JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
@@ -396,8 +398,8 @@ public abstract class ExperimentFrame extends JFrame {
                         if (!isCancelled()) {
                             table.addExperiment(classifier);
                         }
+                    } catch (Exception e) {
                     }
-                    catch (Exception e) {}
 
                     if (!isCancelled()) {
                         setProgress(object.getPercent());

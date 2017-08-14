@@ -23,8 +23,8 @@ public class InfoFrame extends JFrame {
         this.setTitle(title);
         try {
             this.setIconImage(parent.getIconImage());
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
         textInfo = new JTextArea(15, 40);
         textInfo.setWrapStyleWord(true);
         textInfo.setLineWrap(true);

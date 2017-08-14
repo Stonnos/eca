@@ -3,22 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.beans;
+package eca.model;
 
 import eca.core.evaluation.Evaluation;
+
 /**
- *
+ * Classification results model.
  * @author Рома
  */
 public class ModelDescriptor implements java.io.Serializable {
-    
+
     private InputData inputData;
     private Evaluation evaluation;
     private String description;
     private int digits;
-    
+
     public ModelDescriptor(InputData inputData,
-            Evaluation evaluation, String description, int digits) {
+                           Evaluation evaluation, String description, int digits) {
         this.inputData = inputData;
         this.evaluation = evaluation;
         this.description = description;

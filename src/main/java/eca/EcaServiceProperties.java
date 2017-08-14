@@ -39,11 +39,12 @@ public class EcaServiceProperties {
     static {
         try (InputStream stream = EcaServiceProperties.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             PROPERTIES.load(stream);
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
     }
 
-    private EcaServiceProperties() {}
+    private EcaServiceProperties() {
+    }
 
     public static EcaServiceProperties getInstance() {
         if (INSTANCE == null) {

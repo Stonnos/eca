@@ -11,6 +11,7 @@ import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- *
  * @author Рома
  */
 public class DatabaseConnectionDialog extends JDialog {
@@ -174,7 +174,7 @@ public class DatabaseConnectionDialog extends JDialog {
     public void setOptions(ConnectionDescriptor connection) {
         hostField.setText(connection.getHost());
         portField.setEnabled(!connection.isEmbedded());
-        portField.setText(connection.isEmbedded() ? "" : String.valueOf(connection.getPort()));
+        portField.setText(connection.isEmbedded() ? StringUtils.EMPTY : String.valueOf(connection.getPort()));
         dataBaseField.setText(connection.getDataBaseName());
         userField.setText(connection.getLogin());
         passwordField.setText(connection.getPassword());

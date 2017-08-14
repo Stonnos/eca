@@ -6,7 +6,6 @@
 package eca.gui.enums;
 
 /**
- *
  * @author Рома
  */
 public class EnsemblesNames {

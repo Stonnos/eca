@@ -11,15 +11,19 @@ import java.util.ArrayList;
 
 /**
  * Implements weighted voting method.
+ *
  * @author Рома
  */
 public class WeightedVoting extends VotingMethod {
 
-    /** Weights list **/
+    /**
+     * Weights list
+     **/
     private ArrayList<Double> weights;
 
     /**
      * Creates <tt>MajorityVoting</tt> object.
+     *
      * @param aggregator <tt>Aggregator</tt>
      */
     public WeightedVoting(Aggregator aggregator, int size) {
@@ -29,6 +33,7 @@ public class WeightedVoting extends VotingMethod {
 
     /**
      * Sets the weight value.
+     *
      * @param weight the weight value
      */
     public void setWeight(double weight) {
@@ -37,6 +42,7 @@ public class WeightedVoting extends VotingMethod {
 
     /**
      * Return the weight value by index.
+     *
      * @param i index
      * @return the weight value
      */
@@ -46,17 +52,18 @@ public class WeightedVoting extends VotingMethod {
 
     /**
      * Returns the weights list size.
+     *
      * @return the weights list size
      */
     public int size() {
         return weights.size();
     }
-    
+
     @Override
     public double classifyInstance(Instance obj) throws Exception {
         return aggregator().aggregate(obj, weights);
     }
-    
+
     @Override
     public double[] distributionForInstance(Instance obj) throws Exception {
         return aggregator().distributionForInstance(obj, weights);
@@ -66,5 +73,5 @@ public class WeightedVoting extends VotingMethod {
     public String getDescription() {
         return "Метод взвешенного голосования";
     }
-    
+
 }

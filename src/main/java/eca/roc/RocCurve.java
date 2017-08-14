@@ -8,16 +8,19 @@ package eca.roc;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.evaluation.ThresholdCurve;
 import weka.core.Instances;
+
 /**
  * Class for providing ROC - curve results.
+ *
  * @author Рома
  */
 public class RocCurve {
-    
+
     private final Evaluation evaluation;
 
     /**
      * Creates <tt>ROCCurve</tt> object.
+     *
      * @param evaluation <tt>Evaluation</tt> object
      */
     public RocCurve(Evaluation evaluation) {
@@ -26,6 +29,7 @@ public class RocCurve {
 
     /**
      * Returns <tt>Evaluation</tt> object.
+     *
      * @return <tt>Evaluation</tt> object
      */
     public Evaluation evaluation() {
@@ -34,6 +38,7 @@ public class RocCurve {
 
     /**
      * Returns training data associated with <tt>Evaluation</tt> object.
+     *
      * @return training data associated with <tt>Evaluation</tt> object
      */
     public Instances data() {
@@ -42,6 +47,7 @@ public class RocCurve {
 
     /**
      * Returns ROC - curve results for given class.
+     *
      * @param classIndex class index
      * @return ROC - curve results for given class
      */
@@ -49,5 +55,5 @@ public class RocCurve {
         ThresholdCurve curve = new ThresholdCurve();
         return curve.getCurve(evaluation.predictions(), classIndex);
     }
-     
+
 }

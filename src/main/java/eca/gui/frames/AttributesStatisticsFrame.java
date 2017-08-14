@@ -45,7 +45,7 @@ public class AttributesStatisticsFrame extends JFrame {
         this.statisticsTable.setAutoResizeOff(false);
         this.setTitle("Статистика по атрибутам");
         this.setLayout(new GridBagLayout());
-        this.setSize(475,450);
+        this.setSize(475, 450);
         this.setIconImage(parent.getIconImage());
 
         JPanel dataInfoPanel = new JPanel(new GridBagLayout());
@@ -78,8 +78,7 @@ public class AttributesStatisticsFrame extends JFrame {
                     if (a.isNominal()) {
                         attributesStatisticsTableModels[i] = new NominalAttributeTableModel(a,
                                 attributeStatistics);
-                    }
-                    else {
+                    } else {
                         attributesStatisticsTableModels[i] = new NumericAttributeTableModel(a,
                                 attributeStatistics);
                     }

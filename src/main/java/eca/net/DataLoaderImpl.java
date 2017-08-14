@@ -17,28 +17,36 @@ import java.util.function.BiPredicate;
 
 /**
  * Class for loading data from network using http and ftp protocols.
+ *
  * @author Roman93
  */
 public class DataLoaderImpl implements DataLoader {
 
-    /** Available protocols **/
+    /**
+     * Available protocols
+     **/
     private static final String[] PROTOCOLS = {"http", "ftp"};
 
-    /** Available files extensions **/
+    /**
+     * Available files extensions
+     **/
     private static final String[] FILE_EXTENSIONS = {".xls", ".xlsx", ".csv", ".arff"};
 
-    /** Source url **/
+    /**
+     * Source url
+     **/
     private URL url;
 
     /**
      * Creates object with given <tt>URL</tt>
+     *
      * @param url source url
      * @throws Exception if given url contains incorrect protocol or file extension
      */
     public DataLoaderImpl(URL url) throws Exception {
         this.setURL(url);
     }
-    
+
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
@@ -47,8 +55,7 @@ public class DataLoaderImpl implements DataLoader {
             XLSLoader loader = new XLSLoader();
             loader.setInputStream(connection.getInputStream());
             data = loader.getDataSet();
-        }
-        else {
+        } else {
             AbstractFileLoader saver = url.getFile().endsWith(FILE_EXTENSIONS[2])
                     ? new CSVLoader() : new ArffLoader();
             saver.setSource(connection.getInputStream());
@@ -59,6 +66,7 @@ public class DataLoaderImpl implements DataLoader {
 
     /**
      * Sets source url.
+     *
      * @param url source url
      * @throws Exception if given url contains incorrect protocol or file extension
      */

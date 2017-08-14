@@ -14,6 +14,7 @@ import java.util.Random;
 
 /**
  * Implements modified heterogeneous ensemble algorithm.
+ *
  * @author Рома
  */
 public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
@@ -22,6 +23,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     /**
      * Creates <tt>ModifiedHeterogeneousClassifier</tt> with given classifiers set.
+     *
      * @param set classifiers set
      */
     public ModifiedHeterogeneousClassifier(ClassifiersSet set) {
@@ -60,7 +62,8 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances subSample = sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
+            Instances subSample =
+                    sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
 
             Classifier model = getUseRandomClassifier() ? set.buildRandomClassifier(subSample)
                     : set.builtOptimalClassifier(subSample);

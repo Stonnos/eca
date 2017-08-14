@@ -17,12 +17,14 @@ import weka.core.Instances;
 
 /**
  * Class for creation default individual classifiers set,
+ *
  * @author Roman93
  */
 public class ClassifiersSetBuilder {
 
     /**
      * Creates <tt>ClassifiersSet</tt> object.
+     *
      * @param data <tt>Instances</tt> object (training data)
      * @return <tt>ClassifiersSet</tt> object
      */

@@ -16,29 +16,41 @@ import java.util.Random;
 
 /**
  * Class for generating training data.
+ *
  * @author Рома
  */
 public class Sampler implements java.io.Serializable {
 
-    /** Initial sample type **/
+    /**
+     * Initial sample type
+     **/
     public static final int INITIAL = 0;
 
-    /** Bootstrap sample type **/
+    /**
+     * Bootstrap sample type
+     **/
     public static final int BAGGING = 1;
 
-    /** Random sub sample type **/
+    /**
+     * Random sub sample type
+     **/
     public static final int RANDOM = 2;
 
-    /** Random bootstrap sub sample type **/
+    /**
+     * Random bootstrap sub sample type
+     **/
     public static final int RANDOM_BAGGING = 3;
 
-    /** Sampling type **/
+    /**
+     * Sampling type
+     **/
     private int sampling = INITIAL;
 
     private Random random = new Random();
 
     /**
      * Returns sampling method type.
+     *
      * @return sampling method type
      */
     public int getSampling() {
@@ -47,34 +59,46 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Returns sampling method description.
+     *
      * @return sampling method description
      */
     public String getDescription() {
         String info = null;
         switch (sampling) {
-            case INITIAL: info = "Исходное обучающее множество"; break;
-            case BAGGING: info = "Бутстрэп выборки"; break;
-            case RANDOM: info = "Случайные подвыборки"; break;
-            case RANDOM_BAGGING: info = "Бутстрэп выборки случайного размера"; break;
+            case INITIAL:
+                info = "Исходное обучающее множество";
+                break;
+            case BAGGING:
+                info = "Бутстрэп выборки";
+                break;
+            case RANDOM:
+                info = "Случайные подвыборки";
+                break;
+            case RANDOM_BAGGING:
+                info = "Бутстрэп выборки случайного размера";
+                break;
         }
         return info;
     }
 
     /**
      * Sets sampling method type.
+     *
      * @param sampling sampling method type
-     * @exception IllegalArgumentException if the specified sampling type
-     * is invalid
+     * @throws IllegalArgumentException if the specified sampling type
+     *                                  is invalid
      */
     public void setSampling(int sampling) {
         if (sampling != INITIAL && sampling != BAGGING
-            && sampling != RANDOM && sampling != RANDOM_BAGGING)
+                && sampling != RANDOM && sampling != RANDOM_BAGGING) {
             throw new IllegalArgumentException("Wrong sampling value!");
+        }
         this.sampling = sampling;
     }
 
     /**
      * Returns <tt>Random</tt> object.
+     *
      * @return <tt>Random</tt> object
      */
     public Random getRandom() {
@@ -83,6 +107,7 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Sets <tt>Random</tt> object.
+     *
      * @param random <tt>Random</tt> object
      */
     public void setRandom(Random random) {
@@ -91,16 +116,25 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Generates training sub sample based on sampling type.
+     *
      * @param data <tt>Instances</tt> object
      * @return training sub sample based on sampling type
      */
     public Instances instances(Instances data) {
         Instances sample = null;
         switch (sampling) {
-            case INITIAL: sample = initial(data); break;
-            case BAGGING: sample = bootstrap(data); break;
-            case RANDOM: sample = random(data); break;
-            case RANDOM_BAGGING: sample = createBag(data, size(data)); break;
+            case INITIAL:
+                sample = initial(data);
+                break;
+            case BAGGING:
+                sample = bootstrap(data);
+                break;
+            case RANDOM:
+                sample = random(data);
+                break;
+            case RANDOM_BAGGING:
+                sample = createBag(data, size(data));
+                break;
         }
         return sample;
     }
@@ -108,23 +142,33 @@ public class Sampler implements java.io.Serializable {
     /**
      * Generates training sub sample with <tt>K</tt> input attributes
      * based on sampling type.
-     * @param data <tt>Instances</tt> object
+     *
+     * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
      * @return
      */
     public Instances instances(Instances data, int numAttr) {
         Instances sample = null;
         switch (sampling) {
-            case INITIAL: sample = initial(data, numAttr); break;
-            case BAGGING: sample = bootstrap(data, numAttr, data.numInstances()); break;
-            case RANDOM: sample = random(data, numAttr); break;
-            case RANDOM_BAGGING: sample = bootstrap(data, numAttr, size(data)); break;
+            case INITIAL:
+                sample = initial(data, numAttr);
+                break;
+            case BAGGING:
+                sample = bootstrap(data, numAttr, data.numInstances());
+                break;
+            case RANDOM:
+                sample = random(data, numAttr);
+                break;
+            case RANDOM_BAGGING:
+                sample = bootstrap(data, numAttr, size(data));
+                break;
         }
         return sample;
     }
 
     /**
      * Returns initial training set.
+     *
      * @param data <tt>Instances</tt> object
      * @return initial training set
      */
@@ -134,6 +178,7 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Returns bootstrap sample based on training set.
+     *
      * @param data <tt>Instances</tt> object
      * @return bootstrap sample based on training set
      */
@@ -144,6 +189,7 @@ public class Sampler implements java.io.Serializable {
     /**
      * Generates sub sample of random size uniformly distributed in interval [1, N],
      * where N is training set size.
+     *
      * @param data <tt>Instances</tt> object
      * @return sub sample of random size
      */
@@ -153,7 +199,8 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Generates initial sub sample with K random attributes.
-     * @param data <tt>Instances</tt> object
+     *
+     * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
      * @return
      */
@@ -169,9 +216,10 @@ public class Sampler implements java.io.Serializable {
 
     /**
      * Generates bootstrap sample with K random attributes and given size.
-     * @param data <tt>Instances</tt> object
+     *
+     * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
-     * @param size bootstrap sample size
+     * @param size    bootstrap sample size
      * @return bootstrap sample with K random attributes and given size
      */
     public Instances bootstrap(Instances data, int numAttr, int size) {
@@ -187,7 +235,8 @@ public class Sampler implements java.io.Serializable {
     /**
      * Generates sub sample with K random attributes and random size uniformly
      * distributed in interval [1, N], where N is training set size.
-     * @param data <tt>Instances</tt> object
+     *
+     * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
      * @return sub sample with K random attributes and random size
      */
@@ -213,32 +262,31 @@ public class Sampler implements java.io.Serializable {
             int i = random.nextInt(data.numAttributes());
             Attribute a = data.attribute(i);
             if (i != data.classIndex() && !attr.contains(a)) {
-                attr.add((Attribute)a.copy());
+                attr.add((Attribute) a.copy());
                 numAttr--;
             }
         }
-        attr.add((Attribute)data.classAttribute().copy());
+        attr.add((Attribute) data.classAttribute().copy());
         return attr;
     }
-    
+
     private int size(Instances data) {
         return random.nextInt(data.numInstances()) + 1;
     }
-    
+
     private void addInstance(Instances data, Instances sample, int i) {
         Instance obj = new DenseInstance(sample.numAttributes());
         for (int j = 0; j < sample.numAttributes(); j++) {
             Attribute a = sample.attribute(j);
             if (a.isNumeric()) {
                 obj.setValue(a, data.instance(i).value(data.attribute(a.name())));
-            }
-            else {
+            } else {
                 obj.setValue(a, data.instance(i).stringValue(data.attribute(a.name())));
             }
         }
         sample.add(obj);
     }
-    
+
     private Instances createBag(Instances data, int size) {
         Instances bag = new Instances(data, size);
         for (int j = 0; j < size; j++) {
@@ -246,7 +294,7 @@ public class Sampler implements java.io.Serializable {
         }
         return bag;
     }
-    
+
     private Instances createRandom(Instances data, int size) {
         Instances sample = new Instances(data, size);
         HashSet<Integer> index = new HashSet<>();
@@ -259,5 +307,5 @@ public class Sampler implements java.io.Serializable {
         }
         return sample;
     }
-        
+
 }

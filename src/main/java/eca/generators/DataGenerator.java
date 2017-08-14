@@ -10,6 +10,7 @@ public interface DataGenerator {
 
     /**
      * Generate simulated data.
+     *
      * @return <tt>Instances</tt> object.
      */
     Instances generate();

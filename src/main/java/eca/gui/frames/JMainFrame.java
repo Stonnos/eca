@@ -8,9 +8,9 @@ package eca.gui.frames;
 import eca.ApplicationProperties;
 import eca.EcaServiceProperties;
 import eca.Reference;
-import eca.beans.ClassifierDescriptor;
-import eca.beans.InputData;
-import eca.beans.ModelDescriptor;
+import eca.model.ClassifierDescriptor;
+import eca.model.InputData;
+import eca.model.ModelDescriptor;
 import eca.client.RestClient;
 import eca.client.RestClientImpl;
 import eca.core.TestMethod;
@@ -31,7 +31,6 @@ import eca.ensemble.ModifiedHeterogeneousClassifier;
 import eca.ensemble.RandomForests;
 import eca.ensemble.StackingClassifier;
 import eca.gui.ExecutorService;
-import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataBaseConnectionAction;
@@ -86,7 +85,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -99,7 +97,6 @@ import java.util.Locale;
 import java.util.Random;
 
 /**
- *
  * @author Рома
  */
 public class JMainFrame extends JFrame {
@@ -109,13 +106,13 @@ public class JMainFrame extends JFrame {
     private static final EcaServiceProperties ECA_SERVICE_PROPERTIES = EcaServiceProperties.getInstance();
 
     private static final Color frameColor = new Color(198, 226, 255);
-    
+
     private static final String ensembleBuildingProgressTitle = "Пожалуйста подождите, идет построение ансамбля...";
 
     private static final String networkBuildingProgressTitle = "Пожалуйста подождите, идет обучение нейронной сети...";
-    
+
     private final JDesktopPane panels = new JDesktopPane();
-    
+
     private JMenu algorithmsMenu;
 
     private JMenu dataMinerMenu;
@@ -123,7 +120,7 @@ public class JMainFrame extends JFrame {
     private JMenuItem saveFileMenu;
 
     private JMenuItem attrStatisticsMenu;
-    
+
     private JMenu windowsMenu;
 
     private static final double widthCoefficient = 0.8;
@@ -131,16 +128,16 @@ public class JMainFrame extends JFrame {
     private static final double heightCoefficient = 0.9;
 
     private ResultsHistory resultsHistory = new ResultsHistory();
-    
+
     private int maximumFractionDigits;
-    
+
     private boolean isStarted;
-    
+
     private final TestingSetOptionsDialog testingSetFrame
             = new TestingSetOptionsDialog(this);
 
     private ResultHistoryFrame resultHistoryFrame;
-    
+
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
@@ -159,12 +156,13 @@ public class JMainFrame extends JFrame {
         try {
             this.setTitle(APPLICATION_PROPERTIES.getTitle());
             this.maximumFractionDigits = APPLICATION_PROPERTIES.getMaximumFractionDigits();
-            this.setIconImage(ImageIO.read(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl())));
+            this.setIconImage(
+                    ImageIO.read(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl())));
             ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
         } catch (Exception e) {
         }
     }
-    
+
     private void closeWindow() {
         if (isStarted) {
             int result = JOptionPane.showConfirmDialog(JMainFrame.this,
@@ -179,7 +177,7 @@ public class JMainFrame extends JFrame {
             System.exit(0);
         }
     }
-    
+
     private void createWindowListener() {
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -193,32 +191,32 @@ public class JMainFrame extends JFrame {
      *
      */
     private class DataInternalFrame extends JInternalFrame {
-        
+
         private static final String UPPER_TITLE = "Информация о данных";
         private static final String DATA_TITLE = "Таблица с данными";
         private static final String ATTR_TITLE = "Выбранные атрибуты";
         private static final String CLASS_TITLE = "Выбранный класс";
-        
+
         private final Instances data;
-        
+
         private JPanel upperPanel;
         private JPanel lowerPanel;
         private JTextField relationName;
         private JTextField numInstances;
         private JTextField numAttributes;
-        
+
         private JScrollPane dataScrollPane;
         private JScrollPane attrScrollPane;
         private JPanel attrPanel;
-        
+
         private JComboBox<String> classBox;
         private InstancesTable instanceTable;
         private AttributesTable attributesTable;
         private JButton selectButton;
         private JButton resetButton;
-        
+
         private JMenuItem menu;
-        
+
         public DataInternalFrame(Instances data, JMenuItem menu) throws Exception {
             this.setLayout(new GridBagLayout());
             this.makeUpperPanel();
@@ -234,23 +232,23 @@ public class JMainFrame extends JFrame {
             this.setMaximizable(true);
             this.pack();
         }
-        
+
         public final void setMenu(JMenuItem menu) {
             this.menu = menu;
         }
-        
+
         public final JMenuItem getMenu() {
             return menu;
         }
-        
+
         public Instances getData() throws Exception {
             return attributesTable.createData();
         }
-        
+
         public void check() throws Exception {
             attributesTable.check();
         }
-        
+
         public final void setFrameColor(Color color) {
             this.setBackground(color);
             upperPanel.setBackground(color);
@@ -259,7 +257,7 @@ public class JMainFrame extends JFrame {
             dataScrollPane.setBackground(color);
             attrScrollPane.setBackground(color);
         }
-        
+
         private void createPopMenu() {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem("Изменение названия данных");
@@ -296,9 +294,9 @@ public class JMainFrame extends JFrame {
             });
             //-----------------------------------
             saveMenu.addActionListener(new ActionListener() {
-                
+
                 SaveDataFileChooser fileChooser;
-                
+
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     try {
@@ -326,13 +324,13 @@ public class JMainFrame extends JFrame {
             popMenu.add(saveMenu);
             this.setComponentPopupMenu(popMenu);
         }
-        
+
         private void setRelationInfo() {
             relationName.setText(data.relationName());
             numInstances.setText(String.valueOf(data.numInstances()));
             numAttributes.setText(String.valueOf(data.numAttributes()));
         }
-        
+
         private void makeUpperPanel() {
             upperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             upperPanel.setBorder(PanelBorderUtils.createTitledBorder(UPPER_TITLE));
@@ -358,7 +356,7 @@ public class JMainFrame extends JFrame {
                     new Insets(5, 0, 5, 0), 0, 0));
             //----------------------------------------------
         }
-        
+
         private void makeLowerPanel() {
             lowerPanel = new JPanel(new GridBagLayout());
             //--------------------------------------------
@@ -379,7 +377,7 @@ public class JMainFrame extends JFrame {
             this.add(lowerPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         }
-        
+
         private void makeAttrPanel() {
             attrPanel = new JPanel(new GridBagLayout());
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
@@ -432,7 +430,7 @@ public class JMainFrame extends JFrame {
                     GridBagConstraints.WEST, GridBagConstraints.NONE,
                     new Insets(0, 0, 2, 0), 0, 0));
         }
-        
+
         private void convertDataToTables() {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
@@ -445,28 +443,28 @@ public class JMainFrame extends JFrame {
             attrScrollPane.setViewportView(attributesTable);
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());
         }
-        
+
     } //End of class DataInternalFrame
 
     /**
      *
      */
     private class ModelBuilder implements CallbackAction {
-        
+
         Classifier model;
         Instances data;
         Evaluation evaluation;
-        
+
         ModelBuilder(Classifier model, Instances data) {
             this.model = model;
             this.data = data;
         }
-        
+
         @Override
         public void apply() throws Exception {
             evaluation = createEvaluation(model, data);
         }
-        
+
         public Evaluation evaluation() {
             return evaluation;
         }
@@ -505,10 +503,10 @@ public class JMainFrame extends JFrame {
         private ArrayList<ResultsFrameBase> resultsFrameBases = new ArrayList<>();
 
         public void createResultFrame(String title,
-                               Classifier classifier,
-                               Instances data,
-                               Evaluation e,
-                               int digits) throws Exception {
+                                      Classifier classifier,
+                                      Instances data,
+                                      Evaluation e,
+                                      int digits) throws Exception {
             ResultsFrameBase res = new ResultsFrameBase(JMainFrame.this,
                     title, classifier, data, e,
                     digits);
@@ -567,7 +565,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void apply() {
                 JOptionPane.showMessageDialog(JMainFrame.this,
-                       executorDialog.getErrorMessageText(), "", JOptionPane.WARNING_MESSAGE);
+                        executorDialog.getErrorMessageText(), null, JOptionPane.WARNING_MESSAGE);
             }
         });
     }
@@ -600,11 +598,11 @@ public class JMainFrame extends JFrame {
     private DataInternalFrame selectedPanel() {
         return (DataInternalFrame) panels.getSelectedFrame();
     }
-    
+
     private Instances data() throws Exception {
         return selectedPanel().getData();
     }
-    
+
     private void makeGUI() {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize((int) (widthCoefficient * dim.width), (int) (heightCoefficient * dim.height));
@@ -612,12 +610,12 @@ public class JMainFrame extends JFrame {
         panels.setBackground(Color.GRAY);
         this.add(panels);
     }
-    
+
     public void createDataFrame(Instances data) throws Exception {
         final DataInternalFrame frame = new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
 
         frame.addInternalFrameListener(new InternalFrameAdapter() {
-            
+
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
                 windowsMenu.remove(frame.getMenu());
@@ -628,12 +626,12 @@ public class JMainFrame extends JFrame {
                     attrStatisticsMenu.setEnabled(false);
                 }
             }
-            
+
             @Override
             public void internalFrameActivated(InternalFrameEvent e) {
                 frame.getMenu().setSelected(true);
             }
-            
+
             @Override
             public void internalFrameDeactivated(InternalFrameEvent e) {
                 frame.getMenu().setSelected(false);
@@ -660,7 +658,7 @@ public class JMainFrame extends JFrame {
         windowsMenu.add(frame.getMenu());
         isStarted = true;
     }
-    
+
     private void makeMenu() {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu("Файл");
@@ -682,9 +680,9 @@ public class JMainFrame extends JFrame {
         openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
         //-------------------------------
         openFileMenu.addActionListener(new ActionListener() {
-            
+
             OpenDataFileChooser fileChooser;
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -757,9 +755,9 @@ public class JMainFrame extends JFrame {
         fileMenu.add(saveFileMenu);
         //-------------------------------------------------
         saveFileMenu.addActionListener(new ActionListener() {
-            
+
             SaveDataFileChooser fileChooser;
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -809,7 +807,7 @@ public class JMainFrame extends JFrame {
                     } catch (Throwable e) {
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
                 conn.dispose();
@@ -821,7 +819,7 @@ public class JMainFrame extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 String path = (String) JOptionPane.showInputDialog(JMainFrame.this,
@@ -857,9 +855,9 @@ public class JMainFrame extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(new ActionListener() {
-            
+
             OpenModelChooser fileChooser;
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -916,8 +914,7 @@ public class JMainFrame extends JFrame {
                             }
                         });
 
-                    }
-                    catch (Throwable ex) {
+                    } catch (Throwable ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
@@ -943,9 +940,9 @@ public class JMainFrame extends JFrame {
         reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
         //-------------------------------------------------
         aboutProgrammMenu.addActionListener(new ActionListener() {
-            
+
             AboutProgramFrame frame;
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (frame == null) {
@@ -956,9 +953,9 @@ public class JMainFrame extends JFrame {
         });
         //-------------------------------------------------
         reference.addActionListener(new ActionListener() {
-            
+
             Reference ref;
-            
+
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
@@ -978,7 +975,8 @@ public class JMainFrame extends JFrame {
         //---------------------------------------------------
         JMenuItem aNeuralMenu = new JMenuItem("Автоматическое построение: нейронные сети");
         JMenuItem aHeteroEnsMenu = new JMenuItem("Автоматическое построение: неоднородный ансамблевый алгоритм");
-        JMenuItem aRndSubspMenu = new JMenuItem("Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм");
+        JMenuItem aRndSubspMenu =
+                new JMenuItem("Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм");
         JMenuItem aAdaBoostMenu = new JMenuItem("Автоматическое построение: алгоритм AdaBoost");
         JMenuItem aStackingMenu = new JMenuItem("Автоматическое построение: алгоритм Stacking");
         //--------------------------------------------------
@@ -988,17 +986,18 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         ActivationFunction[] func = {new LogisticFunction(),
-                            new TanhFunction(), new SineFunction(), new ExponentialFunction(),
-                            new LogisticFunction(2)};
+                                new TanhFunction(), new SineFunction(), new ExponentialFunction(),
+                                new LogisticFunction(2)};
                         AutomatedNeuralNetwork net
                                 = new AutomatedNeuralNetwork(100, func, data(), new NeuralNetwork(data()));
-                        ExperimentFrame exp = new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
+                        ExperimentFrame exp =
+                                new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         exp.setVisible(true);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1009,12 +1008,13 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        createEnsembleExperiment(new ModifiedHeterogeneousClassifier(null), aRndSubspMenu.getText(), data());
+                        createEnsembleExperiment(new ModifiedHeterogeneousClassifier(null), aRndSubspMenu.getText(),
+                                data());
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1030,7 +1030,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1046,7 +1046,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1062,7 +1062,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1139,7 +1139,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
 
                 }
@@ -1163,7 +1163,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1183,7 +1183,7 @@ public class JMainFrame extends JFrame {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1234,14 +1234,14 @@ public class JMainFrame extends JFrame {
                         Instances data = data();
                         RandomForestsOptionDialog frame
                                 = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNames.RANDOM_FORESTS,
-                                        new RandomForests(data), data);
+                                new RandomForests(data), data);
                         frame.showDialog();
                         computeResults(frame, ensembleBuildingProgressTitle);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1256,13 +1256,13 @@ public class JMainFrame extends JFrame {
                     try {
                         StackingOptionsDialog frame
                                 = new StackingOptionsDialog(JMainFrame.this, EnsemblesNames.STACKING,
-                                        new StackingClassifier(), data());
+                                new StackingClassifier(), data());
                         createAndShowLoaderFrame(frame);
                     } catch (Throwable e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1287,12 +1287,11 @@ public class JMainFrame extends JFrame {
                         AttributesStatisticsFrame frame =
                                 new AttributesStatisticsFrame(data(), JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
-                    }
-                    catch (Throwable ex) {
+                    } catch (Throwable ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 ex.getMessage(),
-                                "", JOptionPane.WARNING_MESSAGE);
+                                null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1301,7 +1300,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         this.setJMenuBar(menu);
     }
-    
+
     private void computeResults(BaseOptionsDialog frame, String msg) throws Exception {
         if (frame.dialogResult()) {
 
@@ -1312,7 +1311,7 @@ public class JMainFrame extends JFrame {
                 } else {
 
                     IterativeBuilder itCls = itClassifier((Iterable) frame.classifier(),
-                        frame.data());
+                            frame.data());
 
                     ClassifierBuilderDialog progress
                             = new ClassifierBuilderDialog(JMainFrame.this, itCls, msg);
@@ -1321,7 +1320,7 @@ public class JMainFrame extends JFrame {
                         @Override
                         public void apply() throws Exception {
                             resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
-                                frame.data(), itCls.evaluation(), maximumFractionDigits);
+                                    frame.data(), itCls.evaluation(), maximumFractionDigits);
                         }
                     });
                 }
@@ -1329,12 +1328,12 @@ public class JMainFrame extends JFrame {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(JMainFrame.this,
                         e.getMessage(),
-                        "", JOptionPane.WARNING_MESSAGE);
+                        null, JOptionPane.WARNING_MESSAGE);
             }
 
         }
     }
-    
+
     private boolean dataValidated() {
         try {
             selectedPanel().check();
@@ -1342,32 +1341,32 @@ public class JMainFrame extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
-                    "", JOptionPane.WARNING_MESSAGE);
+                    null, JOptionPane.WARNING_MESSAGE);
             return false;
         }
         return true;
     }
-    
+
     private void createTreeOptionDialog(String title, DecisionTreeClassifier tree) {
         try {
             DecisionTreeOptionsDialog frame
                     = new DecisionTreeOptionsDialog(JMainFrame.this, title,
-                            tree, data());
+                    tree, data());
             createAndShowLoaderFrame(frame);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
-                    "", JOptionPane.WARNING_MESSAGE);
+                    null, JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private void createEnsembleOptionDialog(String title, AbstractHeterogeneousClassifier ens,
-            boolean sample) {
+                                            boolean sample) {
         try {
             EnsembleOptionsDialog frame
                     = new EnsembleOptionsDialog(JMainFrame.this, title, ens,
-                            data());
+                    data());
             frame.setSampleEnabled(sample);
             frame.showDialog();
             computeResults(frame, ensembleBuildingProgressTitle);
@@ -1375,10 +1374,10 @@ public class JMainFrame extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
-                    "", JOptionPane.WARNING_MESSAGE);
+                    null, JOptionPane.WARNING_MESSAGE);
         }
     }
-    
+
     private IterativeBuilder itClassifier(Iterable model, Instances data)
             throws Exception {
         IterativeBuilder itCls = null;
@@ -1386,14 +1385,14 @@ public class JMainFrame extends JFrame {
             case TestMethod.TRAINING_SET:
                 itCls = model.getIterativeBuilder(data);
                 break;
-            
+
             case TestMethod.CROSS_VALIDATION:
                 itCls = new CVIterativeBuilder(model, data, testingSetFrame.numFolds(), testingSetFrame.numValids());
                 break;
         }
         return itCls;
     }
-    
+
     private Evaluation createEvaluation(Classifier model, Instances data) throws Exception {
         Evaluation e = new Evaluation(data);
         //---------------------------------------
@@ -1402,7 +1401,7 @@ public class JMainFrame extends JFrame {
                 model.buildClassifier(data);
                 e.evaluateModel(model, data);
                 break;
-            
+
             case TestMethod.CROSS_VALIDATION:
                 e.kCrossValidateModel(AbstractClassifier.makeCopy(model), data,
                         testingSetFrame.numFolds(), testingSetFrame.numValids(), new Random());
@@ -1412,23 +1411,23 @@ public class JMainFrame extends JFrame {
         //---------------------------------------
         return e;
     }
-    
+
     private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,
-            String title, Instances data) throws Exception {
+                                          String title, Instances data) throws Exception {
         classifier.setClassifiersSet(ClassifiersSetBuilder.createClassifiersSet(data));
         AutomatedHeterogeneousEnsemble exp = new AutomatedHeterogeneousEnsemble(classifier, data);
         AutomatedHeterogeneousEnsembleFrame frame
                 = new AutomatedHeterogeneousEnsembleFrame(title, exp, this, maximumFractionDigits);
         frame.setVisible(true);
     }
-    
+
     private void createStackingExperiment(StackingClassifier classifier,
-            String title, Instances data) throws Exception {
+                                          String title, Instances data) throws Exception {
         classifier.setClassifiers(ClassifiersSetBuilder.createClassifiersSet(data));
         AutomatedStacking exp = new AutomatedStacking(classifier, data);
         AutomatedStackingFrame frame
                 = new AutomatedStackingFrame(title, exp, this, maximumFractionDigits);
         frame.setVisible(true);
     }
-    
+
 } //End of class JMainFrame

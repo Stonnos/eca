@@ -27,7 +27,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- *
  * @author Рома
  */
 
@@ -149,8 +148,7 @@ public class AttributesTable extends JDataTableBase {
                         if (isDate(j)) {
                             try {
                                 DateFormat.SIMPLE_DATE_FORMAT.parse(str);
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 throw new Exception("Формат даты для атрибута  '"
                                         + a.name() + "'\nдолжен быть следующим: "
                                         + DateFormat.DATE_FORMAT);
@@ -197,7 +195,7 @@ public class AttributesTable extends JDataTableBase {
             if (isSelected(i)) {
                 if (isNumeric(a.index())) {
                     attr.add(new Attribute(a.name()));
-                } else if (isDate(a.index()))  {
+                } else if (isDate(a.index())) {
                     attr.add(new Attribute(a.name(), DateFormat.DATE_FORMAT));
                 } else {
                     attr.add(makeNominalAttribute(a));
@@ -218,7 +216,7 @@ public class AttributesTable extends JDataTableBase {
         //if (values.size() < 2) {
         //    throw new Exception("Категориальный атрибут '" + a.name()
         //            + "' должен\nиметь не менее двух значений!");
-      //  }
+        //  }
         return new Attribute(a.name(), values);
     }
 
@@ -265,7 +263,7 @@ public class AttributesTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());
                 this.setBackground(table.getSelectionBackground());
@@ -294,7 +292,7 @@ public class AttributesTable extends JDataTableBase {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             Component c = super.getTableCellEditorComponent(table, value, isSelected, row, column);
             c.setFont(new Font(AttributesTable.this.getFont().getName(), Font.BOLD,
                     AttributesTable.this.getFont().getSize()));

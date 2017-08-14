@@ -31,7 +31,6 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author Рома
  */
 public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
@@ -55,14 +54,14 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     private static final String coefficientTitle = "Значение коэффициента:";
 
     private static final String[] activationsFuctions = {"Логистическая",
-                                                        "Гиперболический тангенс",
-                                                        "Тригонометрический синус",
-                                                        "Экспоненциальная"};
+            "Гиперболический тангенс",
+            "Тригонометрический синус",
+            "Экспоненциальная"};
 
     private static final String[] activationFuctionsToolTipsMessages = {"f(S)=1/(1+exp(-a*S))",
-                                                                        "f(S)=(exp(a*S)-exp(-a*S))/(exp(a*S)+exp(-a*S))",
-                                                                        "f(S)=sin(a*S)",
-                                                                        "f(S)=exp(-S^2/a^2)"};
+            "f(S)=(exp(a*S)-exp(-a*S))/(exp(a*S)+exp(-a*S))",
+            "f(S)=sin(a*S)",
+            "f(S)=exp(-S^2/a^2)"};
 
     private static final String errorTitle = "Допустимая ошибка:";
 

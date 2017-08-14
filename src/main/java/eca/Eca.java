@@ -1,10 +1,12 @@
 package eca;
 
 import eca.gui.frames.JMainFrame;
+
 import java.awt.EventQueue;
 
 /**
  * Main class.
+ *
  * @author Roman Batygin
  */
 public class Eca {

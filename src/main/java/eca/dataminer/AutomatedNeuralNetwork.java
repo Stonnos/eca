@@ -5,7 +5,7 @@
  */
 package eca.dataminer;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.neural.NeuralNetwork;
 import eca.neural.functions.ActivationFunction;
 import weka.classifiers.AbstractClassifier;
@@ -16,21 +16,26 @@ import java.util.NoSuchElementException;
 /**
  * Implements automatic selection of optimal options
  * for neural networks based on experiment series.
+ *
  * @author Roman93
  */
 public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
-    /** Available activation functions **/
+    /**
+     * Available activation functions
+     **/
     private ActivationFunction[] activationFunctions;
 
     /**
      * Creates <tt>AutomatedNeuralNetwork</tt> object with given options
-     * @param numExperiments experiments number
+     *
+     * @param numExperiments      experiments number
      * @param activationFunctions available activation functions
-     * @param data training set
-     * @param classifier classifier object
+     * @param data                training set
+     * @param classifier          classifier object
      */
-    public AutomatedNeuralNetwork(int numExperiments, ActivationFunction[] activationFunctions, Instances data, NeuralNetwork classifier) {
+    public AutomatedNeuralNetwork(int numExperiments, ActivationFunction[] activationFunctions, Instances data,
+                                  NeuralNetwork classifier) {
         super(data, classifier, numExperiments);
         this.setNumIterations(numExperiments);
         this.setActivationFunctions(activationFunctions);
@@ -38,6 +43,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
     /**
      * Returns available activation functions.
+     *
      * @return available activation functions
      */
     public final ActivationFunction[] getActivationFunctions() {
@@ -46,6 +52,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
     /**
      * Sets available activation functions.
+     *
      * @param activationFunctions available activation functions
      */
     public final void setActivationFunctions(ActivationFunction[] activationFunctions) {

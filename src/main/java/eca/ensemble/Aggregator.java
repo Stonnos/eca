@@ -12,15 +12,19 @@ import java.util.ArrayList;
 
 /**
  * Implements ensemble classification results aggregating.
+ *
  * @author Рома
  */
 public class Aggregator implements java.io.Serializable {
 
-    /** Iterative ensemble model **/
+    /**
+     * Iterative ensemble model
+     **/
     private IterativeEnsembleClassifier classifier;
 
     /**
      * Creates <tt>Aggregator</tt> object.
+     *
      * @param classifier <tt>IterativeEnsembleClassifier</tt> object
      */
     public Aggregator(IterativeEnsembleClassifier classifier) {
@@ -29,6 +33,7 @@ public class Aggregator implements java.io.Serializable {
 
     /**
      * Returns <tt>IterativeEnsembleClassifier</tt> object.
+     *
      * @return <tt>IterativeEnsembleClassifier</tt> object
      */
     public IterativeEnsembleClassifier classifier() {
@@ -37,7 +42,8 @@ public class Aggregator implements java.io.Serializable {
 
     /**
      * Classify instance by classifier at the specified position.
-     * @param i index of the classifier
+     *
+     * @param i   index of the classifier
      * @param obj instance object
      * @return class value
      * @throws Exception
@@ -48,7 +54,8 @@ public class Aggregator implements java.io.Serializable {
 
     /**
      * Returns the array of classes probabilities.
-     * @param i index of the classifier
+     *
+     * @param i   index of the classifier
      * @param obj instance object
      * @return the array of classes probabilities
      * @throws Exception
@@ -60,16 +67,18 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Aggregate classification results of individual models
      * using majority votes method.
+     *
      * @param obj instance object
      * @return class value
      * @throws Exception
      */
     public double aggregate(Instance obj) throws Exception {
-        return aggregate(obj, null); 
+        return aggregate(obj, null);
     }
 
     /**
      * Returns the array of classes probabilities.
+     *
      * @param obj instance object
      * @return the array of classes probabilities
      * @throws Exception
@@ -80,7 +89,8 @@ public class Aggregator implements java.io.Serializable {
 
     /**
      * Returns the array of classes probabilities.
-     * @param obj instance object
+     *
+     * @param obj     instance object
      * @param weights classifiers weight
      * @return the array of classes probabilities
      * @throws Exception
@@ -89,28 +99,29 @@ public class Aggregator implements java.io.Serializable {
         double[] sums;
         if (classifier.classifiers.size() == 1) {
             return classifier.classifiers.get(0).distributionForInstance(obj);
-        }
-        else if (weights == null) {
+        } else if (weights == null) {
             sums = new double[classifier.filteredData.numClasses()];
             for (int i = 0; i < classifier.classifiers.size(); i++) {
                 double[] distr = distributionForInstance(i, obj);
-                for (int j = 0; j < distr.length; j++)
+                for (int j = 0; j < distr.length; j++) {
                     sums[j] += distr[j];
+                }
             }
-        }
-        else {
+        } else {
             sums = getVoices(obj, weights);
-        }       
+        }
         if (Utils.eq(Utils.sum(sums), 0)) {
             return sums;
+        } else {
+            Utils.normalize(sums);
         }
-        else Utils.normalize(sums);
         return sums;
     }
 
     /**
      * Returns the voices array for given instance.
-     * @param obj instance object
+     *
+     * @param obj     instance object
      * @param weights classifiers weight
      * @return the voices array for given instance
      * @throws Exception
@@ -118,16 +129,17 @@ public class Aggregator implements java.io.Serializable {
     public double[] getVoices(Instance obj, ArrayList<Double> weights) throws Exception {
         double[] voices = new double[obj.numClasses()];
         for (int i = 0; i < classifier.classifiers.size(); i++) {
-            int classIndex = (int)classifyInstance(i, obj);
+            int classIndex = (int) classifyInstance(i, obj);
             voices[classIndex] += weights == null ? 1.0 : weights.get(i);
-        }     
+        }
         return voices;
     }
 
     /**
      * Aggregate classification results of individual models
      * using weighted votes method.
-     * @param obj instance object
+     *
+     * @param obj     instance object
      * @param weights instance object
      * @return class value
      * @throws Exception
@@ -136,7 +148,7 @@ public class Aggregator implements java.io.Serializable {
         if (obj == null) {
             throw new IllegalArgumentException();
         }
-        double[] voices = getVoices(obj, weights);  
+        double[] voices = getVoices(obj, weights);
         double classValue = 0.0, maxVoices = 0.0;
         for (int i = 0; i < voices.length; i++) {
             if (voices[i] > maxVoices) {
@@ -146,5 +158,5 @@ public class Aggregator implements java.io.Serializable {
         }
         return classValue;
     }
-    
+
 }

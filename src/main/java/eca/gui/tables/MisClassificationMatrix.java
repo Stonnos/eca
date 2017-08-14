@@ -13,15 +13,14 @@ import weka.core.Instances;
 import javax.swing.*;
 
 /**
- *
  * @author Рома
  */
 public class MisClassificationMatrix extends JDataTableBase {
-    
+
     public MisClassificationMatrix(Instances data, Classifier classifier,
-            Evaluation ev) throws Exception {
+                                   Evaluation ev) throws Exception {
         super(new MisClassificationTableModel(data, classifier, ev));
         this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     }
-    
+
 }

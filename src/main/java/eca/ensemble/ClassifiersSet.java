@@ -16,6 +16,7 @@ import java.util.Random;
 
 /**
  * Implements collection of individual classifiers models.
+ *
  * @author Рома
  */
 public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable, Cloneable {
@@ -25,6 +26,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Adds classifier to collection.
+     *
      * @param model <tt>Classifier</tt> object
      * @return <tt>true</tt> if this collection changed as a result of the call
      */
@@ -34,6 +36,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Returns <tt>Classifier</tt> object at the specified position in this collection.
+     *
      * @param i index of element
      * @return <tt>Classifier</tt> object at the specified position in this collection
      */
@@ -44,6 +47,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
     /**
      * Replaces the classifier at the specified position in this collection with
      * the specified classifier.
+     *
      * @param i index of the element to replace
      * @param c <tt>Classifier</tt> object
      */
@@ -54,7 +58,8 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
     /**
      * Returns classifier model at the specified position in this collection
      * built on given training set.
-     * @param i index of the element
+     *
+     * @param i    index of the element
      * @param data <tt>Instances</tt> object
      * @return classifier model at the specified position in this collection
      * built on given training set
@@ -68,6 +73,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Returns <tt>Classifier</tt> object copy at the specified position in this collection.
+     *
      * @param i index of the element
      * @return <tt>Classifier</tt> object copy at the specified position in this collection
      * @throws Exception
@@ -78,6 +84,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Returns the number of classifiers in this collection.
+     *
      * @return the number of classifiers in this collection
      */
     public int size() {
@@ -126,6 +133,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Returns <tt>Classifier</tt> object at random position.
+     *
      * @return <tt>Classifier</tt> object at random position
      * @throws Exception
      */
@@ -136,6 +144,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
     /**
      * Returns classifier model at random position in this collection
      * built on given training set.
+     *
      * @param data <tt>Instances</tt> object
      * @return classifier model at random position in this collection
      * built on given training set
@@ -150,6 +159,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
     /**
      * Returns classifier model in this collection minimizing
      * classification error on given training set.
+     *
      * @param data <tt>Instances</tt> object
      * @return classifier model in this collection minimizing
      * classification error on given training set
@@ -172,6 +182,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
 
     /**
      * Returns classifiers set converted to <tt>ArrayList</tt> object.
+     *
      * @return classifiers set converted to <tt>ArrayList</tt> object
      */
     public ArrayList<Classifier> toList() {

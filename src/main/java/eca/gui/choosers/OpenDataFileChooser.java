@@ -8,7 +8,6 @@ package eca.gui.choosers;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- *
  * @author Рома
  */
 public class OpenDataFileChooser extends OpenFileChooser {

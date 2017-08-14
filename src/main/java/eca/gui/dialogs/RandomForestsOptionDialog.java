@@ -18,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- *
  * @author Рома
  */
 public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
@@ -39,7 +38,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     private JTextField numRandomAttrText;
 
     public RandomForestsOptionDialog(Window parent, String title,
-            RandomForests forest, Instances data) {
+                                     RandomForests forest, Instances data) {
         super(parent, title, forest, data);
         this.data = data;
         this.setLayout(new GridBagLayout());
@@ -101,7 +100,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 } else if (Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
                             "Число случайных атрибутов должно быть не больше "
-                            + String.valueOf(data.numAttributes() - 1),
+                                    + String.valueOf(data.numAttributes() - 1),
                             "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
                     numRandomAttrText.requestFocusInWindow();
                 } else {

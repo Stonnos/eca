@@ -10,17 +10,21 @@ import weka.core.Instance;
 
 /**
  * Class for generating model of nominal attribute binary split rule.
+ *
  * @author Рома
  */
 public class BinaryRule extends NominalRule {
 
-    /** Array of binary codes for nominal attribute values **/
+    /**
+     * Array of binary codes for nominal attribute values
+     **/
     private int[] values;
 
     /**
      * Creates <tt>BinaryRule</tt> object.
+     *
      * @param attribute split attribute
-     * @param values the array of binary codes for nominal attribute values
+     * @param values    the array of binary codes for nominal attribute values
      */
     public BinaryRule(Attribute attribute, int[] values) {
         super(attribute);
@@ -29,6 +33,7 @@ public class BinaryRule extends NominalRule {
 
     /**
      * Returns the array of binary codes for nominal attribute values.
+     *
      * @return the array of binary codes for nominal attribute values
      */
     public final int[] values() {
@@ -37,6 +42,7 @@ public class BinaryRule extends NominalRule {
 
     /**
      * Sets the array of binary codes for nominal attribute values.
+     *
      * @param values the array of binary codes for nominal attribute values
      */
     public final void setValues(int[] values) {

@@ -92,7 +92,8 @@ public class DataGeneratorDialog extends JDialog {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField field = GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
+                JTextField field =
+                        GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
                 if (field != null) {
                     JOptionPane.showMessageDialog(DataGeneratorDialog.this,
                             "Заполните все поля!",

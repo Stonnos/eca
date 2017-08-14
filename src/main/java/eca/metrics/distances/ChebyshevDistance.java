@@ -9,10 +9,11 @@ import weka.core.Instance;
 
 /**
  * Chebychev distance function model.
+ *
  * @author Рома
  */
 public class ChebyshevDistance implements Distance {
-    
+
     @Override
     public double distance(Instance x1, Instance x2) {
         double dist = -Double.MAX_VALUE;
@@ -23,5 +24,5 @@ public class ChebyshevDistance implements Distance {
         }
         return dist;
     }
-    
+
 }

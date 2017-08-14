@@ -23,37 +23,51 @@ import java.util.ArrayList;
 
 /**
  * Implements loading data from database.
+ *
  * @author Рома
  */
 public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 
-    /** Default relation name **/
+    /**
+     * Default relation name
+     **/
     private static final String defaultRelationName = "Relation";
 
-    /** Available column types of numeric attribute **/
+    /**
+     * Available column types of numeric attribute
+     **/
     private static final int[] NUMERIC_TYPES = {Types.DOUBLE, Types.FLOAT,
-                Types.INTEGER, Types.SMALLINT,
-                Types.DECIMAL, Types.NUMERIC,
-                Types.REAL,  Types.TINYINT,
-                Types.BIGINT};
+            Types.INTEGER, Types.SMALLINT,
+            Types.DECIMAL, Types.NUMERIC,
+            Types.REAL, Types.TINYINT,
+            Types.BIGINT};
 
-    /** Available column types of nominal attribute **/
+    /**
+     * Available column types of nominal attribute
+     **/
     private static final int[] NOMINAL_TYPES = {Types.CHAR, Types.VARCHAR,
-                Types.NCHAR, Types.NVARCHAR,
-                Types.BOOLEAN, Types.BIT};
+            Types.NCHAR, Types.NVARCHAR,
+            Types.BOOLEAN, Types.BIT};
 
-    /** Available column types of date attribute **/
+    /**
+     * Available column types of date attribute
+     **/
     private static final int[] DATES_TYPES = {Types.DATE, Types.TIME,
             Types.TIMESTAMP};
 
-    /** Database connection object **/
+    /**
+     * Database connection object
+     **/
     private Connection connection;
 
-    /** Datasource descriptor **/
+    /**
+     * Datasource descriptor
+     **/
     private ConnectionDescriptor connectionDescriptor;
 
     /**
      * Creates <tt>DataBaseConnection</tt> object.
+     *
      * @throws Exception
      */
     public DataBaseConnection() throws Exception {
@@ -67,6 +81,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 
     /**
      * Opens connection with database.
+     *
      * @throws SQLException
      */
     public void open() throws SQLException {
@@ -84,6 +99,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 
     /**
      * Returns <tt>ConnectionDescriptor</tt> object.
+     *
      * @return <tt>ConnectionDescriptor</tt> object
      */
     public ConnectionDescriptor getConnectionDescriptor() {
@@ -92,6 +108,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 
     /**
      * Sets <tt>ConnectionDescriptor</tt> object.
+     *
      * @param connectionDescriptor <tt>ConnectionDescriptor</tt> object
      */
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
@@ -103,7 +120,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
         Instances data;
         try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_READ_ONLY);
-                ResultSet result = statement.executeQuery(query)) {
+             ResultSet result = statement.executeQuery(query)) {
             checkColumnsTypes(result);
             ResultSetMetaData meta = result.getMetaData();
             String tableName = meta.getTableName(1);
@@ -137,7 +154,8 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
     private void checkColumnsTypes(ResultSet result) throws SQLException {
         ResultSetMetaData meta = result.getMetaData();
         for (int i = 1; i <= meta.getColumnCount(); i++) {
-            if (!isNumeric(meta.getColumnType(i)) && !isNominal(meta.getColumnType(i)) && !isDate(meta.getColumnType(i))) {
+            if (!isNumeric(meta.getColumnType(i)) && !isNominal(meta.getColumnType(i)) &&
+                    !isDate(meta.getColumnType(i))) {
                 throw new SQLException("Система не поддерживает тип данных: "
                         + meta.getColumnTypeName(i));
             }
@@ -146,15 +164,17 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
     }
 
     private boolean isNominal(int type) {
-        return  existType(NOMINAL_TYPES, type);
+        return existType(NOMINAL_TYPES, type);
     }
 
-    private boolean isDate(int type) {return existType(DATES_TYPES, type);}
+    private boolean isDate(int type) {
+        return existType(DATES_TYPES, type);
+    }
 
     private boolean isNumeric(int type) {
         return existType(NUMERIC_TYPES, type);
     }
-    
+
     private boolean existType(int[] types, int type) {
         for (int t : types) {
             if (type == t) {
@@ -170,8 +190,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
         for (int i = 1; i <= meta.getColumnCount(); i++) {
             if (isNumeric(meta.getColumnType(i))) {
                 attr.add(new Attribute(meta.getColumnName(i)));
-            }
-            else if (isDate(meta.getColumnType(i))) {
+            } else if (isDate(meta.getColumnType(i))) {
                 attr.add(new Attribute(meta.getColumnName(i), DateFormat.DATE_FORMAT));
             } else {
                 attr.add(new Attribute(meta.getColumnName(i),

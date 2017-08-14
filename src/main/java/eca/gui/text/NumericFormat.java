@@ -7,12 +7,12 @@ package eca.gui.text;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+
 /**
- *
  * @author Roman93
  */
 public class NumericFormat implements java.io.Serializable {
-    
+
     public static DecimalFormat getInstance() {
         DecimalFormat format = new DecimalFormat();
         DecimalFormatSymbols custom = new DecimalFormatSymbols();
@@ -21,5 +21,5 @@ public class NumericFormat implements java.io.Serializable {
         format.setGroupingUsed(false);
         return format;
     }
-    
+
 }

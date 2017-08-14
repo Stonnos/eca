@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- *
  * @author Roman93
  */
 public class ClassifierIndexer {
@@ -22,7 +21,7 @@ public class ClassifierIndexer {
     public String getIndex(Classifier classifier) {
         return classifier.getClass().getSimpleName() + "_" + getCurrentDateToString();
     }
-    
+
     public String getExperimentIndex(Classifier classifier) {
         return classifier.getClass().getSimpleName() + "Experiment_" + getCurrentDateToString();
     }

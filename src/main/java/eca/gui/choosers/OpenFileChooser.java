@@ -10,7 +10,6 @@ import java.awt.*;
 import java.io.File;
 
 /**
- *
  * @author Roman93
  */
 public abstract class OpenFileChooser {

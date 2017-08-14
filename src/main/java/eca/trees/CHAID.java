@@ -13,17 +13,24 @@ import java.util.Enumeration;
 
 /**
  * Class for generating CHAID decision tree model.
+ *
  * @author Рома
  */
 public class CHAID extends DecisionTreeClassifier {
 
-    /** Contingency table **/
+    /**
+     * Contingency table
+     **/
     private double[][] contingency_table;
 
-    /** Significance level for hi square test **/
+    /**
+     * Significance level for hi square test
+     **/
     private double alpha = 0.05;
 
-    /** Use binary splits? **/
+    /**
+     * Use binary splits?
+     **/
     private boolean use_binary_splits = true;
 
     public CHAID() {
@@ -32,6 +39,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     /**
      * Returns the value of significance level for hi square test.
+     *
      * @return the value of significance level for hi square test
      */
     public double getAlpha() {
@@ -40,6 +48,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     /**
      * Sets the value of significance level for hi square test.
+     *
      * @param alpha the value of significance level for hi square test
      */
     public void setAlpha(double alpha) {
@@ -48,6 +57,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     /**
      * Sets the value of binary splits.
+     *
      * @param flag the value of binary splits
      */
     public void setUseBinarySplits(boolean flag) {
@@ -56,6 +66,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     /**
      * Returns the value of binary splits.
+     *
      * @return the value of binary splits
      */
     public boolean getUseBinarySplits() {
@@ -65,11 +76,11 @@ public class CHAID extends DecisionTreeClassifier {
     @Override
     public String[] getOptions() {
         String[] options = {"Минимальное число объектов в листе:", String.valueOf(minObj),
-            "Максиальная глубина дерева:", String.valueOf(maxDepth),
-            "Случайное дерево:", String.valueOf(isRandom),
-            "Число случайных атрибутов:", String.valueOf(numRandomAttr),
-            "Бинарное дерево:", String.valueOf(use_binary_splits),
-            "Уровень значимости alpha:", String.valueOf(alpha)};
+                "Максиальная глубина дерева:", String.valueOf(maxDepth),
+                "Случайное дерево:", String.valueOf(isRandom),
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
+                "Бинарное дерево:", String.valueOf(use_binary_splits),
+                "Уровень значимости alpha:", String.valueOf(alpha)};
         return options;
     }
 
@@ -85,7 +96,7 @@ public class CHAID extends DecisionTreeClassifier {
         currentMeasure = -Double.MAX_VALUE;
         SplitDescriptor split = new SplitDescriptor();
 
-        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements();) {
+        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
                 processNumericSplit(a, x, splitAlgorithm, split);
@@ -105,8 +116,7 @@ public class CHAID extends DecisionTreeClassifier {
         int df;
         if (getUseBinarySplits() || x.rule.attribute().isNumeric()) {
             df = data.numClasses() - 1;
-        }
-        else {
+        } else {
             df = (data.numClasses() - 1) * (x.rule.attribute().numValues() - 1);
         }
         return currentMeasure > Statistics.chiSquaredCriticalValue(alpha, df)

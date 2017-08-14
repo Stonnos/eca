@@ -8,12 +8,12 @@ package eca.gui.tables;
 import eca.gui.tables.models.LogisticCoefficientsTableModel;
 import eca.regression.Logistic;
 import weka.core.Instances;
+
 /**
- *
  * @author Рома
  */
 public class LogisticCoefficientsTable extends JDataTableBase {
-    
+
     public LogisticCoefficientsTable(Logistic logistic, Instances data, int digits) throws Exception {
         super(new LogisticCoefficientsTableModel(logistic, data, digits));
     }

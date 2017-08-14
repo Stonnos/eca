@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 import eca.gui.ClassifierInputInfo;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.ExperimentTableModel;
@@ -22,7 +22,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
 /**
- *
  * @author Roman93
  */
 public class ExperimentTable extends JDataTableBase {
@@ -32,7 +31,7 @@ public class ExperimentTable extends JDataTableBase {
     private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
     public ExperimentTable(ArrayList<ClassifierDescriptor> experiment,
-            JFrame parent, Instances data, int digits) throws Exception {
+                           JFrame parent, Instances data, int digits) throws Exception {
         super(new ExperimentTableModel(experiment, digits));
         this.parent = parent;
         this.data = data;
@@ -63,7 +62,7 @@ public class ExperimentTable extends JDataTableBase {
     public void clear() {
         experimentModel().clear();
     }
-    
+
     public int getBestNumber() {
         return 10;
     }
@@ -72,7 +71,7 @@ public class ExperimentTable extends JDataTableBase {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected,
                         hasFocus, row, column);
                 if (row < getBestNumber()) {
@@ -98,7 +97,7 @@ public class ExperimentTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());
                 this.setBackground(table.getSelectionBackground());
@@ -122,7 +121,7 @@ public class ExperimentTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());
                 this.setBackground(table.getSelectionBackground());
@@ -161,7 +160,7 @@ public class ExperimentTable extends JDataTableBase {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             if (isSelected) {
                 button.setForeground(table.getSelectionForeground());
                 button.setBackground(table.getSelectionBackground());

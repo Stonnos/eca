@@ -11,19 +11,19 @@ import eca.roc.AttributesSelection;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+
 /**
- *
  * @author Рома
  */
 public class SignificantAttributesTable extends JDataTableBase {
-    
+
     public SignificantAttributesTable(AttributesSelection roc, int digits) {
         super(new SignificantAttributesTableModel(roc, digits));
-        
+
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected,
                         hasFocus, row, column);
                 int i = row >= roc.data().classIndex() ? row + 1 : row;
@@ -31,14 +31,14 @@ public class SignificantAttributesTable extends JDataTableBase {
                     cell.setForeground(Color.RED);
                 } else {
                     cell.setForeground(table.getForeground());
-                }               
+                }
                 return cell;
             }
         };
         //--------------------------------------------
         for (int i = 0; i < this.getColumnCount(); i++) {
-             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
+            this.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
     }
-    
+
 }

@@ -9,12 +9,14 @@ import weka.core.Instances;
 
 /**
  * Class for generating {@link IterativeBuilder} objects.
+ *
  * @author Рома
  */
 public interface Iterable {
 
     /**
      * Returns <tt>IterativeBuilder</tt> object.
+     *
      * @param data <tt>Instances</tt> object
      * @return <tt>IterativeBuilder</t> object
      * @throws Exception

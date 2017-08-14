@@ -35,7 +35,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
- *
  * @author Рома
  */
 public class NetworkVisualizer extends JPanel {
@@ -178,7 +177,7 @@ public class NetworkVisualizer extends JPanel {
         }
         //-------------------------------------
         for (NeuronNode n : nodes) {
-            for (Iterator<NeuralLink> i = n.neuron().outLinks(); i.hasNext();) {
+            for (Iterator<NeuralLink> i = n.neuron().outLinks(); i.hasNext(); ) {
                 drawLink(g2d, i.next());
             }
             n.paint(g2d);
@@ -454,7 +453,7 @@ public class NetworkVisualizer extends JPanel {
                     break;
             }
             text.append("\n");
-            for (Iterator<NeuralLink> link = neuron.outLinks(); link.hasNext();) {
+            for (Iterator<NeuralLink> link = neuron.outLinks(); link.hasNext(); ) {
                 NeuralLink edge = link.next();
                 text.append("Вес связи (").append(edge.source().index()).
                         append(",").append(edge.target().index()).
@@ -537,9 +536,9 @@ public class NetworkVisualizer extends JPanel {
             infoLabel.setSize((int) neuronDiam, (int) neuronDiam);
             infoLabel.setLocation((int) x1(), (int) y1());
             g.drawString(text, (float) x1()
-                    + ((float) width() - fm.stringWidth(text)) / 2.0f,
+                            + ((float) width() - fm.stringWidth(text)) / 2.0f,
                     (float) y1() + fm.getAscent()
-                    + ((float) width() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+                            + ((float) width() - (fm.getAscent() + fm.getDescent())) / 2.0f);
 
         }
 

@@ -42,11 +42,12 @@ public class ApplicationProperties {
     static {
         try (InputStream stream = ApplicationProperties.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             PROPERTIES.load(stream);
+        } catch (Exception e) {
         }
-        catch (Exception e) {}
     }
 
-    private ApplicationProperties() {}
+    private ApplicationProperties() {
+    }
 
     public static ApplicationProperties getInstance() {
         if (INSTANCE == null) {

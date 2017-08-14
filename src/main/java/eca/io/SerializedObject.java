@@ -12,42 +12,43 @@ import java.io.ObjectOutputStream;
 
 /**
  * Implements objects serialization.
+ *
  * @author Рома
  */
 public class SerializedObject {
-    
+
     /**
      * Writes serialized object to file.
-     * @param obj object
+     *
+     * @param obj      object
      * @param fileName file name
-     * @throws Exception 
+     * @throws Exception
      */
     public static void serialize(Object obj, String fileName) throws Exception {
         try (ObjectOutputStream stream =
-                new ObjectOutputStream(new FileOutputStream(fileName))) {
+                     new ObjectOutputStream(new FileOutputStream(fileName))) {
             stream.writeObject(obj);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(e);
         }
     }
-    
+
     /**
      * Reads object from file.
+     *
      * @param fileName file name
      * @return object
-     * @throws Exception 
+     * @throws Exception
      */
     public static Object deserialize(String fileName) throws Exception {
         Object obj;
         try (ObjectInputStream stream =
-                new ObjectInputStream(new FileInputStream(fileName))) {
+                     new ObjectInputStream(new FileInputStream(fileName))) {
             obj = stream.readObject();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new Exception(e);
         }
         return obj;
     }
-    
+
 }

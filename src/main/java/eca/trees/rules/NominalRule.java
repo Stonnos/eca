@@ -10,14 +10,16 @@ import weka.core.Instance;
 
 /**
  * Class for generating model of nominal attribute split rule.
+ *
  * @author Рома
  */
 public class NominalRule extends AbstractRule {
 
     /**
      * Creates <tt>NominalRule</tt> object.
+     *
      * @param attribute split attribute
-     * @exception IllegalArgumentException if split attribute is not nominal
+     * @throws IllegalArgumentException if split attribute is not nominal
      */
     public NominalRule(Attribute attribute) {
         super(attribute);

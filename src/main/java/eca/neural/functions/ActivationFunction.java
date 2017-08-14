@@ -7,12 +7,14 @@ package eca.neural.functions;
 
 /**
  * Interface for neuron activation function.
+ *
  * @author Рома
  */
 public interface ActivationFunction {
 
     /**
      * Calculates the value of activation function.
+     *
      * @param s argument value
      * @return the value of activation function
      */
@@ -20,6 +22,7 @@ public interface ActivationFunction {
 
     /**
      * Calculates the value of activation function derivative.
+     *
      * @param s the argument value
      * @return the value of activation function derivative
      */

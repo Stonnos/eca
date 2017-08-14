@@ -7,6 +7,7 @@ package eca.db;
 
 /**
  * Datasource descriptor.
+ *
  * @author Roman93
  */
 public abstract class ConnectionDescriptor implements java.io.Serializable {
@@ -25,11 +26,12 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Creates <tt>ConnectionDescriptor</tt> object with given options.
-     * @param host datasource host
-     * @param port datasource port number
+     *
+     * @param host         datasource host
+     * @param port         datasource port number
      * @param dataBaseName database name
-     * @param login user login
-     * @param password user password
+     * @param login        user login
+     * @param password     user password
      */
     protected ConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
         this.host = host;
@@ -41,6 +43,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Return <tt>true</tt> if database is embedded.
+     *
      * @return <tt>true</tt> if database is embedded
      */
     public boolean isEmbedded() {
@@ -49,6 +52,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns datasource host.
+     *
      * @return datasource host
      */
     public String getHost() {
@@ -57,6 +61,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Sets datasource host.
+     *
      * @param host datasource host
      */
     public void setHost(String host) {
@@ -65,6 +70,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns datasource port number.
+     *
      * @return datasource port number
      */
     public int getPort() {
@@ -73,6 +79,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Sets datasource port number.
+     *
      * @param port datasource port number
      */
     public void setPort(int port) {
@@ -81,6 +88,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns user login.
+     *
      * @return user login
      */
     public String getLogin() {
@@ -89,7 +97,8 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Sets  user login.
-     * @param login  user login
+     *
+     * @param login user login
      */
     public void setLogin(String login) {
         this.login = login;
@@ -97,6 +106,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns user password.
+     *
      * @return user password
      */
     public String getPassword() {
@@ -105,6 +115,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Sets user password.
+     *
      * @param password user password
      */
     public void setPassword(String password) {
@@ -113,6 +124,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns database name.
+     *
      * @return database name
      */
     public String getDataBaseName() {
@@ -121,6 +133,7 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Sets database name.
+     *
      * @param dataBaseName database name
      */
     public void setDataBaseName(String dataBaseName) {
@@ -129,12 +142,14 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     /**
      * Returns url string of datasource.
+     *
      * @return url string of datasource
      */
     public abstract String getUrl();
 
     /**
      * Returns connection protocol.
+     *
      * @return connection protocol
      */
     public abstract String getProtocol();

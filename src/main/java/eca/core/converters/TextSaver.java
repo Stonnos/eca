@@ -8,12 +8,14 @@ import java.io.OutputStreamWriter;
 
 /**
  * Implemets saving text to file.
+ *
  * @author Roman Batygin
  */
 public class TextSaver {
 
     /**
      * Saves text to file.
+     *
      * @param file file object
      * @param text text object
      * @throws IOException

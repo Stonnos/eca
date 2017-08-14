@@ -8,14 +8,16 @@ import java.io.IOException;
 
 /**
  * Implements saving image to file.
+ *
  * @author Roman Batygin
  */
 public class ImageSaver {
 
     /**
      * Saves image to file.
+     *
      * @param file file object
-     * @param img image
+     * @param img  image
      * @throws IOException
      */
     public static void saveImage(File file, Image img) throws IOException {

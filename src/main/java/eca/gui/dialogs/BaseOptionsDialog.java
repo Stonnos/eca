@@ -12,9 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- *
- * @author Рома
  * @param <T>
+ * @author Рома
  */
 public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
 

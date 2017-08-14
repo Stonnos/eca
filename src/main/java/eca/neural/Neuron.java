@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 /**
  * Neuron model.
+ *
  * @author Рома
  */
 public class Neuron implements java.io.Serializable {
@@ -20,35 +21,52 @@ public class Neuron implements java.io.Serializable {
     public static final int HIDDEN_LAYER = 1;
     public static final int OUT_LAYER = 2;
 
-    /** Outer links list **/
+    /**
+     * Outer links list
+     **/
     private final ArrayList<NeuralLink> outLinks = new ArrayList<>();
 
-    /** Inner links list **/
+    /**
+     * Inner links list
+     **/
     private final ArrayList<NeuralLink> inLinks = new ArrayList<>();
 
-    /** Neuron index **/
+    /**
+     * Neuron index
+     **/
     private final int index;
 
-    /** Activation function **/
+    /**
+     * Activation function
+     **/
     private ActivationFunction function;
 
-    /** Input summary value **/
+    /**
+     * Input summary value
+     **/
     private double sumValue;
 
-    /** Output value **/
+    /**
+     * Output value
+     **/
     private double outValue;
 
-    /** Neuron error (using by back propagation algorithm) **/
+    /**
+     * Neuron error (using by back propagation algorithm)
+     **/
     private double error;
 
-    /** Neuron type **/
+    /**
+     * Neuron type
+     **/
     private final int type;
 
     /**
      * Creates <tt>Neuron</tt> object with given options.
-     * @param index neuron index
+     *
+     * @param index    neuron index
      * @param function activation function
-     * @param type neuron type
+     * @param type     neuron type
      */
     public Neuron(int index, ActivationFunction function, int type) {
         if (type != IN_LAYER && type != HIDDEN_LAYER && type != OUT_LAYER) {
@@ -61,6 +79,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Sets activation function.
+     *
      * @param function activation function
      */
     public void setActivationFunction(ActivationFunction function) {
@@ -69,6 +88,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns activation function.
+     *
      * @return activation function
      */
     public ActivationFunction getActivationFunction() {
@@ -77,6 +97,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Sets the value of neuron output value.
+     *
      * @param outValue the value of neuron outer value
      */
     public void setOutValue(double outValue) {
@@ -85,6 +106,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns neuron type.
+     *
      * @return neuron type
      */
     public int getType() {
@@ -93,6 +115,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns the value of neuron index.
+     *
      * @return the value of neuron index
      */
     public int index() {
@@ -101,6 +124,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns the value of neuron output value.
+     *
      * @return the value of neuron output value
      */
     public double getOutValue() {
@@ -109,6 +133,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Sets the value of neuron input summary.
+     *
      * @param sumValue the value of neuron input summary
      */
     public void setSumValue(double sumValue) {
@@ -117,6 +142,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns the value of neuron input summary.
+     *
      * @return the value of neuron input summary
      */
     public double getSumValue() {
@@ -125,6 +151,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Sets the value of neuron error (using by back propagation algorithm).
+     *
      * @param error the value of neuron error
      */
     public void setError(double error) {
@@ -133,6 +160,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns the value of neuron error (using by back propagation algorithm).
+     *
      * @return the value of neuron error
      */
     public double getError() {
@@ -141,6 +169,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Calculates the neuron output value from given input summary.
+     *
      * @param s the value of input summary
      * @return the neuron output value
      */
@@ -152,6 +181,7 @@ public class Neuron implements java.io.Serializable {
     /**
      * Calculates the value of activation function derivative
      * from given input summary.
+     *
      * @param s the value of input summary
      * @return the value of activation function derivative
      */
@@ -161,6 +191,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Calculates the neuron output value.
+     *
      * @return the neuron output value
      */
     public double process() {
@@ -169,6 +200,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Calculates the value of activation function derivative.
+     *
      * @return the value of activation function derivative
      */
     public double derivative() {
@@ -177,6 +209,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Adds output link.
+     *
      * @param link neural link
      */
     public void addOutLink(NeuralLink link) {
@@ -185,6 +218,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Adds input link.
+     *
      * @param link input link
      */
     public void addInLink(NeuralLink link) {
@@ -193,6 +227,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns an <tt>Iterator</tt> object over the output links.
+     *
      * @return an <tt>Iterator</tt> object over the output links
      */
     public Iterator<NeuralLink> outLinks() {
@@ -201,6 +236,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Returns an <tt>Iterator</tt> object over the input links.
+     *
      * @return an <tt>Iterator</tt> object over the input links
      */
     public Iterator<NeuralLink> inLinks() {
@@ -209,6 +245,7 @@ public class Neuron implements java.io.Serializable {
 
     /**
      * Calculates the summary value of input signals.
+     *
      * @return the summary value of input signals
      */
     public double sum() {

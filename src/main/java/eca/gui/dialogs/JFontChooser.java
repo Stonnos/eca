@@ -16,7 +16,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- *
  * @author Рома
  */
 public class JFontChooser extends JDialog {
@@ -26,9 +25,10 @@ public class JFontChooser extends JDialog {
     private static final String fontTypeTitle = "Шрифт:";
     private static final String fontStyleTitle = "Начертание:";
     private static final String fontSizeTitle = "Размер:";
-    private static final String[] FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+    private static final String[] FONTS =
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
     private static final String[] STYLES = {"Обычный", "Полужирный",
-        "Курсив", "Полужирный курсив"};
+            "Курсив", "Полужирный курсив"};
 
     private JComboBox<String> fontType;
     private JComboBox<String> fontSize;
@@ -69,7 +69,7 @@ public class JFontChooser extends JDialog {
                 style = Font.BOLD;
                 break;
             case 2:
-               style = Font.ITALIC;
+                style = Font.ITALIC;
                 break;
             case 3:
                 style = Font.BOLD | Font.ITALIC;
@@ -140,10 +140,18 @@ public class JFontChooser extends JDialog {
         fontSize.setSelectedItem(String.valueOf(font.getSize()));
         fontType.setSelectedItem(font.getName());
         switch (font.getStyle()) {
-            case Font.PLAIN: fontStyle.setSelectedIndex(0); break;
-            case Font.BOLD: fontStyle.setSelectedIndex(1); break;
-            case Font.ITALIC: fontStyle.setSelectedIndex(2); break;
-            case Font.ITALIC | Font.BOLD: fontStyle.setSelectedIndex(3); break;
+            case Font.PLAIN:
+                fontStyle.setSelectedIndex(0);
+                break;
+            case Font.BOLD:
+                fontStyle.setSelectedIndex(1);
+                break;
+            case Font.ITALIC:
+                fontStyle.setSelectedIndex(2);
+                break;
+            case Font.ITALIC | Font.BOLD:
+                fontStyle.setSelectedIndex(3);
+                break;
         }
         //----------------------------------
         ItemListener listener = new ItemListener() {
@@ -156,7 +164,7 @@ public class JFontChooser extends JDialog {
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
         //----------------------------------
-        exampleField = new JTextArea(3,5);
+        exampleField = new JTextArea(3, 5);
         exampleField.setWrapStyleWord(true);
         exampleField.setLineWrap(true);
         exampleField.setEditable(false);
@@ -208,7 +216,7 @@ public class JFontChooser extends JDialog {
         //-----------------------------------------------
         this.getRootPane().setDefaultButton(okButton);
     }
-    
+
     private void setExample() {
         exampleField.setFont(getSelectedFont());
         exampleField.setText("Аа Яя Aa Zz");

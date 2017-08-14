@@ -23,13 +23,12 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- *
  * @author Рома
  */
 public class XLSSaver {
-    
+
     private File file;
-    
+
     public void setFile(File file) throws IOException {
         if (!file.getName().endsWith(".xls") && !file.getName().endsWith(".xlsx")) {
             throw new IOException("Wrong file extension!");
@@ -37,20 +36,20 @@ public class XLSSaver {
         file.createNewFile();
         this.file = file;
     }
-    
+
     public void write(Instances data) throws IOException {
         try (FileOutputStream stream = new FileOutputStream(file)) {
             Workbook book = file.getName().endsWith(".xls") ?
                     new HSSFWorkbook() : new XSSFWorkbook();
             Font font = book.createFont();
             font.setBold(true);
-            font.setFontHeightInPoints((short)12);
+            font.setFontHeightInPoints((short) 12);
             CellStyle style = book.createCellStyle();
             CellStyle dateStyle = book.createCellStyle();
             short date = book.createDataFormat().getFormat(DateFormat.DATE_FORMAT);
             dateStyle.setDataFormat(date);
             style.setFont(font);
-            Sheet sheet = book.createSheet(data.relationName());    
+            Sheet sheet = book.createSheet(data.relationName());
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             //----------------------------------------
             for (int i = 0; i < data.numAttributes(); i++) {
@@ -67,22 +66,22 @@ public class XLSSaver {
                     if (!data.instance(i).isMissing(a)) {
                         if (a.isDate()) {
                             cell.setCellStyle(dateStyle);
-                            cell.setCellValue(new Date((long)data.instance(i).value(a)));
-                        }
-                        else if (a.isNumeric()) {
+                            cell.setCellValue(new Date((long) data.instance(i).value(a)));
+                        } else if (a.isNumeric()) {
                             cell.setCellValue(data.instance(i).value(a));
-                        } else cell.setCellValue(data.instance(i).stringValue(a));
+                        } else {
+                            cell.setCellValue(data.instance(i).stringValue(a));
+                        }
                     }
                 }
             }
             //----------------------------
             book.write(stream);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new IOException(e);
         }
-        
+
     }
-    
+
 }

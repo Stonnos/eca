@@ -12,13 +12,12 @@ import eca.gui.dialogs.EnsembleOptionsDialog;
 import javax.swing.*;
 
 /**
- *
  * @author Roman93
  */
 public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
 
     public AutomatedHeterogeneousEnsembleFrame(String title, AbstractExperiment experiment,
-            JFrame parent, int digits) throws Exception {
+                                               JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
         this.setTitle(title);
     }
@@ -29,7 +28,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
         EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, "Настройки параметров", exp.getClassifier(),
                 exp.data());
         options.setSampleEnabled(false);
-        options.addClassifiers(exp.getClassifier().getClassifiersSet().clone());       
+        options.addClassifiers(exp.getClassifier().getClassifiersSet().clone());
         options.showDialog();
     }
 

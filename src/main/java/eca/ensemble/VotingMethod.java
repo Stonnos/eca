@@ -9,15 +9,19 @@ import weka.core.Instance;
 
 /**
  * Abstract class that implements voting method.
+ *
  * @author Рома
  */
 public abstract class VotingMethod implements java.io.Serializable {
 
-    /** Aggregator object**/
+    /**
+     * Aggregator object
+     **/
     private Aggregator aggregator;
 
     /**
      * Creates <tt>VotingMethod</tt> object.
+     *
      * @param aggregator <tt>Aggregator</tt>
      */
     protected VotingMethod(Aggregator aggregator) {
@@ -26,6 +30,7 @@ public abstract class VotingMethod implements java.io.Serializable {
 
     /**
      * Returns <tt>Aggregator</tt> object.
+     *
      * @return <tt>Aggregator</tt> object
      */
     public Aggregator aggregator() {
@@ -34,6 +39,7 @@ public abstract class VotingMethod implements java.io.Serializable {
 
     /**
      * Returns the class value of given instance.
+     *
      * @param obj instance object
      * @return the class value of given instance
      * @throws Exception
@@ -42,6 +48,7 @@ public abstract class VotingMethod implements java.io.Serializable {
 
     /**
      * Returns the array of classes probabilities.
+     *
      * @param obj instance object
      * @return the array of classes probabilities
      * @throws Exception
@@ -50,8 +57,9 @@ public abstract class VotingMethod implements java.io.Serializable {
 
     /**
      * Returns voting method description.
+     *
      * @return voting method description
      */
     public abstract String getDescription();
-    
+
 }

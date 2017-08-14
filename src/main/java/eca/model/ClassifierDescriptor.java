@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.beans;
+package eca.model;
 
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.Classifier;
@@ -11,7 +11,7 @@ import weka.classifiers.Classifier;
 import java.io.Serializable;
 
 /**
- *
+ * Classifier evaluation model.
  * @author Roman93
  */
 public class ClassifierDescriptor implements Serializable {
@@ -23,7 +23,7 @@ public class ClassifierDescriptor implements Serializable {
         this.classifier = classifier;
         this.evaluation = evaluation;
     }
-    
+
     public Classifier getClassifier() {
         return classifier;
     }
@@ -39,5 +39,5 @@ public class ClassifierDescriptor implements Serializable {
     public void setEvaluation(Evaluation evaluation) {
         this.evaluation = evaluation;
     }
-    
+
 }

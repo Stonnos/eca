@@ -12,17 +12,16 @@ import weka.core.Instances;
 import javax.swing.table.AbstractTableModel;
 
 /**
- *
  * @author Рома
  */
 public class MisClassificationTableModel extends AbstractTableModel {
-    
+
     private Instances data;
     private Classifier classifier;
     private Evaluation ev;
     private String[] titles;
     private double[][] values;
-    
+
     public MisClassificationTableModel(Instances data, Classifier classifier, Evaluation ev)
             throws Exception {
         this.data = data;
@@ -31,37 +30,37 @@ public class MisClassificationTableModel extends AbstractTableModel {
         this.makeTitles();
         this.makeMatrix();
     }
-    
+
     @Override
     public int getColumnCount() {
         return titles.length;
     }
-    
+
     @Override
     public int getRowCount() {
         return values.length;
-    }   
-    
+    }
+
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? row : (int)values[row][column - 1];
+        return column == 0 ? row : (int) values[row][column - 1];
     }
-    
+
     @Override
     public String getColumnName(int column) {
         return titles[column];
     }
-    
+
     private void makeTitles() {
         titles = new String[data.numClasses() + 1];
         titles[0] = "Реальное";
         for (int i = 1; i < titles.length; i++) {
-            titles[i] = i - 1 + " (Прогнозное)"; 
+            titles[i] = i - 1 + " (Прогнозное)";
         }
     }
-    
-    private void makeMatrix() throws Exception {      
+
+    private void makeMatrix() throws Exception {
         values = ev.confusionMatrix();
     }
-       
+
 }

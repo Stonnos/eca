@@ -5,13 +5,12 @@
  */
 package eca.gui.actions;
 
-import eca.beans.ModelDescriptor;
+import eca.model.ModelDescriptor;
 import eca.core.converters.ModelConverter;
 
 import java.io.File;
 
 /**
- *
  * @author Рома
  */
 public class ModelLoader implements CallbackAction {

@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.beans.Entry;
+import eca.model.Entry;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.StackingClassifier;
@@ -14,6 +14,7 @@ import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.trees.DecisionTreeClassifier;
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
 
 import javax.swing.*;
@@ -22,7 +23,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- *
  * @author Рома
  */
 public class StatisticsTableBuilder {
@@ -46,15 +46,17 @@ public class StatisticsTableBuilder {
             results.add(new Entry("Классификатор", classifier.getClass().getSimpleName()));
             results.add(new Entry("Метод оценки точности",
                     !e.isKCrossValidationMethod() ? "Использование обучающей выборки"
-                    : "Кросс - проверка, " + (e.getValidationsNum() > 1 ? e.getValidationsNum() + "*" : "")
-                    + e.numFolds() + " - блочная"));
+                            : "Кросс - проверка, " +
+                            (e.getValidationsNum() > 1 ? e.getValidationsNum() + "*" : StringUtils.EMPTY)
+                            + e.numFolds() + " - блочная"));
             results.add(new Entry("Число объектов тестовых данных", FORMAT.format(e.numInstances())));
             results.add(new Entry("Число правильно классифицированных объектов", FORMAT.format(e.correct())));
             results.add(new Entry("Число неправильно классифицированных объектов", FORMAT.format(e.incorrect())));
             results.add(new Entry("Точность классификатора, %", FORMAT.format(e.pctCorrect())));
             results.add(new Entry("Ошибка классификатора, %", FORMAT.format(e.pctIncorrect())));
             results.add(new Entry("Средняя абсолютная ошибка классификации", FORMAT.format(e.meanAbsoluteError())));
-            results.add(new Entry("Среднеквадратическая ошибка классификации", FORMAT.format(e.rootMeanSquaredError())));
+            results.add(
+                    new Entry("Среднеквадратическая ошибка классификации", FORMAT.format(e.rootMeanSquaredError())));
             if (e.isKCrossValidationMethod()) {
                 results.add(new Entry("Дисперсия ошибки классификатора", FORMAT.format(e.varianceError())));
                 double[] x = e.errorConfidenceInterval();

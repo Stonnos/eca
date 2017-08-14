@@ -12,17 +12,21 @@ import java.text.DecimalFormat;
 
 /**
  * Class for generating model of numeric attribute split rule.
+ *
  * @author Рома
  */
 public class NumericRule extends AbstractRule {
 
-    /** Threshold value **/
+    /**
+     * Threshold value
+     **/
     private double meanValue;
 
     /**
      * Creates <tt>NumericRule</tt> object.
+     *
      * @param attribute split attribute
-     * @exception IllegalArgumentException if split attribute is not numeric
+     * @throws IllegalArgumentException if split attribute is not numeric
      */
     public NumericRule(Attribute attribute) {
         super(attribute);
@@ -30,15 +34,16 @@ public class NumericRule extends AbstractRule {
 
     /**
      * Creates <tt>NumericRule</tt> object.
+     *
      * @param attribute split attribute
      * @param meanValue threshold value
-     * @exception IllegalArgumentException if split attribute is not numeric
+     * @throws IllegalArgumentException if split attribute is not numeric
      */
     public NumericRule(Attribute attribute, double meanValue) {
-         this(attribute);
-         this.meanValue = meanValue;
+        this(attribute);
+        this.meanValue = meanValue;
     }
-    
+
     @Override
     public int getChild(Instance obj) {
         return obj != null ? (obj.value(attribute()) <= meanValue ? 0 : 1) : -1;
@@ -46,6 +51,7 @@ public class NumericRule extends AbstractRule {
 
     /**
      * Returns threshold value.
+     *
      * @return threshold value
      */
     public final double getMeanValue() {
@@ -54,28 +60,30 @@ public class NumericRule extends AbstractRule {
 
     /**
      * Sets threshold value.
+     *
      * @param meanValue threshold value
      */
     public final void setMeanValue(double meanValue) {
         this.meanValue = meanValue;
     }
-    
+
     @Override
     public String rule(int i) {
         return i == 0 ? attribute().name() + " <= " + meanValue
-                :  attribute().name() + " > " + meanValue;
+                : attribute().name() + " > " + meanValue;
     }
 
     /**
      * Returns string representation of rule.
-     * @param i child index
+     *
+     * @param i   child index
      * @param fmt <tt>DecimalFormat</tt> object
      * @return string representation of rule
      */
     public String rule(int i, DecimalFormat fmt) {
         String result = attribute().isDate() ? attribute().formatDate(meanValue) : fmt.format(meanValue);
         return i == 0 ? attribute().name() + " <= " + result
-                :  attribute().name() + " > " + result;
+                : attribute().name() + " > " + result;
     }
-    
+
 }

@@ -10,6 +10,7 @@ import weka.core.Instances;
 
 /**
  * Class for generating logistic regression model.
+ *
  * @author Roman93
  */
 public class Logistic extends weka.classifiers.functions.Logistic
@@ -35,8 +36,8 @@ public class Logistic extends weka.classifiers.functions.Logistic
     @Override
     public String[] getOptions() {
         String[] options = {"Максимальное число итераций:", String.valueOf(getMaxIts()),
-            "Метод поиска минимума:", getUseConjugateGradientDescent()
-            ? "Метод сопряженных градиентов" : "Квазиньютоновский метод"};
+                "Метод поиска минимума:", getUseConjugateGradientDescent()
+                ? "Метод сопряженных градиентов" : "Квазиньютоновский метод"};
         return options;
     }
 }

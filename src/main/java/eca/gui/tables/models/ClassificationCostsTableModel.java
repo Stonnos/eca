@@ -13,52 +13,51 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author Рома
  */
 public class ClassificationCostsTableModel extends AbstractTableModel {
-       
+
     private final Instances data;
     private final Evaluation ev;
-    private final String[] titles = {"Класс","TPR", "FPR",
-                    "TNR", "FNR",
-                    "Полнота", "Точность", "F - мера", "AUC"};
+    private final String[] titles = {"Класс", "TPR", "FPR",
+            "TNR", "FNR",
+            "Полнота", "Точность", "F - мера", "AUC"};
     private Object[][] values;
-    
+
     private final DecimalFormat format = NumericFormat.getInstance();
-    
+
     public ClassificationCostsTableModel(Instances data, Evaluation ev, int digits) {
         this.data = data;
         this.ev = ev;
         format.setMaximumFractionDigits(digits);
         this.makeMatrix();
     }
-    
+
     public DecimalFormat getFormat() {
         return format;
     }
-    
+
     @Override
     public int getColumnCount() {
         return titles.length;
     }
-    
+
     @Override
     public int getRowCount() {
         return values.length;
-    }   
-    
+    }
+
     @Override
     public Object getValueAt(int row, int column) {
         return column == 0 ? row : values[row][column - 1];
     }
-    
+
     @Override
     public String getColumnName(int column) {
         return titles[column];
     }
-    
-    private void makeMatrix() {     
+
+    private void makeMatrix() {
         values = new Object[data.numClasses()][titles.length - 1];
         for (int i = 0; i < data.numClasses(); i++) {
             values[i][0] = format.format(ev.truePositiveRate(i));
@@ -72,5 +71,5 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
             values[i][7] = Double.isNaN(auc) ? "NaN" : format.format(auc);
         }
     }
-    
+
 }

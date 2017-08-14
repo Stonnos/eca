@@ -33,7 +33,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- *
  * @author Рома
  */
 public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier> {
@@ -54,7 +53,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private BaseOptionsDialog metaCls;
 
     public StackingOptionsDialog(Window parent, String title,
-            StackingClassifier forest, Instances data) {
+                                 StackingClassifier forest, Instances data) {
         super(parent, title, forest, data);
         this.data = data;
         this.setLayout(new GridBagLayout());
@@ -118,8 +117,8 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         Dimension dim = new Dimension(300, 180);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
         String[] items = {ClassifiersNames.ID3, ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
-            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
+                ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
+                ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
         algorithms = new JList<>(items);
         algorithms.setPreferredSize(dim);
         algorithms.setMinimumSize(dim);

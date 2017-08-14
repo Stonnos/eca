@@ -8,6 +8,7 @@ package eca.neural.functions;
 /**
  * Implements logistic activation function: <p>
  * <code>f(s) = 1 / (1 + exp(-a*s))</code>
+ *
  * @author Рома
  */
 public class LogisticFunction extends AbstractFunction {
@@ -15,10 +16,12 @@ public class LogisticFunction extends AbstractFunction {
     /**
      * Creates <tt>LogisticFunction</tt> object.
      */
-    public LogisticFunction() {}
+    public LogisticFunction() {
+    }
 
     /**
      * Creates <tt>LogisticFunction</tt> object with given coefficient.
+     *
      * @param a the value of coefficient
      */
     public LogisticFunction(double a) {
@@ -27,12 +30,12 @@ public class LogisticFunction extends AbstractFunction {
 
     @Override
     public double process(double s) {
-	return 1.0 / (1.0 + Math.exp(-getCoefficient() * s));
+        return 1.0 / (1.0 + Math.exp(-getCoefficient() * s));
     }
 
     @Override
     public double derivative(double s) {
-	return getCoefficient() * process(s) * (1 - process(s));
+        return getCoefficient() * process(s) * (1 - process(s));
     }
 
 }

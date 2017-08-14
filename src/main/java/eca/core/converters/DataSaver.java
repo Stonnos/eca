@@ -11,12 +11,14 @@ import java.io.IOException;
 /**
  * Class for saving {@link Instances} objects to file with extensions such as:
  * csv, arff, xls, xlsx.
+ *
  * @author Roman Batygin
  */
 public class DataSaver {
 
     /**
      * Saves data to file.
+     *
      * @param file file object
      * @param data <tt>Instances</tt> object
      * @throws IOException

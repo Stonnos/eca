@@ -17,7 +17,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- *
  * @author Рома
  */
 public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
@@ -37,7 +36,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
     private JRadioButton newton, gradient;
 
     public LogisticOptionsDialogBase(Window parent, String title,
-            Logistic model, Instances data) {
+                                     Logistic model, Instances data) {
         super(parent, title, model, data);
         this.data = data;
         this.setLayout(new GridBagLayout());
@@ -61,7 +60,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         optionPanel.add(numItsText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         JLabel methodLabel = new JLabel(optMethodMessage);
-        methodLabel.setFont(new Font("Arial",1, 13));
+        methodLabel.setFont(new Font("Arial", 1, 13));
         //-----------------------------------------------------------
         optionPanel.add(methodLabel,
                 new GridBagConstraints(0, 1, 2, 1, 1, 1,

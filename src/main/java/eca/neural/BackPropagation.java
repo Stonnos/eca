@@ -9,25 +9,30 @@ import java.util.Iterator;
 
 /**
  * Implements back propagation algorithm. <p>
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Sets the value of learning rate (Default: 0.1) <p>
- *
+ * <p>
  * Sets the value of momentum (Default: 0.2) <p>
  *
  * @author Рома
  */
 public class BackPropagation extends LearningAlgorithm {
 
-    /** Learning rate value **/
+    /**
+     * Learning rate value
+     **/
     private double learningRate = 0.1;
 
-    /** Momentum value **/
+    /**
+     * Momentum value
+     **/
     private double momentum = 0.2;
 
     /**
      * Creates <tt>BackPropagation</tt> object.
+     *
      * @param network <tt>MultilayerPerceptron</tt> object.
      */
     public BackPropagation(MultilayerPerceptron network) {
@@ -40,19 +45,20 @@ public class BackPropagation extends LearningAlgorithm {
 
     public void setLearningRate(double learningRate) {
         if (learningRate <= 0.0 || learningRate > 1.0) {
-            throw new IllegalArgumentException("Недопустимое значение скорости обучения: " + String.valueOf(learningRate));
+            throw new IllegalArgumentException(
+                    "Недопустимое значение скорости обучения: " + String.valueOf(learningRate));
         }
         this.learningRate = learningRate;
     }
-    
+
     public double getMomentum() {
         return momentum;
     }
-    
+
     @Override
     public String[] getOptions() {
         String[] options = {"Коэффициент скорости обучения:", String.valueOf(learningRate),
-                            "Коэффициент момента:", String.valueOf(momentum)};
+                "Коэффициент момента:", String.valueOf(momentum)};
         return options;
     }
 
@@ -80,7 +86,7 @@ public class BackPropagation extends LearningAlgorithm {
     }
 
     private void correctWeight(Neuron u) {
-        for (Iterator<NeuralLink> e = u.inLinks(); e.hasNext();) {
+        for (Iterator<NeuralLink> e = u.inLinks(); e.hasNext(); ) {
             NeuralLink link = e.next();
             Neuron v = link.source();
             double dw = learningRate * u.getError() * v.getOutValue();
@@ -92,7 +98,7 @@ public class BackPropagation extends LearningAlgorithm {
 
     private double sumError(Neuron u) {
         double s = 0.0;
-        for (Iterator<NeuralLink> i = u.outLinks(); i.hasNext();) {
+        for (Iterator<NeuralLink> i = u.outLinks(); i.hasNext(); ) {
             NeuralLink e = i.next();
             s += e.target().getError() * e.getWeight();
         }

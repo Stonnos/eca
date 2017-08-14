@@ -9,18 +9,20 @@ import weka.core.Instance;
 
 /**
  * Square euclid distance function model.
+ *
  * @author Рома
  */
 public class SquareEuclidDistance implements Distance {
-    
+
     @Override
     public double distance(Instance x1, Instance x2) {
         double dist = 0.0;
         for (int i = 0; i < x1.numAttributes(); i++) {
-            if (i != x1.classIndex())
+            if (i != x1.classIndex()) {
                 dist += (x2.value(i) - x1.value(i)) * (x2.value(i) - x1.value(i));
+            }
         }
         return dist;
     }
-    
+
 }

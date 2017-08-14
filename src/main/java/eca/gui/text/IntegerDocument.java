@@ -10,7 +10,6 @@ import javax.swing.text.BadLocationException;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author Рома
  */
 public class IntegerDocument extends LengthDocument {

@@ -12,6 +12,7 @@ import java.util.Enumeration;
 
 /**
  * Class for generating Id3 decision tree model.
+ *
  * @author Рома
  */
 public class ID3 extends DecisionTreeClassifier {
@@ -29,9 +30,8 @@ public class ID3 extends DecisionTreeClassifier {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
                 processNumericSplit(a, x, splitAlgorithm, split);
-            }
-            else {
-               processNominalSplit(a, x, splitAlgorithm, split);
+            } else {
+                processNominalSplit(a, x, splitAlgorithm, split);
             }
         }
         return split;
@@ -74,5 +74,5 @@ public class ID3 extends DecisionTreeClassifier {
             return info(x) - infoS(x);
         }
     }
-    
+
 }

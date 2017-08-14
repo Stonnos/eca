@@ -10,15 +10,15 @@ import java.util.Random;
 
 /**
  * Class for generating data with given properties.
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Set number of classes (Default: 2) <p>
- *
+ * <p>
  * Set number of attributes (Default: 12) <p>
- *
+ * <p>
  * Set number of instances (Default: 100) <p>
- *
+ * <p>
  * Created by Roman93 on 15.04.2017.
  */
 public class SimpleDataGenerator implements DataGenerator {
@@ -45,13 +45,19 @@ public class SimpleDataGenerator implements DataGenerator {
 
     private static final int[] ATTRIBUTE_TYPES = {Attribute.NOMINAL, Attribute.NUMERIC};
 
-    /** Number of classes **/
+    /**
+     * Number of classes
+     **/
     private int numClasses = 2;
 
-    /** Number of attributes **/
+    /**
+     * Number of attributes
+     **/
     private int numAttributes = 12;
 
-    /** Number of instances **/
+    /**
+     * Number of instances
+     **/
     private int numInstances = 100;
 
     private Random random = new Random();
@@ -62,6 +68,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Returns the number of classes.
+     *
      * @return the number of classes
      */
     public int getNumClasses() {
@@ -70,6 +77,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Sets the number of classes.
+     *
      * @param numClasses the number of classes
      */
     public void setNumClasses(int numClasses) {
@@ -78,6 +86,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Returns the number of attributes.
+     *
      * @return the number of attributes
      */
     public int getNumAttributes() {
@@ -86,6 +95,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Sets the number of attributes.
+     *
      * @param numAttributes the number of attributes
      */
     public void setNumAttributes(int numAttributes) {
@@ -94,6 +104,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Returns the number of instances.
+     *
      * @return the number of instances
      */
     public int getNumInstances() {
@@ -102,6 +113,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Sets the number of instances.
+     *
      * @param numInstances the number of instances
      */
     public void setNumInstances(int numInstances) {
@@ -110,6 +122,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Returns <tt>Random</tt> object.
+     *
      * @return <tt>Random</tt> object
      */
     public Random getRandom() {
@@ -118,6 +131,7 @@ public class SimpleDataGenerator implements DataGenerator {
 
     /**
      * Sets <tt>Random</tt> object.
+     *
      * @param random <tt>Random</tt> object
      */
     public void setRandom(Random random) {
@@ -138,8 +152,7 @@ public class SimpleDataGenerator implements DataGenerator {
                 double value;
                 if (attribute.isNumeric()) {
                     value = NumberGenerator.nextGaussianWithNoise(random, means[j], variances[j]);
-                }
-                else {
+                } else {
                     value = random.nextInt(attribute.numValues());
                 }
                 obj.setValue(attribute, value);

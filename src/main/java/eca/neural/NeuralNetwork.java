@@ -23,14 +23,19 @@ import java.util.NoSuchElementException;
 
 /**
  * Class for generating neural network for classification task.
+ *
  * @author Рома
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler {
 
-    /** Initial training set **/
+    /**
+     * Initial training set
+     **/
     private Instances data;
 
-    /** Multilayer perceptron **/
+    /**
+     * Multilayer perceptron
+     **/
     private final MultilayerPerceptron network;
 
     private MinMaxNormalizer normalizer;
@@ -39,6 +44,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     /**
      * Creates <tt>NeuralNetwork</tt> object and sets the initial
      * values for input and output neurons number.
+     *
      * @param data training data
      */
     public NeuralNetwork(Instances data) {
@@ -52,7 +58,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Creates <tt>NeuralNetwork</tt> object with given options.
-     * @param data training data
+     *
+     * @param data     training data
      * @param function the neurons activation function in hidden layer
      */
     public NeuralNetwork(Instances data, ActivationFunction function) {
@@ -73,6 +80,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Returns the minimum number of links in hidden layers.
+     *
      * @return the minimum number of links in hidden layers
      */
     public final int getMinLinksNum() {
@@ -81,15 +89,17 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Returns the maximum number of links in hidden layers.
+     *
      * @return the maximum number of links in hidden layers
      */
     public final int getMaxLinksNum() {
-        return  data.numClasses() * (1 + data.numInstances() / (data.numAttributes() - 1))
+        return data.numClasses() * (1 + data.numInstances() / (data.numAttributes() - 1))
                 * (data.numAttributes() + data.numClasses()) + data.numClasses();
     }
 
     /**
      * Returns the minimum number of neurons in hidden layers.
+     *
      * @return the minimum number of neurons in hidden layers
      */
     public final int getMinNumNeuronsInHiddenLayer() {
@@ -98,6 +108,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Returns the maximum number of neurons in hidden layers.
+     *
      * @return the maximum number of neurons in hidden layers
      */
     public final int getMaxNumNeuronsInHiddenLayer() {
@@ -107,14 +118,16 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     @Override
     public String[] getOptions() {
         String[] options = {"Количество нейронов во входном слое:", String.valueOf(network().inLayerNeuronsNum()),
-            "Количество нейронов в выходном слое:", String.valueOf(network().outLayerNeuronsNum()),
-            "Количество скрытых слоев:", String.valueOf(network().hiddenLayersNum()),
-            "Структура скрытого слоя:", network().getHiddenLayer(),
-            "Максимальное число итераций:", String.valueOf(network().getMaxIterationsNum()),
-            "Допустимая ошибка:", String.valueOf(network().getMinError()),
-            "Активационная функция нейронов скрытого слоя:", network().getActivationFunction().getClass().getSimpleName(),
-            "Активационная функция нейронов выходного слоя:", network().getOutActivationFunction().getClass().getSimpleName(),
-            "Алгоритм обучения:", network().getLearningAlgorithm().getClass().getSimpleName()};
+                "Количество нейронов в выходном слое:", String.valueOf(network().outLayerNeuronsNum()),
+                "Количество скрытых слоев:", String.valueOf(network().hiddenLayersNum()),
+                "Структура скрытого слоя:", network().getHiddenLayer(),
+                "Максимальное число итераций:", String.valueOf(network().getMaxIterationsNum()),
+                "Допустимая ошибка:", String.valueOf(network().getMinError()),
+                "Активационная функция нейронов скрытого слоя:",
+                network().getActivationFunction().getClass().getSimpleName(),
+                "Активационная функция нейронов выходного слоя:",
+                network().getOutActivationFunction().getClass().getSimpleName(),
+                "Алгоритм обучения:", network().getLearningAlgorithm().getClass().getSimpleName()};
         if (network.getLearningAlgorithm() instanceof BackPropagation) {
             String[] algoritmOptions = network().getLearningAlgorithm().getOptions();
             options = Arrays.copyOf(options, options.length + algoritmOptions.length);
@@ -127,6 +140,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     /**
      * Returns <tt>MultilayerPerceptron</tt> object.
+     *
      * @return <tt>MultilayerPerceptron</tt> object
      */
     public MultilayerPerceptron network() {

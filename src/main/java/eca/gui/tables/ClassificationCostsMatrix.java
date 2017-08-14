@@ -12,19 +12,18 @@ import weka.core.Instances;
 import java.text.DecimalFormat;
 
 /**
- *
  * @author Рома
  */
 public class ClassificationCostsMatrix extends JDataTableBase {
-    
+
     public ClassificationCostsMatrix(Instances data, Evaluation ev, int digits) {
         super(new ClassificationCostsTableModel(data, ev, digits));
         this.setAutoResizeOff(false);
     }
-    
-        
+
+
     public DecimalFormat getFormat() {
-        return ((ClassificationCostsTableModel)this.getModel()).getFormat();
+        return ((ClassificationCostsTableModel) this.getModel()).getFormat();
     }
-    
+
 }

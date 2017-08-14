@@ -23,7 +23,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 /**
- *
  * @author Рома
  */
 public class EnsembleTable extends JDataTableBase {
@@ -64,7 +63,7 @@ public class EnsembleTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());
                 this.setBackground(table.getSelectionBackground());
@@ -88,7 +87,7 @@ public class EnsembleTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());
                 this.setBackground(table.getSelectionBackground());
@@ -128,7 +127,7 @@ public class EnsembleTable extends JDataTableBase {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             if (isSelected) {
                 button.setForeground(table.getSelectionForeground());
                 button.setBackground(table.getSelectionBackground());

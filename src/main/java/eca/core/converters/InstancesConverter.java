@@ -10,13 +10,15 @@ import java.util.Date;
 
 /**
  * Class for converting {@link Instances} objects to lists.
+ *
  * @author Roman Batygin
  */
 public class InstancesConverter {
 
     /**
      * Converts <tt>Instances</tt> object to list.
-     * @param data <tt>Instances</tt>
+     *
+     * @param data   <tt>Instances</tt>
      * @param format <tt> DecimalFormat</tt> object
      * @return list representation of <tt>Instances</tt> object
      */
@@ -28,12 +30,12 @@ public class InstancesConverter {
                 Attribute attr = data.instance(i).attribute(j);
                 if (data.instance(i).isMissing(attr)) {
                     row.add(null);
-                }
-                else if (attr.isDate()) {
-                    row.add(DateFormat.SIMPLE_DATE_FORMAT.format(new Date((long)data.instance(i).value(j))));
-                }
-                else row.add(attr.isNumeric() ? format.format(data.instance(i).value(j))
+                } else if (attr.isDate()) {
+                    row.add(DateFormat.SIMPLE_DATE_FORMAT.format(new Date((long) data.instance(i).value(j))));
+                } else {
+                    row.add(attr.isNumeric() ? format.format(data.instance(i).value(j))
                             : data.instance(i).stringValue(j));
+                }
             }
             values.add(row);
         }

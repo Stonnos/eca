@@ -31,6 +31,7 @@ import java.util.ArrayList;
  * - Data should not contain extraneous records; <p>
  * - Data can not contain empty columns; <p>
  * - Each column must contain data of the same type. <p>
+ *
  * @author Рома
  */
 public class XLSLoader {
@@ -41,11 +42,12 @@ public class XLSLoader {
 
     /**
      * Sets the file object.
+     *
      * @param file file object
      * @throws Exception if a file object is null or has invalid extension
      */
     public void setFile(File file) throws Exception {
-        Asserts.notNull(file, "file");
+        Asserts.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(".xls") && !file.getName().endsWith(".xlsx")) {
             throw new Exception("Wrong file extension!");
         }
@@ -54,6 +56,7 @@ public class XLSLoader {
 
     /**
      * Returns file object.
+     *
      * @return file object
      */
     public File getFile() {
@@ -62,15 +65,17 @@ public class XLSLoader {
 
     /**
      * Sets <tt>InputStream</tt> object.
+     *
      * @param inputStream <tt>InputStream</tt> object
      */
     public void setInputStream(InputStream inputStream) {
-        Asserts.notNull(inputStream, "inputStream");
+        Asserts.notNull(inputStream, "InputStream is not specified!");
         this.inputStream = inputStream;
     }
 
     /**
      * Returns <tt>InputStream</tt> object.
+     *
      * @return <tt>InputStream</tt> object
      */
     public InputStream getInputStream() {
@@ -79,6 +84,7 @@ public class XLSLoader {
 
     /**
      * Reads data from xls/xlsx file.
+     *
      * @return <tt>Instances</tt> object
      * @throws Exception
      */
@@ -159,8 +165,7 @@ public class XLSLoader {
                         if (!val.isEmpty() && !values.contains(val)) {
                             values.add(val);
                         }
-                    }
-                    else if (cellType.equals(CellType.BOOLEAN)) {
+                    } else if (cellType.equals(CellType.BOOLEAN)) {
                         String val = String.valueOf(cell.getBooleanCellValue());
                         if (!values.contains(val)) {
                             values.add(val);
@@ -174,11 +179,9 @@ public class XLSLoader {
             Attribute a;
             if (isDate) {
                 a = new Attribute(getColName(sheet, i), DateFormat.DATE_FORMAT);
-            }
-            else if (values.isEmpty()) {
+            } else if (values.isEmpty()) {
                 a = new Attribute(getColName(sheet, i));
-            }
-            else {
+            } else {
                 a = new Attribute(getColName(sheet, i), values);
             }
             attr.add(a);
@@ -208,10 +211,9 @@ public class XLSLoader {
                         throw new Exception("Значения должны быть числовыми или текстовыми!");
                     }
                     CellType t = cell.getCellTypeEnum();
-                    if (cellType != null  && !t.equals(CellType.BLANK) && !t.equals(cellType)) {
+                    if (cellType != null && !t.equals(CellType.BLANK) && !t.equals(cellType)) {
                         throw new Exception("Столбец " + i + " содержит данные различных типов!");
-                    }
-                    else {
+                    } else {
                         cellType = cell.getCellTypeEnum();
                     }
 

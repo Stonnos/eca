@@ -7,6 +7,7 @@ package eca.ensemble;
 
 import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -18,15 +19,15 @@ import java.util.ArrayList;
 
 /**
  * Implements stacking algorithm.
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Set meta classifier. <p>
- *
+ * <p>
  * Set number of folds for k - cross validation. (Default: 10) <p>
- *
+ * <p>
  * Use k - cross validation method for creating meta data. <p>
- *
+ * <p>
  * Set individual classifiers collection  <p>
  *
  * @author Рома
@@ -34,25 +35,39 @@ import java.util.ArrayList;
 public class StackingClassifier extends AbstractClassifier
         implements EnsembleClassifier, InstancesHandler {
 
-    /** Initial training set **/
+    /**
+     * Initial training set
+     **/
     private Instances initialData;
 
-    /** Meta data **/
+    /**
+     * Meta data
+     **/
     private Instances metaSet;
 
-    /** Meta classifier **/
+    /**
+     * Meta classifier
+     **/
     private Classifier metaClassifier;
 
-    /** Classifiers set **/
+    /**
+     * Classifiers set
+     **/
     private ClassifiersSet classifiers;
 
-    /** Filtered training set **/
+    /**
+     * Filtered training set
+     **/
     private Instances filteredData;
 
-    /** Use k - cross validation method? **/
+    /**
+     * Use k - cross validation method?
+     **/
     private boolean use_Cross_Validation;
 
-    /** Number of folds **/
+    /**
+     * Number of folds
+     **/
     private int numFolds = 10;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
@@ -65,6 +80,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Creates <tt>StackingClassifier</tt> object.
+     *
      * @param flag the value of use cross validation.
      */
     public StackingClassifier(boolean flag) {
@@ -73,6 +89,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Sets the value of use cross validation.
+     *
      * @param flag the value of use cross validation
      */
     public final void setUseCrossValidation(boolean flag) {
@@ -81,6 +98,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Returns the value of use cross validation.
+     *
      * @return the value of use cross validation
      */
     public final boolean getUseCrossValidation() {
@@ -89,6 +107,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Sets the number of folds.
+     *
      * @param numFolds the number of folds
      */
     public void setNumFolds(int numFolds) {
@@ -97,6 +116,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Returns the number of folds.
+     *
      * @return the number of folds
      */
     public int getNumFolds() {
@@ -105,6 +125,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Returns classifiers collection.
+     *
      * @return classifiers collection
      */
     public ClassifiersSet getClassifiers() {
@@ -113,6 +134,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Sets classifiers collection.
+     *
      * @param classifiers classifiers collection
      */
     public void setClassifiers(ClassifiersSet classifiers) {
@@ -127,6 +149,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Returns the number of classifiers.
+     *
      * @return the number of classifiers
      */
     public int numClassifiers() {
@@ -173,6 +196,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Sets meta classifier.
+     *
      * @param classifier the number of classifiers
      */
     public void setMetaClassifier(Classifier classifier) {
@@ -181,6 +205,7 @@ public class StackingClassifier extends AbstractClassifier
 
     /**
      * Returns meta classifier.
+     *
      * @return meta classifier
      */
     public Classifier getMetaClassifier() {
@@ -194,7 +219,7 @@ public class StackingClassifier extends AbstractClassifier
     }
 
     @Override
-    public ArrayList<Classifier> getStructure() throws Exception { 
+    public ArrayList<Classifier> getStructure() throws Exception {
         ArrayList<Classifier> copies = getClassifiers().clone().toList();
         copies.add(AbstractClassifier.makeCopy(metaClassifier));
         return copies;
@@ -232,8 +257,8 @@ public class StackingClassifier extends AbstractClassifier
         }
 
         for (int k = 0; k < classifiers.size(); k++) {
-            attr.add(new Attribute(classifiers.getClassifier(k).getClass().getSimpleName() + " "
-                    + String.valueOf(k), (ArrayList<String>) values.clone()));
+            attr.add(new Attribute(classifiers.getClassifier(k).getClass().getSimpleName() +
+                    StringUtils.SPACE + String.valueOf(k), (ArrayList<String>) values.clone()));
         }
 
         attr.add((Attribute) classAttr.copy());

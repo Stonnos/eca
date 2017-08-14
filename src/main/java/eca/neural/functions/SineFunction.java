@@ -16,10 +16,12 @@ public class SineFunction extends AbstractFunction {
     /**
      * Creates <tt>SineFunction</tt> object.
      */
-    public SineFunction() {}
+    public SineFunction() {
+    }
 
     /**
      * Creates <tt>SineFunction</tt> object with given coefficient.
+     *
      * @param a the value of coefficient
      */
     public SineFunction(double a) {
@@ -28,12 +30,12 @@ public class SineFunction extends AbstractFunction {
 
     @Override
     public double process(double s) {
-	return Math.sin(getCoefficient() * s);
+        return Math.sin(getCoefficient() * s);
     }
 
     @Override
     public double derivative(double s) {
-	    return getCoefficient() * Math.cos(getCoefficient() * s);
+        return getCoefficient() * Math.cos(getCoefficient() * s);
     }
-    
+
 }

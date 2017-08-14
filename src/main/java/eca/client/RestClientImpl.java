@@ -1,8 +1,8 @@
 package eca.client;
 
 import eca.EcaServiceProperties;
-import eca.beans.ClassifierDescriptor;
-import eca.beans.InputData;
+import eca.model.ClassifierDescriptor;
+import eca.model.InputData;
 import eca.core.TestMethod;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -26,16 +26,37 @@ public class RestClientImpl implements RestClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
 
+    /**
+     * Evaluation test method
+     **/
     private int testMethod = TestMethod.TRAINING_SET;
 
+    /**
+     * Number of folds
+     **/
     private Integer numFolds;
 
+    /**
+     * Number of tests
+     **/
     private Integer numTests;
 
+    /**
+     * Return the evaluation method type.
+     *
+     * @return the evaluation method type
+     */
     public int getTestMethod() {
         return testMethod;
     }
 
+    /**
+     * Sets the evaluation method type
+     *
+     * @param testMethod the evaluation method type
+     * @throws IllegalArgumentException if the specified method type
+     *                                  is invalid
+     */
     public void setTestMethod(int testMethod) {
         if (testMethod != TestMethod.TRAINING_SET && testMethod != TestMethod.CROSS_VALIDATION) {
             throw new IllegalArgumentException("Invalid test method value!");
@@ -43,18 +64,38 @@ public class RestClientImpl implements RestClient {
         this.testMethod = testMethod;
     }
 
+    /**
+     * Returns the number of folds.
+     *
+     * @return the number of folds
+     */
     public Integer getNumFolds() {
         return numFolds;
     }
 
+    /**
+     * Sets the number of folds.
+     *
+     * @param numFolds the number of folds
+     */
     public void setNumFolds(Integer numFolds) {
         this.numFolds = numFolds;
     }
 
+    /**
+     * Returns the number of validations.
+     *
+     * @return the number of validations
+     */
     public Integer getNumTests() {
         return numTests;
     }
 
+    /**
+     * Sets the number of validations.
+     *
+     * @param numTests the number of validations
+     */
     public void setNumTests(Integer numTests) {
         this.numTests = numTests;
     }
@@ -113,7 +154,7 @@ public class RestClientImpl implements RestClient {
 
         ResponseEntity<ByteArrayResource> response =
                 restTemplate.exchange(PROPERTIES.getEcaServiceUrl(), HttpMethod.POST,
-                request, ByteArrayResource.class);
+                        request, ByteArrayResource.class);
 
         HttpStatus httpStatus = response.getStatusCode();
 

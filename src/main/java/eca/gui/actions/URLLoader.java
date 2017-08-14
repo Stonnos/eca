@@ -7,23 +7,23 @@ package eca.gui.actions;
 
 import eca.net.DataLoaderImpl;
 import weka.core.Instances;
+
 /**
- *
  * @author Roman93
  */
 public class URLLoader implements CallbackAction {
-    
+
     private Instances data;
     private final DataLoaderImpl loader;
-    
-     public URLLoader(DataLoaderImpl loader) {
+
+    public URLLoader(DataLoaderImpl loader) {
         this.loader = loader;
     }
-    
+
     public Instances data() {
         return data;
     }
-    
+
     @Override
     public void apply() throws Exception {
         data = loader.loadInstances();

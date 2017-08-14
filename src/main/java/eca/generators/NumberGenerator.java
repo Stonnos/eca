@@ -10,6 +10,7 @@ public class NumberGenerator {
 
     /**
      * Returns the number uniformly distributed in defined interval {@code [a, b)}.
+     *
      * @param lowerBound lower bound of interval
      * @param upperBound upper bound of interval
      * @return the number uniformly distributed in defined interval {@code [a, b)}
@@ -23,8 +24,9 @@ public class NumberGenerator {
 
     /**
      * Returns the number with normal distribution and defined mean and standard deviation.
-     * @param random <tt>Random</tt> object.
-     * @param mean mean of the normal distribution
+     *
+     * @param random   <tt>Random</tt> object.
+     * @param mean     mean of the normal distribution
      * @param variance standard deviation of the normal distribution
      * @return the number normally distributed with defined mean and standard deviation.
      */
@@ -35,8 +37,9 @@ public class NumberGenerator {
     /**
      * Returns the number with normal distribution and additive noise uniformly
      * distributed in interval {@code [-0.5, 0.5)}.
-     * @param random <tt>Random</tt> object.
-     * @param mean mean of the normal distribution
+     *
+     * @param random   <tt>Random</tt> object.
+     * @param mean     mean of the normal distribution
      * @param variance standard deviation of the normal distribution
      * @return the number normally distributed with defined mean and standard deviation.
      */

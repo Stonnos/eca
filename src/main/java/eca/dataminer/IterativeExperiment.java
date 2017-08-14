@@ -5,22 +5,25 @@
  */
 package eca.dataminer;
 
-import eca.beans.ClassifierDescriptor;
+import eca.model.ClassifierDescriptor;
 
 /**
  * Interface for iterative experiment building.
+ *
  * @author Roman93
  */
 public interface IterativeExperiment {
 
     /**
      * Returns <tt>true</tt> if the next iteration is exist.
+     *
      * @return <tt>true</tt> if the next iteration is exist
      */
     boolean hasNext();
 
     /**
      * Returns the next constructed model.
+     *
      * @return the next constructed model
      * @throws Exception
      */
@@ -28,6 +31,7 @@ public interface IterativeExperiment {
 
     /**
      * Returns the value of building percent.
+     *
      * @return the value of building percent
      */
     int getPercent();

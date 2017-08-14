@@ -11,7 +11,6 @@ import eca.gui.dialogs.NumberFormatDialog;
 import javax.swing.*;
 
 /**
- *
  * @author Roman93
  */
 public class AutomatedNeuralNetworkFrame extends ExperimentFrame {

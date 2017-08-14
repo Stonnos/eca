@@ -25,7 +25,6 @@ import java.text.DecimalFormat;
 import java.util.Enumeration;
 
 /**
- *
  * @author Рома
  */
 public class ClassifyInstanceTable extends JDataTableBase {
@@ -117,7 +116,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         info.append("</tr><tr>");
         info.append("<td class = 'attr'>Тип:</td>");
         if (a.isNumeric()) {
-            info.append("<td>").append(a.isDate()? AttributesTypes.DATE : AttributesTypes.NUMERIC).append("</td>");
+            info.append("<td>").append(a.isDate() ? AttributesTypes.DATE : AttributesTypes.NUMERIC).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr'>Минимальное значение:</td>").
                     append("<td>").append(attributeStatistics.getMin(a)).append("</td>");
@@ -165,7 +164,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             int i = row >= data.classIndex() ? row + 1 : row;
             if (isSelected) {
                 this.setForeground(table.getSelectionForeground());

@@ -11,7 +11,8 @@ public class StringCopier implements Copyable {
 
     private String copyString;
 
-    public StringCopier() {}
+    public StringCopier() {
+    }
 
     public StringCopier(String copyString) {
         this.copyString = copyString;

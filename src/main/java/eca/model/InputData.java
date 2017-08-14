@@ -1,4 +1,4 @@
-package eca.beans;
+package eca.model;
 
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -6,6 +6,7 @@ import weka.core.Instances;
 import java.io.Serializable;
 
 /**
+ * Classifier input options model.
  * @author Roman Batygin
  */
 

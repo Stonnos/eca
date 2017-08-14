@@ -11,12 +11,13 @@ import java.util.Iterator;
 
 /**
  * Implements multilayer perceptron learning algorithm.
+ *
  * @author Рома
  */
 public abstract class LearningAlgorithm implements java.io.Serializable {
-    
+
     protected MultilayerPerceptron network;
-     
+
     protected LearningAlgorithm(MultilayerPerceptron network) {
         if (network == null) {
             throw new IllegalArgumentException();
@@ -26,13 +27,15 @@ public abstract class LearningAlgorithm implements java.io.Serializable {
 
     /**
      * Performs one iteration of learning algorithm.
-     * @param actual actual outer values
+     *
+     * @param actual   actual outer values
      * @param expected expected outer values
      */
     public abstract void train(double[] actual, double[] expected);
 
     /**
      * Returns options list.
+     *
      * @return options list
      */
     public abstract String[] getOptions();
@@ -47,15 +50,15 @@ public abstract class LearningAlgorithm implements java.io.Serializable {
                     initializeLinks(neuron.inLinks());
                 }
                 initializeLinks(neuron.outLinks());
-            } 
+            }
         }
     }
-            
+
     private void initializeLinks(Iterator<NeuralLink> i) {
         while (i.hasNext()) {
             NeuralLink link = i.next();
-            link.setWeight(NumberGenerator.random(-0.5,0.5));
+            link.setWeight(NumberGenerator.random(-0.5, 0.5));
         }
     }
-    
+
 }

@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.beans;
+package eca.model;
 
 /**
- *
  * @author Roman93
  */
 public class Entry implements java.io.Serializable {
-    
+
     private String key;
-    
+
     private String value;
-    
-    public Entry() {}
-    
+
+    public Entry() {
+    }
+
     public Entry(String key, String value) {
         this.key = key;
         this.value = value;
@@ -37,5 +37,5 @@ public class Entry implements java.io.Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
 }

@@ -7,17 +7,19 @@ package eca.db;
 
 /**
  * Implements MySQL datasource descriptor.
+ *
  * @author Roman93
  */
 public class MySQLConnectionDescriptor extends ConnectionDescriptor {
 
     /**
      * Creates <tt>MySQLConnectionDescriptor</tt> object with given options.
-     * @param host datasource host
-     * @param port datasource port number
+     *
+     * @param host         datasource host
+     * @param port         datasource port number
      * @param dataBaseName database name
-     * @param login user login
-     * @param password user password
+     * @param login        user login
+     * @param password     user password
      */
     public MySQLConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
         super(host, port, dataBaseName, login, password);

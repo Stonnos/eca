@@ -7,6 +7,7 @@ package eca.gui.tables;
 
 import eca.gui.dialogs.JOptionPaneN;
 import eca.gui.tables.models.InstancesTableModel;
+import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -16,11 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- *
  * @author Рома
  */
 public class InstancesTable extends JDataTableBase {
-    
+
     public InstancesTable(final Instances data, final JTextField numInstances) {
         super(new InstancesTableModel(data));
         MissingCellRenderer renderer = new MissingCellRenderer();
@@ -37,7 +37,7 @@ public class InstancesTable extends JDataTableBase {
         JMenuItem reValueMenu = new JMenuItem("Замена значений атрибута");
         //-----------------------------------
         popMenu.addPopupMenuListener(new PopupMenuListener() {
-            
+
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 int i = getSelectedRow();
@@ -46,15 +46,15 @@ public class InstancesTable extends JDataTableBase {
                 missMenu.setEnabled(getRowCount() != 0);
                 reValueMenu.setEnabled(getSelectedColumn() > 0);
             }
-            
+
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                
+
             }
-            
+
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-                
+
             }
         });
         //-----------------------------------
@@ -122,10 +122,10 @@ public class InstancesTable extends JDataTableBase {
                 int i = getSelectedColumn();
                 if (i > 0) {
                     int j = getSelectedRow();
-                    String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : "";
+                    String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
                     String[] labels = {"Старое значение:",
                             "Новое значение:"};
-                    String[] values = {value , ""};
+                    String[] values = {value, StringUtils.EMPTY};
                     JOptionPaneN frame = new JOptionPaneN(null,
                             "Замена значения", labels, values,
                             2, 10);
@@ -143,15 +143,16 @@ public class InstancesTable extends JDataTableBase {
         popMenu.add(clearMenu);
         popMenu.add(missMenu);
         popMenu.add(reValueMenu);
-        this.getTableHeader().setComponentPopupMenu(popMenu);;
+        this.getTableHeader().setComponentPopupMenu(popMenu);
+        ;
     }
-    
+
     public final InstancesTableModel model() {
         return (InstancesTableModel) this.getModel();
     }
-    
+
     public final Instances data() {
         return model().data();
     }
-    
+
 }

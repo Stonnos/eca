@@ -22,13 +22,13 @@ import java.util.Arrays;
 
 /**
  * Class for generating k - nearest neighbours model. <p>
- *
+ * <p>
  * Valid options are: <p>
- *
+ * <p>
  * Set nearest neighbour weight (Default: 1) <p>
- *
+ * <p>
  * Set number of nearest neighbours (Default: 10) <p>
- *
+ * <p>
  * Set distance function (Default: {@link EuclidDistance}) <p>
  *
  * @author Рома
@@ -40,19 +40,29 @@ public class KNearestNeighbours extends AbstractClassifier
 
     public static final double MAX_WEIGHT = 1.0;
 
-    /** Initial training set **/
+    /**
+     * Initial training set
+     **/
     private Instances data;
 
-    /** Normalized training set **/
+    /**
+     * Normalized training set
+     **/
     private Instances normalizedData;
 
-    /** Number of nearest neighbours **/
+    /**
+     * Number of nearest neighbours
+     **/
     private int numNeighbours = 10;
 
-    /** Nearest neighbour weight **/
+    /**
+     * Nearest neighbour weight
+     **/
     private double weight = 1.0;
 
-    /** Distance function **/
+    /**
+     * Distance function
+     **/
     private Distance metric;
 
     private MinMaxNormalizer normalizer;
@@ -62,6 +72,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Creates <tt>KNearestNeighbours</tt> object.
+     *
      * @param metric distance function
      */
     public KNearestNeighbours(Distance metric) {
@@ -83,13 +94,14 @@ public class KNearestNeighbours extends AbstractClassifier
     @Override
     public String[] getOptions() {
         String[] options = {"Число ближайших соседей:", String.valueOf(numNeighbours),
-            "Вес ближайшего соседа:", String.valueOf(weight),
-            "Функция расстояния:", metric.getClass().getSimpleName()};
+                "Вес ближайшего соседа:", String.valueOf(weight),
+                "Функция расстояния:", metric.getClass().getSimpleName()};
         return options;
     }
 
     /**
      * Returns the number of nearest neighbours.
+     *
      * @return the number of nearest neighbours
      */
     public int getNumNeighbours() {
@@ -98,6 +110,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Returns the value of nearest neighbour weight.
+     *
      * @return the value of nearest neighbour weight
      */
     public double getWeight() {
@@ -106,8 +119,9 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Sets the number of nearest neighbours.
+     *
      * @param numNeighbours the number of nearest neighbours
-     * @exception IllegalArgumentException if the number of nearest neighbours is less than 1
+     * @throws IllegalArgumentException if the number of nearest neighbours is less than 1
      */
     public void setNumNeighbours(int numNeighbours) {
         if (numNeighbours < 1) {
@@ -118,9 +132,10 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Sets the value of nearest neighbour weight.
+     *
      * @param weight the value of nearest neighbour weight
-     * @exception IllegalArgumentException if the value of nearest neighbour weight is less
-     * than {@value MIN_WEIGHT} or greater than {@value MAX_WEIGHT}
+     * @throws IllegalArgumentException if the value of nearest neighbour weight is less
+     *                                  than {@value MIN_WEIGHT} or greater than {@value MAX_WEIGHT}
      */
     public void setWeight(double weight) {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
@@ -132,6 +147,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Returns the distance function object.
+     *
      * @return the distance function object
      */
     public Distance distance() {
@@ -140,6 +156,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     /**
      * Sets the distance function object.
+     *
      * @param metric the distance function object
      */
     public void setDistance(Distance metric) {
