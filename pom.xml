@@ -6,7 +6,7 @@
 
     <groupId>eca</groupId>
     <artifactId>eca</artifactId>
-    <version>4.0</version>
+    <version>4.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -200,7 +200,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <excludes>
-                                        <exclude>*.properties</exclude>
+                                        <exclude>application.properties</exclude>
                                     </excludes>
                                 </resource>
                             </resources>

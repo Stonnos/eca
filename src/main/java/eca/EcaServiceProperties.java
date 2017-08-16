@@ -1,6 +1,8 @@
 package eca;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -37,7 +39,7 @@ public class EcaServiceProperties {
     private static EcaServiceProperties INSTANCE;
 
     static {
-        try (InputStream stream = EcaServiceProperties.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+        try (InputStream stream = new FileInputStream(getPropertiesFile())) {
             PROPERTIES.load(stream);
         } catch (Exception e) {
         }
@@ -58,8 +60,7 @@ public class EcaServiceProperties {
     }
 
     public void save() throws Exception {
-        try (FileOutputStream out = new FileOutputStream(getClass().
-                getClassLoader().getResource(PROPERTIES_FILE).getFile());
+        try (FileOutputStream out = new FileOutputStream(getPropertiesFile());
              BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "Cp1251"))) {
             PROPERTIES.store(writer, null);
         }
@@ -107,6 +108,12 @@ public class EcaServiceProperties {
 
     public String getEcaServiceEvaluationMethodCrossValidation() {
         return PROPERTIES.getProperty(ECA_SERVICE_EVALUATION_METHOD_CROSS_VALIDATION);
+    }
+
+    private static File getPropertiesFile() {
+        String targetDir = new File(EcaServiceProperties.class.getProtectionDomain()
+                .getCodeSource().getLocation().getPath()).getParent();
+        return new File(targetDir, PROPERTIES_FILE);
     }
 
 }
