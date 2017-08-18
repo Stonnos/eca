@@ -40,6 +40,8 @@ public class KNearestNeighbours extends AbstractClassifier
 
     public static final double MAX_WEIGHT = 1.0;
 
+    public static final int MIN_NEIGHBOURS_NUMBER = 1;
+
     /**
      * Initial training set
      **/
@@ -124,8 +126,9 @@ public class KNearestNeighbours extends AbstractClassifier
      * @throws IllegalArgumentException if the number of nearest neighbours is less than 1
      */
     public void setNumNeighbours(int numNeighbours) {
-        if (numNeighbours < 1) {
-            throw new IllegalArgumentException("Чило ближайших соседей должно быть не менее 1!");
+        if (numNeighbours < MIN_NEIGHBOURS_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("Число ближайших соседей должно быть не менее %d!", MIN_NEIGHBOURS_NUMBER));
         }
         this.numNeighbours = numNeighbours;
     }
@@ -139,8 +142,8 @@ public class KNearestNeighbours extends AbstractClassifier
      */
     public void setWeight(double weight) {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
-            throw new IllegalArgumentException("Вес должен лежать в интервале от "
-                    + String.valueOf(MIN_WEIGHT) + " до " + String.valueOf(MAX_WEIGHT) + "!");
+            throw new IllegalArgumentException(
+                    String.format("Вес должен лежать в интервале [%.1f, %.1f]!", MIN_WEIGHT, MAX_WEIGHT));
         }
         this.weight = weight;
     }

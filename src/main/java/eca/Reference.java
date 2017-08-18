@@ -5,6 +5,8 @@
  */
 package eca;
 
+import eca.io.FileUtils;
+
 import java.awt.Desktop;
 import java.io.File;
 
@@ -20,9 +22,7 @@ public class Reference {
 
     static {
         try {
-            String targetDir = new File(Reference.class.getProtectionDomain().
-                    getCodeSource().getLocation().getPath()).getParent();
-            REFERENCE_FILE = new File(targetDir, FILE_NAME);
+            REFERENCE_FILE = new File(FileUtils.getCurrentDir(), FILE_NAME);
             REFERENCE_FILE.setExecutable(true, false);
         } catch (Exception e) {
         }

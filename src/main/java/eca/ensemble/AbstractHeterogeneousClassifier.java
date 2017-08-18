@@ -69,9 +69,9 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
      */
     public final void setMaxError(double max_error) {
         if (max_error <= min_error || max_error > MAX_ERROR_THRESHOLD) {
-            throw new IllegalArgumentException("Значение допустимой ошибки"
-                    + " классификатора должно лежать в интервале: [" + String.valueOf(MIN_ERROR_THRESHOLD)
-                    + "," + String.valueOf(MAX_ERROR_THRESHOLD) + "]!");
+            throw new IllegalArgumentException(
+                    String.format("Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!",
+                    MIN_ERROR_THRESHOLD, MAX_ERROR_THRESHOLD));
         }
         this.max_error = max_error;
     }
@@ -103,9 +103,9 @@ public abstract class AbstractHeterogeneousClassifier extends IterativeEnsembleC
      */
     public void setMinError(double min_error) {
         if (min_error < MIN_ERROR_THRESHOLD || min_error >= max_error) {
-            throw new IllegalArgumentException("Значение допустимой ошибки"
-                    + " классификатора должно лежать в интервале: [" + String.valueOf(MIN_ERROR_THRESHOLD)
-                    + "," + String.valueOf(MAX_ERROR_THRESHOLD) + "]!");
+            throw new IllegalArgumentException(
+                    String.format("Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!",
+                    MIN_ERROR_THRESHOLD, MAX_ERROR_THRESHOLD));
         }
         this.min_error = min_error;
     }

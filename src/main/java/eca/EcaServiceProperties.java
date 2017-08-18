@@ -1,5 +1,7 @@
 package eca;
 
+import eca.io.FileUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -111,9 +113,7 @@ public class EcaServiceProperties {
     }
 
     private static File getPropertiesFile() {
-        String targetDir = new File(EcaServiceProperties.class.getProtectionDomain()
-                .getCodeSource().getLocation().getPath()).getParent();
-        return new File(targetDir, PROPERTIES_FILE);
+        return new File(FileUtils.getCurrentDir(), PROPERTIES_FILE);
     }
 
 }
