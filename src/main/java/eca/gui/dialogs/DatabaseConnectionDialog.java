@@ -27,6 +27,14 @@ public class DatabaseConnectionDialog extends JDialog {
 
     private static final int FIELD_LENGTH = 255;
     private static final int TEXT_LENGTH = 20;
+    private static final String TITLE = "Подключение к базе данных";
+    private static final String CONNECTION_PARAMS_TITLE = "Параметры подключения";
+    private static final String DB_TYPE_TEXT = "База данных:";
+    private static final String HOST_TEXT = "Хост:";
+    private static final String PORT_TEXT = "Порт:";
+    private static final String DB_NAME_TEXT = "Имя базы данных:";
+    private static final String LOGIN_TEXT = "Логин:";
+    private static final String PASSWORD_TEXT = "Пароль:";
 
     private JComboBox<String> dataBases;
     private JTextField hostField;
@@ -38,7 +46,7 @@ public class DatabaseConnectionDialog extends JDialog {
     private boolean dialogResult;
 
     public DatabaseConnectionDialog(Frame parent) {
-        super(parent, "Подключение к базе данных", true);
+        super(parent, TITLE, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();
@@ -50,7 +58,7 @@ public class DatabaseConnectionDialog extends JDialog {
 
     private void makeGUI() {
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder("Параметры подключения"));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(CONNECTION_PARAMS_TITLE));
         dataBases = new JComboBox<>();
         dataBases.addItem(ConnectionDescriptorFactory.MYSQL);
         dataBases.addItem(ConnectionDescriptorFactory.ORACLE);
@@ -77,28 +85,28 @@ public class DatabaseConnectionDialog extends JDialog {
         });
         dataBases.setSelectedIndex(1);
         //-------------------------------------------------------
-        optionPanel.add(new JLabel("База данных:"),
+        optionPanel.add(new JLabel(DB_TYPE_TEXT),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(dataBases, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Хост:"), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(HOST_TEXT), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(hostField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Порт:"), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(PORT_TEXT), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(portField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Имя базы данных:"), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(DB_NAME_TEXT), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(dataBaseField, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Логин:"), new GridBagConstraints(0, 4, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(LOGIN_TEXT), new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(userField, new GridBagConstraints(1, 4, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Пароль:"), new GridBagConstraints(0, 5, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(PASSWORD_TEXT), new GridBagConstraints(0, 5, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(passwordField, new GridBagConstraints(1, 5, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));

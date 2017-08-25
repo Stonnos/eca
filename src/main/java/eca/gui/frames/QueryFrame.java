@@ -30,6 +30,12 @@ public class QueryFrame extends JFrame {
     private static final String urlTitle = "URL:";
     private static final String userTitle = "User:";
     private static final String queryTitle = "SELECT запрос";
+    private static final String DATA_TITLE = "Данные";
+    private static final String INTERRUPT_BUTTON_TEXT = "Прервать";
+    private static final String CLEAR_BUTTON_TEXT = "Очистить";
+    private static final String START_BUTTON_TEXT = "Выполнить";
+
+    private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
 
     private final DataBaseConnection connection;
 
@@ -115,11 +121,11 @@ public class QueryFrame extends JFrame {
         queryArea = new JTextArea(10, 20);
         queryArea.setWrapStyleWord(true);
         queryArea.setLineWrap(true);
-        queryArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        queryArea.setFont(QUERY_AREA_FONT);
         JScrollPane scrollPanel = new JScrollPane(queryArea);
-        execute = new JButton("Выполнить");
-        JButton clear = new JButton("Очистить");
-        interrupt = new JButton("Прервать");
+        execute = new JButton(START_BUTTON_TEXT);
+        JButton clear = new JButton(CLEAR_BUTTON_TEXT);
+        interrupt = new JButton(INTERRUPT_BUTTON_TEXT);
         interrupt.setEnabled(false);
         //-----------------------------------------
         execute.addActionListener(new ActionListener() {
@@ -164,7 +170,7 @@ public class QueryFrame extends JFrame {
         model = new ListModel();
         sets = new JList<>(model);
         JScrollPane setsPane = new JScrollPane(sets);
-        setsPane.setBorder(PanelBorderUtils.createTitledBorder("Данные"));
+        setsPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
         setsPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         sets.addMouseListener(new MouseAdapter() {

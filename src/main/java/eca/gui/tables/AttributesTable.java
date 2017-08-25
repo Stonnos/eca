@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.gui.GuiUtils;
 import eca.gui.enums.AttributesTypes;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DateFormat;
@@ -264,13 +265,7 @@ public class AttributesTable extends JDataTableBase {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setFont(new Font(AttributesTable.this.getFont().getName(), Font.BOLD,
                     AttributesTable.this.getFont().getSize()));
             this.setSelectedItem(value);

@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.gui.GuiUtils;
 import eca.gui.enums.AttributesTypes;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
@@ -166,13 +167,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             int i = row >= data.classIndex() ? row + 1 : row;
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(getInfo(i).toString());
             this.setText(value.toString());
             this.setBorder(null);

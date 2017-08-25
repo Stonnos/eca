@@ -5,10 +5,10 @@
  */
 package eca.dataminer;
 
-import eca.model.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
+import eca.model.ClassifierDescriptor;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;

@@ -55,11 +55,4 @@ public abstract class VotingMethod implements java.io.Serializable {
      */
     public abstract double[] distributionForInstance(Instance obj) throws Exception;
 
-    /**
-     * Returns voting method description.
-     *
-     * @return voting method description
-     */
-    public abstract String getDescription();
-
 }

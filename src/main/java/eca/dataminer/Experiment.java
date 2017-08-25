@@ -5,9 +5,9 @@
  */
 package eca.dataminer;
 
+import eca.core.InstancesHandler;
 import eca.model.ClassifierDescriptor;
 import weka.classifiers.Classifier;
-import weka.core.Instances;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * @param <T> classifier type
  * @author Roman93
  */
-public interface Experiment<T extends Classifier> {
+public interface Experiment<T extends Classifier> extends InstancesHandler {
 
     /**
      * Begins experiment.
@@ -52,13 +52,6 @@ public interface Experiment<T extends Classifier> {
      * @param n iterations number of experiment
      */
     void setNumIterations(int n);
-
-    /**
-     * Returns training set.
-     *
-     * @return <tt>Instances</tt> object.
-     */
-    Instances data();
 
     /**
      * Classifier algorithm.

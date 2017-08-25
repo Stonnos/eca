@@ -5,10 +5,10 @@
  */
 package eca.dataminer;
 
-import eca.model.ClassifierDescriptor;
-import eca.core.TestMethod;
+import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
-import weka.classifiers.AbstractClassifier;
+import eca.core.evaluation.EvaluationService;
+import eca.model.ClassifierDescriptor;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -27,7 +27,7 @@ import java.util.Random;
  * <p>
  * Sets the number of iterations (Default: 100) <p>
  * <p>
- * Sets evaluation test method (Default: {@value TestMethod#TRAINING_SET}) <p>
+ * Sets evaluation method (Default: TRAINING_DATA) <p>
  *
  * @param <T> classifier type
  * @author Roman93
@@ -46,9 +46,9 @@ public abstract class AbstractExperiment<T extends Classifier>
     private int numFolds = 10;
 
     /**
-     * Number of validations
+     * Number of tests
      **/
-    private int numValidations = 10;
+    private int numTests = 10;
 
     /**
      * Number of iterations
@@ -56,9 +56,9 @@ public abstract class AbstractExperiment<T extends Classifier>
     private int numIterations = 100;
 
     /**
-     * Evaluation test method
+     * Evaluation method
      **/
-    private int mode = TestMethod.TRAINING_SET;
+    private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
 
     /**
      * Training set
@@ -119,8 +119,8 @@ public abstract class AbstractExperiment<T extends Classifier>
      *
      * @return the evaluation method type
      */
-    public int getTestMethod() {
-        return mode;
+    public EvaluationMethod getEvaluationMethod() {
+        return evaluationMethod;
     }
 
     /**
@@ -133,39 +133,34 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     /**
-     * Returns the number of validations.
+     * Returns the number of tests.
      *
-     * @return the number of validations
+     * @return the number of tests
      */
-    public int getNumValidations() {
-        return numValidations;
+    public int getNumTests() {
+        return numTests;
     }
 
     /**
-     * Sets the number of validations.
+     * Sets the number of tests.
      *
-     * @param numValidations the number of validations
+     * @param numTests the number of tests
      */
-    public void setNumValidations(int numValidations) {
-        this.numValidations = numValidations;
+    public void setNumTests(int numTests) {
+        this.numTests = numTests;
     }
 
     /**
      * Sets the evaluation method type
      *
-     * @param mode the evaluation method type
-     * @throws IllegalArgumentException if the specified method type
-     *                                  is invalid
+     * @param evaluationMethod evaluation method type
      */
-    public void setTestMethod(int mode) {
-        if (mode != TestMethod.TRAINING_SET && mode != TestMethod.CROSS_VALIDATION) {
-            throw new IllegalArgumentException("Invalid test method value!");
-        }
-        this.mode = mode;
+    public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
+        this.evaluationMethod = evaluationMethod;
     }
 
     @Override
-    public Instances data() {
+    public Instances getData() {
         return data;
     }
 
@@ -175,21 +170,11 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     protected final ClassifierDescriptor evaluateModel(Classifier model) throws Exception {
-        Evaluation ev = new Evaluation(data());
 
-        switch (getTestMethod()) {
-            case TestMethod.TRAINING_SET:
-                model.buildClassifier(data());
-                ev.evaluateModel(model, data());
-                break;
-            case TestMethod.CROSS_VALIDATION:
-                ev.kCrossValidateModel(AbstractClassifier.makeCopy(model), data(), getNumFolds(), getNumValidations(),
-                        r);
-                model.buildClassifier(data());
-                break;
-        }
+        Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
+               getEvaluationMethod(), getNumFolds(), getNumTests(), r);
 
-        ClassifierDescriptor object = new ClassifierDescriptor(model, ev);
+        ClassifierDescriptor object = new ClassifierDescriptor(model, evaluation);
         getHistory().add(object);
 
         return object;

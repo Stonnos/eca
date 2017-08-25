@@ -29,6 +29,12 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     private static final String minObjMessage = "Минимальное число объектов в листе:";
     private static final String maxDepthMessage = "Максимальная глубина дерева:";
     private static final String numRandomAttrMessage = "Число случайных атрибутов:";
+    private static final String BINARY_TREE_TYPE_TEXT = "Бинарное дерево";
+    private static final String HI_SQUARE_TEXT =
+            "<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>";
+
+    private static final String[] AlPHA = {"0.995", "0.99", "0.975", "0.95", "0.75", "0.5", "0.25",
+            "0.1", "0.05", "0.025", "0.01", "0.005"};
 
     private Setter setter = new Setter();
 
@@ -43,26 +49,26 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        //------------------------------------
+
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(treeOptionsMessage));
         minObjText = new JTextField(TEXT_FIELD_LENGTH);
         minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
         maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
         maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        //----------------------------------------------------
+
         randomBox = new JCheckBox(randomTreeMessage);
-        //-----------------------------------------------------------
+
         randomBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 numRandomAttrText.setEditable(randomBox.isSelected());
             }
         });
-        //-------------------------------------------------------
+
         numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
         numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        //-------------------------------------------------------
+
         optionPanel.add(new JLabel(minObjMessage),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -78,11 +84,10 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        //-----------------------------------------------
-        //------------------------------------
+
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
-        //-----------------------------------------------
+
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -90,7 +95,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 setVisible(false);
             }
         });
-        //-----------------------------------------------
+
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -119,17 +124,16 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 }
             }
         });
-        //----------------------------------
+
         if (classifier instanceof CHAID) {
-            final JCheckBox binaryBox = new JCheckBox("Бинарное дерево");
+            final JCheckBox binaryBox = new JCheckBox(BINARY_TREE_TYPE_TEXT);
             optionPanel.add(binaryBox, new GridBagConstraints(0, 4, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
-            optionPanel.add(new JLabel("<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>"),
+            optionPanel.add(new JLabel(HI_SQUARE_TEXT),
                     new GridBagConstraints(0, 5, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-            String[] alphas = {"0.995", "0.99", "0.975", "0.95", "0.75", "0.5", "0.25",
-                    "0.1", "0.05", "0.025", "0.01", "0.005"};
-            final JComboBox<String> values = new JComboBox<>(alphas);
+
+            final JComboBox<String> values = new JComboBox<>(AlPHA);
             okButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -148,16 +152,15 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             optionPanel.add(values, new GridBagConstraints(1, 5, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 10), 0, 0));
         }
-        //------------------------------------
+
         this.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
         this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------------------
+
         this.getRootPane().setDefaultButton(okButton);
-        //-----------------------------------
         this.pack();
         this.setLocationRelativeTo(parent);
         minObjText.requestFocusInWindow();

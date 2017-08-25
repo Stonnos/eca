@@ -123,7 +123,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
                 c.buildClassifier(train);
                 Instances test = current.testCV(numFolds, j);
                 evaluateModel(c, test);
-                error[i * validationsNum + j] = error(c, test);
+                error[i * numFolds + j] = error(c, test);
             }
         }
 

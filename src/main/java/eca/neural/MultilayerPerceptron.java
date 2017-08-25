@@ -7,6 +7,7 @@ package eca.neural;
 
 import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.LogisticFunction;
+import org.springframework.util.Assert;
 
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -35,6 +36,8 @@ import java.util.StringTokenizer;
  * @author Рома
  */
 public class MultilayerPerceptron implements java.io.Serializable {
+
+    public static final int MINIMUM_NUMBER_OF_NEURONS_IN_LAYER = 1;
 
     /**
      * Input neurons
@@ -289,9 +292,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param function the neurons activation function in hidden layer
      */
     public final void setActivationFunction(ActivationFunction function) {
-        if (function == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(function, "Activation function is not specified!");
         this.hiddenFunction = function;
     }
 
@@ -301,9 +302,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param function the neurons activation function in output layer
      */
     public final void setOutActivationFunction(ActivationFunction function) {
-        if (function == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(function, "Activation function is not specified!");
         this.outerFunction = function;
     }
 
@@ -313,9 +312,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param algorithm the learning algorithm object
      */
     public void setLearningAlgorithm(LearningAlgorithm algorithm) {
-        if (algorithm == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(algorithm, "Learning algorithm is not specified!");
         if (algorithm.network != this) {
             throw new IllegalArgumentException();
         }
@@ -503,28 +500,24 @@ public class MultilayerPerceptron implements java.io.Serializable {
     }
 
     private void checkValue(int value) {
-        if (value < 1) {
-            throw new IllegalArgumentException("Число нейронов "
-                    + "должно быть больше 1!");
+        if (value < MINIMUM_NUMBER_OF_NEURONS_IN_LAYER) {
+            throw new IllegalArgumentException(
+                    String.format("Число нейронов должно быть больше %d!", MINIMUM_NUMBER_OF_NEURONS_IN_LAYER));
         }
     }
 
     private void checkVector(double[] x, int size) {
-        if (x == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(x, "Vector is not specified!");
         if (x.length != size) {
-            throw new IllegalArgumentException("Illegal value: "
-                    + String.valueOf(x.length));
+            throw new IllegalArgumentException(String.format("Illegal value: %d", x.length));
         }
     }
 
     private void checkInputVectors(double[][] input, double[][] output) {
-        if (input == null || output == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(input, "Input vector is not specified!");
+        Assert.notNull(input, "Output vector is not specified!");
         if (input.length != output.length) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Input and output vectors must have the same lengths!");
         }
         for (int i = 0; i < input.length; i++) {
             checkVector(input[i], inLayerNeuronsNum());

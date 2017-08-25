@@ -6,6 +6,7 @@
 package eca.db;
 
 import eca.gui.text.DateFormat;
+import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -112,6 +113,7 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
      * @param connectionDescriptor <tt>ConnectionDescriptor</tt> object
      */
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
+        Assert.notNull(connectionDescriptor, "Connection descriptor is not specified!");
         this.connectionDescriptor = connectionDescriptor;
     }
 

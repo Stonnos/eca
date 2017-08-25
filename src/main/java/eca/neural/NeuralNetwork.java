@@ -242,13 +242,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         @Override
         public Evaluation evaluation() throws Exception {
-            if (!hasNext()) {
-                Evaluation e = new Evaluation(data);
-                e.evaluateModel(NeuralNetwork.this, data);
-                return e;
-            } else {
-                return null;
-            }
+            return evaluateModel(NeuralNetwork.this, data);
         }
 
         @Override

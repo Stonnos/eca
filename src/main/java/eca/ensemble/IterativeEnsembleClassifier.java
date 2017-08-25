@@ -27,6 +27,8 @@ import java.util.ArrayList;
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         implements Iterable, EnsembleClassifier, InstancesHandler {
 
+    public static final int MINIMUM_ITERATIONS_NUMBER = 1;
+
     /**
      * Initial training set
      **/
@@ -61,8 +63,9 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the values of iterations number is less than 1
      */
     public final void setIterationsNum(int numIterations) {
-        if (numIterations < 1) {
-            throw new IllegalArgumentException("Число итераций должно быть больше 1!");
+        if (numIterations < MINIMUM_ITERATIONS_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format("Число итераций должно быть больше %d!", MINIMUM_ITERATIONS_NUMBER));
         }
         this.numIterations = numIterations;
     }
@@ -127,8 +130,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
     protected final void checkForNegative(int value) {
         if (value < 0) {
-            throw new IllegalArgumentException("Negative value: " +
-                    String.valueOf(value));
+            throw new IllegalArgumentException(String.format("Negative value: %d: ", value));
         }
     }
 
@@ -151,13 +153,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
         @Override
         public Evaluation evaluation() throws Exception {
-            if (!hasNext()) {
-                Evaluation e = new Evaluation(initialData);
-                e.evaluateModel(IterativeEnsembleClassifier.this, initialData);
-                return e;
-            } else {
-                return null;
-            }
+            return evaluateModel(IterativeEnsembleClassifier.this, initialData);
         }
 
         @Override

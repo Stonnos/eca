@@ -5,9 +5,9 @@
  */
 package eca.gui.frames;
 
-import eca.model.ClassifierDescriptor;
 import eca.core.ClassifierIndexer;
-import eca.core.TestMethod;
+import eca.core.EvaluationMethod;
+import eca.core.EvaluationMethodVisitor;
 import eca.core.converters.ModelConverter;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistory;
@@ -20,6 +20,7 @@ import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.tables.ExperimentTable;
+import eca.model.ClassifierDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -42,8 +43,20 @@ import java.io.File;
 public abstract class ExperimentFrame extends JFrame {
 
     private static final String buildingProgressTitle = "Пожалуйста подождите, идет построение моделей...";
-
     private static final String loadExperimentTitle = "Пожалуйста подождите, идет загрузка истории эксперимента...";
+    private static final int MINIMUM_NUMBER_OF_FOLDS = 2;
+    private static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
+    private static final int MINIMUM_NUMBER_OF_TESTS = 1;
+    private static final int MAXIMUM_NUMBER_OF_TESTS = 100;
+    private static final String EXPERIMENT_HISTORY_TITLE = "История эксперимента";
+    private static final String INFO_TITLE = "Информация";
+    private static final String START_BUTTON_TEXT = "Начать эксперимент";
+    private static final String STOP_BUTTON_TEXT = "Остановить эксперимент";
+    private static final String OPTIONS_BUTTON_TEXT = "Настройки";
+    private static final String SAVE_BUTTON_TEXT = "Сохранить эксперимент";
+    private static final String LOAD_BUTTON_TEXT = "Загрузить эксперимент";
+
+    private static final Font TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 13);
 
     private final AbstractExperiment experiment;
 
@@ -119,25 +132,33 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     public final void setResults() {
-        setResults(experiment.data());
+        setResults(experiment.getData());
     }
 
     public final void setResults(Instances data) {
-        StringBuilder str = new StringBuilder();
+        final StringBuilder str = new StringBuilder();
         str.append("Эксперимент завершен.\n");
         str.append(getDataInfo(data));
         str.append("Метод оценки точности: ");
-        switch (getExperiment().getTestMethod()) {
-            case TestMethod.TRAINING_SET:
+
+        getExperiment().getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
+
+            @Override
+            public Void evaluateModel() {
                 str.append("Использование обучающего множества");
-                break;
-            case TestMethod.CROSS_VALIDATION:
-                String s = getExperiment().getNumValidations() > 1 ?
-                        getExperiment().getNumValidations() + "*" : StringUtils.EMPTY;
+                return null;
+            }
+
+            @Override
+            public Void crossValidateModel() {
+                String s = getExperiment().getNumTests() > 1 ?
+                        getExperiment().getNumTests() + "*" : StringUtils.EMPTY;
                 str.append(s).append(getExperiment().getNumFolds()).append(
                         " - блочная кросс-проверка на тестовой выборке");
-                break;
-        }
+                return null;
+            }
+        });
+
         str.append("\n\n").append("Наилучшие конфигурации классификаторов:\n");
         for (int i = 0; i < Integer.min(table.getBestNumber(), table.getRowCount()); i++) {
             str.append(table.experimentModel().getClassifier(i).getClass().getSimpleName())
@@ -163,16 +184,16 @@ public abstract class ExperimentFrame extends JFrame {
     private void makeGUI() throws Exception {
         this.setSize(1100, 600);
         this.setLayout(new GridBagLayout());
-        table = new ExperimentTable(new java.util.ArrayList<>(), this, experiment.data(), digits);
+        table = new ExperimentTable(new java.util.ArrayList<>(), this, experiment.getData(), digits);
         JPanel top = new JPanel(new GridBagLayout());
         text = new JTextArea(10, 10);
         text.setEditable(false);
-        text.setFont(new Font("Arial", Font.BOLD, 13));
+        text.setFont(TEXT_AREA_FONT);
         text.setWrapStyleWord(true);
         text.setLineWrap(true);
         JScrollPane bottom = new JScrollPane(text);
-        bottom.setBorder(PanelBorderUtils.createTitledBorder("Информация"));
-        setDataInfo(experiment.data());
+        bottom.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
+        setDataInfo(experiment.getData());
         progress = new JProgressBar();
         progress.setStringPainted(true);
         //----------------------------------------------
@@ -187,18 +208,28 @@ public abstract class ExperimentFrame extends JFrame {
         group.add(useTrainingSet);
         group.add(useTestingSet);
         //---------------------------------
-        foldsSpinner.setModel(new SpinnerNumberModel(experiment.getNumFolds(), 2, 100, 1));
-        validationsSpinner.setModel(new SpinnerNumberModel(experiment.getNumValidations(), 1, 100, 1));
+        foldsSpinner.setModel(new SpinnerNumberModel(experiment.getNumFolds(), MINIMUM_NUMBER_OF_FOLDS,
+                MAXIMUM_NUMBER_OF_FOLDS, 1));
+        validationsSpinner.setModel(new SpinnerNumberModel(experiment.getNumTests(), MINIMUM_NUMBER_OF_TESTS,
+                MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
         validationsSpinner.setEnabled(false);
-        switch (experiment.getTestMethod()) {
-            case TestMethod.TRAINING_SET:
+
+        getExperiment().getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
+
+            @Override
+            public Void evaluateModel() {
                 useTrainingSet.setSelected(true);
-                break;
-            case TestMethod.CROSS_VALIDATION:
+                return null;
+            }
+
+            @Override
+            public Void crossValidateModel() {
                 useTestingSet.setSelected(true);
-                break;
-        }
+                return null;
+            }
+        });
+
         useTestingSet.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
@@ -215,26 +246,26 @@ public abstract class ExperimentFrame extends JFrame {
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         left.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        left.add(new JLabel(TestingSetOptionsDialog.validsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        left.add(new JLabel(TestingSetOptionsDialog.testsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         left.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
         //--------------------------------------------------------------
-        startButton = new JButton("Начать эксперимент");
-        stopButton = new JButton("Остановить эксперимент");
+        startButton = new JButton(START_BUTTON_TEXT);
+        stopButton = new JButton(STOP_BUTTON_TEXT);
         stopButton.setEnabled(false);
-        optionsButton = new JButton("Настройки");
-        saveButton = new JButton("Сохранить эксперимент");
-        loadButton = new JButton("Загрузить эксперимент");
+        optionsButton = new JButton(OPTIONS_BUTTON_TEXT);
+        saveButton = new JButton(SAVE_BUTTON_TEXT);
+        loadButton = new JButton(LOAD_BUTTON_TEXT);
         //---------------------------------------------------------------
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                experiment.setTestMethod(useTestingSet.isSelected()
-                        ? TestMethod.CROSS_VALIDATION : TestMethod.TRAINING_SET);
+                experiment.setEvaluationMethod(useTestingSet.isSelected()
+                        ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
                 if (useTestingSet.isSelected()) {
                     experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                    experiment.setNumValidations(
+                    experiment.setNumTests(
                             ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
                 }
                 text.setText(buildingProgressTitle);
@@ -276,7 +307,7 @@ public abstract class ExperimentFrame extends JFrame {
                     File file = fileChooser.saveFile(ExperimentFrame.this);
                     if (file != null) {
                         ModelConverter.saveModel(file,
-                                new ExperimentHistory(table.experimentModel().getExperiment(), experiment.data()));
+                                new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData()));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -344,7 +375,7 @@ public abstract class ExperimentFrame extends JFrame {
                 new GridBagConstraints(0, 4, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
         //---------------------------------------------------------------
-        right.setBorder(PanelBorderUtils.createTitledBorder("История эксперимента"));
+        right.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         top.add(left,
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));

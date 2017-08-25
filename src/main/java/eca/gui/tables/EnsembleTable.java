@@ -9,6 +9,7 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.EnsembleClassifier;
 import eca.gui.ClassifierInputInfo;
+import eca.gui.GuiUtils;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
 import weka.classifiers.Classifier;
@@ -64,13 +65,7 @@ public class EnsembleTable extends JDataTableBase {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ClassifierInputInfo.getInfo(ensembleModel().get(row)));
             this.setText(value.toString());
             this.setBorder(null);
@@ -88,13 +83,7 @@ public class EnsembleTable extends JDataTableBase {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setFont(new Font(EnsembleTable.this.getFont().getName(), Font.BOLD,
                     EnsembleTable.this.getFont().getSize()));
             this.setText(EnsembleTableModel.RESULT_TITLE);
@@ -128,13 +117,7 @@ public class EnsembleTable extends JDataTableBase {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            if (isSelected) {
-                button.setForeground(table.getSelectionForeground());
-                button.setBackground(table.getSelectionBackground());
-            } else {
-                button.setForeground(table.getForeground());
-                button.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(button, table, isSelected);
             button.setFont(new Font(EnsembleTable.this.getFont().getName(), Font.BOLD,
                     EnsembleTable.this.getFont().getSize()));
             isPushed = true;

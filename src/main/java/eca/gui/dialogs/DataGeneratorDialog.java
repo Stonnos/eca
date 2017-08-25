@@ -20,6 +20,11 @@ import java.awt.event.ActionListener;
 public class DataGeneratorDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 12;
+    private static final String TITLE = "Генерация выборки";
+    private static final String GENERATOR_PARAMS_TEXT = "Параметры генератора";
+    private static final String ATTR_NUMBER_TEXT = "Число атрибутов:";
+    private static final String CLASSES_NUMBER_TEXT = "Число классов:";
+    private static final String INSTANCES_NUMBER_TEXT = "Число объектов:";
 
     private JTextField numAttributesField;
     private JTextField numClassesField;
@@ -30,7 +35,7 @@ public class DataGeneratorDialog extends JDialog {
     private boolean dialogResult;
 
     public DataGeneratorDialog(Frame parent) {
-        super(parent, "Генерация выборки", true);
+        super(parent, TITLE, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();
@@ -53,7 +58,7 @@ public class DataGeneratorDialog extends JDialog {
 
     private void makeGUI() {
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder("Параметры генератора"));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(GENERATOR_PARAMS_TEXT));
 
         numAttributesField = new JTextField(TEXT_LENGTH);
         numAttributesField.setDocument(new LengthDocument(4));
@@ -65,15 +70,15 @@ public class DataGeneratorDialog extends JDialog {
         numInstancesField.setDocument(new LengthDocument(8));
 
 
-        optionPanel.add(new JLabel("Число атрибутов:"), new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(ATTR_NUMBER_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numAttributesField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Число классов:"), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(CLASSES_NUMBER_TEXT), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numClassesField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel("Число объектов:"), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(INSTANCES_NUMBER_TEXT), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numInstancesField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));

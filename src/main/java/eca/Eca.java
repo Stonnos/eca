@@ -2,7 +2,7 @@ package eca;
 
 import eca.gui.frames.JMainFrame;
 
-import java.awt.EventQueue;
+import java.awt.*;
 
 /**
  * Main class.

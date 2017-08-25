@@ -24,6 +24,10 @@ public class ClassifyInstancePanel extends JPanel {
 
     private static final String CLASSIFY_INFO = "Классифицировать новый пример";
     private static final String RESET_INFO = "Сбросить все значения в таблице";
+    private static final String CLASSIFY_INSTANCE_TITLE = "Классификация примера";
+    private static final String CLASSIFY_BUTTON_TEXT = "Классифицировать";
+    private static final String RESET_BUTTON_TEXT = "Сброс значений";
+
     private Classifier classifier;
     private final ClassifyInstanceTable table;
 
@@ -33,7 +37,7 @@ public class ClassifyInstancePanel extends JPanel {
         this.setClassifier(classifier);
         this.table = table;
         this.setLayout(new GridBagLayout());
-        this.setBorder(PanelBorderUtils.createTitledBorder("Классификация примера"));
+        this.setBorder(PanelBorderUtils.createTitledBorder(CLASSIFY_INSTANCE_TITLE));
         this.makeGUI();
     }
 
@@ -65,7 +69,7 @@ public class ClassifyInstancePanel extends JPanel {
         bottom.setToolTipText(table.getInfo(table.data().classIndex()).toString());
         JPanel top = new JPanel(new GridBagLayout());
         //--------------------------------------------
-        JButton classifyButton = new JButton("Классифицировать");
+        JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);
         classifyButton.setToolTipText(CLASSIFY_INFO);
         classifyButton.addActionListener(new ActionListener() {
             @Override
@@ -89,7 +93,7 @@ public class ClassifyInstancePanel extends JPanel {
                 }
             }
         });
-        JButton resetButton = new JButton("Сброс значений");
+        JButton resetButton = new JButton(RESET_BUTTON_TEXT);
         resetButton.setToolTipText(RESET_INFO);
         resetButton.addActionListener(new ActionListener() {
             @Override

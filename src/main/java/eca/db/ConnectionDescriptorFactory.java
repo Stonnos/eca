@@ -42,8 +42,8 @@ public class ConnectionDescriptorFactory {
      */
     public static MySQLConnectionDescriptor getMySqlConnectionDescriptor() {
         if (MY_SQL_CONNECTION_DESCRIPTOR == null) {
-            MY_SQL_CONNECTION_DESCRIPTOR = new MySQLConnectionDescriptor("localhost", 3306, "", "",
-                    "");
+            MY_SQL_CONNECTION_DESCRIPTOR =
+                    new MySQLConnectionDescriptor("localhost", 3306, "", "", "");
         }
         return MY_SQL_CONNECTION_DESCRIPTOR;
     }
@@ -55,7 +55,8 @@ public class ConnectionDescriptorFactory {
      */
     public static OracleConnectionDescriptor getOracleConnectionDescriptor() {
         if (ORACLE_CONNECTION_DESCRIPTOR == null) {
-            ORACLE_CONNECTION_DESCRIPTOR = new OracleConnectionDescriptor("localhost", 1521, "XE", "", "");
+            ORACLE_CONNECTION_DESCRIPTOR =
+                    new OracleConnectionDescriptor("localhost", 1521, "XE", "", "");
         }
         return ORACLE_CONNECTION_DESCRIPTOR;
     }
@@ -67,7 +68,8 @@ public class ConnectionDescriptorFactory {
      */
     public static PostgreSQLConnectionDescriptor getPostgreSQLConnectionDescriptor() {
         if (POSTGRESQL_CONNECTION_DESCRIPTOR == null) {
-            POSTGRESQL_CONNECTION_DESCRIPTOR = new PostgreSQLConnectionDescriptor("localhost", 5432, "", "", "");
+            POSTGRESQL_CONNECTION_DESCRIPTOR =
+                    new PostgreSQLConnectionDescriptor("localhost", 5432, "", "", "");
         }
         return POSTGRESQL_CONNECTION_DESCRIPTOR;
     }
@@ -79,7 +81,8 @@ public class ConnectionDescriptorFactory {
      */
     public static MSSQLConnectionDescriptor getMSSqlConnectionDescriptor() {
         if (MSSQL_CONNECTION_DESCRIPTOR == null) {
-            MSSQL_CONNECTION_DESCRIPTOR = new MSSQLConnectionDescriptor("localhost", 1433, "", "", "");
+            MSSQL_CONNECTION_DESCRIPTOR =
+                    new MSSQLConnectionDescriptor("localhost", 1433, "", "", "");
         }
         return MSSQL_CONNECTION_DESCRIPTOR;
     }
@@ -91,7 +94,8 @@ public class ConnectionDescriptorFactory {
      */
     public static MSAccessConnectionDescriptor getMSAccessConnectionDescriptor() {
         if (MSACCESS_CONNECTION_DESCRIPTOR == null) {
-            MSACCESS_CONNECTION_DESCRIPTOR = new MSAccessConnectionDescriptor("D:/", "db.accdb", "", "");
+            MSACCESS_CONNECTION_DESCRIPTOR =
+                    new MSAccessConnectionDescriptor("D:/", "db.accdb", "", "");
         }
         return MSACCESS_CONNECTION_DESCRIPTOR;
     }
@@ -103,7 +107,8 @@ public class ConnectionDescriptorFactory {
      */
     public static SQLiteConnectionDescriptor getSqliteConnectionDescriptor() {
         if (SQLITE_CONNECTION_DESCRIPTOR == null) {
-            SQLITE_CONNECTION_DESCRIPTOR = new SQLiteConnectionDescriptor("c:/", "", "", "");
+            SQLITE_CONNECTION_DESCRIPTOR =
+                    new SQLiteConnectionDescriptor("c:/", "", "", "");
         }
         return SQLITE_CONNECTION_DESCRIPTOR;
     }

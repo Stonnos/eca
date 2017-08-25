@@ -16,6 +16,8 @@ import javax.swing.*;
  */
 public class AutomatedStackingFrame extends ExperimentFrame {
 
+    private static final String OPTIONS_TITLE = "Настройка параметров";
+
     public AutomatedStackingFrame(String title, AbstractExperiment experiment,
                                   JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
@@ -26,8 +28,8 @@ public class AutomatedStackingFrame extends ExperimentFrame {
     protected void setOptions() {
         AutomatedStacking exp = (AutomatedStacking) this.getExperiment();
         StackingOptionsDialog options
-                = new StackingOptionsDialog(this, "Настройка параметров",
-                exp.getClassifier(), exp.data());
+                = new StackingOptionsDialog(this, OPTIONS_TITLE,
+                exp.getClassifier(), exp.getData());
         options.setMetaEnabled(false);
         try {
             options.addClassifiers(exp.getClassifier().getClassifiers().clone());

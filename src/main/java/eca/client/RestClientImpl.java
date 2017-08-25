@@ -1,9 +1,10 @@
 package eca.client;
 
 import eca.EcaServiceProperties;
+import eca.core.EvaluationMethod;
+import eca.core.EvaluationMethodVisitor;
 import eca.model.ClassifierDescriptor;
 import eca.model.InputData;
-import eca.core.TestMethod;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,7 @@ public class RestClientImpl implements RestClient {
     /**
      * Evaluation test method
      **/
-    private int testMethod = TestMethod.TRAINING_SET;
+    private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
 
     /**
      * Number of folds
@@ -46,22 +47,20 @@ public class RestClientImpl implements RestClient {
      *
      * @return the evaluation method type
      */
-    public int getTestMethod() {
-        return testMethod;
+    public EvaluationMethod getEvaluationMethod() {
+        return evaluationMethod;
     }
 
     /**
      * Sets the evaluation method type
      *
-     * @param testMethod the evaluation method type
+     * @param evaluationMethod the evaluation method type
      * @throws IllegalArgumentException if the specified method type
      *                                  is invalid
      */
-    public void setTestMethod(int testMethod) {
-        if (testMethod != TestMethod.TRAINING_SET && testMethod != TestMethod.CROSS_VALIDATION) {
-            throw new IllegalArgumentException("Invalid test method value!");
-        }
-        this.testMethod = testMethod;
+    public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
+        Assert.notNull(evaluationMethod, "Evaluation method is not specified!");
+        this.evaluationMethod = evaluationMethod;
     }
 
     /**
@@ -116,28 +115,20 @@ public class RestClientImpl implements RestClient {
 
         MultiValueMap<String, Object> valueMap = new LinkedMultiValueMap<>();
 
-        String evaluationMethod = null;
-
-        switch (testMethod) {
-
-            case TestMethod.TRAINING_SET: {
-                evaluationMethod = PROPERTIES.getEcaServiceEvaluationMethodTraining();
-                break;
+        String evaluationMethodStr = evaluationMethod.accept(new EvaluationMethodVisitor<String>() {
+            @Override
+            public String evaluateModel() {
+                return PROPERTIES.getEcaServiceEvaluationMethodTraining();
             }
 
-            case TestMethod.CROSS_VALIDATION: {
-                evaluationMethod = PROPERTIES.getEcaServiceEvaluationMethodCrossValidation();
-                break;
+            @Override
+            public String crossValidateModel() {
+                return PROPERTIES.getEcaServiceEvaluationMethodCrossValidation();
             }
-
-        }
-
-        if (evaluationMethod == null) {
-            evaluationMethod = PROPERTIES.getEcaServiceEvaluationMethodTraining();
-        }
+        });
 
         valueMap.add(PROPERTIES.getEcaServiceParamsModel(), new ByteArrayResource(model));
-        valueMap.add(PROPERTIES.getEcaServiceParamsEvaluationMethod(), evaluationMethod);
+        valueMap.add(PROPERTIES.getEcaServiceParamsEvaluationMethod(), evaluationMethodStr);
 
         if (numFolds != null) {
             valueMap.add(PROPERTIES.getEcaServiceParamsNumFolds(), numFolds);

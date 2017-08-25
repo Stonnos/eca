@@ -5,10 +5,11 @@
  */
 package eca.gui.tables;
 
-import eca.model.ClassifierDescriptor;
 import eca.gui.ClassifierInputInfo;
+import eca.gui.GuiUtils;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.ExperimentTableModel;
+import eca.model.ClassifierDescriptor;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -98,13 +99,7 @@ public class ExperimentTable extends JDataTableBase {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ClassifierInputInfo.getInfo(experimentModel().getClassifier(row)));
             this.setText(value.toString());
             this.setBorder(null);
@@ -122,13 +117,7 @@ public class ExperimentTable extends JDataTableBase {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                this.setForeground(table.getSelectionForeground());
-                this.setBackground(table.getSelectionBackground());
-            } else {
-                this.setForeground(table.getForeground());
-                this.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setFont(new Font(ExperimentTable.this.getFont().getName(), Font.BOLD,
                     ExperimentTable.this.getFont().getSize()));
             this.setText(ExperimentTableModel.RESULT_TITLE);
@@ -161,13 +150,7 @@ public class ExperimentTable extends JDataTableBase {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            if (isSelected) {
-                button.setForeground(table.getSelectionForeground());
-                button.setBackground(table.getSelectionBackground());
-            } else {
-                button.setForeground(table.getForeground());
-                button.setBackground(table.getBackground());
-            }
+            GuiUtils.updateForegroundAndBackGround(button, table, isSelected);
             button.setText(ExperimentTableModel.RESULT_TITLE);
             button.setFont(new Font(ExperimentTable.this.getFont().getName(), Font.BOLD,
                     ExperimentTable.this.getFont().getSize()));

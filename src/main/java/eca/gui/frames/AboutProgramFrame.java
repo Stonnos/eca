@@ -18,6 +18,8 @@ import java.awt.event.ActionListener;
 public class AboutProgramFrame extends JFrame {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+    private static final String ABOUT_PROGRAM_TITLE = "О программе";
+    public static final String CLOSE_BUTTON = "Закрыть";
 
     public AboutProgramFrame(JFrame parent) {
         this.setIconImage(parent.getIconImage());
@@ -27,7 +29,7 @@ public class AboutProgramFrame extends JFrame {
 
     private void makeGUI() {
         this.setResizable(false);
-        this.setTitle("О программе");
+        this.setTitle(ABOUT_PROGRAM_TITLE);
         this.setLayout(new GridBagLayout());
 
         JPanel infoPanel = new JPanel();
@@ -36,7 +38,7 @@ public class AboutProgramFrame extends JFrame {
                 new ImageIcon(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getLogotypeUrl()));
         info.setIcon(icon);
         infoPanel.add(info);
-        JButton okButton = new JButton("Закрыть");
+        JButton okButton = new JButton(CLOSE_BUTTON);
 
         okButton.addActionListener(new ActionListener() {
             @Override
@@ -55,15 +57,16 @@ public class AboutProgramFrame extends JFrame {
 
     private String makeInfo() {
         StringBuilder info = new StringBuilder("<html><body style = 'font-size: 15'>");
-        info.append("<span style = 'font-size: 36'>" + APPLICATION_PROPERTIES.getTitle() + "</span><br>");
-        info.append(
-                "<i><span style = 'font-size: 28'>" + APPLICATION_PROPERTIES.getTitleDescription() + "</span></i><br>");
-        info.append("<br>&copy Copyright " + APPLICATION_PROPERTIES.getTitle() + ", Inc. 2015 - 2017<br>");
+        info.append("<span style = 'font-size: 36'>").append(APPLICATION_PROPERTIES.getTitle()).append("</span><br>");
+        info.append("<i><span style = 'font-size: 28'>").append(APPLICATION_PROPERTIES.getTitleDescription())
+                .append("</span></i><br>");
+        info.append("<br>&copy Copyright ").append(APPLICATION_PROPERTIES.getTitle()).append(", Inc. 2015 - 2017<br>");
         info.append("Все права защищены.<br>");
-        info.append("Автор: <i>" + APPLICATION_PROPERTIES.getAuthor() + "</i><br>");
-        info.append("Email: <i>" + APPLICATION_PROPERTIES.getAuthorEmail() + "</i><br>");
-        info.append("Версия: <i>" + APPLICATION_PROPERTIES.getVersion() + "</i><br>");
-        info.append("Последняя дата обновления: <i>" + APPLICATION_PROPERTIES.getReleaseDateToString() + "</i>");
+        info.append("Автор: <i>").append(APPLICATION_PROPERTIES.getAuthor()).append("</i><br>");
+        info.append("Email: <i>").append(APPLICATION_PROPERTIES.getAuthorEmail()).append("</i><br>");
+        info.append("Версия: <i>").append(APPLICATION_PROPERTIES.getVersion()).append("</i><br>");
+        info.append("Последняя дата обновления: <i>").append(APPLICATION_PROPERTIES.getReleaseDateToString())
+                .append("</i>");
         info.append("</body></html>");
         return info.toString();
     }

@@ -5,8 +5,8 @@
  */
 package eca.gui.actions;
 
-import eca.model.ModelDescriptor;
 import eca.core.converters.ModelConverter;
+import eca.model.ModelDescriptor;
 
 import java.io.File;
 

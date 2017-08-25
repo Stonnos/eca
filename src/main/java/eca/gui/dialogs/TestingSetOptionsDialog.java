@@ -6,7 +6,8 @@
 package eca.gui.dialogs;
 
 import eca.ApplicationProperties;
-import eca.core.TestMethod;
+import eca.core.EvaluationMethod;
+import eca.core.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 
@@ -28,20 +29,25 @@ public class TestingSetOptionsDialog extends JDialog {
     public static final String initialMethodTitle = "Использование обучающего множества";
     public static final String cvMethodTitle = "V-блочная кросс-проверка";
     public static final String blocksNumTitle = "Количество блоков:";
-    public static final String validsNumTitle = "Количество проверок:";
+    public static final String testsNumTitle = "Количество проверок:";
+    public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
+    public static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
+    public static final int MINIMUM_NUMBER_OF_TESTS = 1;
+    public static final int MAXIMUM_NUMBER_OF_TESTS = 100;
+    public static final String OPTIONS_TITLE = "Настройки";
 
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private JSpinner foldsSpinner = new JSpinner();
-    private JSpinner validsSpinner = new JSpinner();
+    private JSpinner testsSpinner = new JSpinner();
 
     private boolean dialogResult;
-    private int type = TestMethod.TRAINING_SET;
+    private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
     private int numFolds = APPLICATION_PROPERTIES.getNumFolds();
-    private int numValids = APPLICATION_PROPERTIES.getNumTests();
+    private int numTests = APPLICATION_PROPERTIES.getNumTests();
 
     public TestingSetOptionsDialog(Window parent) {
-        super(parent, "Настройки");
+        super(parent, OPTIONS_TITLE);
         this.setModal(true);
         this.setResizable(false);
         this.makeGUI();
@@ -49,29 +55,35 @@ public class TestingSetOptionsDialog extends JDialog {
         this.setLocationRelativeTo(parent);
     }
 
-    public final void setTestingSet(int type) {
-        switch (type) {
-            case TestMethod.TRAINING_SET:
+    public final void setEvaluationMethod(EvaluationMethod evaluationMethod) {
+        evaluationMethod.accept(new EvaluationMethodVisitor<Void>() {
+            @Override
+            public Void evaluateModel() {
                 useTrainingSet.setSelected(true);
-                break;
-            case TestMethod.CROSS_VALIDATION:
+                return null;
+            }
+
+            @Override
+            public Void crossValidateModel() {
                 useTestingSet.setSelected(true);
-                break;
-        }
+                return null;
+            }
+        });
     }
 
     public final void setParams() {
-        type = useTrainingSet.isSelected() ? TestMethod.TRAINING_SET : TestMethod.CROSS_VALIDATION;
+        evaluationMethod = useTrainingSet.isSelected() ?
+                EvaluationMethod.TRAINING_DATA : EvaluationMethod.CROSS_VALIDATION;
         if (useTestingSet.isSelected()) {
             numFolds = ((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue();
-            numValids = ((SpinnerNumberModel) validsSpinner.getModel()).getNumber().intValue();
+            numTests = ((SpinnerNumberModel) testsSpinner.getModel()).getNumber().intValue();
         }
     }
 
     public void showDialog() {
-        setTestingSet(type);
-        ((SpinnerNumberModel) foldsSpinner.getModel()).setValue(numFolds);
-        ((SpinnerNumberModel) validsSpinner.getModel()).setValue(numValids);
+        setEvaluationMethod(evaluationMethod);
+        foldsSpinner.getModel().setValue(numFolds);
+        testsSpinner.getModel().setValue(numTests);
         this.setVisible(true);
     }
 
@@ -85,16 +97,18 @@ public class TestingSetOptionsDialog extends JDialog {
         group.add(useTrainingSet);
         group.add(useTestingSet);
         //---------------------------------
-        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, 2, 100, 1));
-        validsSpinner.setModel(new SpinnerNumberModel(numValids, 1, 100, 1));
+        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, MINIMUM_NUMBER_OF_FOLDS,
+                MAXIMUM_NUMBER_OF_FOLDS, 1));
+        testsSpinner.setModel(new SpinnerNumberModel(numTests, MINIMUM_NUMBER_OF_TESTS,
+                MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
-        validsSpinner.setEnabled(false);
+        testsSpinner.setEnabled(false);
         //--------------------------------
         useTestingSet.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 foldsSpinner.setEnabled(useTestingSet.isSelected());
-                validsSpinner.setEnabled(useTestingSet.isSelected());
+                testsSpinner.setEnabled(useTestingSet.isSelected());
             }
         });
         //---------------------------------
@@ -126,9 +140,9 @@ public class TestingSetOptionsDialog extends JDialog {
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         panel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        panel.add(new JLabel(validsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        panel.add(new JLabel(testsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
-        panel.add(validsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        panel.add(testsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
         //--------------------------------------------------------------------
         this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
@@ -141,16 +155,16 @@ public class TestingSetOptionsDialog extends JDialog {
         this.getRootPane().setDefaultButton(okButton);
     }
 
-    public final int getTestingSetType() {
-        return type;
+    public final EvaluationMethod getEvaluationMethod() {
+        return evaluationMethod;
     }
 
     public final int numFolds() {
         return numFolds;
     }
 
-    public final int numValids() {
-        return numValids;
+    public final int numTests() {
+        return numTests;
     }
 
     public final boolean dialogResult() {

@@ -5,6 +5,7 @@
  */
 package eca.roc;
 
+import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.evaluation.ThresholdCurve;
 import weka.core.Instances;
@@ -14,8 +15,9 @@ import weka.core.Instances;
  *
  * @author Рома
  */
-public class RocCurve {
+public class RocCurve implements InstancesHandler {
 
+    private final ThresholdCurve curve = new ThresholdCurve();
     private final Evaluation evaluation;
 
     /**
@@ -41,7 +43,8 @@ public class RocCurve {
      *
      * @return training data associated with <tt>Evaluation</tt> object
      */
-    public Instances data() {
+    @Override
+    public Instances getData() {
         return evaluation().getHeader();
     }
 
@@ -52,7 +55,6 @@ public class RocCurve {
      * @return ROC - curve results for given class
      */
     public Instances getROCCurve(int classIndex) {
-        ThresholdCurve curve = new ThresholdCurve();
         return curve.getCurve(evaluation.predictions(), classIndex);
     }
 

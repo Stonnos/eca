@@ -15,16 +15,22 @@ import javax.swing.*;
  */
 public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
 
+    private static final String TITLE = "Автоматическое построение нейронных сетей";
+    private static final String OPTIONS_TITLE = "Настройки";
+    private static final String NETWORKS_NUMBER_TITLE = "Количество сетей:";
+    private static final int MIN_ITERATIONS = 10;
+    private static final int MAX_ITERATIONS = 10000;
+
     public AutomatedNeuralNetworkFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
-        this.setTitle("Автоматическое построение нейронных сетей");
+        this.setTitle(TITLE);
     }
 
     @Override
     protected void setOptions() {
         NumberFormatDialog dialog =
-                new NumberFormatDialog(this, "Настройки", "Количество сетей:",
-                        getExperiment().getNumIterations(), 10, 10000);
+                new NumberFormatDialog(this, OPTIONS_TITLE, NETWORKS_NUMBER_TITLE,
+                        getExperiment().getNumIterations(), MIN_ITERATIONS, MAX_ITERATIONS);
         dialog.setVisible(true);
         if (dialog.dialogResult()) {
             getExperiment().setNumIterations(dialog.getValue());

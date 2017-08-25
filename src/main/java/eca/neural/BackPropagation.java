@@ -20,6 +20,10 @@ import java.util.Iterator;
  */
 public class BackPropagation extends LearningAlgorithm {
 
+    public static final double MIN_LEARNING_RATE = 0.0;
+    public static final double MAX_LEARNING_RATE = 1.0;
+    public static final double MIN_MOMENTUM = 0.0;
+    public static final double MAX_MOMENTUM = 1.0;
     /**
      * Learning rate value
      **/
@@ -44,9 +48,10 @@ public class BackPropagation extends LearningAlgorithm {
     }
 
     public void setLearningRate(double learningRate) {
-        if (learningRate <= 0.0 || learningRate > 1.0) {
+        if (learningRate <= MIN_LEARNING_RATE || learningRate > MAX_LEARNING_RATE) {
             throw new IllegalArgumentException(
-                    "Недопустимое значение скорости обучения: " + String.valueOf(learningRate));
+                    String.format("Значение коэффициента скорости обучения должно лежать в интервале [%.2f, %.2f)!",
+                            MIN_LEARNING_RATE, MAX_LEARNING_RATE));
         }
         this.learningRate = learningRate;
     }
@@ -63,8 +68,10 @@ public class BackPropagation extends LearningAlgorithm {
     }
 
     public void setMomentum(double momentum) {
-        if (momentum < 0.0 || momentum >= 1.0) {
-            throw new IllegalArgumentException("Недопустимое значение момента: " + String.valueOf(momentum));
+        if (momentum < MIN_MOMENTUM || momentum >= MAX_MOMENTUM) {
+            throw new IllegalArgumentException(
+                    String.format("Значение коэффициента момента должно лежать в интервале (%.2f, %.2f]!",
+                    MIN_LEARNING_RATE, MAX_LEARNING_RATE));
         }
         this.momentum = momentum;
     }

@@ -464,8 +464,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     private void checkForNegative(int value) {
         if (value < 0) {
-            throw new IllegalArgumentException("Negative value: "
-                    + String.valueOf(value));
+            throw new IllegalArgumentException(String.format("Negative value: %d", value));
         }
     }
 

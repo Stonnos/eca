@@ -5,12 +5,12 @@
  */
 package eca.gui.tables;
 
-import eca.model.Entry;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.StackingClassifier;
 import eca.gui.text.NumericFormat;
 import eca.metrics.KNearestNeighbours;
+import eca.model.Entry;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.trees.DecisionTreeClassifier;

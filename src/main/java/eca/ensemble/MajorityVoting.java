@@ -33,9 +33,4 @@ public class MajorityVoting extends VotingMethod {
         return aggregator().distributionForInstance(obj);
     }
 
-    @Override
-    public String getDescription() {
-        return "Метод большинства голосов";
-    }
-
 }

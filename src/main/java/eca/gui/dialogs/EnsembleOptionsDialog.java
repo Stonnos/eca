@@ -56,6 +56,13 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String votesTitle = "Выбор метода голосования";
 
     private static final String[] votesMethod = {"Метод большинства голосов", "Метод взвешенного голосования"};
+    private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
+    private static final String AVAILABLE_CLASSIFIERS_TITLE = "Доступные классификаторы";
+    private static final String SELECTED_CLASSIFIERS_TITLE = "Выбранные классификаторы";
+    private static final String ADD_BUTTON_TEXT = "Добавить";
+    private static final String DELETE_BUTTON_TEXT = "Удалить";
+    private static final String MAIN_OPTIONS_TAB_TITLE = "Основные настройки";
+    private static final String ADDITIONAL_OPTIONS_TAB_TITLE = "Дополнительные настройки";
 
 
     private JTabbedPane pane;
@@ -117,7 +124,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         firstPanel = new JPanel(new GridBagLayout());
         firstPanel.setPreferredSize(dim1);
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder("Основные параметры"));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
         numClassifiersText.setDocument(new IntegerDocument(FIELD_LENGTH));
         classifierMinErrorText = new JTextField(TEXT_FIELD_LENGTH);
@@ -156,7 +163,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         //-------------------------------------------------
         JScrollPane algorithmsPane = new JScrollPane(algorithms);
         algorithmsPane.setPreferredSize(dim);
-        algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder("Доступные классификаторы"));
+        algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TITLE));
         JPanel selectedPanel = new JPanel(new GridBagLayout());
         model = new BaseClassifiersListModel(data(), this);
         selectedAlgorithms = new JList<>(model);
@@ -164,13 +171,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
         selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        selectedPanel.setBorder(PanelBorderUtils.createTitledBorder("Выбранные классификаторы"));
+        selectedPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TITLE));
         selectedPane.setPreferredSize(dim);
-        //-------------------------------------------------------------        
-        //------------------------------------------------------------
-        final JButton addButton = new JButton("Добавить");
+
+        final JButton addButton = new JButton(ADD_BUTTON_TEXT);
         addButton.setEnabled(false);
-        final JButton removeButton = new JButton("Удалить");
+        final JButton removeButton = new JButton(DELETE_BUTTON_TEXT);
         removeButton.setEnabled(false);
         //-------------------------------------------------------------
         addButton.addActionListener(new ActionListener() {
@@ -257,7 +263,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             }
         });
         //--------------------------------------------------------------
-        pane.add(firstPanel, "Основные настройки");
+        pane.add(firstPanel, MAIN_OPTIONS_TAB_TITLE);
         //--------------------------------------------------------------
         secondPanel = new JPanel(new GridBagLayout());
         secondPanel.setPreferredSize(dim);
@@ -382,7 +388,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         secondPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
         //------------------------------------------------------
-        pane.add(secondPanel, "Дополнительные настройки");
+        pane.add(secondPanel, ADDITIONAL_OPTIONS_TAB_TITLE);
         //------------------------------------------------------
         this.add(pane, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));

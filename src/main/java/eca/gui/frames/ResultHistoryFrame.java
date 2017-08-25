@@ -13,6 +13,9 @@ import java.awt.event.MouseEvent;
 
 public class ResultHistoryFrame extends JFrame {
 
+    private static final String TITLE = "История классификаторов";
+    private static final String CLOSE_BUTTON_TEXT = "Закрыть";
+
     private JMainFrame.ResultsHistory historyModel;
 
     private JList<String> historyList;
@@ -27,7 +30,7 @@ public class ResultHistoryFrame extends JFrame {
 
     private void makeGUI() {
         this.setResizable(false);
-        this.setTitle("История классификаторов");
+        this.setTitle(TITLE);
         this.setLayout(new GridBagLayout());
 
         JPanel infoPanel = new JPanel();
@@ -55,7 +58,7 @@ public class ResultHistoryFrame extends JFrame {
 
         infoPanel.add(historyPane);
 
-        JButton okButton = new JButton("Закрыть");
+        JButton okButton = new JButton(CLOSE_BUTTON_TEXT);
 
         okButton.addActionListener(new ActionListener() {
             @Override

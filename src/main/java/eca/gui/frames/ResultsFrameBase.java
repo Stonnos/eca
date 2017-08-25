@@ -6,8 +6,6 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.model.InputData;
-import eca.model.ModelDescriptor;
 import eca.core.ClassifierIndexer;
 import eca.core.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
@@ -28,6 +26,8 @@ import eca.gui.tables.EnsembleTable;
 import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.SignificantAttributesTable;
+import eca.model.InputData;
+import eca.model.ModelDescriptor;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -73,10 +73,27 @@ import java.util.ArrayList;
 public class ResultsFrameBase extends JFrame {
 
     private static final String RESULTS_TEXT = "Результаты классификации";
-    private static final String STATISTICA_TEXT = "Статистика";
+    private static final String STATISTICS_TEXT = "Статистика";
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
-
+    private static final String CLASSIFY_TAB_TITLE = "Классификация";
+    private static final String TREE_STRUCTURE_TAB_TITLE = "Структура дерева";
+    private static final String NETWORK_STRUCTURE_TAB_TITLE = "Структура нейронной сети";
+    private static final String LOGISTIC_COEFFICIENTS_TAB_TITLE = "Оценки коэффициентов";
+    private static final String SIGNIFICANT_ATTRIBUTES_TAB_TITLE = "Значимые атрибуты";
+    private static final String ENSEMBLE_STRUCTURE_TAB_TITLE = "Структура ансамбля";
+    private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
+    private static final int DEFAULT_WIDTH = 875;
+    private static final int DEFAULT_HEIGHT = 650;
+    private static final String FILE_MENU_TEXT = "Файл";
+    private static final String SERVICE_MENU_TEXT = "Сервис";
+    private static final String REFERENCE_MENU_TEXT = "Справка";
+    private static final String SAVE_MODEL_MENU_TEXT = "Сохранить модель";
+    private static final String INPUT_OPTIONS_MENU_TEXT = "Входные параметры модели";
+    private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
+    private static final String ATTR_INFO_MENU_TEXT = "Информация об атрибутах";
+    private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
+    private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
 
     private final Classifier classifier;
     private final Instances data;
@@ -135,16 +152,16 @@ public class ResultsFrameBase extends JFrame {
 
     private void makeMenu(final int digits) {
         JMenuBar menu = new JMenuBar();
-        JMenu fileMenu = new JMenu("Файл");
-        JMenu serviceMenu = new JMenu("Сервис");
-        JMenu helpMenu = new JMenu("Справка");
-        JMenuItem saveModelMenu = new JMenuItem("Сохранить модель");
-        JMenuItem inputMenu = new JMenuItem("Входные параметры модели");
-        JMenuItem refMenu = new JMenuItem("Показать справку");
+        JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
+        JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
+        JMenu helpMenu = new JMenu(REFERENCE_MENU_TEXT);
+        JMenuItem saveModelMenu = new JMenuItem(SAVE_MODEL_MENU_TEXT);
+        JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
+        JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke("F1"));
-        JMenuItem attrMenu = new JMenuItem("Информация об атрибутах");
-        JMenuItem dataMenu = new JMenuItem("Иcходные данные");
-        JMenuItem statMenu = new JMenuItem("Статистика по атрибутам");
+        JMenuItem attrMenu = new JMenuItem(ATTR_INFO_MENU_TEXT);
+        JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
+        JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         //--------------------------------------------
         saveModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
         //--------------------------------------------
@@ -276,12 +293,12 @@ public class ResultsFrameBase extends JFrame {
     }
 
     private void makeGUI(final int digits) throws Exception {
-        this.setSize(875, 650);
+        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         pane = new JTabbedPane();
         JPanel resultPanel = new JPanel(new GridBagLayout());
         //------------------------------------------------------
         resultPane = new JScrollPane();
-        resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICA_TEXT));
+        resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
         //------------------------------------------------------
         misMatrix = new MisClassificationMatrix(data, classifier, ev);
         JScrollPane misClassPane = new JScrollPane(misMatrix);
@@ -299,7 +316,7 @@ public class ResultsFrameBase extends JFrame {
         resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         //-----------------------------------
-        JButton saveButton = new JButton("Сохранить");
+        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
         Dimension dim = new Dimension(150, 25);
         saveButton.setPreferredSize(dim);
         saveButton.setMinimumSize(dim);
@@ -342,7 +359,7 @@ public class ResultsFrameBase extends JFrame {
         rocCurvePanel = new ROCCurvePanel(new RocCurve(ev), this, digits);
 
         pane.add(RESULTS_TEXT, resultPanel);
-        pane.add("Классификация", new ClassifyInstancePanel(
+        pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
                 new ClassifyInstanceTable(data, digits), classifier));
         pane.add(ROC_CURVES_TEXT, rocCurvePanel);
         //---------------------------------
@@ -359,30 +376,31 @@ public class ResultsFrameBase extends JFrame {
                 JScrollPane pane
                         = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) res.classifier(),
                         digits));
-                res.addPanel("Структура дерева", pane);
+                res.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
                 JScrollBar bar = pane.getHorizontalScrollBar();
                 bar.setValue(bar.getMaximum());
             } else if (res.classifier() instanceof NeuralNetwork) {
                 NeuralNetwork net = (NeuralNetwork) res.classifier();
                 JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, res, digits));
-                res.addPanel("Структура нейронной сети", pane);
+                res.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
             } else if (res.classifier() instanceof Logistic) {
                 LogisticCoefficientsTable table
                         = new LogisticCoefficientsTable((Logistic) res.classifier(), res.data(), digits);
                 JScrollPane pane = new JScrollPane(table);
-                res.addPanel("Оценки коэффициентов", pane);
-                //-----------------------------------------
+                res.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
+
                 AttributesSelection roc = new AttributesSelection(res.data());
                 roc.calculate();
                 SignificantAttributesTable signTable
                         = new SignificantAttributesTable(roc, digits);
                 JScrollPane signPane = new JScrollPane(signTable);
-                res.addPanel("Значимые атрибуты", signPane);
+
+                res.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
             } else if (res.classifier() instanceof EnsembleClassifier) {
                 EnsembleTable table = new EnsembleTable((EnsembleClassifier) res.classifier(),
                         res.getParentFrame(), digits);
                 JScrollPane pane = new JScrollPane(table);
-                res.addPanel("Структура ансамбля", pane);
+                res.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
             }
         }
     }
@@ -570,7 +588,7 @@ public class ResultsFrameBase extends JFrame {
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             Cell cell = row.createCell(0);
             cell.setCellStyle(style);
-            cell.setCellValue(STATISTICA_TEXT);
+            cell.setCellValue(STATISTICS_TEXT);
             DecimalFormat fmt = costMatrix.getFormat();
             //------------------------------
             for (int i = 0; i < statTable.getRowCount(); i++) {

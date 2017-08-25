@@ -16,6 +16,8 @@ import javax.swing.*;
  */
 public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
 
+    private static final String OPTIONS_TITLE = "Настройки параметров";
+
     public AutomatedHeterogeneousEnsembleFrame(String title, AbstractExperiment experiment,
                                                JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
@@ -25,8 +27,8 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
     @Override
     protected void setOptions() {
         AutomatedHeterogeneousEnsemble exp = (AutomatedHeterogeneousEnsemble) this.getExperiment();
-        EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, "Настройки параметров", exp.getClassifier(),
-                exp.data());
+        EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, OPTIONS_TITLE, exp.getClassifier(),
+                exp.getData());
         options.setSampleEnabled(false);
         options.addClassifiers(exp.getClassifier().getClassifiersSet().clone());
         options.showDialog();

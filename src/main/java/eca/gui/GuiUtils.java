@@ -1,7 +1,6 @@
 package eca.gui;
 
-import javax.swing.JTextField;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 
 /**
@@ -17,6 +16,16 @@ public class GuiUtils {
             }
         }
         return null;
+    }
+
+    public static void updateForegroundAndBackGround(JComponent target, JTable source, boolean isSelected) {
+        if (isSelected) {
+            target.setForeground(source.getSelectionForeground());
+            target.setBackground(source.getSelectionBackground());
+        } else {
+            target.setForeground(source.getForeground());
+            target.setBackground(source.getBackground());
+        }
     }
 
     public static void setUIFont(FontUIResource f) {

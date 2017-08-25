@@ -47,7 +47,6 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         miss_Filter.setInputFormat(train);
         train = weka.filters.Filter.useFilter(train, miss_Filter);
         train.setRelationName(data.relationName());
-        //System.out.println(train);
         return train;
     }
 

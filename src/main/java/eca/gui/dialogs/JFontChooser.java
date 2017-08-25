@@ -25,20 +25,29 @@ public class JFontChooser extends JDialog {
     private static final String fontTypeTitle = "Шрифт:";
     private static final String fontStyleTitle = "Начертание:";
     private static final String fontSizeTitle = "Размер:";
-    private static final String[] FONTS =
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
     private static final String[] STYLES = {"Обычный", "Полужирный",
             "Курсив", "Полужирный курсив"};
+    private static final String TITLE = "Настройки";
+    private static final String SELECT_FONT_TITLE = "Выбор шрифта";
+    private static final String FONT_EXAMPLE_TITLE = "Образец";
+    private static final String FONT_EXAMPLE = "Аа Яя Aa Zz";
+    private static final int DEFAULT_FONT_SIZE = 12;
 
     private JComboBox<String> fontType;
     private JComboBox<String> fontSize;
     private JComboBox<String> fontStyle;
     private JTextArea exampleField;
 
+    private static String[] FONTS;
+
     private boolean dialogResult;
 
+    static {
+        FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+    }
+
     public JFontChooser(Window parent, Font font) {
-        super(parent, "Настройки");
+        super(parent, TITLE);
         this.setModal(true);
         this.setResizable(false);
         this.makeGUI(font);
@@ -85,7 +94,7 @@ public class JFontChooser extends JDialog {
     private void makeGUI(Font font) {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(PanelBorderUtils.createTitledBorder("Выбор шрифта"));
+        panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
         //---------------------------------
         fontType = new JComboBox<>(FONTS);
         fontSize = new JComboBox<>();
@@ -100,7 +109,7 @@ public class JFontChooser extends JDialog {
             public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
                 if (i >= 0) {
-                    label.setFont(new Font(FONTS[i], Font.PLAIN, 12));
+                    label.setFont(new Font(FONTS[i], Font.PLAIN, DEFAULT_FONT_SIZE));
                     label.setText(FONTS[i]);
                 }
                 return label;
@@ -115,16 +124,16 @@ public class JFontChooser extends JDialog {
                 if (i >= 0) {
                     switch (i) {
                         case 0:
-                            label.setFont(new Font("Arial", Font.PLAIN, 12));
+                            label.setFont(new Font("Arial", Font.PLAIN, DEFAULT_FONT_SIZE));
                             break;
                         case 1:
-                            label.setFont(new Font("Arial", Font.BOLD, 12));
+                            label.setFont(new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE));
                             break;
                         case 2:
-                            label.setFont(new Font("Arial", Font.ITALIC, 12));
+                            label.setFont(new Font("Arial", Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
                         case 3:
-                            label.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, 12));
+                            label.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
                     }
                     label.setText(STYLES[i]);
@@ -169,7 +178,7 @@ public class JFontChooser extends JDialog {
         exampleField.setLineWrap(true);
         exampleField.setEditable(false);
         JScrollPane bottom = new JScrollPane(exampleField);
-        bottom.setBorder(PanelBorderUtils.createTitledBorder("Образец"));
+        bottom.setBorder(PanelBorderUtils.createTitledBorder(FONT_EXAMPLE_TITLE));
         setExample();
         //---------------------------------
         panel.add(new JLabel(fontTypeTitle),
@@ -219,7 +228,7 @@ public class JFontChooser extends JDialog {
 
     private void setExample() {
         exampleField.setFont(getSelectedFont());
-        exampleField.setText("Аа Яя Aa Zz");
+        exampleField.setText(FONT_EXAMPLE);
     }
 
 }

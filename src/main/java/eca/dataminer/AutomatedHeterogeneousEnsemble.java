@@ -5,12 +5,12 @@
  */
 package eca.dataminer;
 
-import eca.model.ClassifierDescriptor;
 import eca.core.PermutationsSearch;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Sampler;
+import eca.model.ClassifierDescriptor;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 

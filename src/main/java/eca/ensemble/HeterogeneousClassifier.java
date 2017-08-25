@@ -104,7 +104,8 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = "Максимальная допустимая ошибка классификатора:";
         options[k++] = String.valueOf(max_error);
         options[k++] = "Метод голосования:";
-        options[k++] = votes.getDescription();
+        options[k++] = getUseWeightedVotesMethod() ?
+                "Метод взвешенного голосования" : "Метод большинства голосов";
         options[k++] = "Формирование обучающих выборок:";
         options[k++] = sampler.getDescription();
         options[k++] = "Выбор классификатора:";

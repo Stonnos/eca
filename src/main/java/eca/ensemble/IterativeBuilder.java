@@ -6,6 +6,8 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
+import weka.classifiers.Classifier;
+import weka.core.Instances;
 
 /**
  * Abstract class for iterative building of classifier model.
@@ -80,6 +82,16 @@ public abstract class IterativeBuilder {
      */
     public int getPercent() {
         return index() * 100 / numIterations();
+    }
+
+    protected Evaluation evaluateModel(Classifier classifier, Instances data) throws Exception {
+        if (!hasNext()) {
+            Evaluation e = new Evaluation(data);
+            e.evaluateModel(classifier, data);
+            return e;
+        } else {
+            return null;
+        }
     }
 
 }

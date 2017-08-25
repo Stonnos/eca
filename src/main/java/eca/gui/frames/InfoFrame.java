@@ -16,6 +16,8 @@ import java.io.File;
 
 public class InfoFrame extends JFrame {
 
+    private static final String FILE_MENU_TEXT = "Файл";
+    private static final String SAVE_MENU_TEXT = "Сохранить";
     private JTextArea textInfo;
 
     public InfoFrame(String title, String str, JFrame parent) {
@@ -49,8 +51,8 @@ public class InfoFrame extends JFrame {
                 new Insets(4, 0, 4, 0), 0, 0));
         //---------------------------------------
         JMenuBar menu = new JMenuBar();
-        JMenu fileMenu = new JMenu("Файл");
-        JMenuItem saveMenu = new JMenuItem("Сохранить");
+        JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
+        JMenuItem saveMenu = new JMenuItem(SAVE_MENU_TEXT);
         fileMenu.add(saveMenu);
         menu.add(fileMenu);
         //--------------------------------------------

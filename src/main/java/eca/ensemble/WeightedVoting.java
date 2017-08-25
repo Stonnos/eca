@@ -69,9 +69,4 @@ public class WeightedVoting extends VotingMethod {
         return aggregator().distributionForInstance(obj, weights);
     }
 
-    @Override
-    public String getDescription() {
-        return "Метод взвешенного голосования";
-    }
-
 }

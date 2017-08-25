@@ -15,10 +15,12 @@ import java.awt.event.ActionListener;
 
 public class InstancesFrame extends JDialog {
 
+    private static final String DATA_FORMAT = "Данные: %s";
+
     private Instances data;
 
     public InstancesFrame(Instances data, Window parent) {
-        super(parent, "Данные: " + data.relationName());
+        super(parent, String.format(DATA_FORMAT, data.relationName()));
         this.data = data;
         this.setLayout(new GridBagLayout());
         //----------------------------------------------

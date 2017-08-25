@@ -56,7 +56,7 @@ public class ROCCurvePanel extends JPanel {
         plotBox.setPreferredSize(dim);
         plotBox.setMaximumSize(dim);
         plotBox.setMinimumSize(dim);
-        Attribute classAttr = curve.data().classAttribute();
+        Attribute classAttr = curve.getData().classAttribute();
         for (Enumeration i = classAttr.enumerateValues(); i.hasMoreElements(); ) {
             plotBox.addItem("Класс " + i.nextElement());
         }
@@ -77,7 +77,7 @@ public class ROCCurvePanel extends JPanel {
                 if (i < plots.length - 1) {
                     if (frames[i] == null) {
                         frames[i] = new DataFrame(curve.getROCCurve(i), digits,
-                                curve.data().classAttribute().value(i));
+                                curve.getData().classAttribute().value(i));
                     }
                     frames[i].setVisible(true);
                 }
@@ -121,17 +121,17 @@ public class ROCCurvePanel extends JPanel {
     }
 
     private void createFrames() {
-        frames = new DataFrame[curve.data().numClasses()];
+        frames = new DataFrame[curve.getData().numClasses()];
     }
 
     private void createPlots() {
-        plots = new JFreeChart[curve.data().numClasses() + 1];
+        plots = new JFreeChart[curve.getData().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
-        //----------------------------------
-        for (int i = 0; i < curve.data().numClasses(); i++) {
+
+        for (int i = 0; i < curve.getData().numClasses(); i++) {
             Instances rocSet = curve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
-            XYSeries points = new XYSeries(curve.data().classAttribute().value(i));
+            XYSeries points = new XYSeries(curve.getData().classAttribute().value(i));
             for (int j = 0; j < rocSet.numInstances(); j++) {
                 Instance obj = rocSet.instance(j);
                 points.add(obj.value(4) * 100, obj.value(5) * 100);
@@ -149,7 +149,7 @@ public class ROCCurvePanel extends JPanel {
                         allPlots,
                         PlotOrientation.VERTICAL,
                         true, true, false);
-        //----------------------------------
+
         panel = new ChartPanel(plots[plots.length - 1]);
     }
 

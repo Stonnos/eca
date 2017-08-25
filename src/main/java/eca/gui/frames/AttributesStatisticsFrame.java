@@ -25,6 +25,15 @@ import java.text.DecimalFormat;
 
 public class AttributesStatisticsFrame extends JFrame {
 
+    private static final String TITLE = "Статистика по атрибутам";
+    private static final String DATA_INFO_TITLE = "Информация о данных";
+    private static final String STATISTICS_TITLE = "Статистика";
+    private static final String SELECTED_ATTRIBUTE_TITLE = "Выбранный атрибут";
+    private static final String ATTR_LABEL_TEXT = "Атрибут:";
+    private static final String ATTR_TYPE_TEXT = "Тип:";
+    private static final int DEFAULT_WIDTH = 475;
+    private static final int DEFAULT_HEIGHT = 450;
+
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
 
     private AttributeStatistics attributeStatistics;
@@ -43,14 +52,14 @@ public class AttributesStatisticsFrame extends JFrame {
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
         this.statisticsTable = new JDataTableBase();
         this.statisticsTable.setAutoResizeOff(false);
-        this.setTitle("Статистика по атрибутам");
+        this.setTitle(TITLE);
         this.setLayout(new GridBagLayout());
-        this.setSize(475, 450);
+        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setIconImage(parent.getIconImage());
 
         JPanel dataInfoPanel = new JPanel(new GridBagLayout());
 
-        dataInfoPanel.setBorder(PanelBorderUtils.createTitledBorder("Информация о данных"));
+        dataInfoPanel.setBorder(PanelBorderUtils.createTitledBorder(DATA_INFO_TITLE));
 
         JDataTableBase dataInfoTable = new JDataTableBase(new DataInfoTableModel(data));
         dataInfoTable.setAutoResizeOff(false);
@@ -90,19 +99,19 @@ public class AttributesStatisticsFrame extends JFrame {
 
         attributeTypeLabel = new JLabel();
         JPanel content = new JPanel(new GridBagLayout());
-        content.setBorder(PanelBorderUtils.createTitledBorder("Выбранный атрибут"));
+        content.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_ATTRIBUTE_TITLE));
 
-        content.add(new JLabel("Атрибут:"), new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        content.add(new JLabel(ATTR_LABEL_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 10, 0, 10), 0, 0));
         content.add(attributesBox, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 10), 0, 0));
-        content.add(new JLabel("Тип:"), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        content.add(new JLabel(ATTR_TYPE_TEXT), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 10, 0, 10), 0, 0));
         content.add(attributeTypeLabel, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 0, 0, 10), 0, 0));
 
         JScrollPane scrollPane = new JScrollPane(statisticsTable);
-        scrollPane.setBorder(PanelBorderUtils.createTitledBorder("Статистика"));
+        scrollPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TITLE));
 
         JButton okButton = ButtonUtils.createOkButton();
 
