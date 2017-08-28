@@ -39,23 +39,23 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private static final int FIELD_LENGTH = 5;
 
-    private static final String itsNumTitle = "Число итераций:";
-    private static final String maxErrorTitle = "Макс. допустимая ошибка классификатора:";
-    private static final String minErrorTitle = "Мин. допустимая ошибка классификатора:";
+    private static final String ITS_NUM_TITLE = "Число итераций:";
+    private static final String MAX_ERROR_TITLE = "Макс. допустимая ошибка классификатора:";
+    private static final String MIN_ERROR_TITLE = "Мин. допустимая ошибка классификатора:";
 
-    private static final String samplingTitle = "Формирование обучающих выборок";
+    private static final String SAMPLING_TITLE = "Формирование обучающих выборок";
 
-    private static final String[] samplingMethod = {"Использование исходной выборки",
+    private static final String[] SAMPLING_METHOD = {"Использование исходной выборки",
             "Бутстрэп выборки",
             "Случайные подвыборки",
             "Бутстрэп выборки случайного размера"};
 
-    private static final String clsSelectionTitle = "Выбор классификатора на каждой итерации";
-    private static final String[] clsSelectionMethod = {"Случайный классификатор", "Оптимальный классификатор"};
+    private static final String CLS_SELECTION_TITLE = "Выбор классификатора на каждой итерации";
+    private static final String[] CLS_SELECTION_METHOD = {"Случайный классификатор", "Оптимальный классификатор"};
 
-    private static final String votesTitle = "Выбор метода голосования";
+    private static final String VOTES_TITLE = "Выбор метода голосования";
 
-    private static final String[] votesMethod = {"Метод большинства голосов", "Метод взвешенного голосования"};
+    private static final String[] VOTES_METHOD = {"Метод большинства голосов", "Метод взвешенного голосования"};
     private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
     private static final String AVAILABLE_CLASSIFIERS_TITLE = "Доступные классификаторы";
     private static final String SELECTED_CLASSIFIERS_TITLE = "Выбранные классификаторы";
@@ -134,18 +134,18 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         //----------------------------------------------------
         firstPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
-        optionPanel.add(new JLabel(itsNumTitle),
+        optionPanel.add(new JLabel(ITS_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numClassifiersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
-        optionPanel.add(new JLabel(minErrorTitle), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(MIN_ERROR_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(classifierMinErrorText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
-        optionPanel.add(new JLabel(maxErrorTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(MAX_ERROR_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(classifierMaxErrorText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
@@ -244,10 +244,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersText,
                         classifierMinErrorText, classifierMaxErrorText);
                 if (text != null) {
-                    JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    text.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
                 } else if (isValidate()) {
                     createEnsemble();
                     dialogResult = true;
@@ -268,12 +265,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         secondPanel = new JPanel(new GridBagLayout());
         secondPanel.setPreferredSize(dim);
         samplePanel = new JPanel(new GridBagLayout());
-        samplePanel.setBorder(PanelBorderUtils.createTitledBorder(samplingTitle));
+        samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
-        initial = new JRadioButton(samplingMethod[0]);
-        bagging = new JRadioButton(samplingMethod[1]);
-        random = new JRadioButton(samplingMethod[2]);
-        randomBagging = new JRadioButton(samplingMethod[3]);
+        initial = new JRadioButton(SAMPLING_METHOD[0]);
+        bagging = new JRadioButton(SAMPLING_METHOD[1]);
+        random = new JRadioButton(SAMPLING_METHOD[2]);
+        randomBagging = new JRadioButton(SAMPLING_METHOD[3]);
         group.add(initial);
         group.add(bagging);
         group.add(random);
@@ -325,10 +322,10 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         //------------------------------------------------------
         JPanel clsMethodPanel = new JPanel(new GridBagLayout());
-        clsMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(clsSelectionTitle));
+        clsMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(CLS_SELECTION_TITLE));
         ButtonGroup clsGroup = new ButtonGroup();
-        randomCls = new JRadioButton(clsSelectionMethod[0]);
-        optimalCls = new JRadioButton(clsSelectionMethod[1]);
+        randomCls = new JRadioButton(CLS_SELECTION_METHOD[0]);
+        optimalCls = new JRadioButton(CLS_SELECTION_METHOD[1]);
         clsGroup.add(randomCls);
         clsGroup.add(optimalCls);
         //--------------------------------
@@ -357,10 +354,10 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
         //------------------------------------------------------------
         JPanel votesPanel = new JPanel(new GridBagLayout());
-        votesPanel.setBorder(PanelBorderUtils.createTitledBorder(votesTitle));
+        votesPanel.setBorder(PanelBorderUtils.createTitledBorder(VOTES_TITLE));
         ButtonGroup votesGroup = new ButtonGroup();
-        majority = new JRadioButton(votesMethod[0]);
-        weighted = new JRadioButton(votesMethod[1]);
+        majority = new JRadioButton(VOTES_METHOD[0]);
+        weighted = new JRadioButton(VOTES_METHOD[1]);
         votesGroup.add(majority);
         votesGroup.add(weighted);
         //--------------------------------

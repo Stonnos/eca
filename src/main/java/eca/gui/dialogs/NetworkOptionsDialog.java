@@ -37,39 +37,41 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
 
     private static final int DOUBLE_FIELD_LENGTH = 12;
 
-    private static final String mainOptionsTitle = "Основные параметры";
+    private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
 
-    private static final String inLayerNeuronsNumTitle = "Количество нейронов во входном слое:";
+    private static final String IN_LAYER_NEURONS_NUM_TITLE = "Количество нейронов во входном слое:";
 
-    private static final String outLayerNeuronsNumTitle = "Количество нейронов в выходном слое:";
+    private static final String OUT_LAYER_NEURONS_NUM_TITLE = "Количество нейронов в выходном слое:";
 
-    private static final String hiddenLayerTitle = "Параметры скрытого слоя";
+    private static final String HIDDEN_LAYER_TITLE = "Параметры скрытого слоя";
 
-    private static final String hiddenLayerStructureTitle = "Структура скрытого слоя:";
+    private static final String HIDDEN_LAYER_STRUCTURE_TITLE = "Структура скрытого слоя:";
 
-    private static final String activationFunctionTitle = "Активационная функция нейронов скрытого слоя";
+    private static final String ACTIVATION_FUNCTION_TITLE = "Активационная функция нейронов скрытого слоя";
 
-    private static final String learningAlgorithmTitle = "Параметры алгоритма обучения";
+    private static final String LEARNING_ALGORITHM_TITLE = "Параметры алгоритма обучения";
 
-    private static final String coefficientTitle = "Значение коэффициента:";
+    private static final String COEFFICIENT_TITLE = "Значение коэффициента:";
 
-    private static final String[] activationsFuctions = {"Логистическая",
+    private static final String[] ACTIVATIONS_FUNCTIONS = {"Логистическая",
             "Гиперболический тангенс",
             "Тригонометрический синус",
             "Экспоненциальная"};
 
-    private static final String[] activationFuctionsToolTipsMessages = {"f(S)=1/(1+exp(-a*S))",
+    private static final String[] ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES = {"f(S)=1/(1+exp(-a*S))",
             "f(S)=(exp(a*S)-exp(-a*S))/(exp(a*S)+exp(-a*S))",
             "f(S)=sin(a*S)",
             "f(S)=exp(-S^2/a^2)"};
 
-    private static final String errorTitle = "Допустимая ошибка:";
+    private static final String ERROR_TITLE = "Допустимая ошибка:";
 
-    private static final String maxItsTitle = "Максимальное число итераций:";
+    private static final String MAX_ITS_TITLE = "Максимальное число итераций:";
 
-    private static final String speedCoefficientTitle = "Коэффициент скорости обучения:";
+    private static final String SPEED_COEFFICIENT_TITLE = "Коэффициент скорости обучения:";
 
-    private static final String momentumCoefficientTitle = "Коэффициент момента:";
+    private static final String MOMENTUM_COEFFICIENT_TITLE = "Коэффициент момента:";
+    private static final String RECOMMENDED_HIDDEN_LAYER_MESSAGE =
+            "Рекомендуемое число нейронов в скрытом слое:  %d <= N <= %d";
 
     private JTextField inNeuronsText;
     private JTextField outNeuronsText;
@@ -104,7 +106,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         Dimension labelDim = new Dimension(270, 20);
         //---------------------------------------------------
         JPanel defaultPanel = new JPanel(new GridBagLayout());
-        defaultPanel.setBorder(PanelBorderUtils.createTitledBorder(mainOptionsTitle));
+        defaultPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         //--------------------------------------------------
         inNeuronsText = new JTextField(TEXT_FIELD_LENGTH);
         inNeuronsText.setEditable(false);
@@ -113,10 +115,10 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         outNeuronsText.setEditable(false);
         outNeuronsText.setBackground(Color.WHITE);
         //----------------------------------------------------
-        JLabel inLabel = new JLabel(inLayerNeuronsNumTitle);
+        JLabel inLabel = new JLabel(IN_LAYER_NEURONS_NUM_TITLE);
         inLabel.setPreferredSize(labelDim);
         inLabel.setHorizontalAlignment(JLabel.RIGHT);
-        JLabel outLabel = new JLabel(outLayerNeuronsNumTitle);
+        JLabel outLabel = new JLabel(OUT_LAYER_NEURONS_NUM_TITLE);
         outLabel.setPreferredSize(labelDim);
         outLabel.setHorizontalAlignment(JLabel.RIGHT);
         //-------------------------------------------------
@@ -132,43 +134,42 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         //------------------------------------------------------------
         JPanel hiddenLayerPanel = new JPanel(new GridBagLayout());
-        hiddenLayerPanel.setBorder(PanelBorderUtils.createTitledBorder(hiddenLayerTitle));
+        hiddenLayerPanel.setBorder(PanelBorderUtils.createTitledBorder(HIDDEN_LAYER_TITLE));
         JPanel actFuncPanel = new JPanel(new GridBagLayout());
-        actFuncPanel.setBorder(PanelBorderUtils.createTitledBorder(activationFunctionTitle));
+        actFuncPanel.setBorder(PanelBorderUtils.createTitledBorder(ACTIVATION_FUNCTION_TITLE));
         JPanel learningPanel = new JPanel(new GridBagLayout());
-        learningPanel.setBorder(PanelBorderUtils.createTitledBorder(learningAlgorithmTitle));
+        learningPanel.setBorder(PanelBorderUtils.createTitledBorder(LEARNING_ALGORITHM_TITLE));
         //-------------------------------------------------------------
         hidLayersText = new JTextField(TEXT_FIELD_LENGTH);
         hidLayersText.setDocument(new ListDocument(200));
         //----------------------------------------------------
-        JLabel hidLabel = new JLabel(hiddenLayerStructureTitle);
+        JLabel hidLabel = new JLabel(HIDDEN_LAYER_STRUCTURE_TITLE);
         hidLabel.setPreferredSize(labelDim);
         hidLabel.setHorizontalAlignment(JLabel.RIGHT);
-        String reccomendText = "Рекомендуемое число нейронов"
-                + " в скрытом слое:  " + classifier.getMinNumNeuronsInHiddenLayer() + " <= N <= "
-                + classifier.getMaxNumNeuronsInHiddenLayer();
+        String recommendText = String.format(RECOMMENDED_HIDDEN_LAYER_MESSAGE,
+                classifier.getMinNumNeuronsInHiddenLayer(), classifier.getMaxNumNeuronsInHiddenLayer());
         //-------------------------------------------------
         hiddenLayerPanel.add(hidLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
         hiddenLayerPanel.add(hidLayersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        hiddenLayerPanel.setToolTipText(reccomendText);
+        hiddenLayerPanel.setToolTipText(recommendText);
         //-------------------------------------------------------------
         ButtonGroup group = new ButtonGroup();
-        logistic = new JRadioButton(activationsFuctions[0]);
-        tanh = new JRadioButton(activationsFuctions[1]);
-        sine = new JRadioButton(activationsFuctions[2]);
-        exp = new JRadioButton(activationsFuctions[3]);
-        logistic.setToolTipText(activationFuctionsToolTipsMessages[0]);
-        tanh.setToolTipText(activationFuctionsToolTipsMessages[1]);
-        sine.setToolTipText(activationFuctionsToolTipsMessages[2]);
-        exp.setToolTipText(activationFuctionsToolTipsMessages[3]);
+        logistic = new JRadioButton(ACTIVATIONS_FUNCTIONS[0]);
+        tanh = new JRadioButton(ACTIVATIONS_FUNCTIONS[1]);
+        sine = new JRadioButton(ACTIVATIONS_FUNCTIONS[2]);
+        exp = new JRadioButton(ACTIVATIONS_FUNCTIONS[3]);
+        logistic.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[0]);
+        tanh.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[1]);
+        sine.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[2]);
+        exp.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[3]);
         group.add(logistic);
         group.add(tanh);
         group.add(sine);
         group.add(exp);
-        JLabel coeffLabel = new JLabel(coefficientTitle);
+        JLabel coeffLabel = new JLabel(COEFFICIENT_TITLE);
         coeffLabel.setPreferredSize(labelDim);
         coeffLabel.setHorizontalAlignment(JLabel.RIGHT);
         afCoeffText = new JTextField(TEXT_FIELD_LENGTH);
@@ -196,16 +197,16 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         momentumText = new JTextField(TEXT_FIELD_LENGTH);
         momentumText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
         //------------------------------------------------------------
-        JLabel errLabel = new JLabel(errorTitle);
+        JLabel errLabel = new JLabel(ERROR_TITLE);
         errLabel.setPreferredSize(labelDim);
         errLabel.setHorizontalAlignment(JLabel.RIGHT);
-        JLabel itsLabel = new JLabel(maxItsTitle);
+        JLabel itsLabel = new JLabel(MAX_ITS_TITLE);
         itsLabel.setPreferredSize(labelDim);
         itsLabel.setHorizontalAlignment(JLabel.RIGHT);
-        JLabel speedLabel = new JLabel(speedCoefficientTitle);
+        JLabel speedLabel = new JLabel(SPEED_COEFFICIENT_TITLE);
         speedLabel.setPreferredSize(labelDim);
         speedLabel.setHorizontalAlignment(JLabel.RIGHT);
-        JLabel momentumLabel = new JLabel(momentumCoefficientTitle);
+        JLabel momentumLabel = new JLabel(MOMENTUM_COEFFICIENT_TITLE);
         speedLabel.setPreferredSize(labelDim);
         speedLabel.setHorizontalAlignment(JLabel.RIGHT);
         //------------------------------------------------------------
@@ -244,10 +245,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 JTextField text = GuiUtils.searchFirstEmptyField(hidLayersText, afCoeffText,
                         estimateText, numItsText, learnSpeedText, momentumText);
                 if (text != null) {
-                    JOptionPane.showMessageDialog(NetworkOptionsDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    text.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(NetworkOptionsDialog.this, text);
                 } else {
                     text = hidLayersText;
                     try {

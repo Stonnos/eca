@@ -22,9 +22,9 @@ public class JFontChooser extends JDialog {
 
     private static final int MIN_FONT_SIZE = 8;
     private static final int MAX_FONT_SIZE = 50;
-    private static final String fontTypeTitle = "Шрифт:";
-    private static final String fontStyleTitle = "Начертание:";
-    private static final String fontSizeTitle = "Размер:";
+    private static final String FONT_TYPE_TITLE = "Шрифт:";
+    private static final String FONT_STYLE_TITLE = "Начертание:";
+    private static final String FONT_SIZE_TITLE = "Размер:";
     private static final String[] STYLES = {"Обычный", "Полужирный",
             "Курсив", "Полужирный курсив"};
     private static final String TITLE = "Настройки";
@@ -181,16 +181,16 @@ public class JFontChooser extends JDialog {
         bottom.setBorder(PanelBorderUtils.createTitledBorder(FONT_EXAMPLE_TITLE));
         setExample();
         //---------------------------------
-        panel.add(new JLabel(fontTypeTitle),
+        panel.add(new JLabel(FONT_TYPE_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         panel.add(fontType, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        panel.add(new JLabel(fontSizeTitle), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        panel.add(new JLabel(FONT_SIZE_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         panel.add(fontSize, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        panel.add(new JLabel(fontStyleTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        panel.add(new JLabel(FONT_STYLE_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         panel.add(fontStyle, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));

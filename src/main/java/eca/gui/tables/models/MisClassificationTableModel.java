@@ -6,7 +6,6 @@
 package eca.gui.tables.models;
 
 import eca.core.evaluation.Evaluation;
-import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
@@ -16,16 +15,13 @@ import javax.swing.table.AbstractTableModel;
  */
 public class MisClassificationTableModel extends AbstractTableModel {
 
-    private Instances data;
-    private Classifier classifier;
+    private static final String ACTUAL_VALUE_TEXT = "Реальное";
+    private static final String PREDICTED_VALUE_FORMAT = "%d (Прогнозное)";
     private Evaluation ev;
     private String[] titles;
     private double[][] values;
 
-    public MisClassificationTableModel(Instances data, Classifier classifier, Evaluation ev)
-            throws Exception {
-        this.data = data;
-        this.classifier = classifier;
+    public MisClassificationTableModel(Evaluation ev) throws Exception {
         this.ev = ev;
         this.makeTitles();
         this.makeMatrix();
@@ -52,10 +48,10 @@ public class MisClassificationTableModel extends AbstractTableModel {
     }
 
     private void makeTitles() {
-        titles = new String[data.numClasses() + 1];
-        titles[0] = "Реальное";
+        titles = new String[ev.getData().numClasses() + 1];
+        titles[0] = ACTUAL_VALUE_TEXT;
         for (int i = 1; i < titles.length; i++) {
-            titles[i] = i - 1 + " (Прогнозное)";
+            titles[i] = String.format(PREDICTED_VALUE_FORMAT, i - 1);
         }
     }
 

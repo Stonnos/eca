@@ -16,8 +16,8 @@ import java.text.DecimalFormat;
  */
 public class ClassificationCostsMatrix extends JDataTableBase {
 
-    public ClassificationCostsMatrix(Instances data, Evaluation ev, int digits) {
-        super(new ClassificationCostsTableModel(data, ev, digits));
+    public ClassificationCostsMatrix(Evaluation ev, int digits) {
+        super(new ClassificationCostsTableModel(ev, digits));
         this.setAutoResizeOff(false);
     }
 

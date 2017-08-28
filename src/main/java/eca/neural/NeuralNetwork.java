@@ -129,10 +129,10 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
                 network().getOutActivationFunction().getClass().getSimpleName(),
                 "Алгоритм обучения:", network().getLearningAlgorithm().getClass().getSimpleName()};
         if (network.getLearningAlgorithm() instanceof BackPropagation) {
-            String[] algoritmOptions = network().getLearningAlgorithm().getOptions();
-            options = Arrays.copyOf(options, options.length + algoritmOptions.length);
-            for (int i = 0; i < algoritmOptions.length; i++) {
-                options[options.length - algoritmOptions.length + i] = algoritmOptions[i];
+            String[] algorithmOptions = network().getLearningAlgorithm().getOptions();
+            options = Arrays.copyOf(options, options.length + algorithmOptions.length);
+            for (int i = 0; i < algorithmOptions.length; i++) {
+                options[options.length - algorithmOptions.length + i] = algorithmOptions[i];
             }
         }
         return options;

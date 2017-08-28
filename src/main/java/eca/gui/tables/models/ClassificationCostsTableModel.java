@@ -17,7 +17,7 @@ import java.text.DecimalFormat;
  */
 public class ClassificationCostsTableModel extends AbstractTableModel {
 
-    private final Instances data;
+    private static final String NAN = "NaN";
     private final Evaluation ev;
     private final String[] titles = {"Класс", "TPR", "FPR",
             "TNR", "FNR",
@@ -26,8 +26,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
 
     private final DecimalFormat format = NumericFormat.getInstance();
 
-    public ClassificationCostsTableModel(Instances data, Evaluation ev, int digits) {
-        this.data = data;
+    public ClassificationCostsTableModel(Evaluation ev, int digits) {
         this.ev = ev;
         format.setMaximumFractionDigits(digits);
         this.makeMatrix();
@@ -58,6 +57,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
     }
 
     private void makeMatrix() {
+        Instances data = ev.getData();
         values = new Object[data.numClasses()][titles.length - 1];
         for (int i = 0; i < data.numClasses(); i++) {
             values[i][0] = format.format(ev.truePositiveRate(i));
@@ -68,7 +68,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
             values[i][5] = format.format(ev.precision(i));
             values[i][6] = format.format(ev.fMeasure(i));
             double auc = ev.areaUnderROC(i);
-            values[i][7] = Double.isNaN(auc) ? "NaN" : format.format(auc);
+            values[i][7] = Double.isNaN(auc) ? NAN : format.format(auc);
         }
     }
 

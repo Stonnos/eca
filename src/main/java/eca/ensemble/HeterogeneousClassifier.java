@@ -109,7 +109,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = "Формирование обучающих выборок:";
         options[k++] = sampler.getDescription();
         options[k++] = "Выбор классификатора:";
-        options[k++] = use_Random_Classifier ? "Случайный классификатор"
+        options[k++] = getUseRandomClassifier() ? "Случайный классификатор"
                 : "Оптимальный классификатор";
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
             options[i] = "Базовый классификатор " + j + ":";

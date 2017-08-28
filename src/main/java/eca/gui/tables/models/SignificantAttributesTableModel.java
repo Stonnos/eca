@@ -16,6 +16,9 @@ import java.text.DecimalFormat;
  */
 public class SignificantAttributesTableModel extends AbstractTableModel {
 
+    private static final String ATTR_TEXT = "Атрибут";
+    private static final String AVG_AUC_TEXT = "Avg. AUC";
+    private static final String AUC_FORMAT = "AUC (Класс %d)";
     private final AttributesSelection roc;
     private String[] titles;
     private final DecimalFormat format = NumericFormat.getInstance();
@@ -56,10 +59,10 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
 
     private void createNames() {
         titles = new String[roc.data().numClasses() + 2];
-        titles[0] = "Атрибут";
+        titles[0] = ATTR_TEXT;
         for (int k = 0; k < roc.data().numClasses(); k++) {
-            titles[k + 1] = "AUC (Класс " + k + ")";
+            titles[k + 1] = String.format(AUC_FORMAT, k);
         }
-        titles[titles.length - 1] = "Avg. AUC";
+        titles[titles.length - 1] = AVG_AUC_TEXT;
     }
 }

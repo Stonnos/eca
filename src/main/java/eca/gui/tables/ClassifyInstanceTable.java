@@ -33,6 +33,8 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final int DOUBLE_FIELD_LENGTH = 12;
     private static final int MAX_FIELD_LENGTH = 255;
     private static final int ROW_HEIGHT = 18;
+    private static final String ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT = "Не задано значение атрибута '%s'";
+    private static final String INCORRECT_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
     private AttributeStatistics attributeStatistics;
 
@@ -84,11 +86,11 @@ public class ClassifyInstanceTable extends JDataTableBase {
                 Attribute a = en.nextElement();
                 String strValue = (String) vector[a.index()];
                 if (strValue == null || strValue.isEmpty()) {
-                    throw new Exception(String.format("Не задано значение атрибута '%s'", a.name()));
+                    throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
                 }
                 double value = decimalFormat.parse(strValue).doubleValue();
                 if (a.isNominal() && (!strValue.matches("^[0-9]+$") || !a.isInRange(value))) {
-                    throw new Exception(String.format("Недопустимое значение атрибута '%s'", a.name()));
+                    throw new Exception(String.format(INCORRECT_ATTR_VALUE_ERROR_FORMAT, a.name()));
                 }
                 ins.setValue(a, value);
             }

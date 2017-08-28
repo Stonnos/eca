@@ -16,6 +16,7 @@ import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationService;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedNeuralNetworkUtil;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.ClassifiersSetBuilder;
 import eca.db.DataBaseConnection;
@@ -67,11 +68,6 @@ import eca.model.InputData;
 import eca.model.ModelDescriptor;
 import eca.net.DataLoaderImpl;
 import eca.neural.NeuralNetwork;
-import eca.neural.functions.ActivationFunction;
-import eca.neural.functions.ExponentialFunction;
-import eca.neural.functions.LogisticFunction;
-import eca.neural.functions.SineFunction;
-import eca.neural.functions.TanhFunction;
 import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
@@ -106,10 +102,10 @@ public class JMainFrame extends JFrame {
 
     private static final EcaServiceProperties ECA_SERVICE_PROPERTIES = EcaServiceProperties.getInstance();
 
-    private static final Color frameColor = new Color(198, 226, 255);
+    private static final Color FRAME_COLOR = new Color(198, 226, 255);
 
-    private static final String ensembleBuildingProgressTitle = "Пожалуйста подождите, идет построение ансамбля...";
-    private static final String networkBuildingProgressTitle = "Пожалуйста подождите, идет обучение нейронной сети...";
+    private static final String ENSEMBLE_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение ансамбля...";
+    private static final String NETWORK_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
@@ -153,6 +149,9 @@ public class JMainFrame extends JFrame {
     private static final String ATTRIBUTES_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
 
+    private static final double WIDTH_COEFFICIENT = 0.8;
+    private static final double HEIGHT_COEFFICIENT = 0.9;
+
     private final JDesktopPane panels = new JDesktopPane();
 
     private JMenu algorithmsMenu;
@@ -164,10 +163,6 @@ public class JMainFrame extends JFrame {
     private JMenuItem attrStatisticsMenu;
 
     private JMenu windowsMenu;
-
-    private static final double widthCoefficient = 0.8;
-
-    private static final double heightCoefficient = 0.9;
 
     private ResultsHistory resultsHistory = new ResultsHistory();
 
@@ -272,7 +267,7 @@ public class JMainFrame extends JFrame {
             this.setLayout(new GridBagLayout());
             this.makeUpperPanel();
             this.makeLowerPanel();
-            this.setFrameColor(frameColor);
+            this.setFrameColor(FRAME_COLOR);
             this.data = data;
             this.setMenu(menu);
             this.createPopMenu();
@@ -452,7 +447,7 @@ public class JMainFrame extends JFrame {
             attrScrollPane = new JScrollPane();
             attrScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             attrScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            double width = 0.35 * widthCoefficient * Toolkit.getDefaultToolkit().getScreenSize().width;
+            double width = 0.35 * WIDTH_COEFFICIENT * Toolkit.getDefaultToolkit().getScreenSize().width;
             attrScrollPane.setPreferredSize(new Dimension((int) width,
                     400));
             //-------------------------------------------
@@ -563,7 +558,7 @@ public class JMainFrame extends JFrame {
                     title, classifier, data, e,
                     digits);
             StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-            res.setStatisticaTable(stat.createStatistica(classifier, e));
+            res.setStatisticaTable(stat.createStatistics(classifier, e));
             ResultsFrameBase.createResults(res, digits);
             add(res);
             res.setVisible(true);
@@ -657,7 +652,7 @@ public class JMainFrame extends JFrame {
 
     private void makeGUI() {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize((int) (widthCoefficient * dim.width), (int) (heightCoefficient * dim.height));
+        this.setSize((int) (WIDTH_COEFFICIENT * dim.width), (int) (HEIGHT_COEFFICIENT * dim.height));
         this.makeMenu();
         panels.setBackground(Color.GRAY);
         this.add(panels);
@@ -1036,11 +1031,10 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        ActivationFunction[] func = {new LogisticFunction(),
-                                new TanhFunction(), new SineFunction(), new ExponentialFunction(),
-                                new LogisticFunction(2)};
-                        AutomatedNeuralNetwork net
-                                = new AutomatedNeuralNetwork(100, func, data(), new NeuralNetwork(data()));
+                        Instances data = data();
+                        AutomatedNeuralNetwork net =
+                                new AutomatedNeuralNetwork(AutomatedNeuralNetworkUtil.createActivationFunctions(),
+                                        data, new NeuralNetwork(data));
                         ExperimentFrame exp =
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         exp.setVisible(true);
@@ -1208,7 +1202,7 @@ public class JMainFrame extends JFrame {
                                 ClassifiersNames.NEURAL_NETWORK,
                                 new NeuralNetwork(set), set);
                         frame.showDialog();
-                        computeResults(frame, networkBuildingProgressTitle);
+                        computeResults(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1286,7 +1280,7 @@ public class JMainFrame extends JFrame {
                                 = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNames.RANDOM_FORESTS,
                                 new RandomForests(data), data);
                         frame.showDialog();
-                        computeResults(frame, ensembleBuildingProgressTitle);
+                        computeResults(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1418,7 +1412,7 @@ public class JMainFrame extends JFrame {
                     data());
             frame.setSampleEnabled(sample);
             frame.showDialog();
-            computeResults(frame, ensembleBuildingProgressTitle);
+            computeResults(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,

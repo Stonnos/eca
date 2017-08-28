@@ -73,13 +73,13 @@ public abstract class AbstractExperiment<T extends Classifier>
     protected final Random r = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
-        this(data, classifier, 16);
+        this(data, classifier, 100);
     }
 
     protected AbstractExperiment(Instances data, T classifier, int size) {
         this.data = data;
         this.classifier = classifier;
-        experiment = new ArrayList<>(size);
+        this.experiment = new ArrayList<>(size);
     }
 
     @Override

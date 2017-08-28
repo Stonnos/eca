@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
+import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.trees.CHAID;
@@ -24,11 +25,11 @@ import java.awt.event.ItemListener;
  */
 public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeClassifier> {
 
-    private static final String treeOptionsMessage = "Параметры дерева";
-    private static final String randomTreeMessage = "Случайное дерево";
-    private static final String minObjMessage = "Минимальное число объектов в листе:";
-    private static final String maxDepthMessage = "Максимальная глубина дерева:";
-    private static final String numRandomAttrMessage = "Число случайных атрибутов:";
+    private static final String TREE_OPTIONS_MESSAGE = "Параметры дерева";
+    private static final String RANDOM_TREE_MESSAGE = "Случайное дерево";
+    private static final String MIN_OBJ_MESSAGE = "Минимальное число объектов в листе:";
+    private static final String MAX_DEPTH_MESSAGE = "Максимальная глубина дерева:";
+    private static final String NUM_RANDOM_ATTR_MESSAGE = "Число случайных атрибутов:";
     private static final String BINARY_TREE_TYPE_TEXT = "Бинарное дерево";
     private static final String HI_SQUARE_TEXT =
             "<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>";
@@ -51,13 +52,13 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         this.setResizable(false);
 
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(treeOptionsMessage));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_MESSAGE));
         minObjText = new JTextField(TEXT_FIELD_LENGTH);
         minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
         maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
         maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
-        randomBox = new JCheckBox(randomTreeMessage);
+        randomBox = new JCheckBox(RANDOM_TREE_MESSAGE);
 
         randomBox.addItemListener(new ItemListener() {
             @Override
@@ -69,18 +70,18 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
         numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
-        optionPanel.add(new JLabel(minObjMessage),
+        optionPanel.add(new JLabel(MIN_OBJ_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(minObjText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(maxDepthMessage), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(MAX_DEPTH_MESSAGE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(maxDepthText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(randomBox, new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
-        optionPanel.add(new JLabel(numRandomAttrMessage), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(NUM_RANDOM_ATTR_MESSAGE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
@@ -101,15 +102,11 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             public void actionPerformed(ActionEvent evt) {
                 JTextField text = emptyField();
                 if (text != null) {
-                    JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    text.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
                 } else if (randomBox.isSelected()
                         && Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                            "Число случайных атрибутов должно быть не больше "
-                                    + String.valueOf(data.numAttributes() - 1),
+                            String.format("Число случайных атрибутов должно быть не больше %d", data.numAttributes() - 1),
                             "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
                     numRandomAttrText.requestFocusInWindow();
                 } else {

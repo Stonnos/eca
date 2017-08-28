@@ -1,5 +1,7 @@
 package eca.db;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Implements factory providing singleton connection descriptor objects,
  *
@@ -43,7 +45,8 @@ public class ConnectionDescriptorFactory {
     public static MySQLConnectionDescriptor getMySqlConnectionDescriptor() {
         if (MY_SQL_CONNECTION_DESCRIPTOR == null) {
             MY_SQL_CONNECTION_DESCRIPTOR =
-                    new MySQLConnectionDescriptor("localhost", 3306, "", "", "");
+                    new MySQLConnectionDescriptor("localhost", 3306, StringUtils.EMPTY, StringUtils.EMPTY,
+                            StringUtils.EMPTY);
         }
         return MY_SQL_CONNECTION_DESCRIPTOR;
     }
@@ -56,7 +59,8 @@ public class ConnectionDescriptorFactory {
     public static OracleConnectionDescriptor getOracleConnectionDescriptor() {
         if (ORACLE_CONNECTION_DESCRIPTOR == null) {
             ORACLE_CONNECTION_DESCRIPTOR =
-                    new OracleConnectionDescriptor("localhost", 1521, "XE", "", "");
+                    new OracleConnectionDescriptor("localhost", 1521, "XE",
+                            StringUtils.EMPTY, StringUtils.EMPTY);
         }
         return ORACLE_CONNECTION_DESCRIPTOR;
     }
@@ -69,7 +73,8 @@ public class ConnectionDescriptorFactory {
     public static PostgreSQLConnectionDescriptor getPostgreSQLConnectionDescriptor() {
         if (POSTGRESQL_CONNECTION_DESCRIPTOR == null) {
             POSTGRESQL_CONNECTION_DESCRIPTOR =
-                    new PostgreSQLConnectionDescriptor("localhost", 5432, "", "", "");
+                    new PostgreSQLConnectionDescriptor("localhost", 5432, StringUtils.EMPTY, StringUtils.EMPTY,
+                            StringUtils.EMPTY);
         }
         return POSTGRESQL_CONNECTION_DESCRIPTOR;
     }
@@ -82,7 +87,8 @@ public class ConnectionDescriptorFactory {
     public static MSSQLConnectionDescriptor getMSSqlConnectionDescriptor() {
         if (MSSQL_CONNECTION_DESCRIPTOR == null) {
             MSSQL_CONNECTION_DESCRIPTOR =
-                    new MSSQLConnectionDescriptor("localhost", 1433, "", "", "");
+                    new MSSQLConnectionDescriptor("localhost", 1433, StringUtils.EMPTY, StringUtils.EMPTY,
+                            StringUtils.EMPTY);
         }
         return MSSQL_CONNECTION_DESCRIPTOR;
     }
@@ -95,7 +101,8 @@ public class ConnectionDescriptorFactory {
     public static MSAccessConnectionDescriptor getMSAccessConnectionDescriptor() {
         if (MSACCESS_CONNECTION_DESCRIPTOR == null) {
             MSACCESS_CONNECTION_DESCRIPTOR =
-                    new MSAccessConnectionDescriptor("D:/", "db.accdb", "", "");
+                    new MSAccessConnectionDescriptor("D:/", "db.accdb",
+                            StringUtils.EMPTY, StringUtils.EMPTY);
         }
         return MSACCESS_CONNECTION_DESCRIPTOR;
     }
@@ -108,7 +115,7 @@ public class ConnectionDescriptorFactory {
     public static SQLiteConnectionDescriptor getSqliteConnectionDescriptor() {
         if (SQLITE_CONNECTION_DESCRIPTOR == null) {
             SQLITE_CONNECTION_DESCRIPTOR =
-                    new SQLiteConnectionDescriptor("c:/", "", "", "");
+                    new SQLiteConnectionDescriptor("c:/", StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
         }
         return SQLITE_CONNECTION_DESCRIPTOR;
     }

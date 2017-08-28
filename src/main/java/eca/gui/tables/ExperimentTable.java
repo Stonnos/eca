@@ -168,7 +168,7 @@ public class ExperimentTable extends JDataTableBase {
                             object.getClassifier(), data, object.getEvaluation(), model.digits());
                     ResultsFrameBase.createResults(result, model.digits());
                     StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
-                    result.setStatisticaTable(stat.createStatistica(object.getClassifier(), object.getEvaluation()));
+                    result.setStatisticaTable(stat.createStatistics(object.getClassifier(), object.getEvaluation()));
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),

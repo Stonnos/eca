@@ -5,6 +5,8 @@
  */
 package eca.db;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Datasource descriptor.
  *
@@ -12,11 +14,11 @@ package eca.db;
  */
 public abstract class ConnectionDescriptor implements java.io.Serializable {
 
-    private String host = "";
+    private String host = StringUtils.EMPTY;
     private int port;
-    private String dataBaseName = "";
-    private String login = "";
-    private String password = "";
+    private String dataBaseName = StringUtils.EMPTY;
+    private String login = StringUtils.EMPTY;
+    private String password = StringUtils.EMPTY;
 
     /**
      * Creates <tt>ConnectionDescriptor</tt> object with default options.

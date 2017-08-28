@@ -33,6 +33,17 @@ import java.util.ArrayList;
 
 public class AttributesTable extends JDataTableBase {
 
+    private static final String RENAME_ATTR_MENU_TEXT = "Переименовать атрибут";
+    private static final String ATTR_NAME_TEXT = "Имя:";
+    private static final String NEW_ATTR_NAME_FORMAT = "Новое имя атрибута: %s";
+    private static final String DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT = "Атрибут с именем '%s' уже существует!";
+    private static final String EMPTY_DATA_ERROR_MESSAGE = "Необходимо заполнить таблицу с данными!";
+    private static final String NOT_ENOUGH_ATTRS_ERROR_MESSAGE = "Выберите хотя бы 2 атрибута!";
+    private static final String BAD_CLASS_TYPE_ERROR_MESSAGE = "Атрибут класса должен иметь категориальный тип!";
+    private static final String CLASS_NOT_SELECTED_ERROR_MESSAGE = "Не выбран атрибут класса!";
+    private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
+    private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
+            "Формат даты для атрибута '%s' должен быть следующим: %s";
     private final InstancesTable table;
 
     public AttributesTable(InstancesTable table, final JComboBox<String> classBox) {
@@ -52,7 +63,7 @@ public class AttributesTable extends JDataTableBase {
         col.setCellRenderer(new ComboBoxRenderer());
         //-------------------------------------------------
         JPopupMenu popMenu = this.getComponentPopupMenu();
-        JMenuItem renameMenu = new JMenuItem("Переименовать атрибут");
+        JMenuItem renameMenu = new JMenuItem(RENAME_ATTR_MENU_TEXT);
         //-----------------------------------
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
@@ -79,8 +90,8 @@ public class AttributesTable extends JDataTableBase {
                 int i = getSelectedRow();
                 if (i != -1) {
                     String name = (String) JOptionPane.showInputDialog(AttributesTable.this.getRootPane(),
-                            "Имя:",
-                            "Новое имя атрибута: " + table.data().attribute(i).name(),
+                            ATTR_NAME_TEXT,
+                            String.format(NEW_ATTR_NAME_FORMAT, table.data().attribute(i).name()),
                             JOptionPane.INFORMATION_MESSAGE, null,
                             null, null);
                     if (name != null) {
@@ -96,7 +107,7 @@ public class AttributesTable extends JDataTableBase {
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
-                                        "Атрибут с именем '" + trimName + "' уже существует!",
+                                        String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
                                         null, JOptionPane.WARNING_MESSAGE);
                             }
                         }
@@ -104,7 +115,7 @@ public class AttributesTable extends JDataTableBase {
                 }
             }
         });
-        //--------------------------------------------------
+
         popMenu.add(renameMenu);
         this.setAutoResizeOff(false);
     }
@@ -125,16 +136,16 @@ public class AttributesTable extends JDataTableBase {
 
     public final void check() throws Exception {
         if (table.getRowCount() == 0) {
-            throw new Exception("Необходимо заполнить таблицу с данными!");
+            throw new Exception(EMPTY_DATA_ERROR_MESSAGE);
         }
         if (notSelected()) {
-            throw new Exception("Выберите хотя бы 2 атрибута!");
+            throw new Exception(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
         }
         if (isNumeric(data().classIndex())) {
-            throw new Exception("Атрибут класса должен иметь категориальный тип!");
+            throw new Exception(BAD_CLASS_TYPE_ERROR_MESSAGE);
         }
         if (!isSelected(data().classIndex())) {
-            throw new Exception("Не выбран атрибут класса!");
+            throw new Exception(CLASS_NOT_SELECTED_ERROR_MESSAGE);
         }
         for (int j = 0; j < data().numAttributes(); j++) {
             Attribute a = data().attribute(j);
@@ -143,16 +154,14 @@ public class AttributesTable extends JDataTableBase {
                     String str = (String) table.getValueAt(k, j + 1);
                     if (str != null) {
                         if (isNumeric(j) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                            throw new Exception("Недопустимые значения числового атрибута "
-                                    + a.name() + "!");
+                            throw new Exception(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, a.name()));
                         }
                         if (isDate(j)) {
                             try {
                                 DateFormat.SIMPLE_DATE_FORMAT.parse(str);
                             } catch (Exception e) {
-                                throw new Exception("Формат даты для атрибута  '"
-                                        + a.name() + "'\nдолжен быть следующим: "
-                                        + DateFormat.DATE_FORMAT);
+                                throw new Exception(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
+                                        a.name(), DateFormat.DATE_FORMAT));
                             }
                         }
                     }
@@ -214,10 +223,7 @@ public class AttributesTable extends JDataTableBase {
                 values.add(x);
             }
         }
-        //if (values.size() < 2) {
-        //    throw new Exception("Категориальный атрибут '" + a.name()
-        //            + "' должен\nиметь не менее двух значений!");
-        //  }
+
         return new Attribute(a.name(), values);
     }
 

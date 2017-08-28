@@ -39,6 +39,11 @@ public class TreeVisualizer extends JPanel {
     private static final int MIN_STROKE = 1;
     private static final int MAX_STROKE = 6;
     private static final double STEP_SIZE = 10.0;
+    private static final String SAVE_IMAGE_MENU_TITLE = "Сохранить изображение";
+    private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
+    private static final String OPTIONS_MENU_TEXT = "Настройки";
+    private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
+    private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
 
     private double nodeWidth = 25.0;
     private double nodeHeight = 25.0;
@@ -192,11 +197,11 @@ public class TreeVisualizer extends JPanel {
 
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
-        JMenuItem saveImage = new JMenuItem("Сохранить изображение");
-        JMenuItem copyImage = new JMenuItem("Копировать");
-        JMenuItem options = new JMenuItem("Настройки");
-        JMenuItem increase = new JMenuItem("Увеличить");
-        JMenuItem decrease = new JMenuItem("Уменьшить");
+        JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TITLE);
+        JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
+        JMenuItem options = new JMenuItem(OPTIONS_MENU_TEXT);
+        JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
+        JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
         //-----------------------------------
         options.addActionListener(new ActionListener() {
 
@@ -562,6 +567,31 @@ public class TreeVisualizer extends JPanel {
      */
     private class TreeOptions extends JDialog {
 
+        static final String TITLE = "Настройки";
+        static final String TREE_OPTIONS_TITLE = "Параметры дерева";
+        static final String NODE_WIDTH_TEXT = "Ширина узла:";
+        static final String NODE_HEIGHT_TITLE = "Высота узла:";
+        static final String NODE_STROKE_TITLE = "Толщина границы узла:";
+        static final String CHOOSE_BUTTON_TEXT = "Выбрать...";
+        static final String CHOOSE_RULE_COLOR_TEXT = "Выбор цвета правила";
+        static final String CHOOSE_TEXT_COLOR = "Выбор цвета текста";
+        static final String CHOOSE_LINK_COLOR_TEXT = "Выбор цвета связи";
+        static final String CHOOSE_NODE_COLOR_TEXT = "Выбор цвета узла";
+        static final String CHOOSE_LEAF_COLOR_TEXT = "Выбор цвета листа";
+        static final String CHOOSE_CLASS_COLOR_TEXT = "Выбор цвета класса";
+        static final String CHOOSE_NODE_BORDER_COLOR_TEXT = "Выбор цвета границы узла";
+        static final String CHOOSE_BACKGROUND_COLOR_TEXT = "Выбор цвета фона";
+        static final String NODE_FONT_TEXT = "Шрифт узла:";
+        static final String RULE_FONT_TEXT = "Шрифт правила:";
+        static final String RULE_COLOR_TEXT = "Цвет правила:";
+        static final String TEXT_COLOR_TEXT = "Цвет текста:";
+        static final String LINK_COLOR_TEXT = "Цвет связи:";
+        static final String NODE_COLOR_TEXT = "Цвет узла:";
+        static final String LEAF_COLOR_TEXT = "Цвет листа:";
+        static final String CLASS_COLOR_TEXT = "Цвет класса:";
+        static final String NODE_BORDER_COLOR_TEXT = "Цвет границы узла:";
+        static final String BACK_COLOR_TEXT = "Цвет фона:";
+
         boolean dialogResult;
         Font nFont = nodeFont;
         Font rFont = ruleFont;
@@ -578,24 +608,24 @@ public class TreeVisualizer extends JPanel {
         Color backgroundColor = TreeVisualizer.this.getBackground();
 
         public TreeOptions(JFrame parent) {
-            super(parent, "Настройки");
+            super(parent, TITLE);
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);
             JPanel panel = new JPanel(new GridLayout(13, 2, 10, 10));
-            panel.setBorder(PanelBorderUtils.createTitledBorder("Параметры дерева"));
+            panel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_TITLE));
             //-------------------------------------------
             widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, MIN_SIZE, MAX_SIZE, 1));
             heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, MIN_SIZE, MAX_SIZE, 1));
             strokeSpinner.setModel(new SpinnerNumberModel(stroke, MIN_STROKE, MAX_STROKE, 1));
-            panel.add(new JLabel("Ширина узла:"));
+            panel.add(new JLabel(NODE_WIDTH_TEXT));
             panel.add(widthSpinner);
-            panel.add(new JLabel("Высота узла:"));
+            panel.add(new JLabel(NODE_HEIGHT_TITLE));
             panel.add(heightSpinner);
-            panel.add(new JLabel("Толщина границы узла:"));
+            panel.add(new JLabel(NODE_STROKE_TITLE));
             panel.add(strokeSpinner);
             //------------------------------------
-            JButton nodeButton = new JButton("Выбрать...");
+            JButton nodeButton = new JButton(CHOOSE_BUTTON_TEXT);
             nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -606,7 +636,7 @@ public class TreeVisualizer extends JPanel {
                     }
                 }
             });
-            JButton ruleButton = new JButton("Выбрать...");
+            JButton ruleButton = new JButton(CHOOSE_BUTTON_TEXT);
             //----------------------------------------------
             ruleButton.addActionListener(new ActionListener() {
                 @Override
@@ -619,11 +649,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton ruleColorButton = new JButton("Выбрать...");
+            JButton ruleColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             ruleColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета правила",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
                             ruleC);
                     if (obj != null) {
                         ruleC = obj;
@@ -631,11 +661,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton textColorButton = new JButton("Выбрать...");
+            JButton textColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             textColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета текста",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
                             textC);
                     if (obj != null) {
                         textC = obj;
@@ -643,11 +673,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton linkColorButton = new JButton("Выбрать...");
+            JButton linkColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             linkColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета связи",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
                             linkC);
                     if (obj != null) {
                         linkC = obj;
@@ -655,11 +685,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton nodeColorButton = new JButton("Выбрать...");
+            JButton nodeColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             nodeColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета узла",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
                             nodeC);
                     if (obj != null) {
                         nodeC = obj;
@@ -667,11 +697,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton leafColorButton = new JButton("Выбрать...");
+            JButton leafColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             leafColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета листа",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
                             leafC);
                     if (obj != null) {
                         leafC = obj;
@@ -679,11 +709,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton classColorButton = new JButton("Выбрать...");
+            JButton classColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             classColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета класса",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
                             classC);
                     if (obj != null) {
                         classC = obj;
@@ -691,11 +721,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton borderColorButton = new JButton("Выбрать...");
+            JButton borderColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             borderColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета границы узла",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
                             borderC);
                     if (obj != null) {
                         borderC = obj;
@@ -703,11 +733,11 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //--------------------------------------------------
-            JButton backgroundColorButton = new JButton("Выбрать...");
+            JButton backgroundColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             backgroundColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, "Выбор цвета фона",
+                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
                             backgroundColor);
                     if (obj != null) {
                         backgroundColor = obj;
@@ -715,25 +745,25 @@ public class TreeVisualizer extends JPanel {
                 }
             });
             //------------------------------------
-            panel.add(new JLabel("Шрифт узла:"));
+            panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
-            panel.add(new JLabel("Шрифт правила:"));
+            panel.add(new JLabel(RULE_FONT_TEXT));
             panel.add(ruleButton);
-            panel.add(new JLabel("Цвет правила:"));
+            panel.add(new JLabel(RULE_COLOR_TEXT));
             panel.add(ruleColorButton);
-            panel.add(new JLabel("Цвет текста:"));
+            panel.add(new JLabel(TEXT_COLOR_TEXT));
             panel.add(textColorButton);
-            panel.add(new JLabel("Цвет связи:"));
+            panel.add(new JLabel(LINK_COLOR_TEXT));
             panel.add(linkColorButton);
-            panel.add(new JLabel("Цвет узла:"));
+            panel.add(new JLabel(NODE_COLOR_TEXT));
             panel.add(nodeColorButton);
-            panel.add(new JLabel("Цвет листа:"));
+            panel.add(new JLabel(LEAF_COLOR_TEXT));
             panel.add(leafColorButton);
-            panel.add(new JLabel("Цвет класса:"));
+            panel.add(new JLabel(CLASS_COLOR_TEXT));
             panel.add(classColorButton);
-            panel.add(new JLabel("Цвет границы узла:"));
+            panel.add(new JLabel(NODE_BORDER_COLOR_TEXT));
             panel.add(borderColorButton);
-            panel.add(new JLabel("Цвет фона:"));
+            panel.add(new JLabel(BACK_COLOR_TEXT));
             panel.add(backgroundColorButton);
             //-------------------------------------------
             JButton okButton = ButtonUtils.createOkButton();

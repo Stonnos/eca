@@ -300,11 +300,11 @@ public class ResultsFrameBase extends JFrame {
         resultPane = new JScrollPane();
         resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
         //------------------------------------------------------
-        misMatrix = new MisClassificationMatrix(data, classifier, ev);
+        misMatrix = new MisClassificationMatrix(ev);
         JScrollPane misClassPane = new JScrollPane(misMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
         //----------------------------------------
-        costMatrix = new ClassificationCostsMatrix(data, ev, digits);
+        costMatrix = new ClassificationCostsMatrix(ev, digits);
         JScrollPane costsPane = new JScrollPane(costMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));

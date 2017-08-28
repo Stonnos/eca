@@ -34,8 +34,8 @@ import java.util.Enumeration;
 public class ROCCurvePanel extends JPanel {
 
     private static final String TITLE = "График ROC кривой";
-    private static final String X_AXIS_TITLE = "100 - Специфичность (Specifity), %";
-    private static final String Y_AXIS_TITLE = "Чувствительность (Sensivity), %";
+    private static final String X_AXIS_TITLE = "100 - Специфичность (Specificity), %";
+    private static final String Y_AXIS_TITLE = "Чувствительность (Sensitivity), %";
 
     private final RocCurve curve;
     private ChartPanel panel;

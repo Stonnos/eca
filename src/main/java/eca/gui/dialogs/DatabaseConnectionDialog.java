@@ -8,6 +8,7 @@ package eca.gui.dialogs;
 import eca.db.ConnectionDescriptor;
 import eca.db.ConnectionDescriptorFactory;
 import eca.gui.ButtonUtils;
+import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
@@ -127,10 +128,7 @@ public class DatabaseConnectionDialog extends JDialog {
             public void actionPerformed(ActionEvent evt) {
                 JTextField field = emptyField();
                 if (field != null) {
-                    JOptionPane.showMessageDialog(DatabaseConnectionDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    field.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(DatabaseConnectionDialog.this, field);
                 } else {
                     dialogResult = true;
                     setVisible(false);

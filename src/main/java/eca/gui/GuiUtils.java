@@ -1,5 +1,7 @@
 package eca.gui;
 
+import eca.gui.dialogs.DatabaseConnectionDialog;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 
@@ -8,6 +10,9 @@ import javax.swing.plaf.FontUIResource;
  */
 
 public class GuiUtils {
+
+    public static final String INPUT_ERROR_TEXT = "Ошибка ввода";
+    public static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
 
     public static JTextField searchFirstEmptyField(JTextField... fields) {
         for (JTextField field : fields) {
@@ -26,6 +31,13 @@ public class GuiUtils {
             target.setForeground(source.getForeground());
             target.setBackground(source.getBackground());
         }
+    }
+
+    public static void showErrorMessageAndRequestFocusOn(JDialog component, JComponent target) {
+        JOptionPane.showMessageDialog(component,
+                FILL_ALL_FIELDS_ERROR_TEXT,
+                INPUT_ERROR_TEXT, JOptionPane.WARNING_MESSAGE);
+        target.requestFocusInWindow();
     }
 
     public static void setUIFont(FontUIResource f) {

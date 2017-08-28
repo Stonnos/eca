@@ -17,6 +17,8 @@ import javax.swing.table.AbstractTableModel;
 public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     public static final int TEXT_INDEX = 4;
+    private static final String ANY_NUMBER_TEXT = "Любое число";
+    private static final String NOMINAL_ATTR_VALUES_INTERVAL_FORMAT = "Целое от [0,%d]";
 
     private final Instances data;
     private final Object[] values;
@@ -60,8 +62,8 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                     return AttributesTypes.NOMINAL;
                 }
             case 3:
-                return a.isNominal() ? "Целое от [0," + String.valueOf(a.numValues() - 1)
-                        + "]" : "Любое число";
+                return a.isNominal() ? String.format(NOMINAL_ATTR_VALUES_INTERVAL_FORMAT, a.numValues() - 1)
+                        : ANY_NUMBER_TEXT;
             case TEXT_INDEX:
                 return values[i];
             default:

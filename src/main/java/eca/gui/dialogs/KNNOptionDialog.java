@@ -29,13 +29,13 @@ import java.text.DecimalFormat;
  */
 public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
 
-    private static final String optionsMessage = "Параметры алгоритма";
+    private static final String OPTIONS_MESSAGE = "Параметры алгоритма";
 
-    private static final String numNeighboursMessage = "Число ближайших соседей:";
-    private static final String weightMessage = "Вес ближайшего соседа:";
-    private static final String distanceMessage = "Функция расстояния:";
+    private static final String NUM_NEIGHBOURS_MESSAGE = "Число ближайших соседей:";
+    private static final String WEIGHT_MESSAGE = "Вес ближайшего соседа:";
+    private static final String DISTANCE_MESSAGE = "Функция расстояния:";
 
-    private static final String[] metrics = {"Евкилидово расстояние", "Квадрат Евклидова расстояния",
+    private static final String[] METRICS_TEXT = {"Евкилидово расстояние", "Квадрат Евклидова расстояния",
             "Манхеттенское расстояние", "Расстояние Чебышева"};
 
     private final JTextField numNeighboursText;
@@ -55,23 +55,23 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         estimateFormat.setGroupingUsed(false);
         //-------------------------------------------
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(optionsMessage));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_MESSAGE));
         numNeighboursText = new JTextField(TEXT_FIELD_LENGTH);
         numNeighboursText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
         weightText = new JTextField(TEXT_FIELD_LENGTH);
         weightText.setDocument(new DoubleDocument(INT_FIELD_LENGTH));
         //--------------------------------------------
-        metric = new JComboBox(metrics);
-        optionPanel.add(new JLabel(numNeighboursMessage),
+        metric = new JComboBox(METRICS_TEXT);
+        optionPanel.add(new JLabel(NUM_NEIGHBOURS_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numNeighboursText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(weightMessage), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(WEIGHT_MESSAGE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(weightText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(distanceMessage), new GridBagConstraints(0, 2, 2, 1, 1, 1,
+        optionPanel.add(new JLabel(DISTANCE_MESSAGE), new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
         optionPanel.add(metric, new GridBagConstraints(0, 3, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
@@ -92,14 +92,10 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
             public void actionPerformed(ActionEvent evt) {
                 JTextField text = GuiUtils.searchFirstEmptyField(numNeighboursText, weightText);
                 if (text != null) {
-                    JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    text.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(KNNOptionDialog.this, text);
                 } else if (Integer.parseInt(numNeighboursText.getText()) > data.numInstances()) {
                     JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                            "Число ближайших соседей должно быть не больше "
-                                    + String.valueOf(data.numInstances()),
+                            String.format("Число ближайших соседей должно быть не больше %d", data.numInstances()),
                             "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
                     numNeighboursText.requestFocusInWindow();
                 } else {
@@ -139,8 +135,7 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------
-        //-----------------------------------------------
+
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);

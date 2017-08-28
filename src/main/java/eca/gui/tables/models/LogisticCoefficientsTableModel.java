@@ -21,6 +21,9 @@ import java.text.DecimalFormat;
  */
 public class LogisticCoefficientsTableModel extends AbstractTableModel {
 
+    private static final String INTERCEPT = "Intercept";
+    private static final String ATTR_TEXT = "Атрибут";
+    private static final String CLASS_FORMAT = "Класс %d";
     private final Logistic logistic;
     private Instances data;
     private String[] titles;
@@ -32,7 +35,6 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
     public LogisticCoefficientsTableModel(Logistic logistic, Instances data, int digits) throws Exception {
         this.logistic = logistic;
         this.data = data;
-        //------------------------------------
         this.createNames();
         this.filterInstances();
         format.setMaximumFractionDigits(digits);
@@ -50,7 +52,7 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? (row == 0 ? "Intercept" : data.attribute(row - 1).name())
+        return column == 0 ? (row == 0 ? INTERCEPT : data.attribute(row - 1).name())
                 : format.format(logistic.coefficients()[row][column - 1]);
     }
 
@@ -66,14 +68,13 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
         data = Filter.useFilter(data, uselessFilter);
         ntbFilter.setInputFormat(data);
         data = Filter.useFilter(data, ntbFilter);
-        //System.out.println(getData);
     }
 
     private void createNames() {
         titles = new String[data.numClasses()];
-        titles[0] = "Атрибут";
+        titles[0] = ATTR_TEXT;
         for (int k = 1; k < data.numClasses(); k++) {
-            titles[k] = "Класс " + String.valueOf(k - 1);
+            titles[k] = String.format(CLASS_FORMAT, k - 1);
         }
     }
 

@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
+import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.regression.Logistic;
@@ -21,14 +22,14 @@ import java.awt.event.ActionListener;
  */
 public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
 
-    private static final String optionsMessage = "Параметры логиcтической регрессии";
+    private static final String OPTIONS_MESSAGE = "Параметры логистической регрессии";
 
-    private static final String numItsMessage = "<html><body>Максимальное число итераций для"
+    private static final String NUM_ITS_MESSAGE = "<html><body>Максимальное число итераций для"
             + " поиска<br>минимума функции -Log(Likelihood):</body></html>";
 
-    private static final String optMethodMessage = "Метод поиска минимума";
+    private static final String OPT_METHOD_MESSAGE = "Метод поиска минимума";
 
-    private static final String[] optMethods = {"Квазиньютоновкий метод", "Метод сопряженных градиентов"};
+    private static final String[] OPT_METHODS = {"Квазиньютоновкий метод", "Метод сопряженных градиентов"};
 
 
     private JTextField numItsText;
@@ -43,23 +44,23 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         this.setResizable(false);
         //------------------------------------
         JPanel optionPanel = new JPanel(new GridBagLayout());
-        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(optionsMessage));
+        optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_MESSAGE));
         numItsText = new JTextField(TEXT_FIELD_LENGTH);
         numItsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
         //------------------------------------
         ButtonGroup group = new ButtonGroup();
-        newton = new JRadioButton(optMethods[0]);
-        gradient = new JRadioButton(optMethods[1]);
+        newton = new JRadioButton(OPT_METHODS[0]);
+        gradient = new JRadioButton(OPT_METHODS[1]);
         group.add(newton);
         group.add(gradient);
         //------------------------------------
-        JLabel label = new JLabel(numItsMessage);
+        JLabel label = new JLabel(NUM_ITS_MESSAGE);
         optionPanel.add(label,
                 new GridBagConstraints(0, 0, 1, 1, 0, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numItsText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        JLabel methodLabel = new JLabel(optMethodMessage);
+        JLabel methodLabel = new JLabel(OPT_METHOD_MESSAGE);
         methodLabel.setFont(new Font("Arial", 1, 13));
         //-----------------------------------------------------------
         optionPanel.add(methodLabel,
@@ -85,10 +86,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (numItsText.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(LogisticOptionsDialogBase.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    numItsText.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(LogisticOptionsDialogBase.this, numItsText);
                 } else {
                     classifier.setMaxIts(Integer.parseInt(numItsText.getText()));
                     classifier.setUseConjugateGradientDescent(gradient.isSelected());

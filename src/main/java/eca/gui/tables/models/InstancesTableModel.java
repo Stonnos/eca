@@ -20,6 +20,7 @@ import java.util.ListIterator;
 public class InstancesTableModel extends AbstractTableModel {
 
     private static final int MAX_FRACTION_DIGITS = 13;
+    private static final String NUMBER = "№";
 
     private final Instances data;
     private final ArrayList<ArrayList<Object>> values;
@@ -116,7 +117,7 @@ public class InstancesTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return column == 0 ? "№" : data.attribute(column - 1).name();
+        return column == 0 ? NUMBER : data.attribute(column - 1).name();
     }
 
     private Object get(int i, int j) {

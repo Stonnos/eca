@@ -16,6 +16,9 @@ import java.text.DecimalFormat;
  */
 public class ROCThresholdTableModel extends AbstractTableModel {
 
+    private static final String SPECIFICITY_TEXT = "100 - Специфичность";
+    private static final String SENSITIVITY_TEXT = "Чувствительность";
+    private static final String CLASS_THRESHOLD_TEXT = "Порог для класса (%s)";
     private String[] titles;
     private final DecimalFormat format = NumericFormat.getInstance();
     private final Instances data;
@@ -58,8 +61,8 @@ public class ROCThresholdTableModel extends AbstractTableModel {
 
     private void createNames() {
         titles = new String[3];
-        titles[0] = "Порог для класса (" + className + ")";
-        titles[1] = "100 - Специфичность";
-        titles[2] = "Чувствительность";
+        titles[0] = String.format(CLASS_THRESHOLD_TEXT, className);
+        titles[1] = SPECIFICITY_TEXT;
+        titles[2] = SENSITIVITY_TEXT;
     }
 }

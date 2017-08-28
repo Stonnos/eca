@@ -87,50 +87,44 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
 
     @Override
     public void addElement(String classifier) {
-        try {
-            switch (classifier) {
-                case ClassifiersNames.ID3:
-                    frames.add(new DecisionTreeOptionsDialog(parent,
-                            ClassifiersNames.ID3, new ID3(), data));
-                    break;
+        switch (classifier) {
+            case ClassifiersNames.ID3:
+                frames.add(new DecisionTreeOptionsDialog(parent,
+                        ClassifiersNames.ID3, new ID3(), data));
+                break;
 
-                case ClassifiersNames.C45:
-                    frames.add(new DecisionTreeOptionsDialog(parent,
-                            ClassifiersNames.C45, new C45(), data));
-                    break;
+            case ClassifiersNames.C45:
+                frames.add(new DecisionTreeOptionsDialog(parent,
+                        ClassifiersNames.C45, new C45(), data));
+                break;
 
-                case ClassifiersNames.CART:
-                    frames.add(new DecisionTreeOptionsDialog(parent,
-                            ClassifiersNames.CART, new CART(), data));
-                    break;
+            case ClassifiersNames.CART:
+                frames.add(new DecisionTreeOptionsDialog(parent,
+                        ClassifiersNames.CART, new CART(), data));
+                break;
 
-                case ClassifiersNames.CHAID:
-                    frames.add(new DecisionTreeOptionsDialog(parent,
-                            ClassifiersNames.CHAID, new CHAID(), data));
-                    break;
+            case ClassifiersNames.CHAID:
+                frames.add(new DecisionTreeOptionsDialog(parent,
+                        ClassifiersNames.CHAID, new CHAID(), data));
+                break;
 
-                case ClassifiersNames.NEURAL_NETWORK:
-                    frames.add(new NetworkOptionsDialog(parent,
-                            ClassifiersNames.NEURAL_NETWORK, new NeuralNetwork(data), data));
-                    break;
+            case ClassifiersNames.NEURAL_NETWORK:
+                frames.add(new NetworkOptionsDialog(parent,
+                        ClassifiersNames.NEURAL_NETWORK, new NeuralNetwork(data), data));
+                break;
 
-                case ClassifiersNames.LOGISTIC:
-                    frames.add(new LogisticOptionsDialogBase(parent,
-                            ClassifiersNames.LOGISTIC, new Logistic(), data));
-                    break;
+            case ClassifiersNames.LOGISTIC:
+                frames.add(new LogisticOptionsDialogBase(parent,
+                        ClassifiersNames.LOGISTIC, new Logistic(), data));
+                break;
 
-                case ClassifiersNames.KNN:
-                    frames.add(new KNNOptionDialog(parent,
-                            ClassifiersNames.KNN, new KNearestNeighbours(), data));
-                    break;
+            case ClassifiersNames.KNN:
+                frames.add(new KNNOptionDialog(parent,
+                        ClassifiersNames.KNN, new KNearestNeighbours(), data));
+                break;
 
-            }
-            super.addElement(classifier);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(parent,
-                    e.getMessage(),
-                    "Ошибка", JOptionPane.WARNING_MESSAGE);
         }
+        super.addElement(classifier);
     }
 
     @Override

@@ -44,6 +44,12 @@ public class NetworkVisualizer extends JPanel {
     private static final double STEP_BETWEEN_LEVELS = 200.0;
     private static final double STEP_BETWEEN_NODES = 40.0;
     private static final double STEP_SIZE = 10.0;
+    private static final String MODEL_TEXT_MENU = "Текстовое представление модели";
+    private static final String SAVE_IMAGE_MENU_TEXT = "Сохранить изображение";
+    private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
+    private static final String IMAGE_OPTIONS_MENU_TEXT = "Настройки";
+    private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
+    private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
 
     private double neuronDiam = 25.0;
 
@@ -100,7 +106,7 @@ public class NetworkVisualizer extends JPanel {
 
     public void setNeuronDiam(double diam) {
         if (diam < MIN_SIZE || diam > MAX_SIZE) {
-            throw new IllegalArgumentException("Wrong value of diametr!");
+            throw new IllegalArgumentException("Wrong value of diameter!");
         }
         this.neuronDiam = diam;
     }
@@ -137,7 +143,7 @@ public class NetworkVisualizer extends JPanel {
         this.attrColor = color;
     }
 
-    public Color getInLayercolor() {
+    public Color getInLayerColor() {
         return inLayerColor;
     }
 
@@ -194,14 +200,13 @@ public class NetworkVisualizer extends JPanel {
 
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
-        JMenuItem textView = new JMenuItem("Текстовое представление модели");
-        JMenuItem saveImage = new JMenuItem("Сохранить изображение");
-        JMenuItem copyImage = new JMenuItem("Копировать");
-        JMenuItem options = new JMenuItem("Настройки");
-        JMenuItem increase = new JMenuItem("Увеличить");
-        JMenuItem decrease = new JMenuItem("Уменьшить");
-        //-----------------------------------
-        //-----------------------------------
+        JMenuItem textView = new JMenuItem(MODEL_TEXT_MENU);
+        JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TEXT);
+        JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
+        JMenuItem options = new JMenuItem(IMAGE_OPTIONS_MENU_TEXT);
+        JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
+        JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
+
         increase.addActionListener(new ActionListener() {
 
             @Override
@@ -234,7 +239,7 @@ public class NetworkVisualizer extends JPanel {
                 NeuronOptions dialog = new NeuronOptions(frame);
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
-                    neuronDiam = dialog.getNodeDiametr();
+                    neuronDiam = dialog.getNodeDiameter();
                     nodeFont = dialog.getNodeFont();
                     attrFont = dialog.getAttributeFont();
                     linkColor = dialog.getLinkColor();
@@ -326,9 +331,11 @@ public class NetworkVisualizer extends JPanel {
      */
     private class NetworkInfo extends JFrame {
 
+        static final String TITLE = "Модель нейронной сети";
+
         NetworkInfo() {
             this.setLayout(new GridBagLayout());
-            this.setTitle("Модель нейронной сети");
+            this.setTitle(TITLE);
             JTextArea textInfo = new JTextArea(20, 50);
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
@@ -366,11 +373,13 @@ public class NetworkVisualizer extends JPanel {
      */
     private class NeuronInfo extends JFrame {
 
+        static final String NODE_INDEX_FORMAT = "Узел %d";
+
         NeuronNode neuron;
 
         NeuronInfo(NeuronNode neuron) {
             this.neuron = neuron;
-            this.setTitle("Узел " + neuron.neuron().index());
+            this.setTitle(String.format(NODE_INDEX_FORMAT, neuron.neuron().index()));
             this.setLayout(new GridBagLayout());
             JTextArea textInfo = new JTextArea(8, 26);
             textInfo.setWrapStyleWord(true);
@@ -710,170 +719,194 @@ public class NetworkVisualizer extends JPanel {
      */
     private class NeuronOptions extends JDialog {
 
+        static final String TITLE = "Настройки";
+        static final String OPTIONS_TITLE = "Параметры сети";
+        static final String NEURON_DIAM_TEXT = "Диаметр нейрона:";
+        static final String SELECT_BUTTON_TEXT = "Выбрать...";
+        static final String SELECT_IN_LAYER_COLOR_TEXT = "Выбор цвета нейрона вх. слоя";
+        static final String SELECT_OUT_LAYER_COLOR_TEXT = "Выбор цвета нейрона вых. слоя";
+        static final String SELECT_LINK_COLOR_TEXT = "Выбор цвета связи";
+        static final String SELECT_HIDDEN_LAYER_COLOR_TEXT = "Выбор цвета нейронов скрытого слоя";
+        static final String SELECT_ATTR_COLOR_TEXT = "Выбор цвета атрибута";
+        static final String SELECT_CLASS_COLOR_TEXT = "Выбор цвета класса";
+        static final String SELECT_TEXT_COLOR = "Выбор цвета текста";
+        static final String SELECT_BACKGROUND_TEXT = "Выбор цвета фона";
+        static final String NODE_FONT_TEXT = "Шрифт узла:";
+        static final String ATTR_FONT_TEXT = "Шрифт атрибута:";
+        static final String ATTR_COLOR_TEXT = "Цвет атрибута:";
+        static final String TEXT_COLOR_TEXT = "Цвет текста:";
+        static final String LINK_COLOR_TEXT = "Цвет связи:";
+        static final String IN_LAYER_COLOR_TEXT = "Цвет нейрона вх. слоя:";
+        static final String OUT_LAYER_COLOR_TEXT = "Цвет нейрона вых. слоя:";
+        static final String HIDDEN_LAYER_COLOR_TEXT = "Цвет нейрона скрытого слоя:";
+        static final String CLASS_COLOR_TEXT = "Цвет класса:";
+        static final String BACKGROUND_TEXT = "Цвет фона:";
+
+
         boolean dialogResult;
-        Font nFont = nodeFont;
-        Font aFont = attrFont;
+        Font selectedNodeFont = nodeFont;
+        Font selectedAttrFont = attrFont;
         JSpinner diamSpinner = new JSpinner();
-        Color inC = inLayerColor;
-        Color outC = outLayerColor;
-        Color hidC = hidLayerColor;
-        Color linkC = linkColor;
-        Color attrC = attrColor;
-        Color classC = classColor;
-        Color textC = textColor;
-        Color backgroundColor = NetworkVisualizer.this.getBackground();
+        Color selectedInLayerColor = inLayerColor;
+        Color selectedOutLayerColor = outLayerColor;
+        Color selectedHiddenLayerColor = hidLayerColor;
+        Color selectedLinkColor = linkColor;
+        Color selectedAttrColor = attrColor;
+        Color selectedClassColor = classColor;
+        Color selectedTextColor = textColor;
+        Color selectedBackgroundColor = NetworkVisualizer.this.getBackground();
 
         public NeuronOptions(Window parent) {
-            super(parent, "Настройки");
+            super(parent, TITLE);
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);
             JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
-            panel.setBorder(PanelBorderUtils.createTitledBorder("Параметры сети"));
+            panel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
             //-------------------------------------------
             diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, MIN_SIZE, MAX_SIZE, 1));
-            panel.add(new JLabel("Диаметр нейрона:"));
+            panel.add(new JLabel(NEURON_DIAM_TEXT));
             panel.add(diamSpinner);
             //------------------------------------
-            JButton nodeButton = new JButton("Выбрать...");
+            JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
             nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontchooser = new JFontChooser(NeuronOptions.this, nFont);
+                    JFontChooser nodeFontchooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
                     nodeFontchooser.setVisible(true);
                     if (nodeFontchooser.dialogResult()) {
-                        nFont = nodeFontchooser.getSelectedFont();
+                        selectedNodeFont = nodeFontchooser.getSelectedFont();
                     }
                 }
             });
-            JButton attrButton = new JButton("Выбрать...");
+            JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
             //----------------------------------------------
             attrButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontchooser = new JFontChooser(NeuronOptions.this, aFont);
+                    JFontChooser ruleFontchooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
                     ruleFontchooser.setVisible(true);
                     if (ruleFontchooser.dialogResult()) {
-                        aFont = ruleFontchooser.getSelectedFont();
+                        selectedAttrFont = ruleFontchooser.getSelectedFont();
                     }
                 }
             });
             //--------------------------------------------------
-            JButton inColorButton = new JButton("Выбрать...");
+            JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
             inColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета нейрона вх. слоя",
-                            inC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                            SELECT_IN_LAYER_COLOR_TEXT, selectedInLayerColor);
                     if (obj != null) {
-                        inC = obj;
+                        selectedInLayerColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton outColorButton = new JButton("Выбрать...");
+            JButton outColorButton = new JButton(SELECT_BUTTON_TEXT);
             outColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета нейрона вых. слоя",
-                            outC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                            SELECT_OUT_LAYER_COLOR_TEXT, selectedOutLayerColor);
                     if (obj != null) {
-                        outC = obj;
+                        selectedOutLayerColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton linkColorButton = new JButton("Выбрать...");
+            JButton linkColorButton = new JButton(SELECT_BUTTON_TEXT);
             linkColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета связи",
-                            linkC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                            SELECT_LINK_COLOR_TEXT, selectedLinkColor);
                     if (obj != null) {
-                        linkC = obj;
+                        selectedLinkColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton hidColorButton = new JButton("Выбрать...");
+            JButton hidColorButton = new JButton(SELECT_BUTTON_TEXT);
             hidColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор нейрона скрытого слоя",
-                            hidC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                            SELECT_HIDDEN_LAYER_COLOR_TEXT, selectedHiddenLayerColor);
                     if (obj != null) {
-                        hidC = obj;
+                        selectedHiddenLayerColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton attrColorButton = new JButton("Выбрать...");
+            JButton attrColorButton = new JButton(SELECT_BUTTON_TEXT);
             attrColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета атрибута",
-                            attrC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
+                            selectedAttrColor);
                     if (obj != null) {
-                        attrC = obj;
+                        selectedAttrColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton classColorButton = new JButton("Выбрать...");
+            JButton classColorButton = new JButton(SELECT_BUTTON_TEXT);
             classColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета класса",
-                            classC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
+                            selectedClassColor);
                     if (obj != null) {
-                        classC = obj;
+                        selectedClassColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton textColorButton = new JButton("Выбрать...");
+            JButton textColorButton = new JButton(SELECT_BUTTON_TEXT);
             textColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета текста",
-                            textC);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
+                            selectedTextColor);
                     if (obj != null) {
-                        textC = obj;
+                        selectedTextColor = obj;
                     }
                 }
             });
             //--------------------------------------------------
-            JButton backgroundColorButton = new JButton("Выбрать...");
+            JButton backgroundColorButton = new JButton(SELECT_BUTTON_TEXT);
             backgroundColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, "Выбор цвета фона",
-                            backgroundColor);
+                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
+                            selectedBackgroundColor);
                     if (obj != null) {
-                        backgroundColor = obj;
+                        selectedBackgroundColor = obj;
                     }
                 }
             });
             //------------------------------------
-            panel.add(new JLabel("Шрифт узла:"));
+            panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
-            panel.add(new JLabel("Шрифт атрибута:"));
+            panel.add(new JLabel(ATTR_FONT_TEXT));
             panel.add(attrButton);
-            panel.add(new JLabel("Цвет атрибута:"));
+            panel.add(new JLabel(ATTR_COLOR_TEXT));
             panel.add(attrColorButton);
-            panel.add(new JLabel("Цвет текста:"));
+            panel.add(new JLabel(TEXT_COLOR_TEXT));
             panel.add(textColorButton);
-            panel.add(new JLabel("Цвет связи:"));
+            panel.add(new JLabel(LINK_COLOR_TEXT));
             panel.add(linkColorButton);
-            panel.add(new JLabel("Цвет нейрона вх. слоя:"));
+            panel.add(new JLabel(IN_LAYER_COLOR_TEXT));
             panel.add(inColorButton);
-            panel.add(new JLabel("Цвет нейрона вых. слоя:"));
+            panel.add(new JLabel(OUT_LAYER_COLOR_TEXT));
             panel.add(outColorButton);
-            panel.add(new JLabel("Цвет нейрона скрытого слоя:"));
+            panel.add(new JLabel(HIDDEN_LAYER_COLOR_TEXT));
             panel.add(hidColorButton);
-            panel.add(new JLabel("Цвет класса:"));
+            panel.add(new JLabel(CLASS_COLOR_TEXT));
             panel.add(classColorButton);
-            panel.add(new JLabel("Цвет фона:"));
+            panel.add(new JLabel(BACKGROUND_TEXT));
             panel.add(backgroundColorButton);
             //-------------------------------------------
             JButton okButton = ButtonUtils.createOkButton();
@@ -906,48 +939,48 @@ public class NetworkVisualizer extends JPanel {
             this.setLocationRelativeTo(parent);
         }
 
-        public double getNodeDiametr() {
+        public double getNodeDiameter() {
             return ((SpinnerNumberModel) diamSpinner.getModel()).getNumber().doubleValue();
         }
 
         public Font getNodeFont() {
-            return nFont;
+            return selectedNodeFont;
         }
 
         public Font getAttributeFont() {
-            return aFont;
+            return selectedAttrFont;
         }
 
         public Color getInNeuronColor() {
-            return inC;
+            return selectedInLayerColor;
         }
 
         public Color getTextColor() {
-            return textC;
+            return selectedTextColor;
         }
 
         public Color getLinkColor() {
-            return linkC;
+            return selectedLinkColor;
         }
 
         public Color getOutNeuronColor() {
-            return outC;
+            return selectedOutLayerColor;
         }
 
         public Color getHidNeuronColor() {
-            return hidC;
+            return selectedHiddenLayerColor;
         }
 
         public Color getClassColor() {
-            return classC;
+            return selectedClassColor;
         }
 
         public Color getAttributeColor() {
-            return attrC;
+            return selectedAttrColor;
         }
 
         public Color getBackgroundColor() {
-            return backgroundColor;
+            return selectedBackgroundColor;
         }
 
         public boolean dialogResult() {

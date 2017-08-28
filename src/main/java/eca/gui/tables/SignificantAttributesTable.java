@@ -35,7 +35,7 @@ public class SignificantAttributesTable extends JDataTableBase {
                 return cell;
             }
         };
-        //--------------------------------------------
+
         for (int i = 0; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }

@@ -42,8 +42,8 @@ import java.io.File;
  */
 public abstract class ExperimentFrame extends JFrame {
 
-    private static final String buildingProgressTitle = "Пожалуйста подождите, идет построение моделей...";
-    private static final String loadExperimentTitle = "Пожалуйста подождите, идет загрузка истории эксперимента...";
+    private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
+    private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
     private static final int MINIMUM_NUMBER_OF_FOLDS = 2;
     private static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
     private static final int MINIMUM_NUMBER_OF_TESTS = 1;
@@ -268,7 +268,7 @@ public abstract class ExperimentFrame extends JFrame {
                     experiment.setNumTests(
                             ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
                 }
-                text.setText(buildingProgressTitle);
+                text.setText(BUILDING_PROGRESS_TITLE);
                 setStateForButtons(false);
                 setStateForOptions(false);
                 table.setRenderer(Color.BLACK);
@@ -331,7 +331,7 @@ public abstract class ExperimentFrame extends JFrame {
                     try {
                         ExperimentLoader loader = new ExperimentLoader(file);
                         LoadDialog progress = new LoadDialog(ExperimentFrame.this,
-                                loader, loadExperimentTitle);
+                                loader, LOAD_EXPERIMENT_TITLE);
 
                         ExecutorService.process(progress, new CallbackAction() {
                             @Override

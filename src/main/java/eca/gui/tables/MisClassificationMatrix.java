@@ -17,9 +17,8 @@ import javax.swing.*;
  */
 public class MisClassificationMatrix extends JDataTableBase {
 
-    public MisClassificationMatrix(Instances data, Classifier classifier,
-                                   Evaluation ev) throws Exception {
-        super(new MisClassificationTableModel(data, classifier, ev));
+    public MisClassificationMatrix(Evaluation ev) throws Exception {
+        super(new MisClassificationTableModel(ev));
         this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     }
 

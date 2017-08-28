@@ -21,6 +21,19 @@ import java.awt.event.ActionListener;
  */
 public class InstancesTable extends JDataTableBase {
 
+    private static final String DELETE_ATTR_MENU_TEXT = "Удалить выбранный объект";
+    private static final String DELETE_ATTRS_MENU_TEXT = "Удалить выбранные объекты";
+    private static final String ADD_INSTANCE_MENU_TEXT = "Добавить объект";
+    private static final String CLEAR_DATA_MENU_TEXT = "Очистка";
+    private static final String DELETE_MISSING_VALUES_MENU_TEXT = "Удалить объекты с пропусками";
+    private static final String REPLACE_ATTRS_VALUES_MENU_TEXT = "Замена значений атрибута";
+    private static final String ARE_YOU_SURE_TEXT = "Вы уверены?";
+    private static final String INSTANCE_VALUE_TEXT = "Значения объекта:";
+    private static final String ADD_INSTANCE_TEXT = "Добавление объекта";
+    private static final String OLD_VALUE_TEXT = "Старое значение:";
+    private static final String NEW_VALUE_TEXT = "Новое значение:";
+    private static final String REPLACE_VALUE_TEXT = "Замена значения";
+
     public InstancesTable(final Instances data, final JTextField numInstances) {
         super(new InstancesTableModel(data));
         MissingCellRenderer renderer = new MissingCellRenderer();
@@ -29,12 +42,12 @@ public class InstancesTable extends JDataTableBase {
         }
         //----------------------------------------
         JPopupMenu popMenu = this.getComponentPopupMenu();
-        JMenuItem deleteMenu = new JMenuItem("Удалить выбранный объект");
-        JMenuItem deleteAllMenu = new JMenuItem("Удалить выбранные объекты");
-        JMenuItem insertMenu = new JMenuItem("Добавить объект");
-        JMenuItem clearMenu = new JMenuItem("Очистка");
-        JMenuItem missMenu = new JMenuItem("Удалить объекты с пропусками");
-        JMenuItem reValueMenu = new JMenuItem("Замена значений атрибута");
+        JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
+        JMenuItem deleteAllMenu = new JMenuItem(DELETE_ATTRS_MENU_TEXT);
+        JMenuItem insertMenu = new JMenuItem(ADD_INSTANCE_MENU_TEXT);
+        JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
+        JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
+        JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
         //-----------------------------------
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
@@ -84,8 +97,8 @@ public class InstancesTable extends JDataTableBase {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 String val = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
-                        "Значения объекта:",
-                        "Добавление объекта", JOptionPane.INFORMATION_MESSAGE, null,
+                        INSTANCE_VALUE_TEXT,
+                        ADD_INSTANCE_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
                         null, null);
                 if (val != null) {
                     String obj = val.trim();
@@ -99,7 +112,7 @@ public class InstancesTable extends JDataTableBase {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 int result = JOptionPane.showConfirmDialog(InstancesTable.this.getRootPane(),
-                        "Вы уверены?", null,
+                        ARE_YOU_SURE_TEXT, null,
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     model().clear();
@@ -123,11 +136,11 @@ public class InstancesTable extends JDataTableBase {
                 if (i > 0) {
                     int j = getSelectedRow();
                     String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
-                    String[] labels = {"Старое значение:",
-                            "Новое значение:"};
+                    String[] labels = {OLD_VALUE_TEXT,
+                            NEW_VALUE_TEXT};
                     String[] values = {value, StringUtils.EMPTY};
                     JOptionPaneN frame = new JOptionPaneN(null,
-                            "Замена значения", labels, values,
+                            REPLACE_VALUE_TEXT, labels, values,
                             2, 10);
                     frame.setVisible(true);
                     if (frame.dialogResult()) {

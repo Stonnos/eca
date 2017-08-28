@@ -100,10 +100,7 @@ public class DataGeneratorDialog extends JDialog {
                 JTextField field =
                         GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
                 if (field != null) {
-                    JOptionPane.showMessageDialog(DataGeneratorDialog.this,
-                            "Заполните все поля!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
-                    field.requestFocusInWindow();
+                    GuiUtils.showErrorMessageAndRequestFocusOn(DataGeneratorDialog.this, field);
                 } else {
                     dialogResult = true;
                     setVisible(false);
