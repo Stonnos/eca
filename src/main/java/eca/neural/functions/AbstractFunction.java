@@ -10,7 +10,7 @@ package eca.neural.functions;
  *
  * @author Рома
  */
-public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable {
+public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable, Cloneable {
 
     /**
      * Coefficient value
@@ -53,6 +53,11 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      */
     public final String coefficientToString() {
         return "Значение коэффициента: " + String.valueOf(a);
+    }
+
+    @Override
+    public AbstractFunction clone() throws CloneNotSupportedException {
+        return (AbstractFunction) super.clone();
     }
 
 }

@@ -19,6 +19,7 @@ public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
 
     public static final int INT_FIELD_LENGTH = 8;
     public static final int TEXT_FIELD_LENGTH = 8;
+    public static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
 
     protected T classifier;
     protected Instances data;

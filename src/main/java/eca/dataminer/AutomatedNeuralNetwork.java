@@ -7,6 +7,7 @@ package eca.dataminer;
 
 import eca.model.ClassifierDescriptor;
 import eca.neural.NeuralNetwork;
+import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.ActivationFunction;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -83,7 +84,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
             ActivationFunction activationFunction = activationFunctions.get(r.nextInt(activationFunctions.size()));
             model.network().setActivationFunction(activationFunction);
-            model.setRandomHiddenLayer();
+            model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
             ClassifierDescriptor classifierDescriptor = evaluateModel(model);
             ++index;
             return classifierDescriptor;

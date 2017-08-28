@@ -19,7 +19,7 @@ public class AboutProgramFrame extends JFrame {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
     private static final String ABOUT_PROGRAM_TITLE = "О программе";
-    public static final String CLOSE_BUTTON = "Закрыть";
+    private static final String CLOSE_BUTTON = "Закрыть";
 
     public AboutProgramFrame(JFrame parent) {
         this.setIconImage(parent.getIconImage());

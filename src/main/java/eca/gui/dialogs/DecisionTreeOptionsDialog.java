@@ -36,6 +36,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
     private static final String[] AlPHA = {"0.995", "0.99", "0.975", "0.95", "0.75", "0.5", "0.25",
             "0.1", "0.05", "0.025", "0.01", "0.005"};
+    private static final String RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE =
+            "Число случайных атрибутов должно быть не больше %d";
 
     private Setter setter = new Setter();
 
@@ -105,9 +107,11 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                     GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
                 } else if (randomBox.isSelected()
                         && Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
+
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                            String.format("Число случайных атрибутов должно быть не больше %d", data.numAttributes() - 1),
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                            String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
+                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+
                     numRandomAttrText.requestFocusInWindow();
                 } else {
                     classifier.setMinObj(Integer.parseInt(minObjText.getText()));

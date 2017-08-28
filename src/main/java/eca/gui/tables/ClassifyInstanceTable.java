@@ -110,7 +110,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         return (ClassifyInstanceTableModel) this.getModel();
     }
 
-    public StringBuilder getInfo(int i) {
+    public StringBuilder getAttributeInfo(int i) {
         Attribute a = data().attribute(i);
         StringBuilder info = new StringBuilder("<html><head><style>"
                 + ".attr {font-weight: bold;}</style></head><body>");
@@ -170,7 +170,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(getInfo(i).toString());
+            this.setToolTipText(getAttributeInfo(i).toString());
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());

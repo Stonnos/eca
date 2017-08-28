@@ -63,7 +63,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String DELETE_BUTTON_TEXT = "Удалить";
     private static final String MAIN_OPTIONS_TAB_TITLE = "Основные настройки";
     private static final String ADDITIONAL_OPTIONS_TAB_TITLE = "Дополнительные настройки";
-
+    private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
+            "Необходимо выбрать индивидуальные классификаторы!";
 
     private JTabbedPane pane;
     private JPanel firstPanel;
@@ -422,15 +423,15 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
-                    "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                    INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
             focus.requestFocusInWindow();
             return false;
         }
         //-----------------------------
         if (model.isEmpty()) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
-                    "Необходимо выбрать индивидуальные классификаторы!",
-                    "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                    EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
+                    INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
             return false;
         }
         //----------------------------------

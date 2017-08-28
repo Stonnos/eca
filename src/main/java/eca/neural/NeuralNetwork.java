@@ -51,8 +51,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         this.data = data;
         network = new MultilayerPerceptron(data.numAttributes() - 1,
                 data.numClasses());
-        String hiddenLayer = getMinNumNeuronsInHiddenLayer() < 1 ?
-                "1" : String.valueOf(getMinNumNeuronsInHiddenLayer());
+        String hiddenLayer = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data) < 1 ? "1"
+                : String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data));
         network.setHiddenLayer(hiddenLayer);
     }
 
@@ -65,54 +65,6 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     public NeuralNetwork(Instances data, ActivationFunction function) {
         this(data);
         network.setActivationFunction(function);
-    }
-
-    /**
-     * Sets one hidden layer with random neurons number
-     * in interval [a, b). Where: <p>
-     * a - minimum neurons number in hidden layer <p>
-     * b - maximum neurons number in hidden layer <p>
-     */
-    public void setRandomHiddenLayer() {
-        int n = (int) NumberGenerator.random(getMinNumNeuronsInHiddenLayer(), getMaxNumNeuronsInHiddenLayer());
-        network.setHiddenLayer(String.valueOf(n));
-    }
-
-    /**
-     * Returns the minimum number of links in hidden layers.
-     *
-     * @return the minimum number of links in hidden layers
-     */
-    public final int getMinLinksNum() {
-        return (int) (data.numClasses() * data.numInstances() / (1 + Utils.log2(data.numInstances())));
-    }
-
-    /**
-     * Returns the maximum number of links in hidden layers.
-     *
-     * @return the maximum number of links in hidden layers
-     */
-    public final int getMaxLinksNum() {
-        return data.numClasses() * (1 + data.numInstances() / (data.numAttributes() - 1))
-                * (data.numAttributes() + data.numClasses()) + data.numClasses();
-    }
-
-    /**
-     * Returns the minimum number of neurons in hidden layers.
-     *
-     * @return the minimum number of neurons in hidden layers
-     */
-    public final int getMinNumNeuronsInHiddenLayer() {
-        return getMinLinksNum() / (data.numAttributes() + data.numClasses() - 1);
-    }
-
-    /**
-     * Returns the maximum number of neurons in hidden layers.
-     *
-     * @return the maximum number of neurons in hidden layers
-     */
-    public final int getMaxNumNeuronsInHiddenLayer() {
-        return getMaxLinksNum() / (data.numAttributes() + data.numClasses() - 1);
     }
 
     @Override

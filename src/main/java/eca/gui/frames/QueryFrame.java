@@ -26,16 +26,17 @@ import java.util.ArrayList;
  */
 public class QueryFrame extends JFrame {
 
-    private static final String dbTitle = "База данных";
-    private static final String urlTitle = "URL:";
-    private static final String userTitle = "User:";
-    private static final String queryTitle = "SELECT запрос";
+    private static final String DB_TITLE = "База данных";
+    private static final String URL_TITLE = "URL:";
+    private static final String USER_TITLE = "User:";
+    private static final String QUERY_TITLE = "SELECT запрос";
     private static final String DATA_TITLE = "Данные";
     private static final String INTERRUPT_BUTTON_TEXT = "Прервать";
     private static final String CLEAR_BUTTON_TEXT = "Очистить";
     private static final String START_BUTTON_TEXT = "Выполнить";
 
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
+    private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
 
     private final DataBaseConnection connection;
 
@@ -101,7 +102,7 @@ public class QueryFrame extends JFrame {
 
     private void makeGUI() {
         JPanel paramPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        paramPanel.setBorder(PanelBorderUtils.createTitledBorder(dbTitle));
+        paramPanel.setBorder(PanelBorderUtils.createTitledBorder(DB_TITLE));
         JTextField url = new JTextField(30);
         url.setText(connection.getConnectionDescriptor().getUrl());
         url.setBackground(Color.WHITE);
@@ -111,13 +112,13 @@ public class QueryFrame extends JFrame {
         user.setText(connection.getConnectionDescriptor().getLogin());
         user.setBackground(Color.WHITE);
         user.setEditable(false);
-        paramPanel.add(new JLabel(urlTitle));
+        paramPanel.add(new JLabel(URL_TITLE));
         paramPanel.add(url);
-        paramPanel.add(new JLabel(userTitle));
+        paramPanel.add(new JLabel(USER_TITLE));
         paramPanel.add(user);
         //-----------------------------------------------------
         JPanel queryPanel = new JPanel(new GridBagLayout());
-        queryPanel.setBorder(PanelBorderUtils.createTitledBorder(queryTitle));
+        queryPanel.setBorder(PanelBorderUtils.createTitledBorder(QUERY_TITLE));
         queryArea = new JTextArea(10, 20);
         queryArea.setWrapStyleWord(true);
         queryArea.setLineWrap(true);
@@ -216,7 +217,7 @@ public class QueryFrame extends JFrame {
 
                 } else {
                     JOptionPane.showMessageDialog(QueryFrame.this,
-                            "Необходимо сформировать выборку и выбрать ее в списке!",
+                            CREATE_SAMPLE_ERROR_MESSAGE,
                             null, JOptionPane.WARNING_MESSAGE);
                 }
             }

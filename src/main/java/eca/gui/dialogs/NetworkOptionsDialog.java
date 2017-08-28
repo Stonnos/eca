@@ -16,6 +16,7 @@ import eca.gui.text.NumericFormat;
 import eca.neural.BackPropagation;
 import eca.neural.MultilayerPerceptron;
 import eca.neural.NeuralNetwork;
+import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.ExponentialFunction;
@@ -147,7 +148,8 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         hidLabel.setPreferredSize(labelDim);
         hidLabel.setHorizontalAlignment(JLabel.RIGHT);
         String recommendText = String.format(RECOMMENDED_HIDDEN_LAYER_MESSAGE,
-                classifier.getMinNumNeuronsInHiddenLayer(), classifier.getMaxNumNeuronsInHiddenLayer());
+                NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data()),
+                NeuralNetworkUtil.getMaxNumNeuronsInHiddenLayer(data()));
         //-------------------------------------------------
         hiddenLayerPanel.add(hidLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -267,7 +269,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                         setVisible(false);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(NetworkOptionsDialog.this,
-                                e.getMessage(), "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                         text.requestFocusInWindow();
                     }
                 }

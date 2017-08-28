@@ -120,7 +120,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         return copies;
     }
 
-    protected abstract void initialize();
+    protected abstract void initialize() throws Exception;
 
     protected final void checkModel() throws Exception {
         if (classifiers.isEmpty()) {

@@ -44,6 +44,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private static final String ADD_CLASSIFIER_BUTTON_TEXT = "Добавить";
     private static final String DELETE_CLASSIFIER_BUTTON_TEXT = "Удалить";
     private static final String META_CLASSIFIER_OPTIONS_BUTTON_TEXT = "Настройка параметров";
+    private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE = "Необходимо выбрать базовые классификаторы!";
 
     private JList<String> algorithms;
     private JList<String> selectedAlgorithms;
@@ -242,8 +243,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                     }
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(StackingOptionsDialog.this,
-                            e.getMessage(),
-                            "Ошибка", JOptionPane.WARNING_MESSAGE);
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -273,8 +273,8 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             public void actionPerformed(ActionEvent evt) {
                 if (model.isEmpty()) {
                     JOptionPane.showMessageDialog(StackingOptionsDialog.this,
-                            "Необходимо выбрать базовые классификаторы!",
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                            EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
+                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 } else {
                     if (useTestingSet.isSelected()) {
                         classifier.setUseCrossValidation(true);

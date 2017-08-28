@@ -409,12 +409,12 @@ public class ResultsFrameBase extends JFrame {
         String separator = System.getProperty("line.separator");
         StringBuilder attrInfo = new StringBuilder();
         for (int i = 0; i < data().numAttributes(); i++) {
-            attrInfo.append(getInfo(data().attribute(i))).append(separator).append(separator);
+            attrInfo.append(getAttributeInfo(data().attribute(i))).append(separator).append(separator);
         }
         return attrInfo.toString();
     }
 
-    public StringBuilder getInfo(Attribute a) {
+    public StringBuilder getAttributeInfo(Attribute a) {
         String separator = System.getProperty("line.separator");
         StringBuilder attrInfo = new StringBuilder();
         ClassifyInstancePanel panel = (ClassifyInstancePanel) pane.getComponentAt(1);

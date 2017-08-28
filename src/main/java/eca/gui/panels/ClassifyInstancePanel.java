@@ -27,6 +27,10 @@ public class ClassifyInstancePanel extends JPanel {
     private static final String CLASSIFY_INSTANCE_TITLE = "Классификация примера";
     private static final String CLASSIFY_BUTTON_TEXT = "Классифицировать";
     private static final String RESET_BUTTON_TEXT = "Сброс значений";
+    private static final String CLASS_NAME_FORMAT = "Значение класса %s";
+    private static final String CLASS_CODE_TEXT = "Код класса: ";
+    private static final String CLASS_VALUE_TEXT = "Значение класса: ";
+    private static final String CLASS_PROBABILITY_TEXT = "Вероятность класса: ";
 
     private Classifier classifier;
     private final ClassifyInstanceTable table;
@@ -64,9 +68,9 @@ public class ClassifyInstancePanel extends JPanel {
         classField.setLineWrap(true);
         classField.setEditable(false);
         JScrollPane bottom = new JScrollPane(classField);
-        bottom.setBorder(PanelBorderUtils.createTitledBorder("Значение класса "
-                + table.data().classAttribute().name()));
-        bottom.setToolTipText(table.getInfo(table.data().classIndex()).toString());
+        bottom.setBorder(PanelBorderUtils
+                .createTitledBorder(String.format(CLASS_NAME_FORMAT, table.data().classAttribute().name())));
+        bottom.setToolTipText(table.getAttributeInfo(table.data().classIndex()).toString());
         JPanel top = new JPanel(new GridBagLayout());
         //--------------------------------------------
         JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);
@@ -79,10 +83,10 @@ public class ClassifyInstancePanel extends JPanel {
                     int i = (int) classifier.classifyInstance(obj);
                     double probability = classifier.distributionForInstance(obj)[i];
                     StringBuilder result = new StringBuilder();
-                    result.append("Код класса: ").append(i)
-                            .append("\nЗначение класса: ")
+                    result.append(CLASS_CODE_TEXT).append(i)
+                            .append("\n").append(CLASS_VALUE_TEXT)
                             .append(table.data().classAttribute().value(i))
-                            .append("\nВероятность класса: ")
+                            .append("\n").append(CLASS_PROBABILITY_TEXT)
                             .append(table.getDecimalFormat().format(probability));
                     classField.setText(result.toString());
                 } catch (Exception e) {

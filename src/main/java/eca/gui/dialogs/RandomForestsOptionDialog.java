@@ -31,6 +31,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     private static final String MAX_DEPTH_TITLE = "Максимальная глубина дерева:";
 
     private static final String NUM_RANDOM_ATTR_TITLE = "Число случайных атрибутов:";
+    private static final String RANDOM_ATTR_EXCEEDED_ERROR_FORMAT = "Число случайных атрибутов должно быть не больше %d";
 
     private JTextField numClassifiersText;
     private JTextField minObjText;
@@ -96,8 +97,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                     GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
                 } else if (Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
-                            String.format("Число случайных атрибутов должно быть не больше %d", data.numAttributes() - 1),
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                            String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
+                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                     numRandomAttrText.requestFocusInWindow();
                 } else {
                     try {
@@ -109,7 +110,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                         setVisible(false);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
-                                e.getMessage(), "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }

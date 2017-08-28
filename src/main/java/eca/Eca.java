@@ -18,6 +18,5 @@ public class Eca {
                 new JMainFrame().setVisible(true);
             }
         });
-
     }
 }

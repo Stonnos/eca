@@ -37,6 +37,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
 
     private static final String[] METRICS_TEXT = {"Евкилидово расстояние", "Квадрат Евклидова расстояния",
             "Манхеттенское расстояние", "Расстояние Чебышева"};
+    private static final String NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT =
+            "Число ближайших соседей должно быть не больше %d";
 
     private final JTextField numNeighboursText;
     private final JTextField weightText;
@@ -95,8 +97,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                     GuiUtils.showErrorMessageAndRequestFocusOn(KNNOptionDialog.this, text);
                 } else if (Integer.parseInt(numNeighboursText.getText()) > data.numInstances()) {
                     JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                            String.format("Число ближайших соседей должно быть не больше %d", data.numInstances()),
-                            "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                            String.format(NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT, data.numInstances()),
+                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                     numNeighboursText.requestFocusInWindow();
                 } else {
                     JTextField focus = weightText;
@@ -122,7 +124,7 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                         setVisible(false);
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                                e.getMessage(), "Ошибка ввода", JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                         focus.requestFocusInWindow();
                     }
                 }

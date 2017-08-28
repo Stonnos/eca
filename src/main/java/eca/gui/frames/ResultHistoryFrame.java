@@ -32,14 +32,11 @@ public class ResultHistoryFrame extends JFrame {
         this.setResizable(false);
         this.setTitle(TITLE);
         this.setLayout(new GridBagLayout());
-
         JPanel infoPanel = new JPanel();
-
         Dimension dim = new Dimension(430, 300);
         historyList = new JList<>(historyModel);
         historyList.setMinimumSize(dim);
         historyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //-------------------------------------------------
         JScrollPane historyPane = new JScrollPane(historyList);
         historyPane.setPreferredSize(dim);
         historyPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -70,7 +67,7 @@ public class ResultHistoryFrame extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        //-----------------------------------------------------------------
+
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
     }
