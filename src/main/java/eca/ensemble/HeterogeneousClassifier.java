@@ -161,7 +161,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
             if (error > min_error && error < max_error) {
                 classifiers.add(model);
                 if (getUseWeightedVotesMethod()) {
-                    ((WeightedVoting) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
+                    ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
                 }
             }
             if (index == numIterations - 1) {

@@ -445,7 +445,7 @@ public class NetworkVisualizer extends JPanel {
                 text.append("Активационная функция: ");
                 text.append(neuron.getActivationFunction().getClass().getSimpleName()).append("\n");
                 if (neuron.getActivationFunction() instanceof AbstractFunction) {
-                    text.append(((AbstractFunction) neuron.getActivationFunction()).coefficientToString())
+                    text.append(((AbstractFunction) neuron.getActivationFunction()).coefficientToString(fmt))
                             .append("\n");
                 }
             }

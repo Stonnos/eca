@@ -14,4 +14,5 @@ public class EnsemblesNames {
     public static final String MODIFIED_HETEROGENEOUS_ENSEMBLE = "Модифицированный неоднородный ансамблевый алгоритм";
     public static final String RANDOM_FORESTS = "Алгоритм Случайные леса";
     public static final String STACKING = "Алгоритм Stacking";
+    public static final String RANDOM_NETWORKS = "Алгоритм Случайные сети";
 }

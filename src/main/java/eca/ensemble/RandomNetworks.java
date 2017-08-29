@@ -1,5 +1,6 @@
 package eca.ensemble;
 
+import eca.core.evaluation.Evaluation;
 import eca.generators.NumberGenerator;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
@@ -16,7 +17,7 @@ import java.util.Random;
 public class RandomNetworks extends IterativeEnsembleClassifier {
 
     private static final double MIN_COEFFICIENT_VALUE = 1.0;
-    private static final double MAX_COEFFICIENT_VALUE = 10.0;
+    private static final double MAX_COEFFICIENT_VALUE = 5.0;
 
     private List<AbstractFunction> activationFunctionsList;
 
@@ -53,7 +54,6 @@ public class RandomNetworks extends IterativeEnsembleClassifier {
             neuralNetwork.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
             AbstractFunction randomActivationFunction
                     = activationFunctionsList.get(random.nextInt(activationFunctionsList.size()));
-
             AbstractFunction cloneFunction = randomActivationFunction.clone();
 
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);

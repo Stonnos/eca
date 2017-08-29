@@ -5,6 +5,8 @@
  */
 package eca.neural.functions;
 
+import java.text.DecimalFormat;
+
 /**
  * Implements abstract activation function with getCoefficient.
  *
@@ -15,13 +17,13 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
     /**
      * Coefficient value
      **/
-    private double a = 1.0;
+    private double coefficient = 1.0;
 
     protected AbstractFunction() {
     }
 
-    protected AbstractFunction(double a) {
-        this.setCoefficient(a);
+    protected AbstractFunction(double coefficient) {
+        this.setCoefficient(coefficient);
     }
 
     /**
@@ -30,20 +32,20 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      * @return the value of getCoefficient
      */
     public final double getCoefficient() {
-        return a;
+        return coefficient;
     }
 
     /**
      * Sets the value of getCoefficient.
      *
-     * @param a the value of getCoefficient
+     * @param coefficient the value of getCoefficient
      * @throws IllegalArgumentException if the value of getCoefficient is equal to zero
      */
-    public final void setCoefficient(double a) {
-        if (a == 0) {
+    public final void setCoefficient(double coefficient) {
+        if (coefficient == 0) {
             throw new IllegalArgumentException("Значение коэффициента должно быть больше нуля!");
         }
-        this.a = a;
+        this.coefficient = coefficient;
     }
 
     /**
@@ -51,8 +53,8 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      *
      * @return the string representation of getCoefficient value
      */
-    public final String coefficientToString() {
-        return "Значение коэффициента: " + String.valueOf(a);
+    public final String coefficientToString(DecimalFormat decimalFormat) {
+        return String.format("Значение коэффициента: %s", decimalFormat.format(coefficient));
     }
 
     @Override

@@ -16,7 +16,6 @@ import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationService;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedNeuralNetwork;
-import eca.dataminer.AutomatedNeuralNetworkUtil;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.ClassifiersSetBuilder;
 import eca.db.DataBaseConnection;
@@ -28,6 +27,7 @@ import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.ModifiedHeterogeneousClassifier;
 import eca.ensemble.RandomForests;
+import eca.ensemble.RandomNetworks;
 import eca.ensemble.StackingClassifier;
 import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
@@ -52,7 +52,7 @@ import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
 import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.dialogs.NumberFormatDialog;
+import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
@@ -68,6 +68,7 @@ import eca.model.InputData;
 import eca.model.ModelDescriptor;
 import eca.net.DataLoaderImpl;
 import eca.neural.NeuralNetwork;
+import eca.neural.NeuralNetworkUtil;
 import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
@@ -151,6 +152,8 @@ public class JMainFrame extends JFrame {
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
+    private static final int MIN_DECIMAL_PLACES = 1;
+    private static final int MAX_DECIMAL_PLACES = 7;
 
     private final JDesktopPane panels = new JDesktopPane();
 
@@ -772,8 +775,9 @@ public class JMainFrame extends JFrame {
         digitsMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                NumberFormatDialog dialog = new NumberFormatDialog(JMainFrame.this,
-                        NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits);
+                SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
+                        NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits,
+                        MIN_DECIMAL_PLACES, MAX_DECIMAL_PLACES);
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
                     maximumFractionDigits = dialog.getValue();
@@ -981,11 +985,11 @@ public class JMainFrame extends JFrame {
             }
         });
         //-------------------------------
-        JMenuItem aboutProgrammMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
+        JMenuItem aboutProgramMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
         JMenuItem reference = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
         //-------------------------------------------------
-        aboutProgrammMenu.addActionListener(new ActionListener() {
+        aboutProgramMenu.addActionListener(new ActionListener() {
 
             AboutProgramFrame frame;
 
@@ -1016,7 +1020,7 @@ public class JMainFrame extends JFrame {
             }
         });
         //-----------------------------------------------
-        referenceMenu.add(aboutProgrammMenu);
+        referenceMenu.add(aboutProgramMenu);
         referenceMenu.add(reference);
         //---------------------------------------------------
         JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS_MENU_TEXT);
@@ -1033,7 +1037,7 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances data = data();
                         AutomatedNeuralNetwork net =
-                                new AutomatedNeuralNetwork(AutomatedNeuralNetworkUtil.createActivationFunctions(),
+                                new AutomatedNeuralNetwork(NeuralNetworkUtil.getActivationFunctions(),
                                         data, new NeuralNetwork(data));
                         ExperimentFrame exp =
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
@@ -1202,7 +1206,7 @@ public class JMainFrame extends JFrame {
                                 ClassifiersNames.NEURAL_NETWORK,
                                 new NeuralNetwork(set), set);
                         frame.showDialog();
-                        computeResults(frame, NETWORK_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1280,7 +1284,7 @@ public class JMainFrame extends JFrame {
                                 = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNames.RANDOM_FORESTS,
                                 new RandomForests(data), data);
                         frame.showDialog();
-                        computeResults(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1313,6 +1317,43 @@ public class JMainFrame extends JFrame {
         });
         ensembleMenu.add(stackingItem);
 
+        //----------------------------------
+        JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNames.RANDOM_NETWORKS);
+        rndNetworksItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+                        /*Instances data = data();
+                        RandomForestsOptionDialog frame
+                                = new RandomForestsOptionDialog(JMainFrame.this, null,
+                                new RandomForests(data), data);
+                        frame.showDialog();
+                        executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
+                                NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits);
+                        dialog.setVisible(true);
+                        executeIterativeBuilding();*/
+                        Instances data = data();
+                        RandomNetworks randomNetworks = new RandomNetworks();
+                        randomNetworks.buildClassifier(data);
+                        Evaluation evaluation = new Evaluation(data);
+                        evaluation.crossValidateModel(randomNetworks, data, 10,new Random());
+                        System.out.println(randomNetworks.numClassifiers());
+                        System.out.println(evaluation.toSummaryString());
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(),
+                                null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+        ensembleMenu.add(rndNetworksItem);
+
+        //-------------------------------------------------------------------
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
         historyMenu.addActionListener(new ActionListener() {
             @Override
@@ -1344,7 +1385,7 @@ public class JMainFrame extends JFrame {
         this.setJMenuBar(menu);
     }
 
-    private void computeResults(BaseOptionsDialog frame, String msg) throws Exception {
+    private void executeIterativeBuilding(BaseOptionsDialog frame, String progressMessage) throws Exception {
         if (frame.dialogResult()) {
 
             try {
@@ -1353,17 +1394,17 @@ public class JMainFrame extends JFrame {
                     executeWithEcaService(frame);
                 } else {
 
-                    IterativeBuilder itCls = itClassifier((Iterable) frame.classifier(),
+                    IterativeBuilder iterativeBuilder = itClassifier((Iterable) frame.classifier(),
                             frame.data());
 
                     ClassifierBuilderDialog progress
-                            = new ClassifierBuilderDialog(JMainFrame.this, itCls, msg);
+                            = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
 
                     process(progress, new CallbackAction() {
                         @Override
                         public void apply() throws Exception {
                             resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
-                                    frame.data(), itCls.evaluation(), maximumFractionDigits);
+                                    frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits);
                         }
                     });
                 }
@@ -1412,7 +1453,7 @@ public class JMainFrame extends JFrame {
                     data());
             frame.setSampleEnabled(sample);
             frame.showDialog();
-            computeResults(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+            executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,

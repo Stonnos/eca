@@ -20,6 +20,8 @@ public class NeuralNetworkUtil {
 
     private static final int MIN_HIDDEN_LAYERS_NUMBER = 1;
     private static final int MAX_HIDDEN_LAYERS_NUMBER = 3;
+    private static final int MIN_SCORE_VALUE = 1;
+    private static final int MAX_SCORE_VALUE = 6;
 
     /**
      * Creates hidden layer with random neurons number
@@ -31,23 +33,44 @@ public class NeuralNetworkUtil {
      * @return the string representation of hidden layer structure
      */
     public static String generateRandomHiddenLayer(Instances data) {
-        int neuronsNumber = generateNeuronsNumberInHiddenLayer(data);
+        double neuronsCount = generateNeuronsNumberInHiddenLayer(data);
 
         Random random = new Random();
 
-        int hiddenLayers = random.nextInt(MAX_HIDDEN_LAYERS_NUMBER) + MIN_HIDDEN_LAYERS_NUMBER;
+        int hiddenLayersCount = random.nextInt(MAX_HIDDEN_LAYERS_NUMBER) + MIN_HIDDEN_LAYERS_NUMBER;
 
-        int layerSize = neuronsNumber / hiddenLayers;
+        if (hiddenLayersCount == 1) {
+            return String.valueOf((int) neuronsCount);
+        }
+
+        double[] scores = new double[hiddenLayersCount];
+        double resultSum = 0.0;
+
+        for (int i = 0; i < scores.length; i++) {
+            scores[i] = random.nextInt(MAX_SCORE_VALUE) + MIN_SCORE_VALUE;
+            resultSum += scores[i];
+        }
+
+        double normalizationValue = neuronsCount / resultSum;
+        resultSum = 0.0;
+
+        for (int i = 0; i < scores.length; i++) {
+            scores[i] = Math.round(scores[i] * normalizationValue);
+            resultSum += scores[i];
+        }
+
+        if (neuronsCount != resultSum) {
+            double residue = neuronsCount - resultSum;
+            int randomIndex = random.nextInt(scores.length);
+            scores[randomIndex] += residue;
+        }
+
 
         StringBuilder hiddenLayerStr = new StringBuilder();
-        boolean found = false;
+        hiddenLayerStr.append((int) scores[0]);
 
-        for (int i = 0; i < hiddenLayers; i++) {
-            if (found) {
-                hiddenLayerStr.append(",");
-            }
-            found = true;
-            hiddenLayerStr.append(layerSize);
+        for (int i = 1; i < scores.length; i++) {
+            hiddenLayerStr.append(",").append((int) scores[i]);
         }
 
         return hiddenLayerStr.toString();

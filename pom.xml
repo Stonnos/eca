@@ -27,6 +27,7 @@
         <spring.version>4.3.9.RELEASE</spring.version>
         <github.global.server>github</github.global.server>
         <github.maven-plugin>0.12</github.maven-plugin>
+        <reflections.version>0.9.10</reflections.version>
     </properties>
 
     <dependencies>
@@ -123,7 +124,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
+            <version>${reflections.version}</version>
         </dependency>
 
     </dependencies>

@@ -15,25 +15,19 @@ import java.awt.event.ActionListener;
 /**
  * @author Рома
  */
-public class NumberFormatDialog extends JDialog {
+public class SpinnerDialog extends JDialog {
 
     private final JSpinner spinner = new JSpinner();
 
     private boolean dialogResult;
 
-    public NumberFormatDialog(Window window, String title1, String title2, int digits, int min, int max) {
+    public SpinnerDialog(Window window, String title1, String title2, int digits, int min, int max) {
         super(window, title1);
         this.setModal(true);
-        //---------------------------------
         this.setLayout(new GridBagLayout());
         this.makeGUI(title2, digits, min, max);
-        //-----------------------------------
         this.pack();
         this.setLocationRelativeTo(window);
-    }
-
-    public NumberFormatDialog(Window window, String title1, String title2, int digits) {
-        this(window, title1, title2, digits, 1, 7);
     }
 
     public boolean dialogResult() {

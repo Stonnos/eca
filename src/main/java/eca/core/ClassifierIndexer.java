@@ -19,15 +19,15 @@ public class ClassifierIndexer {
     private final Date currentDate = new Date();
 
     public String getIndex(Classifier classifier) {
-        return classifier.getClass().getSimpleName() + "_" + getCurrentDateToString();
+        return String.format("%s_%s", classifier.getClass().getSimpleName(), getCurrentDateToString());
     }
 
     public String getExperimentIndex(Classifier classifier) {
-        return classifier.getClass().getSimpleName() + "Experiment_" + getCurrentDateToString();
+        return String.format("%sExperiment_%s",classifier.getClass().getSimpleName(), getCurrentDateToString());
     }
 
     public String getResultsIndex(Classifier classifier) {
-        return classifier.getClass().getSimpleName() + "Results_" + getCurrentDateToString();
+        return String.format("%sResults_%s",classifier.getClass().getSimpleName(), getCurrentDateToString());
     }
 
     public Date getCurrentDate() {

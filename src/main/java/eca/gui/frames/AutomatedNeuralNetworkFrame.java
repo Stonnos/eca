@@ -6,7 +6,7 @@
 package eca.gui.frames;
 
 import eca.dataminer.AbstractExperiment;
-import eca.gui.dialogs.NumberFormatDialog;
+import eca.gui.dialogs.SpinnerDialog;
 
 import javax.swing.*;
 
@@ -28,8 +28,8 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
 
     @Override
     protected void setOptions() {
-        NumberFormatDialog dialog =
-                new NumberFormatDialog(this, OPTIONS_TITLE, NETWORKS_NUMBER_TITLE,
+        SpinnerDialog dialog =
+                new SpinnerDialog(this, OPTIONS_TITLE, NETWORKS_NUMBER_TITLE,
                         getExperiment().getNumIterations(), MIN_ITERATIONS, MAX_ITERATIONS);
         dialog.setVisible(true);
         if (dialog.dialogResult()) {
