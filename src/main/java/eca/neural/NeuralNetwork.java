@@ -49,11 +49,13 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      */
     public NeuralNetwork(Instances data) {
         this.data = data;
-        network = new MultilayerPerceptron(data.numAttributes() - 1,
+        this.network = new MultilayerPerceptron(data.numAttributes() - 1,
                 data.numClasses());
         int neuronsNum = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data);
-        String hiddenLayer = neuronsNum < 1 ? "1" : String.valueOf(neuronsNum);
-        network.setHiddenLayer(hiddenLayer);
+        if (neuronsNum < 1) {
+            neuronsNum = 1;
+        }
+        this.network.setHiddenLayer(String.valueOf(neuronsNum));
     }
 
     /**

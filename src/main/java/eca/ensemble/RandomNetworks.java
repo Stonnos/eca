@@ -1,6 +1,5 @@
 package eca.ensemble;
 
-import eca.core.evaluation.Evaluation;
 import eca.generators.NumberGenerator;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
