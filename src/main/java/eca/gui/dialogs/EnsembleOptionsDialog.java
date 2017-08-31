@@ -13,6 +13,7 @@ import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.enums.ClassifiersNames;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
@@ -127,10 +128,13 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
         numClassifiersText.setDocument(new IntegerDocument(FIELD_LENGTH));
+        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
         classifierMinErrorText = new JTextField(TEXT_FIELD_LENGTH);
         classifierMinErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMinErrorText.setInputVerifier(new TextFieldInputVerifier());
         classifierMaxErrorText = new JTextField(TEXT_FIELD_LENGTH);
         classifierMaxErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMaxErrorText.setInputVerifier(new TextFieldInputVerifier());
         //----------------------------------------------------
         firstPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));

@@ -20,12 +20,13 @@ public class ListDocument extends LengthDocument {
 
     @Override
     public boolean format(String str) {
-        return Pattern.compile("^[0-9,]*$").matcher(str).matches();
+        return Pattern.compile("^([0-9],?)+$").matcher(str).matches();
     }
 
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-        if (format(str)) {
+        Content c = this.getContent();
+        if (format(c.getString(0, c.length() - 1) + str)) {
             super.insertString(offs, str, a);
         }
     }

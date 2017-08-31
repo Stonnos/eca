@@ -8,6 +8,7 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
@@ -60,8 +61,10 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_MESSAGE));
         numNeighboursText = new JTextField(TEXT_FIELD_LENGTH);
         numNeighboursText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numNeighboursText.setInputVerifier(new TextFieldInputVerifier());
         weightText = new JTextField(TEXT_FIELD_LENGTH);
         weightText.setDocument(new DoubleDocument(INT_FIELD_LENGTH));
+        weightText.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------
         metric = new JComboBox(METRICS_TEXT);
         optionPanel.add(new JLabel(NUM_NEIGHBOURS_MESSAGE),

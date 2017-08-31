@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class EstimateDocument extends LengthDocument {
 
-    private static final String ESTIMATE_FORMAT = "^[,][0-9]*$";
+    private static final String ESTIMATE_FORMAT = "^0|([,][0-9]*)$";
 
     public EstimateDocument(int length) {
         super(length);
@@ -22,8 +22,7 @@ public class EstimateDocument extends LengthDocument {
 
     @Override
     public boolean format(String str) {
-        return Pattern.compile(ESTIMATE_FORMAT).matcher(str).matches() ||
-                str.matches("^[0]$");
+        return Pattern.compile(ESTIMATE_FORMAT).matcher(str).matches();
     }
 
     @Override

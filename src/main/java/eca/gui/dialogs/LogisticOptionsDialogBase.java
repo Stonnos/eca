@@ -8,6 +8,7 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import eca.regression.Logistic;
 import weka.core.Instances;
@@ -47,6 +48,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_MESSAGE));
         numItsText = new JTextField(TEXT_FIELD_LENGTH);
         numItsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numItsText.setInputVerifier(new TextFieldInputVerifier());
         //------------------------------------
         ButtonGroup group = new ButtonGroup();
         newton = new JRadioButton(OPT_METHODS[0]);

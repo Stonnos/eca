@@ -5,6 +5,7 @@ import eca.generators.SimpleDataGenerator;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
 
@@ -62,13 +63,15 @@ public class DataGeneratorDialog extends JDialog {
 
         numAttributesField = new JTextField(TEXT_LENGTH);
         numAttributesField.setDocument(new LengthDocument(4));
+        numAttributesField.setInputVerifier(new TextFieldInputVerifier());
 
         numClassesField = new JTextField(TEXT_LENGTH);
         numClassesField.setDocument(new IntegerDocument(2));
+        numClassesField.setInputVerifier(new TextFieldInputVerifier());
 
         numInstancesField = new JTextField(TEXT_LENGTH);
         numInstancesField.setDocument(new LengthDocument(8));
-
+        numInstancesField.setInputVerifier(new TextFieldInputVerifier());
 
         optionPanel.add(new JLabel(ATTR_NUMBER_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));

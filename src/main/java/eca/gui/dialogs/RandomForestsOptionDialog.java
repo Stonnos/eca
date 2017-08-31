@@ -9,6 +9,7 @@ import eca.ensemble.RandomForests;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import weka.core.Instances;
 
@@ -50,12 +51,16 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         //------------------------------------
         numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
         numClassifiersText.setDocument(new IntegerDocument(5));
+        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
         minObjText = new JTextField(TEXT_FIELD_LENGTH);
         minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        minObjText.setInputVerifier(new TextFieldInputVerifier());
         maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
         maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        maxDepthText.setInputVerifier(new TextFieldInputVerifier());
         numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
         numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numRandomAttrText.setInputVerifier(new TextFieldInputVerifier());
         //-------------------------------------------------------
         optionPanel.add(new JLabel(TREES_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,

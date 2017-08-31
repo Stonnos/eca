@@ -8,6 +8,8 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.ListInputVerifier;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
@@ -73,6 +75,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     private static final String MOMENTUM_COEFFICIENT_TITLE = "Коэффициент момента:";
     private static final String RECOMMENDED_HIDDEN_LAYER_MESSAGE =
             "Рекомендуемое число нейронов в скрытом слое:  %d <= N <= %d";
+    private static final int HIDDEN_LAYER_STRING_LENGTH = 200;
 
     private JTextField inNeuronsText;
     private JTextField outNeuronsText;
@@ -142,7 +145,8 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         learningPanel.setBorder(PanelBorderUtils.createTitledBorder(LEARNING_ALGORITHM_TITLE));
         //-------------------------------------------------------------
         hidLayersText = new JTextField(TEXT_FIELD_LENGTH);
-        hidLayersText.setDocument(new ListDocument(200));
+        hidLayersText.setDocument(new ListDocument(HIDDEN_LAYER_STRING_LENGTH));
+        hidLayersText.setInputVerifier(new ListInputVerifier());
         //----------------------------------------------------
         JLabel hidLabel = new JLabel(HIDDEN_LAYER_STRUCTURE_TITLE);
         hidLabel.setPreferredSize(labelDim);
@@ -176,6 +180,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         coeffLabel.setHorizontalAlignment(JLabel.RIGHT);
         afCoeffText = new JTextField(TEXT_FIELD_LENGTH);
         afCoeffText.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
+        afCoeffText.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------------------
         actFuncPanel.add(logistic, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
@@ -192,12 +197,17 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         //-------------------------------------------------------------
         estimateText = new JTextField(TEXT_FIELD_LENGTH);
         estimateText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        estimateText.setInputVerifier(new TextFieldInputVerifier());
         numItsText = new JTextField(TEXT_FIELD_LENGTH);
         numItsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numItsText.setInputVerifier(new TextFieldInputVerifier());
         learnSpeedText = new JTextField(TEXT_FIELD_LENGTH);
         learnSpeedText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        learnSpeedText.setInputVerifier(new TextFieldInputVerifier());
+
         momentumText = new JTextField(TEXT_FIELD_LENGTH);
         momentumText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        momentumText.setInputVerifier(new TextFieldInputVerifier());
         //------------------------------------------------------------
         JLabel errLabel = new JLabel(ERROR_TITLE);
         errLabel.setPreferredSize(labelDim);

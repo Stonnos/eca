@@ -8,6 +8,7 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
@@ -57,8 +58,10 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_MESSAGE));
         minObjText = new JTextField(TEXT_FIELD_LENGTH);
         minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        minObjText.setInputVerifier(new TextFieldInputVerifier());
         maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
         maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        maxDepthText.setInputVerifier(new TextFieldInputVerifier());
 
         randomBox = new JCheckBox(RANDOM_TREE_MESSAGE);
 

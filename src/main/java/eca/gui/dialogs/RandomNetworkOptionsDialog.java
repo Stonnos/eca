@@ -4,6 +4,7 @@ import eca.ensemble.RandomNetworks;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
@@ -70,10 +71,13 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
         numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
         numClassifiersText.setDocument(new IntegerDocument(FIELD_LENGTH));
+        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
         classifierMinErrorText = new JTextField(TEXT_FIELD_LENGTH);
         classifierMinErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMinErrorText.setInputVerifier(new TextFieldInputVerifier());
         classifierMaxErrorText = new JTextField(TEXT_FIELD_LENGTH);
         classifierMaxErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMaxErrorText.setInputVerifier(new TextFieldInputVerifier());
 
         useBootstrapSamplesCheckBox = new JCheckBox(USE_BOOTSTRAP_SAMPLE_TEXT);
 
