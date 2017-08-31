@@ -16,9 +16,17 @@ import java.util.NoSuchElementException;
  * <p>
  * Valid options are: <p>
  * <p>
+ * Set the number of iterations (Default: 10) <p>
+ * <p>
  * Use weighted votes method. (Default: <tt>false</tt>) <p>
  * <p>
  * Use randomly classifiers selection. (Default: <tt>true</tt>) <p>
+ * <p>
+ * Set individual classifiers collection  <p>
+ * <p>
+ * Set minimum error threshold for including classifier in ensemble <p>
+ * <p>
+ * Set maximum error threshold for including classifier in ensemble <p>
  * <p>
  * Sets {@link Sampler} object. <p>
  *
@@ -30,12 +38,12 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     /**
      * Use weighted votes method?
      **/
-    private boolean use_Weighted_Votes;
+    private boolean useWeightedVotes;
 
     /**
      * Use randomly classifiers selection?
      **/
-    private boolean use_Random_Classifier = true;
+    private boolean useRandomClassifier = true;
 
     /**
      * Sampling object
@@ -43,7 +51,15 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     private final Sampler sampler = new Sampler();
 
     /**
-     * Creates <tt>HeterogeneousClassifier</tt> with given classifiers set.
+     * Creates <tt>HeterogeneousClassifier</tt> object.
+     *
+     */
+    public HeterogeneousClassifier() {
+
+    }
+
+    /**
+     * Creates <tt>HeterogeneousClassifier</tt> object with given classifiers set.
      *
      * @param set classifiers set
      */
@@ -67,12 +83,12 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     public boolean getUseWeightedVotesMethod() {
-        return use_Weighted_Votes;
+        return useWeightedVotes;
     }
 
     @Override
     public void setUseWeightedVotesMethod(boolean flag) {
-        this.use_Weighted_Votes = flag;
+        this.useWeightedVotes = flag;
     }
 
     /**
@@ -81,7 +97,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
      * @return the value of use random classifier
      */
     public boolean getUseRandomClassifier() {
-        return use_Random_Classifier;
+        return useRandomClassifier;
     }
 
     /**
@@ -90,19 +106,19 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
      * @param flag the value of use random classifier
      */
     public void setUseRandomClassifier(boolean flag) {
-        this.use_Random_Classifier = flag;
+        this.useRandomClassifier = flag;
     }
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(set.size() + 6) * 2];
+        String[] options = new String[(getClassifiersSet().size() + 6) * 2];
         int k = 0;
         options[k++] = "Число итераций:";
-        options[k++] = String.valueOf(numIterations);
+        options[k++] = String.valueOf(getIterationsNum());
         options[k++] = "Минимальная допустимая ошибка классификатора:";
-        options[k++] = String.valueOf(min_error);
+        options[k++] = String.valueOf(getMinError());
         options[k++] = "Максимальная допустимая ошибка классификатора:";
-        options[k++] = String.valueOf(max_error);
+        options[k++] = String.valueOf(getMaxError());
         options[k++] = "Метод голосования:";
         options[k++] = getUseWeightedVotesMethod() ?
                 "Метод взвешенного голосования" : "Метод большинства голосов";
@@ -113,7 +129,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
                 : "Оптимальный классификатор";
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
             options[i] = "Базовый классификатор " + j + ":";
-            options[i + 1] = set.getClassifier(j).getClass().getSimpleName();
+            options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
         }
         return options;
     }
@@ -121,11 +137,11 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     @Override
     protected void initialize() {
         if (sampler.getSampling() == Sampler.INITIAL) {
-            numIterations = set.size();
+            setIterationsNum(getClassifiersSet().size());
         }
 
         if (getUseWeightedVotesMethod()) {
-            votes = new WeightedVoting(new Aggregator(this), numIterations);
+            votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
         } else {
             votes = new MajorityVoting(new Aggregator(this));
         }
@@ -149,22 +165,22 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
             Instances bag = sampler.instances(filteredData);
             Classifier model;
             if (sampler.getSampling() == Sampler.INITIAL) {
-                model = set.buildClassifier(index, bag);
+                model = getClassifiersSet().buildClassifier(index, bag);
             } else if (getUseRandomClassifier()) {
-                model = set.buildRandomClassifier(bag);
+                model = getClassifiersSet().buildRandomClassifier(bag);
             } else {
-                model = set.builtOptimalClassifier(bag);
+                model = getClassifiersSet().builtOptimalClassifier(bag);
             }
 
             double error = Evaluation.error(model, bag);
 
-            if (error > min_error && error < max_error) {
+            if (error > getMinError() && error < getMaxError()) {
                 classifiers.add(model);
                 if (getUseWeightedVotesMethod()) {
                     ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
                 }
             }
-            if (index == numIterations - 1) {
+            if (index == getIterationsNum() - 1) {
                 checkModel();
             }
             return ++index;

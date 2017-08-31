@@ -91,7 +91,6 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     public EnsembleOptionsDialog(JFrame parent, String title,
                                  AbstractHeterogeneousClassifier classifier, Instances data) {
         super(parent, title, classifier, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.createFormat();
@@ -398,7 +397,6 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         this.getRootPane().setDefaultButton(okButton);
     }
 
-
     private void createFormat() {
         estimateFormat.setMaximumIntegerDigits(0);
         estimateFormat.setMaximumFractionDigits(FIELD_LENGTH);
@@ -411,20 +409,21 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     }
 
     private boolean isValidate() {
-        JTextField focus = classifierMinErrorText;
+        JTextField textField = classifierMinErrorText;
         try {
+            textField = numClassifiersText;
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
+            textField = classifierMinErrorText;
             classifier.setMinError(estimateFormat
                     .parse(classifierMinErrorText.getText()).doubleValue());
-            focus = classifierMaxErrorText;
+            textField = classifierMaxErrorText;
             classifier.setMaxError(estimateFormat
                     .parse(classifierMaxErrorText.getText()).doubleValue());
-            focus = numClassifiersText;
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
                     INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-            focus.requestFocusInWindow();
+            textField.requestFocusInWindow();
             return false;
         }
         //-----------------------------

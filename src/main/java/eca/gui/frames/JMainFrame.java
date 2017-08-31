@@ -52,6 +52,7 @@ import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
 import eca.gui.dialogs.NetworkOptionsDialog;
+import eca.gui.dialogs.RandomNetworkOptionsDialog;
 import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
@@ -1039,9 +1040,9 @@ public class JMainFrame extends JFrame {
                         AutomatedNeuralNetwork net =
                                 new AutomatedNeuralNetwork(NeuralNetworkUtil.getActivationFunctions(),
                                         data, new NeuralNetwork(data));
-                        ExperimentFrame exp =
+                        ExperimentFrame experimentFrame =
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
-                        exp.setVisible(true);
+                        experimentFrame.setVisible(true);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1057,7 +1058,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        createEnsembleExperiment(new ModifiedHeterogeneousClassifier(null), aRndSubspMenu.getText(),
+                        createEnsembleExperiment(new ModifiedHeterogeneousClassifier(), aRndSubspMenu.getText(),
                                 data());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1074,7 +1075,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        createEnsembleExperiment(new HeterogeneousClassifier(null), aHeteroEnsMenu.getText(), data());
+                        createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(), data());
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1090,7 +1091,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        createEnsembleExperiment(new AdaBoostClassifier(null), aAdaBoostMenu.getText(), data());
+                        createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(), data());
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1243,7 +1244,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     createEnsembleOptionDialog(EnsemblesNames.HETEROGENEOUS_ENSEMBLE,
-                            new HeterogeneousClassifier(null), true);
+                            new HeterogeneousClassifier(), true);
                 }
             }
         });
@@ -1255,7 +1256,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     createEnsembleOptionDialog(EnsemblesNames.BOOSTING,
-                            new AdaBoostClassifier(null), false);
+                            new AdaBoostClassifier(), false);
                 }
             }
         });
@@ -1266,7 +1267,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     createEnsembleOptionDialog(EnsemblesNames.MODIFIED_HETEROGENEOUS_ENSEMBLE,
-                            new ModifiedHeterogeneousClassifier(null), true);
+                            new ModifiedHeterogeneousClassifier(), true);
                 }
             }
         });
@@ -1334,13 +1335,22 @@ public class JMainFrame extends JFrame {
                                 NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits);
                         dialog.setVisible(true);
                         executeIterativeBuilding();*/
+
                         Instances data = data();
+                        RandomNetworkOptionsDialog networkOptionsDialog =
+                                new RandomNetworkOptionsDialog(JMainFrame.this, EnsemblesNames.RANDOM_NETWORKS,
+                                        new RandomNetworks(), data);
+                        networkOptionsDialog.showDialog();
+                        executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+
+                        /*Instances data = data();
                         RandomNetworks randomNetworks = new RandomNetworks();
                         randomNetworks.buildClassifier(data);
                         Evaluation evaluation = new Evaluation(data);
-                        evaluation.crossValidateModel(randomNetworks, data, 10,new Random());
+                        evaluation.kCrossValidateModel(randomNetworks, data, 10,1,new Random());
+                        //evaluation.evaluateModel(randomNetworks, data);
                         System.out.println(randomNetworks.numClassifiers());
-                        System.out.println(evaluation.toSummaryString());
+                        System.out.println(evaluation.toSummaryString());*/
 
                     } catch (Exception e) {
                         e.printStackTrace();

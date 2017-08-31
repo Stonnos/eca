@@ -35,6 +35,7 @@ import java.util.ArrayList;
 public class StackingClassifier extends AbstractClassifier
         implements EnsembleClassifier, InstancesHandler {
 
+    private static final String META_SET_NAME = "MetaSet";
     /**
      * Initial training set
      **/
@@ -263,7 +264,7 @@ public class StackingClassifier extends AbstractClassifier
 
         attr.add((Attribute) classAttr.copy());
 
-        metaSet = new Instances("MetaSet", attr, filteredData.numInstances());
+        metaSet = new Instances(META_SET_NAME, attr, filteredData.numInstances());
         metaSet.setClassIndex(metaSet.numAttributes() - 1);
     }
 

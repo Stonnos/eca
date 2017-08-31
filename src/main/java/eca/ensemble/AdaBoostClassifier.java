@@ -16,6 +16,18 @@ import java.util.Random;
  * Implements AdaBoost algorithm. For more information see <p>
  * Yoav Freund, Robert E. Schapire. A decision-theoretic generalization of online learning
  * and an application to boosting // Second European Conference on Computational Learning Theory. – 1995. <p>
+ * <p>
+ * Valid options are: <p>
+ * <p>
+ * Set the number of iterations (Default: 10) <p>
+ * <p>
+ * Set individual classifiers collection  <p>
+ * <p>
+ * Set minimum error threshold for including classifier in ensemble <p>
+ * <p>
+ * Set maximum error threshold for including classifier in ensemble <p>
+ * <p>
+ * Sets {@link Sampler} object. <p>
  *
  * @author Рома
  */
@@ -27,6 +39,14 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     private double[] weights;
 
     private final Random random = new Random();
+
+    /**
+     * Creates <tt>AdaBoostClassifier</tt> object.
+     *
+     */
+    public AdaBoostClassifier() {
+
+    }
 
     /**
      * Creates <tt>AdaBoostClassifier</tt> object with given classifiers set.
@@ -44,17 +64,17 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(set.size() + 3) * 2];
+        String[] options = new String[(getClassifiersSet().size() + 3) * 2];
         int k = 0;
         options[k++] = "Число итераций:";
-        options[k++] = String.valueOf(numIterations);
+        options[k++] = String.valueOf(getIterationsNum());
         options[k++] = "Минимальная допустимая ошибка классификатора:";
-        options[k++] = String.valueOf(min_error);
+        options[k++] = String.valueOf(getMinError());
         options[k++] = "Максимальная допустимая ошибка классификатора:";
-        options[k++] = String.valueOf(max_error);
+        options[k++] = String.valueOf(getMaxError());
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
             options[i] = "Базовый классификатор " + j + ":";
-            options[i + 1] = set.getClassifier(j).getClass().getSimpleName();
+            options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
         }
         return options;
     }
@@ -95,16 +115,16 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         Instances sample = filteredData.resampleWithWeights(random, weights);
         Classifier model = null;
         double minError = Double.MAX_VALUE;
-        for (int i = 0; i < set.size(); i++) {
-            Classifier c = set.getClassifierCopy(i);
-            c.buildClassifier(sample);
-            double error = weightedError(c);
+        for (int i = 0; i < getClassifiersSet().size(); i++) {
+            Classifier classifier = getClassifiersSet().getClassifierCopy(i);
+            classifier.buildClassifier(sample);
+            double error = weightedError(classifier);
             if (error < minError) {
                 minError = error;
-                model = c;
+                model = classifier;
             }
         }
-        if (minError > min_error && minError < max_error) {
+        if (minError > getMinError() && minError < getMaxError()) {
             classifiers.add(model);
             ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(minError));
             updateWeights(t);
@@ -116,7 +136,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     protected void initialize() {
-        votes = new WeightedVoting(new Aggregator(this), numIterations);
+        votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
@@ -136,10 +156,10 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 throw new NoSuchElementException();
             }
             if (!nextIteration(index)) {
-                step = numIterations - index;
-                index = numIterations - 1;
+                step = getIterationsNum() - index;
+                index = getIterationsNum() - 1;
             }
-            if (index == numIterations - 1) {
+            if (index == getIterationsNum() - 1) {
                 checkModel();
             }
             return ++index;

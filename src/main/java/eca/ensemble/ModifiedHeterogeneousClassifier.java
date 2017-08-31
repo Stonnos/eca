@@ -14,6 +14,22 @@ import java.util.Random;
 
 /**
  * Implements modified heterogeneous ensemble algorithm.
+ * <p>
+ * Valid options are: <p>
+ * <p>
+ * Set the number of iterations (Default: 10) <p>
+ * <p>
+ * Use weighted votes method. (Default: <tt>false</tt>) <p>
+ * <p>
+ * Use randomly classifiers selection. (Default: <tt>true</tt>) <p>
+ * <p>
+ * Set individual classifiers collection  <p>
+ * <p>
+ * Set minimum error threshold for including classifier in ensemble <p>
+ * <p>
+ * Set maximum error threshold for including classifier in ensemble <p>
+ * <p>
+ * Sets {@link Sampler} object. <p>
  *
  * @author Рома
  */
@@ -22,7 +38,15 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     private SubspacesAggregator aggregator;
 
     /**
-     * Creates <tt>ModifiedHeterogeneousClassifier</tt> with given classifiers set.
+     * Creates <tt>ModifiedHeterogeneousClassifier</tt> object.
+     *
+     */
+    public ModifiedHeterogeneousClassifier() {
+
+    }
+
+    /**
+     * Creates <tt>ModifiedHeterogeneousClassifier</tt> object with given classifiers set.
      *
      * @param set classifiers set
      */
@@ -40,7 +64,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
         aggregator = new SubspacesAggregator(this);
 
         if (getUseWeightedVotesMethod()) {
-            votes = new WeightedVoting(aggregator, numIterations);
+            votes = new WeightedVoting(aggregator, getIterationsNum());
         } else {
             votes = new MajorityVoting(aggregator);
         }
@@ -65,24 +89,28 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
             Instances subSample =
                     sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
 
-            Classifier model = getUseRandomClassifier() ? set.buildRandomClassifier(subSample)
-                    : set.builtOptimalClassifier(subSample);
+            Classifier model;
+            if (getUseRandomClassifier()) {
+                model = getClassifiersSet().buildRandomClassifier(subSample);
+            } else {
+                model = getClassifiersSet().builtOptimalClassifier(subSample);
+            }
 
             double error = Evaluation.error(model, subSample);
 
-            if (error > min_error && error < max_error) {
+            if (error > getMinError() && error < getMaxError()) {
                 classifiers.add(model);
                 aggregator.setInstances(subSample);
                 if (getUseWeightedVotesMethod()) {
                     ((WeightedVoting) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
                 }
             }
-            if (index == numIterations - 1) {
+            if (index == getIterationsNum() - 1) {
                 checkModel();
             }
             return ++index;
         }
 
-    } //End of class SpaceBuilder
+    }
 
 }

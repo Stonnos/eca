@@ -20,9 +20,9 @@ import java.util.Set;
 public class NeuralNetworkUtil {
 
     private static final int MIN_HIDDEN_LAYERS_NUMBER = 1;
-    private static final int MAX_HIDDEN_LAYERS_NUMBER = 3;
+    private static final int MAX_HIDDEN_LAYERS_NUMBER = 2;
     private static final int MIN_SCORE_VALUE = 1;
-    private static final int MAX_SCORE_VALUE = 7;
+    private static final int MAX_SCORE_VALUE = 2;
 
     /**
      * Creates hidden layer with random neurons number
@@ -35,7 +35,7 @@ public class NeuralNetworkUtil {
      */
     public static String generateRandomHiddenLayer(Instances data) {
         double neuronsCount = generateNeuronsNumberInHiddenLayer(data);
-        System.out.println(neuronsCount);
+
         if (neuronsCount < 1.0) {
             return String.valueOf(1);
         }
@@ -78,7 +78,7 @@ public class NeuralNetworkUtil {
             hiddenLayerStr.append(",").append((int) scores[i]);
         }
 
-        return hiddenLayerStr.toString().replace("0", StringUtils.EMPTY);
+        return hiddenLayerStr.toString().replace(",0", StringUtils.EMPTY);
     }
 
     /**

@@ -35,6 +35,13 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     private Instances initialData;
 
     /**
+     * Number of iterations
+     **/
+    private int numIterations = 10;
+
+    private final MissingValuesFilter filter = new MissingValuesFilter();
+
+    /**
      * Classifiers list
      **/
     protected ArrayList<Classifier> classifiers;
@@ -50,13 +57,6 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     protected Instances filteredData;
 
     /**
-     * Number of iterations
-     **/
-    protected int numIterations = 10;
-
-    private final MissingValuesFilter filter = new MissingValuesFilter();
-
-    /**
      * Sets the values of iterations number.
      *
      * @param numIterations the values of iterations number
@@ -65,7 +65,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     public final void setIterationsNum(int numIterations) {
         if (numIterations < MINIMUM_ITERATIONS_NUMBER) {
             throw new IllegalArgumentException(
-                    String.format("Число итераций должно быть больше %d!", MINIMUM_ITERATIONS_NUMBER));
+                    String.format("Число итераций должно быть не менее %d!", MINIMUM_ITERATIONS_NUMBER));
         }
         this.numIterations = numIterations;
     }

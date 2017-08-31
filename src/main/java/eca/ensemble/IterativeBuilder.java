@@ -86,9 +86,9 @@ public abstract class IterativeBuilder {
 
     protected Evaluation evaluateModel(Classifier classifier, Instances data) throws Exception {
         if (!hasNext()) {
-            Evaluation e = new Evaluation(data);
-            e.evaluateModel(classifier, data);
-            return e;
+            Evaluation evaluation = new Evaluation(data);
+            evaluation.evaluateModel(classifier, data);
+            return evaluation;
         } else {
             return null;
         }

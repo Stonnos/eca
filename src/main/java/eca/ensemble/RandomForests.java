@@ -16,6 +16,8 @@ import java.util.NoSuchElementException;
  * <p>
  * Valid options are: <p>
  * <p>
+ * Set the number of iterations (Default: 10) <p>
+ * <p>
  * Set minimum number of instances per leaf. (Default: 2) <p>
  * <p>
  * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
@@ -124,7 +126,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Число деревьев:", String.valueOf(numIterations),
+        String[] options = {"Число деревьев:", String.valueOf(getIterationsNum()),
                 "Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
                 "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
