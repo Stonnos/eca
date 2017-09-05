@@ -75,13 +75,12 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Минимальное число объектов в листе:", String.valueOf(minObj),
-                "Максиальная глубина дерева:", String.valueOf(maxDepth),
-                "Случайное дерево:", String.valueOf(isRandom),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
+        return new String[] {"Минимальное число объектов в листе:", String.valueOf(getMinObj()),
+                "Максиальная глубина дерева:", String.valueOf(getMaxDepth()),
+                "Случайное дерево:", String.valueOf(isRandomTree()),
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr()),
                 "Бинарное дерево:", String.valueOf(use_binary_splits),
                 "Уровень значимости alpha:", String.valueOf(alpha)};
-        return options;
     }
 
     @Override
@@ -93,18 +92,17 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     protected final SplitDescriptor createOptSplit(TreeNode x) {
-        currentMeasure = -Double.MAX_VALUE;
-        SplitDescriptor split = new SplitDescriptor();
+        SplitDescriptor split = new SplitDescriptor(x, -Double.MAX_VALUE);
 
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
-                processNumericSplit(a, x, splitAlgorithm, split);
+                processNumericSplit(a, splitAlgorithm, split);
             } else {
                 if (getUseBinarySplits()) {
-                    processBinarySplit(a, x, splitAlgorithm, split);
+                    processBinarySplit(a, splitAlgorithm, split);
                 } else {
-                    processNominalSplit(a, x, splitAlgorithm, split);
+                    processNominalSplit(a, splitAlgorithm, split);
                 }
             }
         }
@@ -112,22 +110,24 @@ public class CHAID extends DecisionTreeClassifier {
     }
 
     @Override
-    protected boolean isSplit(TreeNode x) {
+    protected boolean isSplit(SplitDescriptor splitDescriptor) {
+        TreeNode x = splitDescriptor.getNode();
+        Attribute attribute = x.getRule().attribute();
         int df;
-        if (getUseBinarySplits() || x.rule.attribute().isNumeric()) {
-            df = data.numClasses() - 1;
+        if (getUseBinarySplits() || attribute.isNumeric()) {
+            df = getData().numClasses() - 1;
         } else {
-            df = (data.numClasses() - 1) * (x.rule.attribute().numValues() - 1);
+            df = (getData().numClasses() - 1) * (attribute.numValues() - 1);
         }
-        return currentMeasure > Statistics.chiSquaredCriticalValue(alpha, df)
-                && x.isSplit(minObj);
+        return splitDescriptor.getCurrentMeasure() > Statistics.chiSquaredCriticalValue(alpha, df)
+                && x.isSplit(getMinObj());
     }
 
 
     private class ChaidSplitAlgorithm implements SplitAlgorithm {
 
         @Override
-        public boolean isBetterSplit(double measure) {
+        public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure > currentMeasure;
         }
 

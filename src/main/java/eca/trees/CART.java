@@ -22,15 +22,14 @@ public class CART extends DecisionTreeClassifier {
 
     @Override
     protected final SplitDescriptor createOptSplit(TreeNode x) {
-        SplitDescriptor split = new SplitDescriptor();
-        currentMeasure = Double.MAX_VALUE;
+        SplitDescriptor split = new SplitDescriptor(x, Double.MAX_VALUE);
 
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
-                processNumericSplit(a, x, splitAlgorithm, split);
+                processNumericSplit(a, splitAlgorithm, split);
             } else {
-                processBinarySplit(a, x, splitAlgorithm, split);
+                processBinarySplit(a, splitAlgorithm, split);
             }
         }
 
@@ -41,7 +40,7 @@ public class CART extends DecisionTreeClassifier {
     private class CartSplitAlgorithm implements SplitAlgorithm {
 
         @Override
-        public boolean isBetterSplit(double measure) {
+        public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure < currentMeasure;
         }
 
@@ -53,8 +52,8 @@ public class CART extends DecisionTreeClassifier {
         double giniIndex(TreeNode x) {
             double giniIndex = 0.0;
             probabilities(x);
-            for (int k = 0; k < probabilities.length; k++) {
-                giniIndex += probabilities[k] * probabilities[k];
+            for (double probability : probabilities) {
+                giniIndex += probability * probability;
             }
             return 1.0 - giniIndex;
         }

@@ -23,15 +23,14 @@ public class ID3 extends DecisionTreeClassifier {
 
     @Override
     protected final SplitDescriptor createOptSplit(TreeNode x) {
-        SplitDescriptor split = new SplitDescriptor();
-        currentMeasure = -Double.MAX_VALUE;
+        SplitDescriptor split = new SplitDescriptor(x, -Double.MAX_VALUE);
 
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
             if (a.isNumeric()) {
-                processNumericSplit(a, x, splitAlgorithm, split);
+                processNumericSplit(a, splitAlgorithm, split);
             } else {
-                processNominalSplit(a, x, splitAlgorithm, split);
+                processNominalSplit(a, splitAlgorithm, split);
             }
         }
         return split;
@@ -40,7 +39,7 @@ public class ID3 extends DecisionTreeClassifier {
     protected class Id3SplitAlgorithm implements SplitAlgorithm {
 
         @Override
-        public boolean isBetterSplit(double measure) {
+        public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure > currentMeasure;
         }
 
@@ -56,8 +55,8 @@ public class ID3 extends DecisionTreeClassifier {
         double info(TreeNode x) {
             double info = 0.0;
             probabilities(x);
-            for (int k = 0; k < probabilities.length; k++) {
-                info += log(probabilities[k]);
+            for (double probability : probabilities) {
+                info += log(probability);
             }
             return -info;
         }

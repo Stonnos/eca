@@ -44,7 +44,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     /**
      * Initial training set
      **/
-    protected Instances data;
+    private Instances data;
 
     /**
      * Tree root
@@ -54,37 +54,37 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     /**
      * Number of tree nodes
      **/
-    protected int numNodes;
+    private int numNodes;
 
     /**
      * Number of tree leaves
      **/
-    protected int numLeaves;
+    private int numLeaves;
 
     /**
      * Number of instances per leaf
      **/
-    protected int minObj = 2;
+    private int minObj = 2;
 
     /**
      * Maximum tree depth
      **/
-    protected int maxDepth;
+    private int maxDepth;
 
     /**
      * Number of random attributes at each split
      **/
-    protected int numRandomAttr;
+    private int numRandomAttr;
 
     /**
      * Random tree?
      **/
-    protected boolean isRandom;
+    private boolean isRandom;
 
     /**
      * Tree depth
      **/
-    protected int depth;
+    private int depth;
 
     /**
      * Node split algorithm
@@ -92,8 +92,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected SplitAlgorithm splitAlgorithm;
 
     protected double[] probabilities;
-
-    protected double currentMeasure;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
@@ -223,10 +221,56 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      */
     protected static class SplitDescriptor {
 
+        TreeNode node;
+
         TreeNode[] child;
 
         AbstractRule rule;
 
+        double currentMeasure;
+
+        SplitDescriptor(TreeNode node, double currentMeasure) {
+            this.node = node;
+            this.currentMeasure = currentMeasure;
+        }
+
+        TreeNode getNode() {
+            return node;
+        }
+
+        void setNode(TreeNode node) {
+            this.node = node;
+        }
+
+        TreeNode[] getChild() {
+            return child;
+        }
+
+        void setChild(TreeNode[] child) {
+            this.child = child;
+        }
+
+        AbstractRule getRule() {
+            return rule;
+        }
+
+        void setRule(AbstractRule rule) {
+            this.rule = rule;
+        }
+
+        double getCurrentMeasure() {
+            return currentMeasure;
+        }
+
+        void setCurrentMeasure(double currentMeasure) {
+            this.currentMeasure = currentMeasure;
+        }
+
+        void setParams(double currentMeasure, TreeNode[] child, AbstractRule rule) {
+            setCurrentMeasure(currentMeasure);
+            setChild(child);
+            setRule(rule);
+        }
     }
 
     /**
@@ -236,14 +280,14 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         double getMeasure(TreeNode x);
 
-        boolean isBetterSplit(double measure);
+        boolean isBetterSplit(double currentMeasure, double measure);
 
     }
 
     protected final void processNumericSplit(Attribute a,
-                                             TreeNode x,
                                              SplitAlgorithm splitAlgorithm,
                                              SplitDescriptor split) {
+        TreeNode x = split.getNode();
         x.objects().sort(a);
         NumericRule rule = new NumericRule(a);
         double optThreshold = 0.0;
@@ -253,34 +297,30 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                     + x.objects().instance(i + 1).value(a)) / 2);
             createChildren(x, 2);
             double measure = splitAlgorithm.getMeasure(x);
-            if (splitAlgorithm.isBetterSplit(measure)) {
-                currentMeasure = measure;
-                split.child = x.child;
+            if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
+                split.setParams(measure, x.children(), x.getRule());
                 optThreshold = rule.getMeanValue();
-                split.rule = x.rule;
             }
         }
         rule.setMeanValue(optThreshold);
     }
 
     protected final void processNominalSplit(Attribute a,
-                                             TreeNode x,
                                              SplitAlgorithm splitAlgorithm,
                                              SplitDescriptor split) {
+        TreeNode x = split.getNode();
         x.rule = new NominalRule(a);
         createChildren(x, a.numValues());
         double measure = splitAlgorithm.getMeasure(x);
-        if (splitAlgorithm.isBetterSplit(measure)) {
-            currentMeasure = measure;
-            split.child = x.child;
-            split.rule = x.rule;
+        if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
+            split.setParams(measure, x.children(), x.getRule());
         }
     }
 
     protected final void processBinarySplit(Attribute a,
-                                            TreeNode x,
                                             SplitAlgorithm splitAlgorithm,
                                             SplitDescriptor split) {
+        TreeNode x = split.getNode();
         int[] values = new int[a.numValues()];
         int[] optValues = null;
         BinaryRule rule = new BinaryRule(a, values);
@@ -296,11 +336,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             while (permutationsSearch.nextPermutation()) {
                 createChildren(x, 2);
                 double measure = splitAlgorithm.getMeasure(x);
-                if (splitAlgorithm.isBetterSplit(measure)) {
-                    currentMeasure = measure;
-                    split.child = x.child;
+                if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
+                    split.setParams(measure, x.children(), x.getRule());
                     optValues = Arrays.copyOf(values, values.length);
-                    split.rule = x.rule;
                 }
             }
         }
@@ -431,11 +469,10 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Минимальное число объектов в листе:", String.valueOf(minObj),
+        return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
                 "Случайное дерево:", String.valueOf(isRandom),
                 "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
-        return options;
     }
 
     @Override
@@ -478,8 +515,8 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         depth = Integer.max(depth, x.depth);
     }
 
-    protected boolean isSplit(TreeNode x) {
-        return x.isSplit(minObj);
+    protected boolean isSplit(SplitDescriptor splitDescriptor) {
+        return splitDescriptor.node.isSplit(minObj);
     }
 
     protected final void doSplit(TreeNode x) {
@@ -489,7 +526,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         } else {
             SplitDescriptor split = createOptSplit(x);
             x.child = split.child;
-            if (isSplit(x)) {
+            if (isSplit(split)) {
                 x.rule = split.rule;
                 numNodes += x.childrenNum();
                 setClasses(x);

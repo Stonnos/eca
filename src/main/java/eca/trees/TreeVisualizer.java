@@ -481,7 +481,7 @@ public class TreeVisualizer extends JPanel {
                     append(fmt.format(tree.nodeError(node))).append("</td>");
             str.append("</tr><tr>");
             str.append("<td class = 'attr'>Значение класса:</td>").append("<td>").append(c)
-                    .append(" (").append(tree.data.classAttribute().value(c)).append(")</td>");
+                    .append(" (").append(tree.getData().classAttribute().value(c)).append(")</td>");
             str.append("</tr></table></body></html>");
             return str.toString();
         }
