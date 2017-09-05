@@ -37,9 +37,8 @@ public class Logistic extends weka.classifiers.functions.Logistic
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Максимальное число итераций:", String.valueOf(getMaxIts()),
+        return new String[] {"Максимальное число итераций:", String.valueOf(getMaxIts()),
                 "Метод поиска минимума:", getUseConjugateGradientDescent()
                 ? "Метод сопряженных градиентов" : "Квазиньютоновский метод"};
-        return options;
     }
 }

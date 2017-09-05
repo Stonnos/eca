@@ -126,11 +126,10 @@ public class RandomForests extends IterativeEnsembleClassifier {
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Число деревьев:", String.valueOf(getIterationsNum()),
+        return new String[] {"Число деревьев:", String.valueOf(getIterationsNum()),
                 "Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
                 "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
-        return options;
     }
 
     @Override
