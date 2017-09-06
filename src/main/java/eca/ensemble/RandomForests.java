@@ -137,10 +137,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
         votes = new MajorityVoting(new Aggregator(this));
     }
 
-    /**
-     *
-     */
-    private class ForestBuilder extends AbstractBuilder {
+    protected class ForestBuilder extends AbstractBuilder {
 
         Sampler sampler = new Sampler();
 
@@ -160,14 +157,14 @@ public class RandomForests extends IterativeEnsembleClassifier {
             Instances bag = sampler.bootstrap(filteredData);
             DecisionTreeClassifier model = new CART();
             model.setRandomTree(true);
-            model.setNumRandomAttr(numRandomAttr);
-            model.setMinObj(minObj);
-            model.setMaxDepth(maxDepth);
+            model.setNumRandomAttr(getNumRandomAttr());
+            model.setMinObj(getMinObj());
+            model.setMaxDepth(getMaxDepth());
             model.buildClassifier(bag);
             classifiers.add(model);
             return ++index;
         }
 
-    } //End of class ForestBuilder
+    }
 
 }

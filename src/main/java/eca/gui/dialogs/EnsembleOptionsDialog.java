@@ -67,6 +67,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
             "Необходимо выбрать индивидуальные классификаторы!";
 
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
+            ClassifiersNames.C45,
+            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.EXTRA_TREE,
+            ClassifiersNames.NEURAL_NETWORK,
+            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
+
     private JTabbedPane pane;
     private JPanel firstPanel;
     private JPanel secondPanel;
@@ -157,10 +163,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         //-------------------------------------------------------------
         Dimension dim = new Dimension(320, 265);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        String[] items = {ClassifiersNames.ID3, ClassifiersNames.C45,
-                ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
-                ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
-        algorithms = new JList<>(items);
+        algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         algorithms.setPreferredSize(dim);
         algorithms.setMinimumSize(dim);
         algorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

@@ -9,6 +9,7 @@ import eca.core.AttributesEnumeration;
 import eca.core.InstancesHandler;
 import eca.core.PermutationsSearch;
 import eca.filter.MissingValuesFilter;
+import eca.generators.NumberGenerator;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.BinaryRule;
 import eca.trees.rules.NominalRule;
@@ -22,6 +23,7 @@ import weka.core.Utils;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Random;
 
 /**
  * Abstract class for generating decision tree model. <p>
@@ -94,6 +96,161 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected double[] probabilities;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
+
+    private final Random random = new Random();
+
+    /**
+     * Returns the value of random tree.
+     *
+     * @return the value of random tree
+     */
+    public final boolean isRandomTree() {
+        return isRandom;
+    }
+
+    /**
+     * Sets the value of random tree.
+     *
+     * @param isRandom the value of random tree
+     */
+    public final void setRandomTree(boolean isRandom) {
+        this.isRandom = isRandom;
+    }
+
+    /**
+     * Sets the value of minimum objects per leaf.
+     *
+     * @param minObj the value of minimum objects per leaf
+     * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
+     */
+    public final void setMinObj(int minObj) {
+        checkForNegative(minObj);
+        this.minObj = minObj;
+    }
+
+    /**
+     * Returns the value of minimum objects per leaf.
+     *
+     * @return the value of minimum objects per leaf
+     */
+    public final int getMinObj() {
+        return minObj;
+    }
+
+    /**
+     * Returns the value of maximum tree depth.
+     *
+     * @return the value of maximum tree depth
+     */
+    public final int getMaxDepth() {
+        return maxDepth;
+    }
+
+    /**
+     * Sets the value of maximum tree depth.
+     *
+     * @param maxDepth the value of maximum tree depth.
+     * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
+     */
+    public void setMaxDepth(int maxDepth) {
+        checkForNegative(maxDepth);
+        this.maxDepth = maxDepth;
+    }
+
+    /**
+     * Returns leaves number.
+     *
+     * @return leaves number
+     */
+    public final int numLeaves() {
+        return numLeaves;
+    }
+
+    /**
+     * Returns nodes number
+     *
+     * @return nodes number
+     */
+    public final int numNodes() {
+        return numNodes;
+    }
+
+    /**
+     * Returns tree depth.
+     *
+     * @return tree depth
+     */
+    public final int depth() {
+        return depth;
+    }
+
+    /**
+     * Returns the value of random attributes number.
+     *
+     * @return the value of random attributes number
+     */
+    public final int numRandomAttr() {
+        return numRandomAttr;
+    }
+
+    /**
+     * Sets the value of random attributes number
+     *
+     * @param numRandomAttr the value of random attributes number
+     * @throws IllegalArgumentException if the value of random attributes number is less than zero
+     */
+    public final void setNumRandomAttr(int numRandomAttr) {
+        checkForNegative(numRandomAttr);
+        this.numRandomAttr = numRandomAttr;
+    }
+
+    @Override
+    public Instances getData() {
+        return data;
+    }
+
+    @Override
+    public double[] distributionForInstance(Instance obj) {
+        Instance o = filter.filterInstance(obj);
+        TreeNode x = root;
+        while (!x.isLeaf()) {
+            x = x.getChild(o);
+        }
+        probabilities(x);
+        return Arrays.copyOf(probabilities, probabilities.length);
+    }
+
+    @Override
+    public String[] getOptions() {
+        return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
+                "Максиальная глубина дерева:", String.valueOf(maxDepth),
+                "Случайное дерево:", String.valueOf(isRandom),
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
+    }
+
+    @Override
+    public double classifyInstance(Instance obj) {
+        Instance o = filter.filterInstance(obj);
+        TreeNode x = root;
+        while (!x.isLeaf()) {
+            x = x.getChild(o);
+        }
+        return x.classValue();
+    }
+
+    @Override
+    public void buildClassifier(Instances data) throws Exception {
+        this.data = data;
+        if (isRandomTree() && numRandomAttr > data.numAttributes() - 1) {
+            numRandomAttr = 0;
+        }
+        probabilities = new double[data.numClasses()];
+        root = new TreeNode(filter.filterInstances(data));
+        root.setDepth(1);
+        root.setClassValue(classValue(root));
+        numNodes++;
+        createDecisionTree(root);
+    }
 
     /**
      * Tree node model.
@@ -284,9 +441,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     }
 
-    protected final void processNumericSplit(Attribute a,
-                                             SplitAlgorithm splitAlgorithm,
-                                             SplitDescriptor split) {
+    protected void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         x.objects().sort(a);
         NumericRule rule = new NumericRule(a);
@@ -305,9 +460,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         rule.setMeanValue(optThreshold);
     }
 
-    protected final void processNominalSplit(Attribute a,
-                                             SplitAlgorithm splitAlgorithm,
-                                             SplitDescriptor split) {
+    protected void processNominalSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         x.rule = new NominalRule(a);
         createChildren(x, a.numValues());
@@ -317,9 +470,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
-    protected final void processBinarySplit(Attribute a,
-                                            SplitAlgorithm splitAlgorithm,
-                                            SplitDescriptor split) {
+    protected void processBinarySplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         int[] values = new int[a.numValues()];
         int[] optValues = null;
@@ -331,172 +482,88 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                 values[j] = j < i ? 1 : 0;
             }
 
-            PermutationsSearch permutationsSearch = new PermutationsSearch();
-            permutationsSearch.setValues(values);
-            while (permutationsSearch.nextPermutation()) {
-                createChildren(x, 2);
-                double measure = splitAlgorithm.getMeasure(x);
-                if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
-                    split.setParams(measure, x.children(), x.getRule());
-                    optValues = Arrays.copyOf(values, values.length);
-                }
+            int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
+
+            if (currentOptValues != null) {
+                optValues = currentOptValues;
             }
         }
 
         rule.setValues(optValues);
     }
 
-    /**
-     * Returns the value of random tree.
-     *
-     * @return the value of random tree
-     */
-    public final boolean isRandomTree() {
-        return isRandom;
-    }
+    protected void processRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
+        TreeNode x = split.getNode();
 
-    /**
-     * Sets the value of random tree.
-     *
-     * @param isRandom the value of random tree
-     */
-    public final void setRandomTree(boolean isRandom) {
-        this.isRandom = isRandom;
-    }
+        if (a.isNumeric()) {
 
-    /**
-     * Sets the value of minimum objects per leaf.
-     *
-     * @param minObj the value of minimum objects per leaf
-     * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
-     */
-    public final void setMinObj(int minObj) {
-        checkForNegative(minObj);
-        this.minObj = minObj;
-    }
+            double minAttrValue = x.objects().kthSmallestValue(a, 1);
+            double maxAttrValue = x.objects().kthSmallestValue(a, x.objects().size());
 
-    /**
-     * Returns the value of minimum objects per leaf.
-     *
-     * @return the value of minimum objects per leaf
-     */
-    public final int getMinObj() {
-        return minObj;
-    }
+            NumericRule rule = new NumericRule(a);
+            double optThreshold = 0.0;
+            x.rule = rule;
+            for (int i = 0; i < k; i++) {
+                rule.setMeanValue(NumberGenerator.random(minAttrValue, maxAttrValue));
+                createChildren(x, 2);
+                double measure = splitAlgorithm.getMeasure(x);
+                if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
+                    split.setParams(measure, x.children(), x.getRule());
+                    optThreshold = rule.getMeanValue();
+                }
+            }
+            rule.setMeanValue(optThreshold);
 
-    /**
-     * Returns the value of maximum tree depth.
-     *
-     * @return the value of maximum tree depth
-     */
-    public final int getMaxDepth() {
-        return maxDepth;
-    }
+        } else {
+            if (k < Math.pow(2, a.numValues() - 1) - 1) {
 
-    /**
-     * Sets the value of maximum tree depth.
-     *
-     * @param maxDepth the value of maximum tree depth.
-     * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
-     */
-    public void setMaxDepth(int maxDepth) {
-        checkForNegative(maxDepth);
-        this.maxDepth = maxDepth;
-    }
+                int[] values = new int[a.numValues()];
+                int[] optValues = null;
+                BinaryRule rule = new BinaryRule(a, values);
+                x.rule = rule;
 
-    /**
-     * Returns leaves number.
-     *
-     * @return leaves number
-     */
-    public final int numLeaves() {
-        return numLeaves;
-    }
+                for (int i = 0; i < k; i++) {
 
-    /**
-     * Returns nodes number
-     *
-     * @return nodes number
-     */
-    public final int numNodes() {
-        return numNodes;
-    }
+                    Arrays.fill(values, 0);
+                    int subSetSize = random.nextInt(a.numValues() - 1) + 1;
 
-    /**
-     * Returns tree depth.
-     *
-     * @return tree depth
-     */
-    public final int depth() {
-        return depth;
-    }
+                    while (subSetSize != 0) {
+                        int randomIndex = random.nextInt(values.length);
+                        if (values[randomIndex] == 0) {
+                            values[randomIndex] = 1;
+                            subSetSize--;
+                        }
+                    }
 
-    /**
-     * Returns the value of random attributes number.
-     *
-     * @return the value of random attributes number
-     */
-    public final int numRandomAttr() {
-        return numRandomAttr;
-    }
+                    int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
 
-    /**
-     * Sets the value of random attributes number
-     *
-     * @param numRandomAttr the value of random attributes number
-     * @throws IllegalArgumentException if the value of random attributes number is less than zero
-     */
-    public final void setNumRandomAttr(int numRandomAttr) {
-        checkForNegative(numRandomAttr);
-        this.numRandomAttr = numRandomAttr;
-    }
+                    if (currentOptValues != null) {
+                        optValues = currentOptValues;
+                    }
 
-    @Override
-    public Instances getData() {
-        return data;
-    }
+                }
 
-    @Override
-    public double[] distributionForInstance(Instance obj) {
-        Instance o = filter.filterInstance(obj);
-        TreeNode x = root;
-        while (!x.isLeaf()) {
-            x = x.getChild(o);
+                rule.setValues(optValues);
+            } else {
+                processBinarySplit(a, splitAlgorithm, split);
+            }
         }
-        probabilities(x);
-        return Arrays.copyOf(probabilities, probabilities.length);
     }
 
-    @Override
-    public String[] getOptions() {
-        return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
-                "Максиальная глубина дерева:", String.valueOf(maxDepth),
-                "Случайное дерево:", String.valueOf(isRandom),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
-    }
-
-    @Override
-    public double classifyInstance(Instance obj) {
-        Instance o = filter.filterInstance(obj);
-        TreeNode x = root;
-        while (!x.isLeaf()) {
-            x = x.getChild(o);
+    private int[] findOptimalBinarySplit(SplitAlgorithm splitAlgorithm, SplitDescriptor splitDescriptor, int[] values) {
+        int[] optValues = null;
+        TreeNode x = splitDescriptor.getNode();
+        PermutationsSearch permutationsSearch = new PermutationsSearch();
+        permutationsSearch.setValues(values);
+        while (permutationsSearch.nextPermutation()) {
+            createChildren(x, 2);
+            double measure = splitAlgorithm.getMeasure(x);
+            if (splitAlgorithm.isBetterSplit(splitDescriptor.getCurrentMeasure(), measure)) {
+                splitDescriptor.setParams(measure, x.children(), x.getRule());
+                optValues = Arrays.copyOf(values, values.length);
+            }
         }
-        return x.classValue();
-    }
-
-    @Override
-    public void buildClassifier(Instances data) throws Exception {
-        this.data = data;
-        if (isRandomTree() && numRandomAttr > data.numAttributes() - 1) {
-            numRandomAttr = 0;
-        }
-        probabilities = new double[data.numClasses()];
-        root = new TreeNode(filter.filterInstances(data));
-        root.setDepth(1);
-        root.setClassValue(classValue(root));
-        numNodes++;
-        createDecisionTree(root);
+        return optValues;
     }
 
     private void checkForNegative(int value) {
@@ -516,7 +583,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     protected boolean isSplit(SplitDescriptor splitDescriptor) {
-        return splitDescriptor.node.isSplit(minObj);
+        return splitDescriptor.getNode().isSplit(minObj);
     }
 
     protected final void doSplit(TreeNode x) {
@@ -540,9 +607,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected abstract SplitDescriptor createOptSplit(TreeNode x);
 
     protected final void probabilities(TreeNode x) {
-        for (int k = 0; k < probabilities.length; k++) {
-            probabilities[k] = 0;
-        }
+        Arrays.fill(probabilities, 0);
         if (!x.objects().isEmpty()) {
             for (int i = 0; i < x.objects().numInstances(); i++) {
                 probabilities[(int) x.objects().instance(i).classValue()]++;

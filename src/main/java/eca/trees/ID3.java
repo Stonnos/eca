@@ -22,7 +22,7 @@ public class ID3 extends DecisionTreeClassifier {
     }
 
     @Override
-    protected final SplitDescriptor createOptSplit(TreeNode x) {
+    protected SplitDescriptor createOptSplit(TreeNode x) {
         SplitDescriptor split = new SplitDescriptor(x, -Double.MAX_VALUE);
 
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {

@@ -75,6 +75,7 @@ import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
+import eca.trees.ExtraTree;
 import eca.trees.ID3;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -621,7 +622,7 @@ public class JMainFrame extends JFrame {
         });
     }
 
-    private void createAndShowLoaderFrame(BaseOptionsDialog frame) throws Exception {
+    private void executeSimpleBuilding(BaseOptionsDialog frame) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
 
@@ -1135,6 +1136,7 @@ public class JMainFrame extends JFrame {
         JMenuItem c45Item = new JMenuItem(ClassifiersNames.C45);
         JMenuItem cartItem = new JMenuItem(ClassifiersNames.CART);
         JMenuItem chaidItem = new JMenuItem(ClassifiersNames.CHAID);
+        JMenuItem extraTreeItem = new JMenuItem(ClassifiersNames.EXTRA_TREE);
         id3Item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1167,10 +1169,19 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+        extraTreeItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    createTreeOptionDialog(ClassifiersNames.EXTRA_TREE, new ExtraTree());
+                }
+            }
+        });
         treesMenu.add(id3Item);
         treesMenu.add(c45Item);
         treesMenu.add(cartItem);
         treesMenu.add(chaidItem);
+        treesMenu.add(extraTreeItem);
         //------------------------------------------------------------------
         JMenuItem logisticItem = new JMenuItem(ClassifiersNames.LOGISTIC);
         classifiersMenu.add(logisticItem);
@@ -1183,7 +1194,7 @@ public class JMainFrame extends JFrame {
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
                                 ClassifiersNames.LOGISTIC,
                                 new Logistic(), set);
-                        createAndShowLoaderFrame(frame);
+                        executeSimpleBuilding(frame);
                     } catch (Throwable e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1227,7 +1238,7 @@ public class JMainFrame extends JFrame {
                     try {
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNames.KNN,
                                 new KNearestNeighbours(), data());
-                        createAndShowLoaderFrame(frame);
+                        executeSimpleBuilding(frame);
                     } catch (Exception e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1306,7 +1317,7 @@ public class JMainFrame extends JFrame {
                         StackingOptionsDialog frame
                                 = new StackingOptionsDialog(JMainFrame.this, EnsemblesNames.STACKING,
                                 new StackingClassifier(), data());
-                        createAndShowLoaderFrame(frame);
+                        executeSimpleBuilding(frame);
                     } catch (Throwable e) {
                         e.printStackTrace();
                         JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1325,16 +1336,6 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        /*Instances data = data();
-                        RandomForestsOptionDialog frame
-                                = new RandomForestsOptionDialog(JMainFrame.this, null,
-                                new RandomForests(data), data);
-                        frame.showDialog();
-                        executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
-                        SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
-                                NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits);
-                        dialog.setVisible(true);
-                        executeIterativeBuilding();*/
 
                         Instances data = data();
                         RandomNetworkOptionsDialog networkOptionsDialog =
@@ -1342,15 +1343,6 @@ public class JMainFrame extends JFrame {
                                         new RandomNetworks(), data);
                         networkOptionsDialog.showDialog();
                         executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);
-
-                        /*Instances data = data();
-                        RandomNetworks randomNetworks = new RandomNetworks();
-                        randomNetworks.buildClassifier(data);
-                        Evaluation evaluation = new Evaluation(data);
-                        evaluation.kCrossValidateModel(randomNetworks, data, 10,1,new Random());
-                        //evaluation.evaluateModel(randomNetworks, data);
-                        System.out.println(randomNetworks.numClassifiers());
-                        System.out.println(evaluation.toSummaryString());*/
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1446,7 +1438,7 @@ public class JMainFrame extends JFrame {
             DecisionTreeOptionsDialog frame
                     = new DecisionTreeOptionsDialog(JMainFrame.this, title,
                     tree, data());
-            createAndShowLoaderFrame(frame);
+            executeSimpleBuilding(frame);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(JMainFrame.this,

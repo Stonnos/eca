@@ -17,6 +17,7 @@ import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
+import eca.trees.ExtraTree;
 import eca.trees.ID3;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -45,6 +46,12 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private static final String DELETE_CLASSIFIER_BUTTON_TEXT = "Удалить";
     private static final String META_CLASSIFIER_OPTIONS_BUTTON_TEXT = "Настройка параметров";
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE = "Необходимо выбрать базовые классификаторы!";
+
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
+            ClassifiersNames.C45,
+            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.EXTRA_TREE,
+            ClassifiersNames.NEURAL_NETWORK,
+            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
 
     private JList<String> algorithms;
     private JList<String> selectedAlgorithms;
@@ -119,10 +126,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
 
         Dimension dim = new Dimension(300, 180);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        String[] items = {ClassifiersNames.ID3, ClassifiersNames.C45,
-                ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.NEURAL_NETWORK,
-                ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
-        algorithms = new JList<>(items);
+        algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         algorithms.setPreferredSize(dim);
         algorithms.setMinimumSize(dim);
         algorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -200,7 +204,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         this.add(selectedPanel, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
         //-------------------------------------------------------------
-        meta = new JComboBox<>(items);
+        meta = new JComboBox<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         meta.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
@@ -219,6 +223,11 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                         case ClassifiersNames.CART:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNames.CART, new CART(), data);
+                            break;
+
+                        case ClassifiersNames.EXTRA_TREE:
+                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                                    ClassifiersNames.EXTRA_TREE, new ExtraTree(), data);
                             break;
 
                         case ClassifiersNames.CHAID:
