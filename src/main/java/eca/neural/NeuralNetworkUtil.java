@@ -2,7 +2,6 @@ package eca.neural;
 
 import eca.generators.NumberGenerator;
 import eca.neural.functions.AbstractFunction;
-import eca.neural.functions.ActivationFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import weka.core.Instances;

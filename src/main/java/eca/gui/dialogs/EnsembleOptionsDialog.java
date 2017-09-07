@@ -13,11 +13,11 @@ import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.enums.ClassifiersNames;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
+import eca.gui.validators.TextFieldInputVerifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -69,7 +69,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
             ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.EXTRA_TREE,
+            ClassifiersNames.CART, ClassifiersNames.CHAID,
             ClassifiersNames.NEURAL_NETWORK,
             ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
 

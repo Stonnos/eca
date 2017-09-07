@@ -6,7 +6,6 @@
 package eca.gui.tables.models;
 
 import eca.core.evaluation.Evaluation;
-import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
 

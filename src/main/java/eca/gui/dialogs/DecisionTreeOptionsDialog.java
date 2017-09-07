@@ -8,8 +8,9 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
+import eca.gui.validators.TextFieldInputVerifier;
+import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import weka.core.Instances;
@@ -39,6 +40,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             "0.1", "0.05", "0.025", "0.01", "0.005"};
     private static final String RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE =
             "Число случайных атрибутов должно быть не больше %d";
+    public static final String RANDOM_SPLITS_TEXT = "Случайные расщепления атрибута";
+    public static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
 
     private Setter setter = new Setter();
 
@@ -46,6 +49,9 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     private JTextField maxDepthText;
     private JCheckBox randomBox;
     private JTextField numRandomAttrText;
+    private JCheckBox binaryTreeBox;
+    private JCheckBox randomSplitsBox;
+    private JTextField numRandomSplitsText;
 
     public DecisionTreeOptionsDialog(Window parent, String title,
                                      DecisionTreeClassifier tree, Instances data) {
@@ -65,6 +71,9 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
         randomBox = new JCheckBox(RANDOM_TREE_MESSAGE);
 
+        numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
+        numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+
         randomBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
@@ -72,8 +81,23 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             }
         });
 
-        numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
-        numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        binaryTreeBox = new JCheckBox(BINARY_TREE_TYPE_TEXT);
+
+        randomSplitsBox = new JCheckBox(RANDOM_SPLITS_TEXT);
+
+        numRandomSplitsText = new JTextField(TEXT_FIELD_LENGTH);
+        numRandomSplitsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+
+        randomSplitsBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent evt) {
+                numRandomSplitsText.setEditable(randomSplitsBox.isSelected());
+            }
+        });
+
+        if (classifier instanceof CART) {
+            binaryTreeBox.setEnabled(false);
+        }
 
         optionPanel.add(new JLabel(MIN_OBJ_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -85,11 +109,20 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         optionPanel.add(maxDepthText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(randomBox, new GridBagConstraints(0, 2, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
         optionPanel.add(new JLabel(NUM_RANDOM_ATTR_MESSAGE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+        optionPanel.add(binaryTreeBox, new GridBagConstraints(0, 4, 2, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
+        optionPanel.add(randomSplitsBox, new GridBagConstraints(0, 5, 2, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
+        optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 6, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(numRandomSplitsText, new GridBagConstraints(1, 6, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
 
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
@@ -123,6 +156,20 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                         classifier.setRandomTree(true);
                         classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
                     }
+                    classifier.setUseBinarySplits(binaryTreeBox.isSelected());
+                    classifier.setUseRandomSplits(randomSplitsBox.isSelected());
+
+                    if (classifier.isUseRandomSplits()) {
+                        try {
+                            classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsText.getText()));
+                        } catch (Exception e) {
+                            JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
+                                    e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                            numRandomSplitsText.requestFocusInWindow();
+                            return;
+                        }
+                    }
+
                     dialogResult = true;
                     setVisible(false);
                 }
@@ -130,11 +177,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         });
 
         if (classifier instanceof CHAID) {
-            final JCheckBox binaryBox = new JCheckBox(BINARY_TREE_TYPE_TEXT);
-            optionPanel.add(binaryBox, new GridBagConstraints(0, 4, 2, 1, 1, 1,
-                    GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 10), 0, 0));
             optionPanel.add(new JLabel(HI_SQUARE_TEXT),
-                    new GridBagConstraints(0, 5, 1, 1, 1, 1,
+                    new GridBagConstraints(0, 7, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 
             final JComboBox<String> values = new JComboBox<>(AlPHA);
@@ -142,18 +186,16 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     ((CHAID) classifier).setAlpha(Double.valueOf(values.getSelectedItem().toString()));
-                    ((CHAID) classifier).setUseBinarySplits(binaryBox.isSelected());
                 }
             });
             setter = new Setter() {
                 @Override
                 void setOptions() {
                     super.setOptions();
-                    binaryBox.setSelected(((CHAID) classifier).getUseBinarySplits());
                     values.setSelectedItem(String.valueOf(((CHAID) classifier).getAlpha()));
                 }
             };
-            optionPanel.add(values, new GridBagConstraints(1, 5, 1, 1, 1, 1,
+            optionPanel.add(values, new GridBagConstraints(1, 7, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 10), 0, 0));
         }
 
@@ -184,6 +226,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             return maxDepthText;
         } else if (randomBox.isSelected() && isEmpty(numRandomAttrText)) {
             return numRandomAttrText;
+        } else if (isEmpty(numRandomSplitsText)) {
+            return numRandomSplitsText;
         } else {
             return null;
         }
@@ -200,6 +244,10 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             randomBox.setSelected(classifier.isRandomTree());
             numRandomAttrText.setText(String.valueOf(classifier.numRandomAttr()));
             numRandomAttrText.setEditable(randomBox.isSelected());
+            binaryTreeBox.setSelected(classifier.getUseBinarySplits());
+            randomSplitsBox.setSelected(classifier.isUseRandomSplits());
+            numRandomSplitsText.setText(String.valueOf(classifier.getNumRandomSplits()));
+            numRandomSplitsText.setEditable(randomSplitsBox.isSelected());
         }
     }
 

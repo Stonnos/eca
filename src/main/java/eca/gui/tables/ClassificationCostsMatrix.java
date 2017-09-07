@@ -7,7 +7,6 @@ package eca.gui.tables;
 
 import eca.core.evaluation.Evaluation;
 import eca.gui.tables.models.ClassificationCostsTableModel;
-import weka.core.Instances;
 
 import java.text.DecimalFormat;
 

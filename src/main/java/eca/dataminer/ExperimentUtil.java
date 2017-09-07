@@ -1,6 +1,6 @@
 package eca.dataminer;
 
-import eca.core.Utils;
+import eca.core.MathUtils;
 
 /**
  * Data miner utils class.
@@ -17,10 +17,10 @@ public class ExperimentUtil {
      * @return
      */
     public static int getNumClassifiersCombinations(int r) {
-        int fact = Utils.fact(r);
+        int fact = MathUtils.fact(r);
         int p = 0;
         for (int t = 1; t <= r; t++) {
-            p += fact / (Utils.fact(t) * Utils.fact(r - t));
+            p += fact / (MathUtils.fact(t) * MathUtils.fact(r - t));
         }
         return p;
     }

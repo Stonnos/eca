@@ -18,7 +18,7 @@ import java.util.Random;
  *
  * @author Рома
  */
-public class AttributesEnumeration implements Enumeration<Attribute> {
+public class RandomAttributesEnumeration implements Enumeration<Attribute> {
 
     private final Iterator<Attribute> iterator;
 
@@ -28,7 +28,7 @@ public class AttributesEnumeration implements Enumeration<Attribute> {
      * @param data  <tt>Instances</tt> object.
      * @param count random attributes number
      */
-    public AttributesEnumeration(Instances data, int count) {
+    public RandomAttributesEnumeration(Instances data, int count) {
         ArrayList<Attribute> attributes = new ArrayList<>(count);
         Random random = new Random();
         while (count != 0) {
@@ -52,4 +52,4 @@ public class AttributesEnumeration implements Enumeration<Attribute> {
         return iterator.next();
     }
 
-} //End of class AttributesEnumeration
+}

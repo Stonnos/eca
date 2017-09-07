@@ -4,10 +4,10 @@ import eca.ensemble.RandomNetworks;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
+import eca.gui.validators.TextFieldInputVerifier;
 import weka.core.Instances;
 
 import javax.swing.*;

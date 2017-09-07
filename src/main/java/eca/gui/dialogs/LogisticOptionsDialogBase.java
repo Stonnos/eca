@@ -8,8 +8,8 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
+import eca.gui.validators.TextFieldInputVerifier;
 import eca.regression.Logistic;
 import weka.core.Instances;
 

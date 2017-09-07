@@ -5,9 +5,9 @@ import eca.generators.SimpleDataGenerator;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
+import eca.gui.validators.TextFieldInputVerifier;
 
 import javax.swing.*;
 import java.awt.*;

@@ -5,10 +5,7 @@
  */
 package eca.trees;
 
-import weka.core.Attribute;
 import weka.core.Utils;
-
-import java.util.Enumeration;
 
 /**
  * Class for generating Id3 decision tree model.
@@ -21,26 +18,16 @@ public class ID3 extends DecisionTreeClassifier {
         splitAlgorithm = new Id3SplitAlgorithm();
     }
 
-    @Override
-    protected SplitDescriptor createOptSplit(TreeNode x) {
-        SplitDescriptor split = new SplitDescriptor(x, -Double.MAX_VALUE);
-
-        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
-            Attribute a = e.nextElement();
-            if (a.isNumeric()) {
-                processNumericSplit(a, splitAlgorithm, split);
-            } else {
-                processNominalSplit(a, splitAlgorithm, split);
-            }
-        }
-        return split;
-    }
-
     protected class Id3SplitAlgorithm implements SplitAlgorithm {
 
         @Override
         public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure > currentMeasure;
+        }
+
+        @Override
+        public double getMaxMeasure() {
+            return -Double.MAX_VALUE;
         }
 
         @Override

@@ -7,8 +7,6 @@ package eca.gui.tables;
 
 import eca.core.evaluation.Evaluation;
 import eca.gui.tables.models.MisClassificationTableModel;
-import weka.classifiers.Classifier;
-import weka.core.Instances;
 
 import javax.swing.*;
 

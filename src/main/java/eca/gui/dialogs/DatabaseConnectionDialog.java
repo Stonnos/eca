@@ -10,9 +10,9 @@ import eca.db.ConnectionDescriptorFactory;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
+import eca.gui.validators.TextFieldInputVerifier;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;

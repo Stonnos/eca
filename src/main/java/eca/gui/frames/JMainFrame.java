@@ -26,7 +26,7 @@ import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.ModifiedHeterogeneousClassifier;
-import eca.ensemble.RandomForests;
+import eca.ensemble.forests.RandomForests;
 import eca.ensemble.RandomNetworks;
 import eca.ensemble.StackingClassifier;
 import eca.gui.ExecutorService;
@@ -52,9 +52,9 @@ import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
 import eca.gui.dialogs.NetworkOptionsDialog;
+import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.RandomNetworkOptionsDialog;
 import eca.gui.dialogs.SpinnerDialog;
-import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.enums.ClassifiersNames;
@@ -75,7 +75,6 @@ import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
-import eca.trees.ExtraTree;
 import eca.trees.ID3;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -1136,7 +1135,6 @@ public class JMainFrame extends JFrame {
         JMenuItem c45Item = new JMenuItem(ClassifiersNames.C45);
         JMenuItem cartItem = new JMenuItem(ClassifiersNames.CART);
         JMenuItem chaidItem = new JMenuItem(ClassifiersNames.CHAID);
-        JMenuItem extraTreeItem = new JMenuItem(ClassifiersNames.EXTRA_TREE);
         id3Item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1169,19 +1167,11 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
-        extraTreeItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNames.EXTRA_TREE, new ExtraTree());
-                }
-            }
-        });
+
         treesMenu.add(id3Item);
         treesMenu.add(c45Item);
         treesMenu.add(cartItem);
         treesMenu.add(chaidItem);
-        treesMenu.add(extraTreeItem);
         //------------------------------------------------------------------
         JMenuItem logisticItem = new JMenuItem(ClassifiersNames.LOGISTIC);
         classifiersMenu.add(logisticItem);

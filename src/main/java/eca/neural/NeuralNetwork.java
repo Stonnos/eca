@@ -11,7 +11,6 @@ import eca.core.evaluation.Evaluation;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.filter.MissingValuesFilter;
-import eca.generators.NumberGenerator;
 import eca.neural.functions.ActivationFunction;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;

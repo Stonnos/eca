@@ -5,10 +5,6 @@
  */
 package eca.trees;
 
-import weka.core.Attribute;
-
-import java.util.Enumeration;
-
 /**
  * Class for generating CART decision tree model.
  *
@@ -21,27 +17,24 @@ public class CART extends DecisionTreeClassifier {
     }
 
     @Override
-    protected SplitDescriptor createOptSplit(TreeNode x) {
-        SplitDescriptor split = new SplitDescriptor(x, Double.MAX_VALUE);
-
-        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
-            Attribute a = e.nextElement();
-            if (a.isNumeric()) {
-                processNumericSplit(a, splitAlgorithm, split);
-            } else {
-                processBinarySplit(a, splitAlgorithm, split);
-            }
-        }
-
-        return split;
+    public boolean getUseBinarySplits() {
+        return true;
     }
 
+    @Override
+    public void setUseBinarySplits(boolean flag) {
+    }
 
     private class CartSplitAlgorithm implements SplitAlgorithm {
 
         @Override
         public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure < currentMeasure;
+        }
+
+        @Override
+        public double getMaxMeasure() {
+            return Double.MAX_VALUE;
         }
 
         @Override

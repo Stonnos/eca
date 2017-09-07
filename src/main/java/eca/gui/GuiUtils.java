@@ -1,7 +1,5 @@
 package eca.gui;
 
-import eca.gui.dialogs.DatabaseConnectionDialog;
-
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 

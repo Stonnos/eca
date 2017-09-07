@@ -9,7 +9,7 @@ import eca.statistics.Statistics;
 import weka.core.Attribute;
 import weka.core.Instances;
 
-import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Class for generating CHAID decision tree model.
@@ -27,11 +27,6 @@ public class CHAID extends DecisionTreeClassifier {
      * Significance level for hi square test
      **/
     private double alpha = 0.05;
-
-    /**
-     * Use binary splits?
-     **/
-    private boolean use_binary_splits = true;
 
     public CHAID() {
         splitAlgorithm = new ChaidSplitAlgorithm();
@@ -55,32 +50,18 @@ public class CHAID extends DecisionTreeClassifier {
         this.alpha = alpha;
     }
 
-    /**
-     * Sets the value of binary splits.
-     *
-     * @param flag the value of binary splits
-     */
-    public void setUseBinarySplits(boolean flag) {
-        this.use_binary_splits = flag;
-    }
-
-    /**
-     * Returns the value of binary splits.
-     *
-     * @return the value of binary splits
-     */
-    public boolean getUseBinarySplits() {
-        return use_binary_splits;
-    }
-
     @Override
     public String[] getOptions() {
-        return new String[] {"Минимальное число объектов в листе:", String.valueOf(getMinObj()),
+        List<String> options = getOptionsList();
+        options.add("Уровень значимости alpha:");
+        options.add(String.valueOf(alpha));
+        return options.toArray(new String[options.size()]);
+        /*return new String[] {"Минимальное число объектов в листе:", String.valueOf(getMinObj()),
                 "Максиальная глубина дерева:", String.valueOf(getMaxDepth()),
                 "Случайное дерево:", String.valueOf(isRandomTree()),
                 "Число случайных атрибутов:", String.valueOf(numRandomAttr()),
-                "Бинарное дерево:", String.valueOf(use_binary_splits),
-                "Уровень значимости alpha:", String.valueOf(alpha)};
+                "Бинарное дерево:", String.valueOf(getUseBinarySplits()),
+                "Уровень значимости alpha:", String.valueOf(alpha)};*/
     }
 
     @Override
@@ -88,25 +69,6 @@ public class CHAID extends DecisionTreeClassifier {
         contingency_table = getUseBinarySplits() ? new double[data.numClasses() + 1][3]
                 : new double[data.numClasses() + 1][];
         super.buildClassifier(data);
-    }
-
-    @Override
-    protected SplitDescriptor createOptSplit(TreeNode x) {
-        SplitDescriptor split = new SplitDescriptor(x, -Double.MAX_VALUE);
-
-        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
-            Attribute a = e.nextElement();
-            if (a.isNumeric()) {
-                processNumericSplit(a, splitAlgorithm, split);
-            } else {
-                if (getUseBinarySplits()) {
-                    processBinarySplit(a, splitAlgorithm, split);
-                } else {
-                    processNominalSplit(a, splitAlgorithm, split);
-                }
-            }
-        }
-        return split;
     }
 
     @Override
@@ -129,6 +91,11 @@ public class CHAID extends DecisionTreeClassifier {
         @Override
         public boolean isBetterSplit(double currentMeasure, double measure) {
             return measure > currentMeasure;
+        }
+
+        @Override
+        public double getMaxMeasure() {
+            return -Double.MAX_VALUE;
         }
 
         @Override
@@ -184,10 +151,10 @@ public class CHAID extends DecisionTreeClassifier {
                     / contingency_table[contingency_table.length - 1][getTableSize() - 1];
         }
 
-        int frequency(TreeNode x, double c) {
+        int frequency(TreeNode x, double classValue) {
             int freq = 0;
             for (int i = 0; i < x.objects().numInstances(); i++) {
-                if (x.objects().instance(i).classValue() == c) {
+                if (x.objects().instance(i).classValue() == classValue) {
                     freq++;
                 }
             }

@@ -5,12 +5,13 @@
  */
 package eca.gui.dialogs;
 
-import eca.ensemble.RandomForests;
+import eca.ensemble.forests.DecisionTreeType;
+import eca.ensemble.forests.RandomForests;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.text.IntegerDocument;
+import eca.gui.validators.TextFieldInputVerifier;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -33,11 +34,13 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
 
     private static final String NUM_RANDOM_ATTR_TITLE = "Число случайных атрибутов:";
     private static final String RANDOM_ATTR_EXCEEDED_ERROR_FORMAT = "Число случайных атрибутов должно быть не больше %d";
+    private static final String DECISION_TREE_ALGORITHM_TEXT = "Дерево решений: ";
 
     private JTextField numClassifiersText;
     private JTextField minObjText;
     private JTextField maxDepthText;
     private JTextField numRandomAttrText;
+    private JComboBox<String> treeAlgorithmBox;
 
     public RandomForestsOptionDialog(Window parent, String title,
                                      RandomForests forest, Instances data) {
@@ -61,6 +64,11 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
         numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
         numRandomAttrText.setInputVerifier(new TextFieldInputVerifier());
+        treeAlgorithmBox = new JComboBox<>();
+
+        for (DecisionTreeType treeType : DecisionTreeType.values()) {
+            treeAlgorithmBox.addItem(treeType.getDescription());
+        }
         //-------------------------------------------------------
         optionPanel.add(new JLabel(TREES_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -81,6 +89,12 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
+        optionPanel.add(new JLabel(DECISION_TREE_ALGORITHM_TEXT), new GridBagConstraints(0, 4, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(treeAlgorithmBox, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
         //------------------------------------
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
@@ -111,8 +125,13 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                         classifier.setMinObj(Integer.parseInt(minObjText.getText()));
                         classifier.setMaxDepth(Integer.parseInt(maxDepthText.getText()));
                         classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
+
+                        String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
+                        classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
+
                         dialogResult = true;
                         setVisible(false);
+
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
                                 e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
@@ -145,6 +164,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         minObjText.setText(String.valueOf(classifier.getMinObj()));
         maxDepthText.setText(String.valueOf(classifier.getMaxDepth()));
         numRandomAttrText.setText(String.valueOf(classifier.getNumRandomAttr()));
+        treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
     }
 
 }

@@ -17,7 +17,6 @@ import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
-import eca.trees.ExtraTree;
 import eca.trees.ID3;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -49,7 +48,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
 
     private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
             ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID, ClassifiersNames.EXTRA_TREE,
+            ClassifiersNames.CART, ClassifiersNames.CHAID,
             ClassifiersNames.NEURAL_NETWORK,
             ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
 
@@ -223,11 +222,6 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                         case ClassifiersNames.CART:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNames.CART, new CART(), data);
-                            break;
-
-                        case ClassifiersNames.EXTRA_TREE:
-                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.EXTRA_TREE, new ExtraTree(), data);
                             break;
 
                         case ClassifiersNames.CHAID:

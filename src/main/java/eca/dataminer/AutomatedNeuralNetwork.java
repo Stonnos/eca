@@ -10,7 +10,6 @@ import eca.model.ClassifierDescriptor;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
-import eca.neural.functions.ActivationFunction;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 

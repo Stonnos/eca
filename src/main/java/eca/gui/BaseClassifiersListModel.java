@@ -12,7 +12,6 @@ import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
-import eca.trees.ExtraTree;
 import eca.trees.ID3;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -70,10 +69,6 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
             name = ClassifiersNames.CHAID;
             frames.add(new DecisionTreeOptionsDialog(parent,
                     name, (CHAID) classifier, data));
-        } else if (classifier instanceof ExtraTree) {
-            name = ClassifiersNames.CHAID;
-            frames.add(new DecisionTreeOptionsDialog(parent,
-                    name, (ExtraTree) classifier, data));
         } else if (classifier instanceof Logistic) {
             name = ClassifiersNames.LOGISTIC;
             frames.add(new LogisticOptionsDialogBase(parent,
@@ -111,11 +106,6 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
             case ClassifiersNames.CHAID:
                 frames.add(new DecisionTreeOptionsDialog(parent,
                         ClassifiersNames.CHAID, new CHAID(), data));
-                break;
-
-            case ClassifiersNames.EXTRA_TREE:
-                frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNames.EXTRA_TREE, new ExtraTree(), data));
                 break;
 
             case ClassifiersNames.NEURAL_NETWORK:

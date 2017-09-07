@@ -3,10 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.ensemble;
+package eca.ensemble.forests;
 
-import eca.trees.CART;
+import eca.ensemble.IterativeBuilder;
+import eca.ensemble.IterativeEnsembleClassifier;
+import eca.ensemble.Sampler;
+import eca.ensemble.Aggregator;
+import eca.ensemble.voting.MajorityVoting;
 import eca.trees.DecisionTreeClassifier;
+import org.springframework.util.Assert;
 import weka.core.Instances;
 
 import java.util.NoSuchElementException;
@@ -44,13 +49,20 @@ public class RandomForests extends IterativeEnsembleClassifier {
     private int maxDepth;
 
     /**
+     * Decision tree type
+     */
+    private DecisionTreeType decisionTreeType = DecisionTreeType.CART;
+
+    private final DecisionTreeBuilder decisionTreeBuilder = new DecisionTreeBuilder();
+
+    /**
      * Creates <tt>RandomForests</tt> object with K / 3 random attributes
      * at each split, where K is the number of input attributes.
      *
      * @param data <tt>Instances</tt> object
      */
     public RandomForests(Instances data) {
-        numRandomAttr = (data.numAttributes() - 1) / 3;
+        this.numRandomAttr = (int) Math.sqrt(data.numAttributes());
     }
 
     /**
@@ -65,7 +77,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
      * @param numRandomAttr the value of random attributes number
      * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
-    public final void setNumRandomAttr(int numRandomAttr) {
+    public void setNumRandomAttr(int numRandomAttr) {
         checkForNegative(numRandomAttr);
         this.numRandomAttr = numRandomAttr;
     }
@@ -75,7 +87,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
      *
      * @return the value of random attributes number
      */
-    public final int getNumRandomAttr() {
+    public int getNumRandomAttr() {
         return numRandomAttr;
     }
 
@@ -85,7 +97,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
      * @param minObj the value of minimum objects per leaf
      * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
-    public final void setMinObj(int minObj) {
+    public void setMinObj(int minObj) {
         checkForNegative(minObj);
         this.minObj = minObj;
     }
@@ -96,7 +108,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
      * @param maxDepth the value of maximum tree depth.
      * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
-    public final void setMaxDepth(int maxDepth) {
+    public void setMaxDepth(int maxDepth) {
         checkForNegative(maxDepth);
         this.maxDepth = maxDepth;
     }
@@ -106,7 +118,7 @@ public class RandomForests extends IterativeEnsembleClassifier {
      *
      * @return the value of minimum objects per leaf
      */
-    public final int getMinObj() {
+    public int getMinObj() {
         return minObj;
     }
 
@@ -115,8 +127,25 @@ public class RandomForests extends IterativeEnsembleClassifier {
      *
      * @return the value of maximum tree depth
      */
-    public final int getMaxDepth() {
+    public int getMaxDepth() {
         return maxDepth;
+    }
+
+    /**
+     * Return decision tree type.
+     * @return {@link DecisionTreeType} object
+     */
+    public DecisionTreeType getDecisionTreeType() {
+        return decisionTreeType;
+    }
+
+    /**
+     * Sets decision tree type.
+     * @param decisionTreeType {@link DecisionTreeType} object
+     */
+    public void setDecisionTreeType(DecisionTreeType decisionTreeType) {
+        Assert.notNull(decisionTreeType, "Decision tree type is not specified!");
+        this.decisionTreeType = decisionTreeType;
     }
 
     @Override
@@ -129,7 +158,8 @@ public class RandomForests extends IterativeEnsembleClassifier {
         return new String[] {"Число деревьев:", String.valueOf(getIterationsNum()),
                 "Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
+                "Алгоритм построения дерева решений:", decisionTreeType.name()};
     }
 
     @Override
@@ -144,9 +174,17 @@ public class RandomForests extends IterativeEnsembleClassifier {
         public ForestBuilder(Instances dataSet) throws Exception {
             super(dataSet);
             if (numRandomAttr > filteredData.numAttributes() - 1) {
-                throw new IllegalArgumentException("Illegal value of randomAttrNum: " +
-                        String.valueOf(numRandomAttr));
+                throw new IllegalArgumentException(String.format("Wrong value of numRandomAttr: %d", numRandomAttr));
             }
+        }
+
+        public DecisionTreeClassifier createDecisionTree(Instances sample) {
+            DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(decisionTreeBuilder);
+            treeClassifier.setRandomTree(true);
+            treeClassifier.setNumRandomAttr(getNumRandomAttr());
+            treeClassifier.setMinObj(getMinObj());
+            treeClassifier.setMaxDepth(getMaxDepth());
+            return treeClassifier;
         }
 
         @Override
@@ -154,14 +192,19 @@ public class RandomForests extends IterativeEnsembleClassifier {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances bag = sampler.bootstrap(filteredData);
-            DecisionTreeClassifier model = new CART();
+            Instances bootstrap = sampler.bootstrap(filteredData);
+            /*DecisionTreeClassifier model = new CART();
             model.setRandomTree(true);
             model.setNumRandomAttr(getNumRandomAttr());
             model.setMinObj(getMinObj());
             model.setMaxDepth(getMaxDepth());
             model.buildClassifier(bag);
-            classifiers.add(model);
+            classifiers.add(model);*/
+
+            DecisionTreeClassifier treeClassifier = createDecisionTree(bootstrap);
+            treeClassifier.setUseBinarySplits(true);
+            treeClassifier.buildClassifier(bootstrap);
+            classifiers.add(treeClassifier);
             return ++index;
         }
 

@@ -1,6 +1,7 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
+import eca.ensemble.voting.WeightedVoting;
 import eca.generators.NumberGenerator;
 import eca.neural.MultilayerPerceptron;
 import eca.neural.NeuralNetwork;
@@ -76,7 +77,6 @@ public class RandomNetworks extends ThresholdClassifier {
 
     @Override
     protected void initialize() throws Exception {
-        //votes = new MajorityVoting(new Aggregator(this));
         votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
         activationFunctionsList = NeuralNetworkUtil.getActivationFunctions();
     }

@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.ensemble.IterativeEnsembleClassifier;
 import weka.core.Instance;
 import weka.core.Utils;
 

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.ensemble;
+package eca.ensemble.voting;
 
+import eca.ensemble.Aggregator;
 import weka.core.Instance;
 
 /**

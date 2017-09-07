@@ -1,7 +1,6 @@
 package eca.core.evaluation;
 
 import eca.core.EvaluationMethod;
-import eca.core.EvaluationMethodVisitor;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;

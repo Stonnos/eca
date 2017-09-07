@@ -7,6 +7,7 @@ package eca.ensemble;
 
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
+import eca.ensemble.voting.VotingMethod;
 import eca.filter.MissingValuesFilter;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;

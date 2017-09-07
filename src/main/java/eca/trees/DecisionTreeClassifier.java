@@ -5,7 +5,7 @@
  */
 package eca.trees;
 
-import eca.core.AttributesEnumeration;
+import eca.core.RandomAttributesEnumeration;
 import eca.core.InstancesHandler;
 import eca.core.PermutationsSearch;
 import eca.filter.MissingValuesFilter;
@@ -21,8 +21,10 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -34,14 +36,22 @@ import java.util.Random;
  * <p>
  * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
  * <p>
- * Use random tree. <p>
+ * Use random tree. (Default: <tt>false</tt>) <p>
  * <p>
- * Set number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
+ * Set the number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
+ * <p>
+ * Use binary splits. (Default: <tt>true</tt>) <p>
+ * <p>
+ * Use random splits of each attribute (Default: <tt>false</tt>) <p>
+ * <p>
+ * Set the number of attribute random splits (Default: 1) <p>
  *
  * @author Рома
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
         implements InstancesHandler {
+
+    public static final int MIN_RANDOM_SPLITS = 1;
 
     /**
      * Initial training set
@@ -82,6 +92,21 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * Random tree?
      **/
     private boolean isRandom;
+
+    /**
+     * Use binary splits?
+     **/
+    private boolean useBinarySplits = true;
+
+    /**
+     * Use random splits?
+     */
+    private boolean useRandomSplits;
+
+    /**
+     * Number of random splits of each attribute
+     */
+    private int numRandomSplits = 1;
 
     /**
      * Tree depth
@@ -194,6 +219,61 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     /**
+     * Sets the value of binary splits.
+     *
+     * @param flag the value of binary splits
+     */
+    public void setUseBinarySplits(boolean flag) {
+        this.useBinarySplits = flag;
+    }
+
+    /**
+     * Returns the value of binary splits.
+     *
+     * @return the value of binary splits
+     */
+    public boolean getUseBinarySplits() {
+        return useBinarySplits;
+    }
+
+    /**
+     * Returns the value of random splits.
+     * @return the value of random splits
+     */
+    public boolean isUseRandomSplits() {
+        return useRandomSplits;
+    }
+
+    /**
+     * Sets the value of random splits.
+     * @param useRandomSplits the value of random splits
+     */
+    public void setUseRandomSplits(boolean useRandomSplits) {
+        this.useRandomSplits = useRandomSplits;
+    }
+
+    /**
+     * Returns the number of random splits of each attribute.
+     * @return the number of random splits of each attribute
+     */
+    public int getNumRandomSplits() {
+        return numRandomSplits;
+    }
+
+    /**
+     * Sets the number of random splits of each attribute.
+     * @param numRandomSplits the number of random splits of each attribute
+     * @throws IllegalArgumentException if the value the number of random splits is less than {@value MIN_RANDOM_SPLITS}
+     */
+    public void setNumRandomSplits(int numRandomSplits) {
+        if (numRandomSplits < MIN_RANDOM_SPLITS) {
+            throw new IllegalArgumentException(
+                    String.format("Число случайных расщеплений атрибута должно быть не менее %d!", MIN_RANDOM_SPLITS));
+        }
+        this.numRandomSplits = numRandomSplits;
+    }
+
+    /**
      * Sets the value of random attributes number
      *
      * @param numRandomAttr the value of random attributes number
@@ -222,10 +302,18 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     @Override
     public String[] getOptions() {
-        return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
+        List<String> options = getOptionsList();
+        return options.toArray(new String[options.size()]);
+
+
+        /*return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
                 "Случайное дерево:", String.valueOf(isRandom),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr)};
+                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
+                "Бинарное дерево:", String.valueOf(getUseBinarySplits()),
+                "Использование случайных расщеплений атрибута:", String.valueOf(isUseRandomSplits()),
+                "Число случайных расщеплений атрибута:", String.valueOf(numRandomSplits)
+        };*/
     }
 
     @Override
@@ -241,8 +329,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     @Override
     public void buildClassifier(Instances data) throws Exception {
         this.data = data;
-        if (isRandomTree() && numRandomAttr > data.numAttributes() - 1) {
-            numRandomAttr = 0;
+        if (isRandomTree() && numRandomAttr() > data.numAttributes() - 1) {
+            setNumRandomAttr(0);
+        }
+        if (isUseRandomSplits()) {
+            setUseBinarySplits(true);
         }
         probabilities = new double[data.numClasses()];
         root = new TreeNode(filter.filterInstances(data));
@@ -437,8 +528,37 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         double getMeasure(TreeNode x);
 
+        double getMaxMeasure();
+
         boolean isBetterSplit(double currentMeasure, double measure);
 
+    }
+
+    protected List<String> getOptionsList() {
+        List<String> options = new ArrayList<>();
+        options.add("Минимальное число объектов в листе:");
+        options.add(String.valueOf(minObj));
+        options.add("Максиальная глубина дерева:");
+        options.add(String.valueOf(maxDepth));
+        options.add("Случайное дерево:");
+        options.add(String.valueOf(isRandom));
+
+        if (isRandomTree()) {
+            options.add("Число случайных атрибутов:");
+            options.add(String.valueOf(numRandomAttr));
+        }
+
+        options.add("Бинарное дерево:");
+        options.add(String.valueOf(getUseBinarySplits()));
+        options.add("Использование случайных расщеплений атрибута:");
+        options.add(String.valueOf(isUseRandomSplits()));
+
+        if (isUseRandomSplits()) {
+            options.add("Число случайных расщеплений атрибута:");
+            options.add(String.valueOf(numRandomSplits));
+        }
+
+        return options;
     }
 
     protected void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
@@ -604,7 +724,31 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
-    protected abstract SplitDescriptor createOptSplit(TreeNode x);
+    protected SplitDescriptor createOptSplit(TreeNode x) {
+        SplitDescriptor split = new SplitDescriptor(x, splitAlgorithm.getMaxMeasure());
+
+        for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
+            Attribute a = e.nextElement();
+
+            if (isUseRandomSplits()) {
+                processRandomSplit(a, splitAlgorithm, split, numRandomSplits);
+            } else {
+
+                if (a.isNumeric()) {
+                    processNumericSplit(a, splitAlgorithm, split);
+                } else {
+                    if (getUseBinarySplits()) {
+                        processBinarySplit(a, splitAlgorithm, split);
+                    } else {
+                        processNominalSplit(a, splitAlgorithm, split);
+                    }
+                }
+
+            }
+        }
+
+        return split;
+    }
 
     protected final void probabilities(TreeNode x) {
         Arrays.fill(probabilities, 0);
@@ -688,7 +832,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             if (numRandomAttr == 0 || numRandomAttr == data.numAttributes() - 1) {
                 return data.enumerateAttributes();
             } else {
-                return new AttributesEnumeration(data, numRandomAttr);
+                return new RandomAttributesEnumeration(data, numRandomAttr);
             }
         } else {
             return data.enumerateAttributes();

@@ -1,0 +1,107 @@
+package eca.ensemble.forests;
+
+import eca.trees.DecisionTreeClassifier;
+import weka.core.Instances;
+
+import java.util.NoSuchElementException;
+
+/**
+ * Class for generating Extra trees model. <p>
+ * <p>
+ * Valid options are: <p>
+ * <p>
+ * Set the number of iterations (Default: 10) <p>
+ * <p>
+ * Set minimum number of instances per leaf. (Default: 2) <p>
+ * <p>
+ * Set maximum tree depth. (Default: 0 (denotes infinity)) <p>
+ * <p>
+ * Set the number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
+ * <p>
+ * Set the number of attribute random splits. (Default: 1) <p>
+ * <p>
+ * Set use bootstrap sample at each iteration. (Default: <tt>false</tt>) <p>
+ *
+ * @author Roman Batygin
+ */
+public class ExtraTreesClassifier extends RandomForests {
+
+    private int numRandomSplits = 1;
+
+    private boolean useBootstrapSamples;
+
+    /**
+     * Return the value of use bootstrap samples.
+     * @return the value of use bootstrap samples
+     */
+    public boolean isUseBootstrapSamples() {
+        return useBootstrapSamples;
+    }
+
+    /**
+     * Returns the number of random splits of each attribute.
+     * @return the number of random splits of each attribute
+     */
+    public int getNumRandomSplits() {
+        return numRandomSplits;
+    }
+
+    /**
+     * Sets the number of random splits of each attribute.
+     * @param numRandomSplits the number of random splits of each attribute
+     * @throws IllegalArgumentException if the value the number of random splits is less than
+     * specified constant
+     */
+    public void setNumRandomSplits(int numRandomSplits) {
+        if (numRandomSplits < DecisionTreeClassifier.MIN_RANDOM_SPLITS) {
+            throw new IllegalArgumentException(
+                    String.format("Число случайных расщеплений атрибута должно быть не менее %d!",
+                            DecisionTreeClassifier.MIN_RANDOM_SPLITS));
+        }
+        this.numRandomSplits = numRandomSplits;
+    }
+
+    /**
+     * Sets the value of use bootstrap samples.
+     * @param useBootstrapSamples the value of use bootstrap samples
+     */
+    public void setUseBootstrapSamples(boolean useBootstrapSamples) {
+        this.useBootstrapSamples = useBootstrapSamples;
+    }
+
+    private class ExtraTreesBuilder extends ForestBuilder {
+
+        public ExtraTreesBuilder(Instances dataSet) throws Exception {
+            super(dataSet);
+        }
+
+        @Override
+        public int next() throws Exception {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            Instances sample;
+            if (isUseBootstrapSamples()) {
+                sample = sampler.bootstrap(filteredData);
+            } else {
+                sample = sampler.initial(filteredData);
+            }
+
+            DecisionTreeClassifier treeClassifier = createDecisionTree(sample);
+            treeClassifier.setUseRandomSplits(true);
+            treeClassifier.setNumRandomSplits(getNumRandomSplits());
+            treeClassifier.buildClassifier(sample);
+            classifiers.add(treeClassifier);
+
+            /*DecisionTreeClassifier treeClassifier = new ExtraTree();
+            treeClassifier.setRandomTree(true);
+            treeClassifier.setNumRandomAttr(getNumRandomAttr());
+            treeClassifier.setMinObj(getMinObj());
+            treeClassifier.setMaxDepth(getMaxDepth());
+            treeClassifier.buildClassifier(sample);
+            classifiers.add(treeClassifier);*/
+            return ++index;
+        }
+    }
+}
