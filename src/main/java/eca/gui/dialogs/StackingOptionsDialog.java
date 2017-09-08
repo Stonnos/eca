@@ -10,7 +10,7 @@ import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.enums.ClassifiersNames;
+import eca.gui.dictionary.ClassifiersNamesDictionary;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -46,11 +46,11 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private static final String META_CLASSIFIER_OPTIONS_BUTTON_TEXT = "Настройка параметров";
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE = "Необходимо выбрать базовые классификаторы!";
 
-    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
-            ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID,
-            ClassifiersNames.NEURAL_NETWORK,
-            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNamesDictionary.ID3,
+            ClassifiersNamesDictionary.C45,
+            ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
+            ClassifiersNamesDictionary.NEURAL_NETWORK,
+            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN};
 
     private JList<String> algorithms;
     private JList<String> selectedAlgorithms;
@@ -209,39 +209,39 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             public void itemStateChanged(ItemEvent evt) {
                 try {
                     switch ((String) meta.getSelectedItem()) {
-                        case ClassifiersNames.ID3:
+                        case ClassifiersNamesDictionary.ID3:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.ID3, new ID3(), data);
+                                    ClassifiersNamesDictionary.ID3, new ID3(), data);
                             break;
 
-                        case ClassifiersNames.C45:
+                        case ClassifiersNamesDictionary.C45:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.C45, new C45(), data);
+                                    ClassifiersNamesDictionary.C45, new C45(), data);
                             break;
 
-                        case ClassifiersNames.CART:
+                        case ClassifiersNamesDictionary.CART:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.CART, new CART(), data);
+                                    ClassifiersNamesDictionary.CART, new CART(), data);
                             break;
 
-                        case ClassifiersNames.CHAID:
+                        case ClassifiersNamesDictionary.CHAID:
                             metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.CHAID, new CHAID(), data);
+                                    ClassifiersNamesDictionary.CHAID, new CHAID(), data);
                             break;
 
-                        case ClassifiersNames.NEURAL_NETWORK:
+                        case ClassifiersNamesDictionary.NEURAL_NETWORK:
                             metaCls = new NetworkOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.NEURAL_NETWORK, new NeuralNetwork(data), data);
+                                    ClassifiersNamesDictionary.NEURAL_NETWORK, new NeuralNetwork(data), data);
                             break;
 
-                        case ClassifiersNames.LOGISTIC:
+                        case ClassifiersNamesDictionary.LOGISTIC:
                             metaCls = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
-                                    ClassifiersNames.LOGISTIC, new Logistic(), data);
+                                    ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data);
                             break;
 
-                        case ClassifiersNames.KNN:
+                        case ClassifiersNamesDictionary.KNN:
                             metaCls = new KNNOptionDialog(StackingOptionsDialog.this,
-                                    ClassifiersNames.KNN, new KNearestNeighbours(), data);
+                                    ClassifiersNamesDictionary.KNN, new KNearestNeighbours(), data);
                             break;
                     }
                 } catch (Exception e) {

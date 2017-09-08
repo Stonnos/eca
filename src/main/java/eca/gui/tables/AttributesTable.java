@@ -6,7 +6,7 @@
 package eca.gui.tables;
 
 import eca.gui.GuiUtils;
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DateFormat;
 import eca.gui.text.DoubleDocument;
@@ -55,9 +55,9 @@ public class AttributesTable extends JDataTableBase {
         this.getColumnModel().getColumn(0).setMinWidth(50);
         this.getColumnModel().getColumn(AttributesTableModel.EDIT_INDEX).setMaxWidth(20);
         JComboBox<String> types = new JComboBox<>();
-        types.addItem(AttributesTypes.NOMINAL);
-        types.addItem(AttributesTypes.NUMERIC);
-        types.addItem(AttributesTypes.DATE);
+        types.addItem(AttributesTypesDictionary.NOMINAL);
+        types.addItem(AttributesTypesDictionary.NUMERIC);
+        types.addItem(AttributesTypesDictionary.DATE);
         TableColumn col = this.getColumnModel().getColumn(AttributesTableModel.LIST_INDEX);
         col.setCellEditor(new JComboBoxEditor(types));
         col.setCellRenderer(new ComboBoxRenderer());
@@ -263,9 +263,9 @@ public class AttributesTable extends JDataTableBase {
             implements TableCellRenderer {
 
         public ComboBoxRenderer() {
-            this.addItem(AttributesTypes.NUMERIC);
-            this.addItem(AttributesTypes.NOMINAL);
-            this.addItem(AttributesTypes.DATE);
+            this.addItem(AttributesTypesDictionary.NUMERIC);
+            this.addItem(AttributesTypesDictionary.NOMINAL);
+            this.addItem(AttributesTypesDictionary.DATE);
         }
 
         @Override

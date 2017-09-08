@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.enums;
+package eca.gui.dictionary;
 
 /**
  * @author Рома
  */
-public class ClassifiersNames {
+public class ClassifiersNamesDictionary {
     public static final String ID3 = "Алгоритм ID3";
     public static final String C45 = "Алгоритм C4.5";
     public static final String CART = "Алгоритм CART";

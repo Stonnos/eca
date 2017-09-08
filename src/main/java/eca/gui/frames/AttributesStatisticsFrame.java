@@ -2,7 +2,7 @@ package eca.gui.frames;
 
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.JDataTableBase;
 import eca.gui.tables.models.AttributeTableModel;
 import eca.gui.tables.models.DataInfoTableModel;
@@ -93,7 +93,7 @@ public class AttributesStatisticsFrame extends JFrame {
                     }
                 }
                 statisticsTable.setModel(attributesStatisticsTableModels[i]);
-                attributeTypeLabel.setText(AttributesTypes.getType(a));
+                attributeTypeLabel.setText(AttributesTypesDictionary.getType(a));
             }
         });
 

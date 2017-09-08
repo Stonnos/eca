@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.enums;
+package eca.gui.dictionary;
 
 /**
  * @author Рома
  */
-public class EnsemblesNames {
+public class EnsemblesNamesDictionary {
     public static final String HETEROGENEOUS_ENSEMBLE = "Неоднородный ансамблевый алгоритм";
     public static final String BOOSTING = "Алгоритм AdaBoost";
     public static final String MODIFIED_HETEROGENEOUS_ENSEMBLE = "Модифицированный неоднородный ансамблевый алгоритм";

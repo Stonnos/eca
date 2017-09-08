@@ -13,7 +13,7 @@ import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.enums.ClassifiersNames;
+import eca.gui.dictionary.ClassifiersNamesDictionary;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.NumericFormat;
@@ -67,11 +67,11 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
             "Необходимо выбрать индивидуальные классификаторы!";
 
-    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNames.ID3,
-            ClassifiersNames.C45,
-            ClassifiersNames.CART, ClassifiersNames.CHAID,
-            ClassifiersNames.NEURAL_NETWORK,
-            ClassifiersNames.LOGISTIC, ClassifiersNames.KNN};
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNamesDictionary.ID3,
+            ClassifiersNamesDictionary.C45,
+            ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
+            ClassifiersNamesDictionary.NEURAL_NETWORK,
+            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN};
 
     private JTabbedPane pane;
     private JPanel firstPanel;

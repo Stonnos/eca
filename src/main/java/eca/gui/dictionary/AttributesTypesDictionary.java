@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.enums;
+package eca.gui.dictionary;
 
 import weka.core.Attribute;
 
 /**
  * @author Рома
  */
-public class AttributesTypes {
+public class AttributesTypesDictionary {
     public static final String NOMINAL = "Категориальный";
     public static final String NUMERIC = "Числовой";
     public static final String DATE = "Дата и время";
@@ -18,11 +18,11 @@ public class AttributesTypes {
     public static String getType(Attribute a) {
         String type;
         if (a.isDate()) {
-            type = AttributesTypes.DATE;
+            type = AttributesTypesDictionary.DATE;
         } else if (a.isNumeric()) {
-            type = AttributesTypes.NUMERIC;
+            type = AttributesTypesDictionary.NUMERIC;
         } else {
-            type = AttributesTypes.NOMINAL;
+            type = AttributesTypesDictionary.NOMINAL;
         }
         return type;
     }

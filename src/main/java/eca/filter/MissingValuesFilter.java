@@ -10,16 +10,16 @@ import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 
 /**
- * @author Рома
+ * Implements filtering missing values for input data.
  */
 public class MissingValuesFilter implements Filter, java.io.Serializable {
 
-    private ReplaceMissingValues miss_Filter = new ReplaceMissingValues();
+    private ReplaceMissingValues missFilter = new ReplaceMissingValues();
 
     @Override
     public Instance filterInstance(Instance obj) {
-        miss_Filter.input(obj);
-        return miss_Filter.output();
+        missFilter.input(obj);
+        return missFilter.output();
     }
 
     @Override
@@ -44,8 +44,8 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         if (train.isEmpty()) {
             throw new Exception("Обучающее множество не содержит объектов с заданными классами!");
         }
-        miss_Filter.setInputFormat(train);
-        train = weka.filters.Filter.useFilter(train, miss_Filter);
+        missFilter.setInputFormat(train);
+        train = weka.filters.Filter.useFilter(train, missFilter);
         train.setRelationName(data.relationName());
         return train;
     }

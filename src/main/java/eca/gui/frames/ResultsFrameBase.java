@@ -17,7 +17,7 @@ import eca.gui.ClassifierInputInfo;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.tables.ClassificationCostsMatrix;
@@ -421,7 +421,7 @@ public class ResultsFrameBase extends JFrame {
         attrInfo.append("Атрибут:  ").append(a.name()).append(separator);
         attrInfo.append("Тип:  ");
         if (a.isNumeric()) {
-            attrInfo.append(a.isDate() ? AttributesTypes.DATE : AttributesTypes.NUMERIC).append(separator);
+            attrInfo.append(a.isDate() ? AttributesTypesDictionary.DATE : AttributesTypesDictionary.NUMERIC).append(separator);
             attrInfo.append("Минимальное значение:  ").
                     append(panel.getAttributeStatistics().getMin(a)).append(separator);
             attrInfo.append("Максимальное значение:  ").
@@ -434,7 +434,7 @@ public class ResultsFrameBase extends JFrame {
             attrInfo.append("Среднеквадратическое отклонение:  ").
                     append(panel.getAttributeStatistics().stdDev(a)).append(separator);
         } else {
-            attrInfo.append(AttributesTypes.NOMINAL).append(separator);
+            attrInfo.append(AttributesTypesDictionary.NOMINAL).append(separator);
             attrInfo.append("Значения:").append(separator);
             for (int k = 0; k < a.numValues(); k++) {
                 attrInfo.append("Код:  ").append(k).append(", Значение: ").

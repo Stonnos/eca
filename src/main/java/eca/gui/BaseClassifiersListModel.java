@@ -5,7 +5,7 @@ import eca.gui.dialogs.DecisionTreeOptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
 import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.enums.ClassifiersNames;
+import eca.gui.dictionary.ClassifiersNamesDictionary;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -54,31 +54,31 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
     public void addClassifier(Classifier classifier) {
         String name = null;
         if (classifier instanceof C45) {
-            name = ClassifiersNames.C45;
+            name = ClassifiersNamesDictionary.C45;
             frames.add(new DecisionTreeOptionsDialog(parent,
                     name, (C45) classifier, data));
         } else if (classifier instanceof ID3) {
-            name = ClassifiersNames.ID3;
+            name = ClassifiersNamesDictionary.ID3;
             frames.add(new DecisionTreeOptionsDialog(parent,
                     name, (ID3) classifier, data));
         } else if (classifier instanceof CART) {
-            name = ClassifiersNames.CART;
+            name = ClassifiersNamesDictionary.CART;
             frames.add(new DecisionTreeOptionsDialog(parent,
                     name, (CART) classifier, data));
         } else if (classifier instanceof CHAID) {
-            name = ClassifiersNames.CHAID;
+            name = ClassifiersNamesDictionary.CHAID;
             frames.add(new DecisionTreeOptionsDialog(parent,
                     name, (CHAID) classifier, data));
         } else if (classifier instanceof Logistic) {
-            name = ClassifiersNames.LOGISTIC;
+            name = ClassifiersNamesDictionary.LOGISTIC;
             frames.add(new LogisticOptionsDialogBase(parent,
                     name, (Logistic) classifier, data));
         } else if (classifier instanceof NeuralNetwork) {
-            name = ClassifiersNames.NEURAL_NETWORK;
+            name = ClassifiersNamesDictionary.NEURAL_NETWORK;
             frames.add(new NetworkOptionsDialog(parent,
                     name, (NeuralNetwork) classifier, data));
         } else if (classifier instanceof KNearestNeighbours) {
-            name = ClassifiersNames.KNN;
+            name = ClassifiersNamesDictionary.KNN;
             frames.add(new KNNOptionDialog(parent,
                     name, (KNearestNeighbours) classifier, data));
         }
@@ -88,39 +88,39 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
     @Override
     public void addElement(String classifier) {
         switch (classifier) {
-            case ClassifiersNames.ID3:
+            case ClassifiersNamesDictionary.ID3:
                 frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNames.ID3, new ID3(), data));
+                        ClassifiersNamesDictionary.ID3, new ID3(), data));
                 break;
 
-            case ClassifiersNames.C45:
+            case ClassifiersNamesDictionary.C45:
                 frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNames.C45, new C45(), data));
+                        ClassifiersNamesDictionary.C45, new C45(), data));
                 break;
 
-            case ClassifiersNames.CART:
+            case ClassifiersNamesDictionary.CART:
                 frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNames.CART, new CART(), data));
+                        ClassifiersNamesDictionary.CART, new CART(), data));
                 break;
 
-            case ClassifiersNames.CHAID:
+            case ClassifiersNamesDictionary.CHAID:
                 frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNames.CHAID, new CHAID(), data));
+                        ClassifiersNamesDictionary.CHAID, new CHAID(), data));
                 break;
 
-            case ClassifiersNames.NEURAL_NETWORK:
+            case ClassifiersNamesDictionary.NEURAL_NETWORK:
                 frames.add(new NetworkOptionsDialog(parent,
-                        ClassifiersNames.NEURAL_NETWORK, new NeuralNetwork(data), data));
+                        ClassifiersNamesDictionary.NEURAL_NETWORK, new NeuralNetwork(data), data));
                 break;
 
-            case ClassifiersNames.LOGISTIC:
+            case ClassifiersNamesDictionary.LOGISTIC:
                 frames.add(new LogisticOptionsDialogBase(parent,
-                        ClassifiersNames.LOGISTIC, new Logistic(), data));
+                        ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data));
                 break;
 
-            case ClassifiersNames.KNN:
+            case ClassifiersNamesDictionary.KNN:
                 frames.add(new KNNOptionDialog(parent,
-                        ClassifiersNames.KNN, new KNearestNeighbours(), data));
+                        ClassifiersNamesDictionary.KNN, new KNearestNeighbours(), data));
                 break;
 
         }

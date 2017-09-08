@@ -5,7 +5,7 @@
  */
 package eca.gui.tables.models;
 
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
@@ -33,7 +33,7 @@ public class AttributesTableModel extends AbstractTableModel {
         //------------------------------------
         for (int i = 0; i < data.numAttributes(); i++) {
             selectedAttr.add(true);
-            attrType.add(AttributesTypes.getType(data.attribute(i)));
+            attrType.add(AttributesTypesDictionary.getType(data.attribute(i)));
         }
     }
 
@@ -106,11 +106,11 @@ public class AttributesTableModel extends AbstractTableModel {
     }
 
     public final boolean isNumeric(int i) {
-        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypes.NUMERIC);
+        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypesDictionary.NUMERIC);
     }
 
     public final boolean isDate(int i) {
-        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypes.DATE);
+        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypesDictionary.DATE);
     }
 
     public final void selectAllAttributes() {
@@ -122,7 +122,7 @@ public class AttributesTableModel extends AbstractTableModel {
     public final void resetValues() {
         for (int i = 0; i < this.getRowCount(); i++) {
             setValueAt(true, i, EDIT_INDEX);
-            setValueAt(AttributesTypes.getType(data.attribute(i)), i, LIST_INDEX);
+            setValueAt(AttributesTypesDictionary.getType(data.attribute(i)), i, LIST_INDEX);
         }
     }
 

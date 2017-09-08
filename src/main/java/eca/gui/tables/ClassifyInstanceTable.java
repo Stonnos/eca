@@ -6,7 +6,7 @@
 package eca.gui.tables;
 
 import eca.gui.GuiUtils;
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.NumericFormat;
@@ -119,7 +119,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         info.append("</tr><tr>");
         info.append("<td class = 'attr'>Тип:</td>");
         if (a.isNumeric()) {
-            info.append("<td>").append(a.isDate() ? AttributesTypes.DATE : AttributesTypes.NUMERIC).append("</td>");
+            info.append("<td>").append(a.isDate() ? AttributesTypesDictionary.DATE : AttributesTypesDictionary.NUMERIC).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr'>Минимальное значение:</td>").
                     append("<td>").append(attributeStatistics.getMin(a)).append("</td>");
@@ -138,7 +138,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
                     append("<td>").append(attributeStatistics.stdDev(a)).append("</td>");
             info.append("</tr>");
         } else {
-            info.append("<td>").append(AttributesTypes.NOMINAL).append("</td>");
+            info.append("<td>").append(AttributesTypesDictionary.NOMINAL).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr' colspan = '2' style = 'text-align: center;'>Значения:</td>");
             info.append("</tr>");

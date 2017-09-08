@@ -57,8 +57,8 @@ import eca.gui.dialogs.RandomNetworkOptionsDialog;
 import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
-import eca.gui.enums.ClassifiersNames;
-import eca.gui.enums.EnsemblesNames;
+import eca.gui.dictionary.ClassifiersNamesDictionary;
+import eca.gui.dictionary.EnsemblesNamesDictionary;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.gui.tables.StatisticsTableBuilder;
@@ -1131,15 +1131,15 @@ public class JMainFrame extends JFrame {
         //------------------------------
         JMenu treesMenu = new JMenu(DECISION_TREES_MENU_TEXT);
         classifiersMenu.add(treesMenu);
-        JMenuItem id3Item = new JMenuItem(ClassifiersNames.ID3);
-        JMenuItem c45Item = new JMenuItem(ClassifiersNames.C45);
-        JMenuItem cartItem = new JMenuItem(ClassifiersNames.CART);
-        JMenuItem chaidItem = new JMenuItem(ClassifiersNames.CHAID);
+        JMenuItem id3Item = new JMenuItem(ClassifiersNamesDictionary.ID3);
+        JMenuItem c45Item = new JMenuItem(ClassifiersNamesDictionary.C45);
+        JMenuItem cartItem = new JMenuItem(ClassifiersNamesDictionary.CART);
+        JMenuItem chaidItem = new JMenuItem(ClassifiersNamesDictionary.CHAID);
         id3Item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNames.ID3, new ID3());
+                    createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
                 }
             }
         });
@@ -1147,7 +1147,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNames.C45, new C45());
+                    createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
                 }
             }
         });
@@ -1155,7 +1155,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNames.CART, new CART());
+                    createTreeOptionDialog(ClassifiersNamesDictionary.CART, new CART());
                 }
             }
         });
@@ -1163,7 +1163,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNames.CHAID, new CHAID());
+                    createTreeOptionDialog(ClassifiersNamesDictionary.CHAID, new CHAID());
                 }
             }
         });
@@ -1173,7 +1173,7 @@ public class JMainFrame extends JFrame {
         treesMenu.add(cartItem);
         treesMenu.add(chaidItem);
         //------------------------------------------------------------------
-        JMenuItem logisticItem = new JMenuItem(ClassifiersNames.LOGISTIC);
+        JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
         classifiersMenu.add(logisticItem);
         logisticItem.addActionListener(new ActionListener() {
             @Override
@@ -1182,7 +1182,7 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances set = data();
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
-                                ClassifiersNames.LOGISTIC,
+                                ClassifiersNamesDictionary.LOGISTIC,
                                 new Logistic(), set);
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
@@ -1196,7 +1196,7 @@ public class JMainFrame extends JFrame {
             }
         });
         //------------------------------------------------------------------
-        JMenuItem mlpItem = new JMenuItem(ClassifiersNames.NEURAL_NETWORK);
+        JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
         classifiersMenu.add(mlpItem);
         mlpItem.addActionListener(new ActionListener() {
             @Override
@@ -1205,7 +1205,7 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances set = data();
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
-                                ClassifiersNames.NEURAL_NETWORK,
+                                ClassifiersNamesDictionary.NEURAL_NETWORK,
                                 new NeuralNetwork(set), set);
                         frame.showDialog();
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
@@ -1219,14 +1219,14 @@ public class JMainFrame extends JFrame {
             }
         });
         //------------------------------------------------------------------
-        JMenuItem knnItem = new JMenuItem(ClassifiersNames.KNN);
+        JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
         classifiersMenu.add(knnItem);
         knnItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNames.KNN,
+                        KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNamesDictionary.KNN,
                                 new KNearestNeighbours(), data());
                         executeSimpleBuilding(frame);
                     } catch (Exception e) {
@@ -1239,35 +1239,35 @@ public class JMainFrame extends JFrame {
             }
         });
         //----------------------------------
-        JMenuItem heterogeneousItem = new JMenuItem(EnsemblesNames.HETEROGENEOUS_ENSEMBLE);
+        JMenuItem heterogeneousItem = new JMenuItem(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE);
         heterogeneousItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createEnsembleOptionDialog(EnsemblesNames.HETEROGENEOUS_ENSEMBLE,
+                    createEnsembleOptionDialog(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE,
                             new HeterogeneousClassifier(), true);
                 }
             }
         });
         ensembleMenu.add(heterogeneousItem);
         //----------------------------------
-        JMenuItem boostingItem = new JMenuItem(EnsemblesNames.BOOSTING);
+        JMenuItem boostingItem = new JMenuItem(EnsemblesNamesDictionary.BOOSTING);
         boostingItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createEnsembleOptionDialog(EnsemblesNames.BOOSTING,
+                    createEnsembleOptionDialog(EnsemblesNamesDictionary.BOOSTING,
                             new AdaBoostClassifier(), false);
                 }
             }
         });
         //----------------------------------
-        JMenuItem rndSubSpaceItem = new JMenuItem(EnsemblesNames.MODIFIED_HETEROGENEOUS_ENSEMBLE);
+        JMenuItem rndSubSpaceItem = new JMenuItem(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE);
         rndSubSpaceItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createEnsembleOptionDialog(EnsemblesNames.MODIFIED_HETEROGENEOUS_ENSEMBLE,
+                    createEnsembleOptionDialog(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE,
                             new ModifiedHeterogeneousClassifier(), true);
                 }
             }
@@ -1275,7 +1275,7 @@ public class JMainFrame extends JFrame {
         ensembleMenu.add(rndSubSpaceItem);
         ensembleMenu.add(boostingItem);
         //----------------------------------
-        JMenuItem rndForestsItem = new JMenuItem(EnsemblesNames.RANDOM_FORESTS);
+        JMenuItem rndForestsItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_FORESTS);
         rndForestsItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1283,7 +1283,7 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances data = data();
                         RandomForestsOptionDialog frame
-                                = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNames.RANDOM_FORESTS,
+                                = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNamesDictionary.RANDOM_FORESTS,
                                 new RandomForests(data), data);
                         frame.showDialog();
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
@@ -1298,14 +1298,14 @@ public class JMainFrame extends JFrame {
         });
         ensembleMenu.add(rndForestsItem);
         //-------------------------------------------------
-        JMenuItem stackingItem = new JMenuItem(EnsemblesNames.STACKING);
+        JMenuItem stackingItem = new JMenuItem(EnsemblesNamesDictionary.STACKING);
         stackingItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
                         StackingOptionsDialog frame
-                                = new StackingOptionsDialog(JMainFrame.this, EnsemblesNames.STACKING,
+                                = new StackingOptionsDialog(JMainFrame.this, EnsemblesNamesDictionary.STACKING,
                                 new StackingClassifier(), data());
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
@@ -1320,7 +1320,7 @@ public class JMainFrame extends JFrame {
         ensembleMenu.add(stackingItem);
 
         //----------------------------------
-        JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNames.RANDOM_NETWORKS);
+        JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_NETWORKS);
         rndNetworksItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1329,7 +1329,7 @@ public class JMainFrame extends JFrame {
 
                         Instances data = data();
                         RandomNetworkOptionsDialog networkOptionsDialog =
-                                new RandomNetworkOptionsDialog(JMainFrame.this, EnsemblesNames.RANDOM_NETWORKS,
+                                new RandomNetworkOptionsDialog(JMainFrame.this, EnsemblesNamesDictionary.RANDOM_NETWORKS,
                                         new RandomNetworks(), data);
                         networkOptionsDialog.showDialog();
                         executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);

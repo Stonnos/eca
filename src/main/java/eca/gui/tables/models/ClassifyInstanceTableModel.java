@@ -5,7 +5,7 @@
  */
 package eca.gui.tables.models;
 
-import eca.gui.enums.AttributesTypes;
+import eca.gui.dictionary.AttributesTypesDictionary;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -55,11 +55,11 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                 return a.name();
             case 2:
                 if (a.isDate()) {
-                    return AttributesTypes.DATE;
+                    return AttributesTypesDictionary.DATE;
                 } else if (a.isNumeric()) {
-                    return AttributesTypes.NUMERIC;
+                    return AttributesTypesDictionary.NUMERIC;
                 } else {
-                    return AttributesTypes.NOMINAL;
+                    return AttributesTypesDictionary.NOMINAL;
                 }
             case 3:
                 return a.isNominal() ? String.format(NOMINAL_ATTR_VALUES_INTERVAL_FORMAT, a.numValues() - 1)

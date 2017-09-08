@@ -1,6 +1,6 @@
 package eca.ensemble.forests;
 
-import eca.gui.enums.ClassifiersNames;
+import eca.gui.dictionary.ClassifiersNamesDictionary;
 
 /**
  * Decision tree algorithm enum.
@@ -11,7 +11,7 @@ public enum DecisionTreeType {
     /**
      * CART algorithm.
      */
-    CART(ClassifiersNames.CART) {
+    CART(ClassifiersNamesDictionary.CART) {
         @Override
         public <T> T handle(DecisionTreeTypeVisitor<T> decisionTreeTypeVisitor) {
             return decisionTreeTypeVisitor.handleCartTree();
@@ -21,7 +21,7 @@ public enum DecisionTreeType {
     /**
      * Id3 algorithm.
      */
-    ID3(ClassifiersNames.ID3) {
+    ID3(ClassifiersNamesDictionary.ID3) {
         @Override
         public <T> T handle(DecisionTreeTypeVisitor<T> decisionTreeTypeVisitor) {
             return decisionTreeTypeVisitor.handleId3Tree();
@@ -31,7 +31,7 @@ public enum DecisionTreeType {
     /**
      * C4.5 algorithm.
      */
-    C45(ClassifiersNames.C45) {
+    C45(ClassifiersNamesDictionary.C45) {
         @Override
         public <T> T handle(DecisionTreeTypeVisitor<T> decisionTreeTypeVisitor) {
             return decisionTreeTypeVisitor.handleC45Tree();
@@ -41,7 +41,7 @@ public enum DecisionTreeType {
     /**
      * CHAID algorithm.
      */
-    CHAID(ClassifiersNames.CHAID) {
+    CHAID(ClassifiersNamesDictionary.CHAID) {
         @Override
         public <T> T handle(DecisionTreeTypeVisitor<T> decisionTreeTypeVisitor) {
             return decisionTreeTypeVisitor.handleChaidTree();
