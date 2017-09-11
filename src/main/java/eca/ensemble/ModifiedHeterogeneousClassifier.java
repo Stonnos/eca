@@ -79,7 +79,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
         Random random = new Random();
 
-        public SpaceBuilder(Instances dataSet) throws Exception {
+        SpaceBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 

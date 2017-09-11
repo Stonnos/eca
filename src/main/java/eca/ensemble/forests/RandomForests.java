@@ -5,6 +5,7 @@
  */
 package eca.ensemble.forests;
 
+import eca.core.ListOptionsHandler;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.Sampler;
@@ -14,6 +15,9 @@ import eca.trees.DecisionTreeClassifier;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -31,7 +35,7 @@ import java.util.NoSuchElementException;
  *
  * @author Рома
  */
-public class RandomForests extends IterativeEnsembleClassifier {
+public class RandomForests extends IterativeEnsembleClassifier implements ListOptionsHandler {
 
     /**
      * Number of random attributes at each split
@@ -155,11 +159,17 @@ public class RandomForests extends IterativeEnsembleClassifier {
 
     @Override
     public String[] getOptions() {
-        return new String[] {"Число деревьев:", String.valueOf(getIterationsNum()),
+        List<String> options = getListOptions();
+        return options.toArray(new String[options.size()]);
+    }
+
+    @Override
+    public List<String> getListOptions() {
+        return Arrays.asList("Число деревьев:", String.valueOf(getIterationsNum()),
                 "Минимальное число объектов в листе:", String.valueOf(minObj),
                 "Максиальная глубина дерева:", String.valueOf(maxDepth),
                 "Число случайных атрибутов:", String.valueOf(numRandomAttr),
-                "Алгоритм построения дерева решений:", decisionTreeType.name()};
+                "Алгоритм построения дерева решений:", decisionTreeType.name());
     }
 
     @Override
@@ -171,14 +181,14 @@ public class RandomForests extends IterativeEnsembleClassifier {
 
         Sampler sampler = new Sampler();
 
-        public ForestBuilder(Instances dataSet) throws Exception {
+        ForestBuilder(Instances dataSet) throws Exception {
             super(dataSet);
             if (numRandomAttr > filteredData.numAttributes() - 1) {
                 throw new IllegalArgumentException(String.format("Wrong value of numRandomAttr: %d", numRandomAttr));
             }
         }
 
-        public DecisionTreeClassifier createDecisionTree(Instances sample) {
+        DecisionTreeClassifier createDecisionTree(Instances sample) {
             DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(decisionTreeBuilder);
             treeClassifier.setRandomTree(true);
             treeClassifier.setNumRandomAttr(getNumRandomAttr());
@@ -193,14 +203,6 @@ public class RandomForests extends IterativeEnsembleClassifier {
                 throw new NoSuchElementException();
             }
             Instances bootstrap = sampler.bootstrap(filteredData);
-            /*DecisionTreeClassifier model = new CART();
-            model.setRandomTree(true);
-            model.setNumRandomAttr(getNumRandomAttr());
-            model.setMinObj(getMinObj());
-            model.setMaxDepth(getMaxDepth());
-            model.buildClassifier(bag);
-            classifiers.add(model);*/
-
             DecisionTreeClassifier treeClassifier = createDecisionTree(bootstrap);
             treeClassifier.setUseBinarySplits(true);
             treeClassifier.buildClassifier(bootstrap);

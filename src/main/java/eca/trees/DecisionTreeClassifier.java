@@ -5,6 +5,7 @@
  */
 package eca.trees;
 
+import eca.core.ListOptionsHandler;
 import eca.core.RandomAttributesEnumeration;
 import eca.core.InstancesHandler;
 import eca.core.PermutationsSearch;
@@ -49,7 +50,7 @@ import java.util.Random;
  * @author Рома
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
-        implements InstancesHandler {
+        implements InstancesHandler, ListOptionsHandler {
 
     public static final int MIN_RANDOM_SPLITS = 1;
 
@@ -302,18 +303,36 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     @Override
     public String[] getOptions() {
-        List<String> options = getOptionsList();
+        List<String> options = getListOptions();
         return options.toArray(new String[options.size()]);
+    }
 
+    @Override
+    public List<String> getListOptions() {
+        List<String> options = new ArrayList<>();
+        options.add("Минимальное число объектов в листе:");
+        options.add(String.valueOf(minObj));
+        options.add("Максиальная глубина дерева:");
+        options.add(String.valueOf(maxDepth));
+        options.add("Случайное дерево:");
+        options.add(String.valueOf(isRandom));
 
-        /*return new String[] {"Минимальное число объектов в листе:", String.valueOf(minObj),
-                "Максиальная глубина дерева:", String.valueOf(maxDepth),
-                "Случайное дерево:", String.valueOf(isRandom),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
-                "Бинарное дерево:", String.valueOf(getUseBinarySplits()),
-                "Использование случайных расщеплений атрибута:", String.valueOf(isUseRandomSplits()),
-                "Число случайных расщеплений атрибута:", String.valueOf(numRandomSplits)
-        };*/
+        if (isRandomTree()) {
+            options.add("Число случайных атрибутов:");
+            options.add(String.valueOf(numRandomAttr));
+        }
+
+        options.add("Бинарное дерево:");
+        options.add(String.valueOf(getUseBinarySplits()));
+        options.add("Использование случайных расщеплений атрибута:");
+        options.add(String.valueOf(isUseRandomSplits()));
+
+        if (isUseRandomSplits()) {
+            options.add("Число случайных расщеплений атрибута:");
+            options.add(String.valueOf(numRandomSplits));
+        }
+
+        return options;
     }
 
     @Override
@@ -532,33 +551,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         boolean isBetterSplit(double currentMeasure, double measure);
 
-    }
-
-    protected List<String> getOptionsList() {
-        List<String> options = new ArrayList<>();
-        options.add("Минимальное число объектов в листе:");
-        options.add(String.valueOf(minObj));
-        options.add("Максиальная глубина дерева:");
-        options.add(String.valueOf(maxDepth));
-        options.add("Случайное дерево:");
-        options.add(String.valueOf(isRandom));
-
-        if (isRandomTree()) {
-            options.add("Число случайных атрибутов:");
-            options.add(String.valueOf(numRandomAttr));
-        }
-
-        options.add("Бинарное дерево:");
-        options.add(String.valueOf(getUseBinarySplits()));
-        options.add("Использование случайных расщеплений атрибута:");
-        options.add(String.valueOf(isUseRandomSplits()));
-
-        if (isUseRandomSplits()) {
-            options.add("Число случайных расщеплений атрибута:");
-            options.add(String.valueOf(numRandomSplits));
-        }
-
-        return options;
     }
 
     protected void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {

@@ -398,7 +398,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
     }
 
     /**
-     *
+     * Multilayer perceptron iterative builder.
      */
     public class IterativeBuilder {
 
@@ -407,6 +407,11 @@ public class MultilayerPerceptron implements java.io.Serializable {
         private final double[][] input;
         private final double[][] output;
 
+        /**
+         * Creates <tt>IterativeBuilder</tt> object.
+         * @param input input vector
+         * @param output output vector
+         */
         public IterativeBuilder(double[][] input, double[][] output) {
             checkInputVectors(input, output);
             this.input = input;
@@ -414,14 +419,27 @@ public class MultilayerPerceptron implements java.io.Serializable {
             algorithm.initializeWeights();
         }
 
+        /**
+         * Returns the current number of iteration.
+         * @return the current number of iteration
+         */
         public int index() {
             return i;
         }
 
+        /**
+         * Returns the value of step between iterations.
+         * @return the value of step between iterations
+         */
         public int step() {
             return step;
         }
 
+        /**
+         * Performs the next iteration and returns its number.
+         * @return the number of next iteration.
+         * @throws Exception
+         */
         public int next() throws Exception {
             if (!isNext()) {
                 throw new NoSuchElementException();
@@ -437,6 +455,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
             return ++i;
         }
 
+        /**
+         * Returns <tt>true</tt> if the next iteration is exists.
+         * @return <tt>true</tt> if the next iteration is exists.
+         */
         public boolean isNext() {
             return i < getMaxIterationsNum();
         }

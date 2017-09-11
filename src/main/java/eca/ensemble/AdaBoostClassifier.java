@@ -147,7 +147,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
      */
     private class AdaBoostBuilder extends AbstractBuilder {
 
-        public AdaBoostBuilder(Instances dataSet) throws Exception {
+        AdaBoostBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 

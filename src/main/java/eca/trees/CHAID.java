@@ -52,16 +52,18 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     public String[] getOptions() {
-        List<String> options = getOptionsList();
+        List<String> options = getListOptions();
         options.add("Уровень значимости alpha:");
         options.add(String.valueOf(alpha));
         return options.toArray(new String[options.size()]);
-        /*return new String[] {"Минимальное число объектов в листе:", String.valueOf(getMinObj()),
-                "Максиальная глубина дерева:", String.valueOf(getMaxDepth()),
-                "Случайное дерево:", String.valueOf(isRandomTree()),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr()),
-                "Бинарное дерево:", String.valueOf(getUseBinarySplits()),
-                "Уровень значимости alpha:", String.valueOf(alpha)};*/
+    }
+
+    @Override
+    public List<String> getListOptions() {
+        List<String> options = getListOptions();
+        options.add("Уровень значимости alpha:");
+        options.add(String.valueOf(alpha));
+        return options;
     }
 
     @Override

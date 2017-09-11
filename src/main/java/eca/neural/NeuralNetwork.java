@@ -6,18 +6,22 @@
 package eca.neural;
 
 import eca.core.InstancesHandler;
+import eca.core.ListOptionsHandler;
 import eca.core.converters.MinMaxNormalizer;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.filter.MissingValuesFilter;
+import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -25,7 +29,7 @@ import java.util.NoSuchElementException;
  *
  * @author Рома
  */
-public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler {
+public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler, ListOptionsHandler {
 
     /**
      * Initial training set
@@ -70,24 +74,55 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     @Override
     public String[] getOptions() {
-        String[] options = {"Количество нейронов во входном слое:", String.valueOf(network().inLayerNeuronsNum()),
-                "Количество нейронов в выходном слое:", String.valueOf(network().outLayerNeuronsNum()),
-                "Количество скрытых слоев:", String.valueOf(network().hiddenLayersNum()),
-                "Структура скрытого слоя:", network().getHiddenLayer(),
-                "Максимальное число итераций:", String.valueOf(network().getMaxIterationsNum()),
-                "Допустимая ошибка:", String.valueOf(network().getMinError()),
-                "Активационная функция нейронов скрытого слоя:",
-                network().getActivationFunction().getClass().getSimpleName(),
-                "Активационная функция нейронов выходного слоя:",
-                network().getOutActivationFunction().getClass().getSimpleName(),
-                "Алгоритм обучения:", network().getLearningAlgorithm().getClass().getSimpleName()};
+        List<String> options = getListOptions();
+        return options.toArray(new String[options.size()]);
+    }
+
+    @Override
+    public List getListOptions() {
+        List<String> options = new ArrayList<>();
+
+        options.add("Количество нейронов во входном слое:");
+        options.add(String.valueOf(network().inLayerNeuronsNum()));
+        options.add("Количество нейронов в выходном слое:");
+        options.add(String.valueOf(network().outLayerNeuronsNum()));
+        options.add("Количество скрытых слоев:");
+        options.add(String.valueOf(network().hiddenLayersNum()));
+        options.add("Структура скрытого слоя:");
+        options.add(network().getHiddenLayer());
+        options.add("Максимальное число итераций:");
+        options.add(String.valueOf(network().getMaxIterationsNum()));
+        options.add("Допустимая ошибка:");
+        options.add(String.valueOf(network().getMinError()));
+
+        options.add("Активационная функция нейронов скрытого слоя:");
+        ActivationFunction activationFunction = network().getActivationFunction();
+        options.add(activationFunction.getClass().getSimpleName());
+
+        if (activationFunction instanceof AbstractFunction) {
+            options.add("Значение коэффициента активационной функции нейронов скрытого слоя:");
+            options.add(String.valueOf(((AbstractFunction) activationFunction).getCoefficient()));
+        }
+
+        options.add("Активационная функция нейронов выходного слоя:");
+        ActivationFunction outActivationFunction = network().getOutActivationFunction();
+        options.add(outActivationFunction.getClass().getSimpleName());
+
+        if (outActivationFunction instanceof AbstractFunction) {
+            options.add("Значение коэффициента активационной функции нейронов выходного слоя:");
+            options.add(String.valueOf(((AbstractFunction) outActivationFunction).getCoefficient()));
+        }
+
+        options.add("Алгоритм обучения:");
+        options.add(network().getLearningAlgorithm().getClass().getSimpleName());
+
         if (network.getLearningAlgorithm() instanceof BackPropagation) {
             String[] algorithmOptions = network().getLearningAlgorithm().getOptions();
-            options = Arrays.copyOf(options, options.length + algorithmOptions.length);
             for (int i = 0; i < algorithmOptions.length; i++) {
-                options[options.length - algorithmOptions.length + i] = algorithmOptions[i];
+                options.add(algorithmOptions[i]);
             }
         }
+
         return options;
     }
 

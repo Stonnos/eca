@@ -3,6 +3,7 @@ package eca.ensemble.forests;
 import eca.trees.DecisionTreeClassifier;
 import weka.core.Instances;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -61,6 +62,16 @@ public class ExtraTreesClassifier extends RandomForests {
         this.numRandomSplits = numRandomSplits;
     }
 
+    @Override
+    public List<String> getListOptions() {
+        List<String> options = getListOptions();
+        options.add("Число случайных расщеплений атрибута:");
+        options.add(String.valueOf(numRandomSplits));
+        options.add("Формирование обучающих выборок:");
+        options.add(isUseBootstrapSamples() ? "Бутстрэп-выборки" : "Исходное обучающее множество");
+        return options;
+    }
+
     /**
      * Sets the value of use bootstrap samples.
      * @param useBootstrapSamples the value of use bootstrap samples
@@ -71,7 +82,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     private class ExtraTreesBuilder extends ForestBuilder {
 
-        public ExtraTreesBuilder(Instances dataSet) throws Exception {
+        ExtraTreesBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 
@@ -94,13 +105,6 @@ public class ExtraTreesClassifier extends RandomForests {
             treeClassifier.buildClassifier(sample);
             classifiers.add(treeClassifier);
 
-            /*DecisionTreeClassifier treeClassifier = new ExtraTree();
-            treeClassifier.setRandomTree(true);
-            treeClassifier.setNumRandomAttr(getNumRandomAttr());
-            treeClassifier.setMinObj(getMinObj());
-            treeClassifier.setMaxDepth(getMaxDepth());
-            treeClassifier.buildClassifier(sample);
-            classifiers.add(treeClassifier);*/
             return ++index;
         }
     }

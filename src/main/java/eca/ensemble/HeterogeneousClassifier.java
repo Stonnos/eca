@@ -155,7 +155,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
      */
     private class HeterogeneousBuilder extends AbstractBuilder {
 
-        public HeterogeneousBuilder(Instances dataSet) throws Exception {
+        HeterogeneousBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 

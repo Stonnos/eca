@@ -10,7 +10,7 @@ import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
 
 /**
- * Implements filtering missing values for input data.
+ * Implements filtering of missing values for input data.
  */
 public class MissingValuesFilter implements Filter, java.io.Serializable {
 

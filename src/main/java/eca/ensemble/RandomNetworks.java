@@ -89,7 +89,7 @@ public class RandomNetworks extends ThresholdClassifier {
         Sampler sampler = new Sampler();
         Random random = new Random();
 
-        public NetworkBuilder(Instances dataSet) throws Exception {
+        NetworkBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 
