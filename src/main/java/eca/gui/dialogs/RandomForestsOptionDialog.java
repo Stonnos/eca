@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * @author Рома
+ * Random forests algorithm options dialog frame.
  */
 public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
 

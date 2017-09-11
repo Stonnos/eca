@@ -43,7 +43,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     public static final String RANDOM_SPLITS_TEXT = "Случайные расщепления атрибута";
     public static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
 
-    private Setter setter = new Setter();
+    private OptionsSetter optionsSetter;
 
     private JTextField minObjText;
     private JTextField maxDepthText;
@@ -188,7 +188,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                     ((CHAID) classifier).setAlpha(Double.valueOf(values.getSelectedItem().toString()));
                 }
             });
-            setter = new Setter() {
+            optionsSetter = new OptionsSetter() {
                 @Override
                 void setOptions() {
                     super.setOptions();
@@ -197,6 +197,8 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
             };
             optionPanel.add(values, new GridBagConstraints(1, 7, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 10), 0, 0));
+        } else {
+            optionsSetter = new OptionsSetter();
         }
 
         this.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
@@ -214,7 +216,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
     @Override
     public final void showDialog() {
-        setter.setOptions();
+        optionsSetter.setOptions();
         super.showDialog();
         minObjText.requestFocusInWindow();
     }
@@ -233,10 +235,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         }
     }
 
-    /**
-     *
-     */
-    protected class Setter {
+    private class OptionsSetter {
 
         void setOptions() {
             minObjText.setText(String.valueOf(classifier.getMinObj()));
