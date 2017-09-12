@@ -28,7 +28,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 
 public class AttributesTable extends JDataTableBase {

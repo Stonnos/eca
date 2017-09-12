@@ -10,7 +10,7 @@ import weka.core.Instances;
 /**
  * Interface for obtaining training set.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public interface InstancesHandler {
 

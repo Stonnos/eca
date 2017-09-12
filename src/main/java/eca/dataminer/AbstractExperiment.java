@@ -30,7 +30,7 @@ import java.util.Random;
  * Sets evaluation method (Default: TRAINING_DATA) <p>
  *
  * @param <T> classifier type
- * @author Roman93
+ * @author Roman Batygin
  */
 public abstract class AbstractExperiment<T extends Classifier>
         implements Experiment<T>, IterableExperiment {

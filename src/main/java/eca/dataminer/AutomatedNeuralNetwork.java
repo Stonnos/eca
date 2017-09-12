@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
  * Implements automatic selection of optimal options
  * for neural networks based on experiment series.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 

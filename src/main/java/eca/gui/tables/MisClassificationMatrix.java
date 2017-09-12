@@ -11,7 +11,7 @@ import eca.gui.tables.models.MisClassificationTableModel;
 import javax.swing.*;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class MisClassificationMatrix extends JDataTableBase {
 

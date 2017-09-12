@@ -11,7 +11,7 @@ import weka.core.Instance;
 /**
  * Class for generating model of nominal attribute binary split rule.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class BinaryRule extends NominalRule {
 

@@ -8,7 +8,7 @@ package eca.db;
 /**
  * Implements MySQL datasource descriptor.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class MySQLConnectionDescriptor extends ConnectionDescriptor {
 

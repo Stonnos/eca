@@ -7,7 +7,7 @@ package eca.statistics;
 
 /**
  * Statistics class.
- * @author Roman93
+ * @author Roman Batygin
  */
 public class Statistics {
 

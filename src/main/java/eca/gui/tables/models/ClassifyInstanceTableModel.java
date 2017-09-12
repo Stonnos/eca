@@ -12,7 +12,7 @@ import weka.core.Instances;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifyInstanceTableModel extends AbstractTableModel {
 

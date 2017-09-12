@@ -8,7 +8,7 @@ package eca.dataminer;
 /**
  * Class for generating {@link IterableExperiment} objects.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public interface IterableExperiment {
 

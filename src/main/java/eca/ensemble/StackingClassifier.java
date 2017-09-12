@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * <p>
  * Set individual classifiers collection  <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class StackingClassifier extends AbstractClassifier
         implements EnsembleClassifier, InstancesHandler {

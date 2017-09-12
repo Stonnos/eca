@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * Implements ensemble classification results aggregating for
  * random subspaces method (random attributes).
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class SubspacesAggregator extends Aggregator {
 

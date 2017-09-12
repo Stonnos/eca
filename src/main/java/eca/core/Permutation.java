@@ -8,7 +8,7 @@ package eca.core;
 /**
  * Implements the <tt>next_permutation</tt> algorithm.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class Permutation {
 

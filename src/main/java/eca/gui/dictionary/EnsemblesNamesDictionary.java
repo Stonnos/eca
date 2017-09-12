@@ -6,7 +6,7 @@
 package eca.gui.dictionary;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class EnsemblesNamesDictionary {
     public static final String HETEROGENEOUS_ENSEMBLE = "Неоднородный ансамблевый алгоритм";

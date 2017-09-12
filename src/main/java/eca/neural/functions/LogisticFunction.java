@@ -9,7 +9,7 @@ package eca.neural.functions;
  * Implements logistic activation function: <p>
  * <code>f(s) = 1 / (1 + exp(-a*s))</code>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class LogisticFunction extends AbstractFunction {
 

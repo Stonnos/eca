@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ExperimentTableModel extends AbstractTableModel {
 

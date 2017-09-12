@@ -33,7 +33,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier> {
 

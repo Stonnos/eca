@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Basic interface for ensemble classification models.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public interface EnsembleClassifier {
 

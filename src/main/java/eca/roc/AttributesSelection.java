@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Implements significant attributes selection based on ROC - analysis.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class AttributesSelection {
 

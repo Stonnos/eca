@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class NumericFormat implements java.io.Serializable {
 

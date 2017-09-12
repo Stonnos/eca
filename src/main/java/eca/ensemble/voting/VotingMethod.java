@@ -11,7 +11,7 @@ import weka.core.Instance;
 /**
  * Abstract class that implements voting method.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class VotingMethod implements java.io.Serializable {
 

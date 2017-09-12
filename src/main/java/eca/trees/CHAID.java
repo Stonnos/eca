@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Class for generating CHAID decision tree model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class CHAID extends DecisionTreeClassifier {
 

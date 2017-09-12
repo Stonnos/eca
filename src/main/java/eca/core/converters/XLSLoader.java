@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * - Data can not contain empty columns; <p>
  * - Each column must contain data of the same type. <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class XLSLoader {
 

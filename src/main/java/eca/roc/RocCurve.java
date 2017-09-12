@@ -13,7 +13,7 @@ import weka.core.Instances;
 /**
  * Class for providing ROC - curve results.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class RocCurve implements InstancesHandler {
 

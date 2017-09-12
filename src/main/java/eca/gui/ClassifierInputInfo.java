@@ -9,7 +9,7 @@ import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifierInputInfo {
 

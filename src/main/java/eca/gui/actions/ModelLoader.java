@@ -11,7 +11,7 @@ import eca.model.ModelDescriptor;
 import java.io.File;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ModelLoader implements CallbackAction {
 

@@ -18,7 +18,7 @@ import java.util.function.BiPredicate;
 /**
  * Class for loading data from network using http and ftp protocols.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class DataLoaderImpl implements DataLoader {
 

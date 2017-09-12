@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
 /**
  * Implements objects serialization.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class SerializedObject {
 

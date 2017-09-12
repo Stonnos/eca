@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Experiment unit model.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ExperimentHistory implements java.io.Serializable {
 

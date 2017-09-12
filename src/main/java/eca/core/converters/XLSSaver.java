@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class XLSSaver {
 

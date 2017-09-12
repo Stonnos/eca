@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * <p>
  * Sets the value of minimum error threshold (Default: 0.00001) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class MultilayerPerceptron implements java.io.Serializable {
 
@@ -379,7 +379,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
             i++;
             int j = i % input.length;
             double[] y = computeOutputVector(input[j]);
-            if (error(y, output[j]) < minError || i > maxIterationsNum) {
+            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > maxIterationsNum) {
                 break;
             }
             algorithm.train(y, output[j]);
@@ -446,7 +446,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
             }
             int j = i % input.length;
             double[] y = computeOutputVector(input[j]);
-            if (error(y, output[j]) < minError || i > maxIterationsNum) {
+            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > maxIterationsNum) {
                 step = maxIterationsNum - i;
                 i = maxIterationsNum - 1;
             } else {
@@ -554,14 +554,6 @@ public class MultilayerPerceptron implements java.io.Serializable {
                 u.process();
             }
         }
-    }
-
-    private double error(double[] actual, double[] expected) {
-        double error = 0.0;
-        for (int i = 0; i < outLayerNeuronsNum(); i++) {
-            error += Math.pow(actual[i] - expected[i], 2);
-        }
-        return 0.5 * error;
     }
 
 }

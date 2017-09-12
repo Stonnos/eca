@@ -10,7 +10,7 @@ import eca.regression.Logistic;
 import weka.core.Instances;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class LogisticCoefficientsTable extends JDataTableBase {
 

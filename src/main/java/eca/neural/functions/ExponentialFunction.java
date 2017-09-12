@@ -9,7 +9,7 @@ package eca.neural.functions;
  * Implements exponential activation function: <p>
  * <code>f(s) = exp(-s^2/a^2)</code>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class ExponentialFunction extends AbstractFunction {
 

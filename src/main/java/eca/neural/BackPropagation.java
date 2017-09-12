@@ -16,7 +16,7 @@ import java.util.Iterator;
  * <p>
  * Sets the value of momentum (Default: 0.2) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class BackPropagation extends LearningAlgorithm {
 

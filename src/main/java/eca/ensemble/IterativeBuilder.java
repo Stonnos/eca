@@ -12,7 +12,7 @@ import weka.core.Instances;
 /**
  * Abstract class for iterative building of classifier model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class IterativeBuilder {
 

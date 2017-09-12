@@ -8,7 +8,7 @@ package eca.neural;
 /**
  * Neural link model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class NeuralLink implements java.io.Serializable {
 

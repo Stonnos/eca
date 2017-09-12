@@ -12,7 +12,7 @@ import java.awt.*;
 import java.io.File;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public abstract class SaveFileChooser {
 

@@ -22,7 +22,7 @@ import java.util.Random;
  * <p>
  * Sets the number of validations <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class CVIterativeBuilder extends IterativeBuilder {
 

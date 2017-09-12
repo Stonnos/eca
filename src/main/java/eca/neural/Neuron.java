@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Neuron model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class Neuron implements java.io.Serializable {
 

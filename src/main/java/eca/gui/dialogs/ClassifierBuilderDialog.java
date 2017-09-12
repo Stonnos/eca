@@ -16,7 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
 

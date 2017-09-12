@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Implements evaluation of the classification results.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class Evaluation extends weka.classifiers.evaluation.Evaluation implements InstancesHandler {
 

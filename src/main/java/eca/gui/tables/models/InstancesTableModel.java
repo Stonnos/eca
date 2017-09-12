@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class InstancesTableModel extends AbstractTableModel {
 

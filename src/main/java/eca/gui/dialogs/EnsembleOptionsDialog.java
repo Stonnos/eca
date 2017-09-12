@@ -34,7 +34,7 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneousClassifier> {
 

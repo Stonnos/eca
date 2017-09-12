@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Class for generating training data.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class Sampler implements java.io.Serializable {
 

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Implements ensemble classification results aggregating.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class Aggregator implements java.io.Serializable {
 

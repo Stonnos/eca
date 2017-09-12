@@ -8,7 +8,7 @@ package eca.gui.actions;
 import eca.db.DataBaseConnection;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class DataBaseConnectionAction implements CallbackAction {
 

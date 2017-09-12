@@ -6,7 +6,7 @@
 package eca.model;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class Entry implements java.io.Serializable {
 

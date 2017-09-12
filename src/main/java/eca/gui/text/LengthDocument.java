@@ -10,7 +10,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class LengthDocument extends PlainDocument {
 

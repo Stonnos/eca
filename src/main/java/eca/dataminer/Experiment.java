@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * for classifiers based on experiment series.
  *
  * @param <T> classifier type
- * @author Roman93
+ * @author Roman Batygin
  */
 public interface Experiment<T extends Classifier> extends InstancesHandler {
 

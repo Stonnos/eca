@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Implements loading data from database.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class DataBaseConnection implements QueryExecutor, AutoCloseable {
 

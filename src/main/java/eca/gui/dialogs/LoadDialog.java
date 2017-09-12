@@ -14,7 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class LoadDialog extends JDialog implements ExecutorDialog {
 

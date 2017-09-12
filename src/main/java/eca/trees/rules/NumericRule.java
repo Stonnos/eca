@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 /**
  * Class for generating model of numeric attribute split rule.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class NumericRule extends AbstractRule {
 

@@ -12,7 +12,7 @@ import java.io.File;
 
 /**
  * Implements working with ECA user manual.
- * @author Roman93
+ * @author Roman Batygin
  */
 public class Reference {
 

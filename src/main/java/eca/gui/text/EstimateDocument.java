@@ -10,7 +10,7 @@ import javax.swing.text.BadLocationException;
 import java.util.regex.Pattern;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class EstimateDocument extends LengthDocument {
 

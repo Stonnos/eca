@@ -11,7 +11,7 @@ import eca.gui.tables.models.ClassificationCostsTableModel;
 import java.text.DecimalFormat;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassificationCostsMatrix extends JDataTableBase {
 

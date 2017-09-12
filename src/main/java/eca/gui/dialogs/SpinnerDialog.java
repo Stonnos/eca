@@ -13,7 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class SpinnerDialog extends JDialog {
 

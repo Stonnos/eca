@@ -22,7 +22,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class QueryFrame extends JFrame {
 

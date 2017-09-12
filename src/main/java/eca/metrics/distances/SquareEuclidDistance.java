@@ -10,7 +10,7 @@ import weka.core.Instance;
 /**
  * Square euclid distance function model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class SquareEuclidDistance implements Distance {
 

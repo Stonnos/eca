@@ -10,7 +10,7 @@ import eca.core.evaluation.Evaluation;
 import javax.swing.table.AbstractTableModel;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class MisClassificationTableModel extends AbstractTableModel {
 

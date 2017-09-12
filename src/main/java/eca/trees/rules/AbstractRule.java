@@ -11,7 +11,7 @@ import weka.core.Instance;
 /**
  * Abstract class for generating model of node split rule.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class AbstractRule implements java.io.Serializable {
 

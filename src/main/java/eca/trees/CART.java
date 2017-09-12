@@ -8,7 +8,7 @@ package eca.trees;
 /**
  * Class for generating CART decision tree model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class CART extends DecisionTreeClassifier {
 

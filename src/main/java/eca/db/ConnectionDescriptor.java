@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Datasource descriptor.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public abstract class ConnectionDescriptor implements java.io.Serializable {
 

@@ -13,7 +13,7 @@ import java.awt.*;
 
 /**
  * @param <T>
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
 

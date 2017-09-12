@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ClassifierIndexer {
 

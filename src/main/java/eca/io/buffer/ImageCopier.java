@@ -13,7 +13,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ImageCopier implements Transferable, Copyable {
 

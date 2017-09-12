@@ -29,7 +29,7 @@ import java.awt.event.WindowEvent;
 import java.util.Enumeration;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ROCCurvePanel extends JPanel {
 

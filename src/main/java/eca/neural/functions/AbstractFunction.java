@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 /**
  * Implements abstract activation function with getCoefficient.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable, Cloneable {
 

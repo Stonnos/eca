@@ -9,7 +9,7 @@ package eca.neural.functions;
  * Implements hyperbolic tangent function: <p>
  * <code>f(s) = (exp(a*s) - exp(-a*s)) / (exp(a*s) + exp(-a*s))</code>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class TanhFunction extends AbstractFunction {
 

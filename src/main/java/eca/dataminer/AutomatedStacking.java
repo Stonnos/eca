@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
  * Implements automatic selection of optimal options
  * for stacking algorithm based on experiment series.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 

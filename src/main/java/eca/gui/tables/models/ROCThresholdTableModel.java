@@ -12,7 +12,7 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ROCThresholdTableModel extends AbstractTableModel {
 

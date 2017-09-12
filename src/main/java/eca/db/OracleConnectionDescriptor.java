@@ -8,7 +8,7 @@ package eca.db;
 /**
  * Implements Oracle connection descriptor.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class OracleConnectionDescriptor extends ConnectionDescriptor {
 

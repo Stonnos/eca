@@ -10,7 +10,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class MinMaxNormalizer implements java.io.Serializable {
 

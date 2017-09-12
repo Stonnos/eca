@@ -34,7 +34,7 @@ import java.util.NoSuchElementException;
  * <p>
  * Set number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class RandomForests extends IterativeEnsembleClassifier implements ListOptionsHandler {
 

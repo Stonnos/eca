@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * <p>
  * Set the number of iterations (Default: 10) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         implements Iterable, EnsembleClassifier, InstancesHandler {

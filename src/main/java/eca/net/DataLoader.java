@@ -10,7 +10,7 @@ import weka.core.Instances;
 /**
  * Interface for loading data from network resource.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public interface DataLoader extends java.io.Serializable {
 

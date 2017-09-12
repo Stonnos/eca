@@ -10,7 +10,7 @@ import weka.core.Instances;
 /**
  * Class for generating {@link IterativeBuilder} objects.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public interface Iterable {
 

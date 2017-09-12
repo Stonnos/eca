@@ -30,7 +30,7 @@ import java.util.Random;
  * <p>
  * Sets {@link Sampler} object. <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 

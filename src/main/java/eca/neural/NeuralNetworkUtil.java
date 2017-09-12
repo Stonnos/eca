@@ -147,4 +147,19 @@ public class NeuralNetworkUtil {
 
         return abstractFunctionList;
     }
+
+    /**
+     * Calculates multilayer perceptron error by formula: <p>
+     * <code>E = 0.5 * sum[i = 1..n](y[i]-d[i])^2</code>
+     * @param actual - actual values of output vector
+     * @param expected - expected values of output vector
+     * @return the error value
+     */
+    public static double error(double[] actual, double[] expected) {
+        double error = 0.0;
+        for (int i = 0; i < actual.length; i++) {
+            error += Math.pow(actual[i] - expected[i], 2);
+        }
+        return 0.5 * error;
+    }
 }

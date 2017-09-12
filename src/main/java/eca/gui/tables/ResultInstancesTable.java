@@ -9,7 +9,7 @@ import eca.gui.tables.models.ResultInstancesTableModel;
 import weka.core.Instances;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ResultInstancesTable extends JDataTableBase {
 

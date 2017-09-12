@@ -16,7 +16,7 @@ import java.util.Random;
 /**
  * Implements iterations over the set of the random attributes.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class RandomAttributesEnumeration implements Enumeration<Attribute> {
 

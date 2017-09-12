@@ -30,7 +30,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class TreeVisualizer extends JPanel {
 

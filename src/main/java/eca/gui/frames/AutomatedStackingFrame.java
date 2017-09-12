@@ -12,7 +12,7 @@ import eca.gui.dialogs.StackingOptionsDialog;
 import javax.swing.*;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class AutomatedStackingFrame extends ExperimentFrame {
 

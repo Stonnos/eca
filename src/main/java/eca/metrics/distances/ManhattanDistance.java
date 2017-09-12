@@ -10,7 +10,7 @@ import weka.core.Instance;
 /**
  * Manhattan distance function model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class ManhattanDistance implements Distance {
 

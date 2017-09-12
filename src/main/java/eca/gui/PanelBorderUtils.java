@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class PanelBorderUtils {
 

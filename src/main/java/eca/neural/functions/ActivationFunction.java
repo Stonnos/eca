@@ -8,7 +8,7 @@ package eca.neural.functions;
 /**
  * Interface for neuron activation function.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public interface ActivationFunction {
 

@@ -31,7 +31,7 @@ import java.util.Arrays;
  * <p>
  * Set distance function (Default: {@link EuclidDistance}) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class KNearestNeighbours extends AbstractClassifier
         implements InstancesHandler {

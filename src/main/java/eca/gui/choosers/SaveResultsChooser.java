@@ -8,7 +8,7 @@ package eca.gui.choosers;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class SaveResultsChooser extends SaveFileChooser {
 

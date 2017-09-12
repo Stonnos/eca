@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Implements collection of individual classifiers models.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable, Cloneable {
 

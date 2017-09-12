@@ -6,7 +6,7 @@
 package eca.gui.dictionary;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifiersNamesDictionary {
     public static final String ID3 = "Алгоритм ID3";

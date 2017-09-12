@@ -12,7 +12,7 @@ import eca.gui.dialogs.EnsembleOptionsDialog;
 import javax.swing.*;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
 

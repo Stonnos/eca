@@ -23,7 +23,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class DatabaseConnectionDialog extends JDialog {
 

@@ -35,7 +35,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class NetworkVisualizer extends JPanel {
 

@@ -11,7 +11,7 @@ import weka.core.Instances;
 import java.io.File;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class InstancesLoader implements CallbackAction {
 

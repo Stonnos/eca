@@ -9,7 +9,7 @@ package eca.neural.functions;
  * Implements sine activation function: <p>
  * <code>f(s) = sin(a*s)</code>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class SineFunction extends AbstractFunction {
 

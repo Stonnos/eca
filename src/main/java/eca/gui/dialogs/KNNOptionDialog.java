@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
 

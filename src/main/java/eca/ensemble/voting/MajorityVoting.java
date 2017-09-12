@@ -11,7 +11,7 @@ import weka.core.Instance;
 /**
  * Implements majority voting method.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class MajorityVoting extends VotingMethod {
 

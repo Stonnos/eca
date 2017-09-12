@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Implements multilayer perceptron learning algorithm.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class LearningAlgorithm implements java.io.Serializable {
 

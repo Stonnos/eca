@@ -23,7 +23,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ExperimentTable extends JDataTableBase {
 

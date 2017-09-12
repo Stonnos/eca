@@ -8,7 +8,7 @@ package eca.ensemble;
 /**
  * Abstract class for generating heterogeneous classifier model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class AbstractHeterogeneousClassifier extends ThresholdClassifier {
 

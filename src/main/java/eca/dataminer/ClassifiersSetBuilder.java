@@ -18,7 +18,7 @@ import weka.core.Instances;
 /**
  * Class for creation default individual classifiers set,
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public class ClassifiersSetBuilder {
 

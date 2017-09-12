@@ -33,7 +33,7 @@ import java.util.NoSuchElementException;
  * <p>
  * Sets {@link Sampler} object. <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         implements WeightedVotesAvailable {

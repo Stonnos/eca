@@ -12,7 +12,7 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class SignificantAttributesTableModel extends AbstractTableModel {
 

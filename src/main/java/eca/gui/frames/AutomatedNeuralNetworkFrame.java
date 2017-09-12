@@ -11,7 +11,7 @@ import eca.gui.dialogs.SpinnerDialog;
 import javax.swing.*;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
 

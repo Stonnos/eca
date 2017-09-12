@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class SignificantAttributesTable extends JDataTableBase {
 

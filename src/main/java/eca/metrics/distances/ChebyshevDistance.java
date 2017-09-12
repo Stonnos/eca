@@ -10,7 +10,7 @@ import weka.core.Instance;
 /**
  * Chebychev distance function model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class ChebyshevDistance implements Distance {
 

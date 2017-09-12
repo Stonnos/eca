@@ -26,7 +26,7 @@ import java.text.DecimalFormat;
 import java.util.Enumeration;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class ClassifyInstanceTable extends JDataTableBase {
 

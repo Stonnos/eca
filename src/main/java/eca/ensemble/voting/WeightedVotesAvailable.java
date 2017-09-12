@@ -8,7 +8,7 @@ package eca.ensemble.voting;
 /**
  * Weighted votes method interface.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public interface WeightedVotesAvailable {
 

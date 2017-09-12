@@ -10,7 +10,7 @@ import eca.model.ClassifierDescriptor;
 /**
  * Interface for iterative experiment building.
  *
- * @author Roman93
+ * @author Roman Batygin
  */
 public interface IterativeExperiment {
 

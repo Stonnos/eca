@@ -27,10 +27,11 @@ import java.util.NoSuchElementException;
 /**
  * Class for generating neural network for classification task.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler, ListOptionsHandler {
 
+    private static final int NIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;
     /**
      * Initial training set
      **/
@@ -55,8 +56,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         this.network = new MultilayerPerceptron(data.numAttributes() - 1,
                 data.numClasses());
         int neuronsNum = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data);
-        if (neuronsNum < 1) {
-            neuronsNum = 1;
+        if (neuronsNum < NIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
+            neuronsNum = NIN_NEURONS_NUM_IN_HIDDEN_LAYER;
         }
         this.network.setHiddenLayer(String.valueOf(neuronsNum));
     }

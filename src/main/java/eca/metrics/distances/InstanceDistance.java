@@ -8,7 +8,7 @@ package eca.metrics.distances;
 /**
  * Instance distance descriptor.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class InstanceDistance implements java.io.Serializable, Comparable<InstanceDistance> {
 

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Implements weighted voting method.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public class WeightedVoting extends VotingMethod {
 

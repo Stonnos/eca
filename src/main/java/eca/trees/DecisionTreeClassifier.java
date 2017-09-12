@@ -47,7 +47,7 @@ import java.util.Random;
  * <p>
  * Set the number of attribute random splits (Default: 1) <p>
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
         implements InstancesHandler, ListOptionsHandler {

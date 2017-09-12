@@ -10,7 +10,7 @@ import weka.core.Instance;
 /**
  * Distance function model.
  *
- * @author Рома
+ * @author Roman Batygin
  */
 public interface Distance extends java.io.Serializable {
 

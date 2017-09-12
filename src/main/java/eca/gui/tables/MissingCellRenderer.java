@@ -10,7 +10,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * @author Roman93
+ * @author Roman Batygin
  */
 public class MissingCellRenderer extends DefaultTableCellRenderer {
 

@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class EnsembleTable extends JDataTableBase {
 

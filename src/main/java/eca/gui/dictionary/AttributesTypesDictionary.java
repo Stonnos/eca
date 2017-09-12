@@ -8,7 +8,7 @@ package eca.gui.dictionary;
 import weka.core.Attribute;
 
 /**
- * @author Рома
+ * @author Roman Batygin
  */
 public class AttributesTypesDictionary {
     public static final String NOMINAL = "Категориальный";
