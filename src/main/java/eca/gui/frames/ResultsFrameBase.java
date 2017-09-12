@@ -146,7 +146,7 @@ public class ResultsFrameBase extends JFrame {
     public final void setStatisticaTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ClassifierInputInfo.getInfo(classifier));
+        this.statTable.setToolTipText(ClassifierInputInfo.getInputOptionsInfo(classifier));
         resultPane.setViewportView(table);
     }
 

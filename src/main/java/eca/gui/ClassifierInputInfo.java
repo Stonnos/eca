@@ -13,7 +13,7 @@ import weka.classifiers.Classifier;
  */
 public class ClassifierInputInfo {
 
-    public static String getInfo(Classifier classifier) {
+    public static String getInputOptionsInfo(Classifier classifier) {
         StringBuilder info = new StringBuilder("<html><head><style>"
                 + ".attr {font-weight: bold;} th {font-size: 14;}</style></head><body>");
         info.append("<table>");

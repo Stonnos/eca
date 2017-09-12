@@ -82,38 +82,38 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     public List getListOptions() {
         List<String> options = new ArrayList<>();
 
-        options.add("Количество нейронов во входном слое:");
+        options.add(NeuralNetworkDictionary.IN_LAYER_NEURONS_NUM);
         options.add(String.valueOf(network().inLayerNeuronsNum()));
-        options.add("Количество нейронов в выходном слое:");
+        options.add(NeuralNetworkDictionary.OUT_LAYER_NEURONS_NUM);
         options.add(String.valueOf(network().outLayerNeuronsNum()));
-        options.add("Количество скрытых слоев:");
+        options.add(NeuralNetworkDictionary.HIDDEN_LAYER_NUM);
         options.add(String.valueOf(network().hiddenLayersNum()));
-        options.add("Структура скрытого слоя:");
+        options.add(NeuralNetworkDictionary.HIDDEN_LAYER_STRUCTURE);
         options.add(network().getHiddenLayer());
-        options.add("Максимальное число итераций:");
+        options.add(NeuralNetworkDictionary.MAX_ITS);
         options.add(String.valueOf(network().getMaxIterationsNum()));
-        options.add("Допустимая ошибка:");
+        options.add(NeuralNetworkDictionary.ERROR_THRESHOLD);
         options.add(String.valueOf(network().getMinError()));
 
-        options.add("Активационная функция нейронов скрытого слоя:");
+        options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF);
         ActivationFunction activationFunction = network().getActivationFunction();
         options.add(activationFunction.getClass().getSimpleName());
 
         if (activationFunction instanceof AbstractFunction) {
-            options.add("Значение коэффициента активационной функции нейронов скрытого слоя:");
+            options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF_COEFFICIENT);
             options.add(String.valueOf(((AbstractFunction) activationFunction).getCoefficient()));
         }
 
-        options.add("Активационная функция нейронов выходного слоя:");
+        options.add(NeuralNetworkDictionary.OUT_LAYER_AF);
         ActivationFunction outActivationFunction = network().getOutActivationFunction();
         options.add(outActivationFunction.getClass().getSimpleName());
 
         if (outActivationFunction instanceof AbstractFunction) {
-            options.add("Значение коэффициента активационной функции нейронов выходного слоя:");
+            options.add(NeuralNetworkDictionary.OUT_LAYER_AF_COEFFICIENT);
             options.add(String.valueOf(((AbstractFunction) outActivationFunction).getCoefficient()));
         }
 
-        options.add("Алгоритм обучения:");
+        options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
         options.add(network().getLearningAlgorithm().getClass().getSimpleName());
 
         if (network.getLearningAlgorithm() instanceof BackPropagation) {

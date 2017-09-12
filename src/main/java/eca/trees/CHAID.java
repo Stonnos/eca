@@ -51,17 +51,9 @@ public class CHAID extends DecisionTreeClassifier {
     }
 
     @Override
-    public String[] getOptions() {
-        List<String> options = getListOptions();
-        options.add("Уровень значимости alpha:");
-        options.add(String.valueOf(alpha));
-        return options.toArray(new String[options.size()]);
-    }
-
-    @Override
     public List<String> getListOptions() {
         List<String> options = getListOptions();
-        options.add("Уровень значимости alpha:");
+        options.add(DecisionTreeDictionary.SIGNIFICANT_LEVEL);
         options.add(String.valueOf(alpha));
         return options;
     }

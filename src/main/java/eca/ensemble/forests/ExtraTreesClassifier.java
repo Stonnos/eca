@@ -1,6 +1,8 @@
 package eca.ensemble.forests;
 
+import eca.ensemble.EnsembleDictionary;
 import eca.trees.DecisionTreeClassifier;
+import eca.trees.DecisionTreeDictionary;
 import weka.core.Instances;
 
 import java.util.List;
@@ -65,10 +67,11 @@ public class ExtraTreesClassifier extends RandomForests {
     @Override
     public List<String> getListOptions() {
         List<String> options = getListOptions();
-        options.add("Число случайных расщеплений атрибута:");
+        options.add(DecisionTreeDictionary.NUM_RANDOM_SPLITS);
         options.add(String.valueOf(numRandomSplits));
-        options.add("Формирование обучающих выборок:");
-        options.add(isUseBootstrapSamples() ? "Бутстрэп-выборки" : "Исходное обучающее множество");
+        options.add(EnsembleDictionary.SAMPLING_METHOD);
+        options.add(isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
+                : EnsembleDictionary.TRAINING_SAMPLE_METHOD);
         return options;
     }
 

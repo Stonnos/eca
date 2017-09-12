@@ -62,8 +62,8 @@ public class BackPropagation extends LearningAlgorithm {
 
     @Override
     public String[] getOptions() {
-        return new String[] {"Коэффициент скорости обучения:", String.valueOf(learningRate),
-                "Коэффициент момента:", String.valueOf(momentum)};
+        return new String[] {NeuralNetworkDictionary.LEARNING_SPEED, String.valueOf(learningRate),
+                NeuralNetworkDictionary.MOMENTUM, String.valueOf(momentum)};
     }
 
     public void setMomentum(double momentum) {

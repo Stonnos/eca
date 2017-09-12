@@ -12,6 +12,7 @@ import eca.ensemble.Sampler;
 import eca.ensemble.Aggregator;
 import eca.ensemble.voting.MajorityVoting;
 import eca.trees.DecisionTreeClassifier;
+import eca.trees.DecisionTreeDictionary;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 
@@ -165,11 +166,11 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
 
     @Override
     public List<String> getListOptions() {
-        return Arrays.asList("Число деревьев:", String.valueOf(getIterationsNum()),
-                "Минимальное число объектов в листе:", String.valueOf(minObj),
-                "Максиальная глубина дерева:", String.valueOf(maxDepth),
-                "Число случайных атрибутов:", String.valueOf(numRandomAttr),
-                "Алгоритм построения дерева решений:", decisionTreeType.name());
+        return Arrays.asList(ForestsDictionary.NUM_TREES, String.valueOf(getIterationsNum()),
+                DecisionTreeDictionary.MIN_NUM_OBJECTS_IN_LEAF, String.valueOf(minObj),
+                DecisionTreeDictionary.MAX_DEPTH, String.valueOf(maxDepth),
+                DecisionTreeDictionary.NUM_RANDOM_ATTRS, String.valueOf(numRandomAttr),
+                ForestsDictionary.DECISION_TREE_ALGORITHM, decisionTreeType.name());
     }
 
     @Override

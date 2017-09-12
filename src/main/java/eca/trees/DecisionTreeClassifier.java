@@ -310,25 +310,25 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     @Override
     public List<String> getListOptions() {
         List<String> options = new ArrayList<>();
-        options.add("Минимальное число объектов в листе:");
+        options.add(DecisionTreeDictionary.MIN_NUM_OBJECTS_IN_LEAF);
         options.add(String.valueOf(minObj));
-        options.add("Максиальная глубина дерева:");
+        options.add(DecisionTreeDictionary.MAX_DEPTH);
         options.add(String.valueOf(maxDepth));
-        options.add("Случайное дерево:");
+        options.add(DecisionTreeDictionary.RANDOM_TREE);
         options.add(String.valueOf(isRandom));
 
         if (isRandomTree()) {
-            options.add("Число случайных атрибутов:");
+            options.add(DecisionTreeDictionary.NUM_RANDOM_ATTRS);
             options.add(String.valueOf(numRandomAttr));
         }
 
-        options.add("Бинарное дерево:");
+        options.add(DecisionTreeDictionary.BINARY_TREE);
         options.add(String.valueOf(getUseBinarySplits()));
-        options.add("Использование случайных расщеплений атрибута:");
+        options.add(DecisionTreeDictionary.RANDOM_SPLITS);
         options.add(String.valueOf(isUseRandomSplits()));
 
         if (isUseRandomSplits()) {
-            options.add("Число случайных расщеплений атрибута:");
+            options.add(DecisionTreeDictionary.NUM_RANDOM_SPLITS);
             options.add(String.valueOf(numRandomSplits));
         }
 

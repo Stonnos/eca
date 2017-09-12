@@ -100,7 +100,7 @@ public class ExperimentTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputInfo.getInfo(experimentModel().getClassifier(row)));
+            this.setToolTipText(ClassifierInputInfo.getInputOptionsInfo(experimentModel().getClassifier(row)));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ExperimentTable.this.getTableHeader().getFont());

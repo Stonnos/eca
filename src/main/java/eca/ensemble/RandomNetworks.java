@@ -51,11 +51,11 @@ public class RandomNetworks extends ThresholdClassifier {
     @Override
     public String[] getOptions() {
         return new String[] {
-                "Число итераций:", String.valueOf(getIterationsNum()),
-                "Минимальная допустимая ошибка сети:", String.valueOf(getMinError()),
-                "Максимальная допустимая ошибка сети:", String.valueOf(getMaxError()),
-                "Формирование обучающих выборок:", isUseBootstrapSamples() ?
-                "Бутстрэп-выборки" : "Исходное обучающее множество"
+                EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
+                EnsembleDictionary.NETWORK_MIN_ERROR, String.valueOf(getMinError()),
+                EnsembleDictionary.NETWORK_MAX_ERROR, String.valueOf(getMaxError()),
+                EnsembleDictionary.SAMPLING_METHOD, isUseBootstrapSamples() ?
+                EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD : EnsembleDictionary.TRAINING_SAMPLE_METHOD
         };
     }
 

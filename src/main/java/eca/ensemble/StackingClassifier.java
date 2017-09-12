@@ -64,7 +64,7 @@ public class StackingClassifier extends AbstractClassifier
     /**
      * Use k - cross validation method?
      **/
-    private boolean use_Cross_Validation;
+    private boolean useCrossValidation;
 
     /**
      * Number of folds
@@ -94,7 +94,7 @@ public class StackingClassifier extends AbstractClassifier
      * @param flag the value of use cross validation
      */
     public final void setUseCrossValidation(boolean flag) {
-        this.use_Cross_Validation = flag;
+        this.useCrossValidation = flag;
     }
 
     /**
@@ -103,7 +103,7 @@ public class StackingClassifier extends AbstractClassifier
      * @return the value of use cross validation
      */
     public final boolean getUseCrossValidation() {
-        return use_Cross_Validation;
+        return useCrossValidation;
     }
 
     /**
@@ -230,13 +230,13 @@ public class StackingClassifier extends AbstractClassifier
     public String[] getOptions() {
         String[] options = new String[(classifiers.size() + 2) * 2];
         int k = 0;
-        options[k++] = "Мета-классификатор:";
+        options[k++] = EnsembleDictionary.META_CLASSIFIER;
         options[k++] = String.valueOf(metaClassifier.getClass().getSimpleName());
-        options[k++] = "Метод формирования мета-признаков:";
-        options[k++] = getUseCrossValidation() ? numFolds + " - блочная кросс-проверка"
-                : "Использование обучающего множества";
+        options[k++] = EnsembleDictionary.META_SAMPLING_METHOD;
+        options[k++] = getUseCrossValidation() ? String.format(EnsembleDictionary.CROSS_VALIDATION, numFolds)
+                : EnsembleDictionary.TRAINING_SET_METHOD;
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
-            options[i] = "Базовый классификатор " + j + ":";
+            options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[i + 1] = classifiers.getClassifier(j).getClass().getSimpleName();
         }
         return options;

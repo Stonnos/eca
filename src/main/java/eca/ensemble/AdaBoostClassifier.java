@@ -67,14 +67,14 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     public String[] getOptions() {
         String[] options = new String[(getClassifiersSet().size() + 3) * 2];
         int k = 0;
-        options[k++] = "Число итераций:";
+        options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
-        options[k++] = "Минимальная допустимая ошибка классификатора:";
+        options[k++] = EnsembleDictionary.MIN_ERROR;
         options[k++] = String.valueOf(getMinError());
-        options[k++] = "Максимальная допустимая ошибка классификатора:";
+        options[k++] = EnsembleDictionary.MAX_ERROR;
         options[k++] = String.valueOf(getMaxError());
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
-            options[i] = "Базовый классификатор " + j + ":";
+            options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
         }
         return options;

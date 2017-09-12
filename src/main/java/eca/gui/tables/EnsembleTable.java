@@ -66,7 +66,7 @@ public class EnsembleTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputInfo.getInfo(ensembleModel().get(row)));
+            this.setToolTipText(ClassifierInputInfo.getInputOptionsInfo(ensembleModel().get(row)));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());
