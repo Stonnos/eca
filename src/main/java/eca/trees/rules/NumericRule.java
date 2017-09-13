@@ -26,7 +26,7 @@ public class NumericRule extends AbstractRule {
      * Creates <tt>NumericRule</tt> object.
      *
      * @param attribute split attribute
-     * @throws IllegalArgumentException if split attribute is not numeric
+     * @throws IllegalArgumentException if the value of split attribute is null
      */
     public NumericRule(Attribute attribute) {
         super(attribute);

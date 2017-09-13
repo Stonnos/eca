@@ -83,7 +83,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
     public void setNumRandomAttr(int numRandomAttr) {
-        checkForNegative(numRandomAttr);
+        eca.core.Assert.notNegative(numRandomAttr);
         this.numRandomAttr = numRandomAttr;
     }
 
@@ -103,7 +103,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
     public void setMinObj(int minObj) {
-        checkForNegative(minObj);
+        eca.core.Assert.notNegative(minObj);
         this.minObj = minObj;
     }
 
@@ -114,7 +114,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
     public void setMaxDepth(int maxDepth) {
-        checkForNegative(maxDepth);
+        eca.core.Assert.notNegative(maxDepth);
         this.maxDepth = maxDepth;
     }
 

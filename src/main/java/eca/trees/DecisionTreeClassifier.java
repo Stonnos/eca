@@ -5,6 +5,7 @@
  */
 package eca.trees;
 
+import eca.core.Assert;
 import eca.core.ListOptionsHandler;
 import eca.core.RandomAttributesEnumeration;
 import eca.core.InstancesHandler;
@@ -150,7 +151,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
     public final void setMinObj(int minObj) {
-        checkForNegative(minObj);
+        Assert.notNegative(minObj);
         this.minObj = minObj;
     }
 
@@ -179,7 +180,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
     public void setMaxDepth(int maxDepth) {
-        checkForNegative(maxDepth);
+        Assert.notNegative(maxDepth);
         this.maxDepth = maxDepth;
     }
 
@@ -269,7 +270,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     public void setNumRandomSplits(int numRandomSplits) {
         if (numRandomSplits < MIN_RANDOM_SPLITS) {
             throw new IllegalArgumentException(
-                    String.format("Число случайных расщеплений атрибута должно быть не менее %d!", MIN_RANDOM_SPLITS));
+                    String.format(DecisionTreeDictionary.BAD_RANDOM_ATTRS_NUMBER_ERROR_TEXT, MIN_RANDOM_SPLITS));
         }
         this.numRandomSplits = numRandomSplits;
     }
@@ -281,7 +282,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
     public final void setNumRandomAttr(int numRandomAttr) {
-        checkForNegative(numRandomAttr);
+        Assert.notNegative(numRandomAttr);
         this.numRandomAttr = numRandomAttr;
     }
 
@@ -676,12 +677,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             }
         }
         return optValues;
-    }
-
-    private void checkForNegative(int value) {
-        if (value < 0) {
-            throw new IllegalArgumentException(String.format("Negative value: %d", value));
-        }
     }
 
     private void createDecisionTree(TreeNode x) {

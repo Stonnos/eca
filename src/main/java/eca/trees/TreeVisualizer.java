@@ -16,6 +16,7 @@ import eca.io.buffer.ImageCopier;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -371,6 +372,17 @@ public class TreeVisualizer extends JPanel {
      */
     private class NodeDescriptor {
 
+        static final String CELL_FORMAT = "<td class = 'attr'>%s</td>";
+        static final String NODE_INDEX = "Номер узла:";
+        static final String NODE_TYPE_TEXT = "Тип узла:";
+        static final String OBJECTS_NUM_TEXT = "Число объектов:";
+        static final String NODE_DEPTH_TEXT = "Глубина узла:";
+        static final String SPLIT_ATTR_TEXT = "Атрибут для расщепления:";
+        static final String NODE_ERROR_TEXT = "Ошибка узла:";
+        static final String CLASS_VALUE_TEXT = "Значение класса:";
+        static final String LEAF_TEXT = "Лист";
+        static final String INNER_NODE_TEXT = "Внутренний";
+
         TreeNode node;
         Rectangle2D.Double rect;
         JLabel info = new JLabel();
@@ -453,35 +465,37 @@ public class TreeVisualizer extends JPanel {
 
         @Override
         public String toString() {
-            StringBuilder str = new StringBuilder("<html><head><style>"
-                    + ".attr {font-weight: bold;}</style></head><body>");
+            StringBuilder str =
+                    new StringBuilder("<html><head><style>.attr {font-weight: bold;}</style></head><body>");
             str.append("<table>");
             str.append("<tr>");
-            str.append("<td class = 'attr'>Номер узла:</td>").append("<td>").
-                    append(node.index()).append("</td>");
+            str.append(String.format(CELL_FORMAT, NODE_INDEX))
+                    .append("<td>").append(node.index()).append("</td>");
             str.append("</tr><tr>");
-            String type = isLeaf() ? "<td>Лист</td>" : "<td>Внутренний</td>";
-            str.append("<td class = 'attr'>Тип узла:</td>").append(type);
+            String type = isLeaf() ? LEAF_TEXT : INNER_NODE_TEXT;
+            str.append(String.format(CELL_FORMAT, NODE_TYPE_TEXT)).append("<td>")
+                .append(type).append("</td>");
             str.append("</tr><tr>");
-            str.append("<td class = 'attr'>Число объектов:</td>").append("<td>").
+            str.append(String.format(CELL_FORMAT, OBJECTS_NUM_TEXT)).append("<td>").
                     append(String.valueOf(objectsNum())).append("</td>");
             str.append("</tr><tr>");
-            str.append("<td class = 'attr'>Глубина узла:</td>").append("<td>").
+            str.append(String.format(CELL_FORMAT, NODE_DEPTH_TEXT)).append("<td>").
                     append(String.valueOf(node.getDepth())).append("</td>");
             str.append("</tr>");
             if (!isLeaf()) {
                 str.append("<tr>");
-                str.append("<td class = 'attr'>Атрибут для расщепления:</td>").append("<td>").
+                str.append(String.format(CELL_FORMAT, SPLIT_ATTR_TEXT)).append("<td>").
                         append(getRule().attribute().name()).append("</td>");
                 str.append("</tr>");
             }
             int c = (int) node.classValue();
             str.append("<tr>");
-            str.append("<td class = 'attr'>Ошибка узла:</td>").append("<td>").
+            str.append(String.format(CELL_FORMAT, NODE_ERROR_TEXT)).append("<td>").
                     append(fmt.format(tree.nodeError(node))).append("</td>");
             str.append("</tr><tr>");
-            str.append("<td class = 'attr'>Значение класса:</td>").append("<td>").append(c)
-                    .append(" (").append(tree.getData().classAttribute().value(c)).append(")</td>");
+            str.append(String.format(CELL_FORMAT, CLASS_VALUE_TEXT)).append("<td>").append(c)
+                    .append(StringUtils.SPACE).append("(").append(tree.getData().classAttribute().value(c))
+                    .append(")").append("</td>");
             str.append("</tr></table></body></html>");
             return str.toString();
         }

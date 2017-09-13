@@ -14,6 +14,7 @@ import eca.gui.dialogs.JFontChooser;
 import eca.gui.text.NumericFormat;
 import eca.io.buffer.ImageCopier;
 import eca.neural.functions.AbstractFunction;
+import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 
 import javax.swing.*;
@@ -419,12 +420,22 @@ public class NetworkVisualizer extends JPanel {
      */
     private class NeuronNode {
 
-        private final Neuron neuron;
-        private Ellipse2D.Double ellipse;
-        private NeuronInfo info;
+        static final String TOOL_TIP_TEXT =
+                "<html><body>Щелкните левой кнопкой мыши<br>для просмотра информации</body></html>";
+        static final String ACTIVATION_FUNCTION_TEXT = "Активационная функция: ";
+        static final String LAYER_TEXT = "Слой:";
+        static final String NODE_INDEX_TEXT = "Номер узла: %d";
+        static final String IN_LAYER_TEXT = "Входной";
+        static final String OUT_LAYER_TEXT = "Выходной";
+        static final String HIDDEN_LAYER_TEXT = "Скрытый";
+        static final String NEURAL_LINK_FORMAT = "Вес связи (%d,%d) = %s";
+
+        final Neuron neuron;
+        Ellipse2D.Double ellipse;
+        NeuronInfo info;
         JLabel infoLabel = new JLabel();
 
-        public NeuronNode(Neuron neuron, Ellipse2D.Double ellipse) {
+        NeuronNode(Neuron neuron, Ellipse2D.Double ellipse) {
             this.neuron = neuron;
             this.ellipse = ellipse;
             NetworkVisualizer.this.add(infoLabel);
@@ -435,109 +446,110 @@ public class NetworkVisualizer extends JPanel {
                     createInfo();
                 }
             });
-            infoLabel.setToolTipText("<html><body>Щелкните левой кнопкой мыши<br>"
-                    + "для просмотра информации</body></html>");
+            infoLabel.setToolTipText(
+                    TOOL_TIP_TEXT);
         }
 
-        public StringBuilder getInfo() {
-            StringBuilder text = new StringBuilder("Номер узла: " + neuron.index() + "\n");
+        StringBuilder getInfo() {
+            StringBuilder text = new StringBuilder(String.format(NODE_INDEX_TEXT, neuron.index()));
+            text.append("\n");
             if (neuron.getType() != Neuron.IN_LAYER) {
-                text.append("Активационная функция: ");
+                text.append(ACTIVATION_FUNCTION_TEXT);
                 text.append(neuron.getActivationFunction().getClass().getSimpleName()).append("\n");
                 if (neuron.getActivationFunction() instanceof AbstractFunction) {
                     text.append(((AbstractFunction) neuron.getActivationFunction()).coefficientToString(fmt))
                             .append("\n");
                 }
             }
-            text.append("Слой: ");
+            text.append(LAYER_TEXT).append(StringUtils.SPACE);
             switch (neuron.getType()) {
                 case Neuron.IN_LAYER:
-                    text.append("Входной");
+                    text.append(IN_LAYER_TEXT);
                     break;
                 case Neuron.OUT_LAYER:
-                    text.append("Выходной");
+                    text.append(OUT_LAYER_TEXT);
                     break;
                 case Neuron.HIDDEN_LAYER:
-                    text.append("Скрытый");
+                    text.append(HIDDEN_LAYER_TEXT);
                     break;
             }
             text.append("\n");
             for (Iterator<NeuralLink> link = neuron.outLinks(); link.hasNext(); ) {
                 NeuralLink edge = link.next();
-                text.append("Вес связи (").append(edge.source().index()).
-                        append(",").append(edge.target().index()).
-                        append(") = ").
-                        append(fmt.format(edge.getWeight())).append("\n");
+                text.append(String.format(NEURAL_LINK_FORMAT,
+                        edge.source().index(), edge.target().index(),
+                        fmt.format(edge.getWeight())));
+                text.append("\n");
             }
             return text;
         }
 
-        public void dispose() {
+        void dispose() {
             if (info != null) {
                 info.dispose();
             }
         }
 
-        public void createInfo() {
+        void createInfo() {
             if (info == null) {
                 info = new NeuronInfo(this);
             }
             info.setVisible(true);
         }
 
-        public Neuron neuron() {
+        Neuron neuron() {
             return neuron;
         }
 
-        public Ellipse2D.Double getEllipse() {
+        Ellipse2D.Double getEllipse() {
             return ellipse;
         }
 
-        public void setEllipse(Ellipse2D.Double ellipse) {
+        void setEllipse(Ellipse2D.Double ellipse) {
             this.ellipse = ellipse;
         }
 
-        public void setRect(double x, double y, double w, double h) {
+        void setRect(double x, double y, double w, double h) {
             ellipse.setFrame(x, y, w, h);
         }
 
-        public double width() {
+        double width() {
             return ellipse.width;
         }
 
-        public double height() {
+        double height() {
             return ellipse.height;
         }
 
-        public double x1() {
+        double x1() {
             return ellipse.x;
         }
 
-        public double x2() {
+        double x2() {
             return ellipse.x + width();
         }
 
-        public double y1() {
+        double y1() {
             return ellipse.y;
         }
 
-        public double y2() {
+        double y2() {
             return ellipse.y + height();
         }
 
-        public double centerX() {
+        double centerX() {
             return (x1() + x2()) / 2.0;
         }
 
-        public double centerY() {
+        double centerY() {
             return (y1() + y2()) / 2.0;
         }
 
-        public boolean contains(double x, double y) {
+        boolean contains(double x, double y) {
             return ellipse.contains(x, y);
         }
 
-        public void paintString(Graphics2D g) {
+        void paintString(Graphics2D g) {
             FontMetrics fm = g.getFontMetrics(nodeFont);
             g.setPaint(textColor);
             g.setFont(nodeFont);
@@ -551,7 +563,7 @@ public class NetworkVisualizer extends JPanel {
 
         }
 
-        public void paint(Graphics2D g) {
+        void paint(Graphics2D g) {
             switch (neuron.getType()) {
                 case Neuron.IN_LAYER:
                     g.setColor(inLayerColor);

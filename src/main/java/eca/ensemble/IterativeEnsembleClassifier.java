@@ -125,13 +125,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
     protected final void checkModel() throws Exception {
         if (classifiers.isEmpty()) {
-            throw new Exception("Не удалось построить модель: ни один классификатор не был включен в ансамбль!");
-        }
-    }
-
-    protected final void checkForNegative(int value) {
-        if (value < 0) {
-            throw new IllegalArgumentException(String.format("Negative value: %d: ", value));
+            throw new Exception(EnsembleDictionary.EMPTY_ENSEMBLE_ERROR_TEXT);
         }
     }
 

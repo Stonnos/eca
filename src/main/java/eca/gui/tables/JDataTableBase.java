@@ -23,6 +23,12 @@ import java.awt.event.ItemListener;
  */
 public class JDataTableBase extends JTable {
 
+    private static final String FONT_SELECTION_MENU_TEXT = "Выбор шрифта";
+    private static final String AUTO_SIZE_MENU_TEXT = "Автомасштабирование";
+    private static final String DATA_COPY_MENU_TEXT = "Копировать данные";
+    private static final String ALL_DATA_COPY_MENU_TEXT = "Копировать данные вместе с заголовком";
+    private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 12);
+
     private JCheckBoxMenuItem resizeMenu;
 
     public JDataTableBase(Object[][] data, Object[] title) {
@@ -50,7 +56,7 @@ public class JDataTableBase extends JTable {
         FontMetrics metric = getGraphics().getFontMetrics(getTableHeader().getFont());
         for (int i = 0; i < getColumnCount(); i++) {
             if (!resizeMenu.getState()) {
-                getColumnModel().getColumn(i).setMinWidth(getPrefferedWidth(i, metric));
+                getColumnModel().getColumn(i).setMinWidth(getPreferredWidth(i, metric));
 
             } else {
                 getColumnModel().getColumn(i).setMinWidth(15);
@@ -66,7 +72,7 @@ public class JDataTableBase extends JTable {
         }
     }
 
-    private int getPrefferedWidth(int column, FontMetrics metric) {
+    private int getPreferredWidth(int column, FontMetrics metric) {
         int max = metric.stringWidth(this.getColumnName(column)) + 10;
         for (int i = 0; i < this.getRowCount(); i++) {
             Object val = this.getValueAt(i, column);
@@ -77,11 +83,10 @@ public class JDataTableBase extends JTable {
         return max;
     }
 
-
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
-        JMenuItem fontMenu = new JMenuItem("Выбор шрифта");
-        //-----------------------------------
+        JMenuItem fontMenu = new JMenuItem(FONT_SELECTION_MENU_TEXT);
+
         fontMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -94,7 +99,7 @@ public class JDataTableBase extends JTable {
                 chooser.dispose();
             }
         });
-        resizeMenu = new JCheckBoxMenuItem("Автомасштабирование");
+        resizeMenu = new JCheckBoxMenuItem(AUTO_SIZE_MENU_TEXT);
         resizeMenu.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
@@ -102,8 +107,8 @@ public class JDataTableBase extends JTable {
             }
         });
         //-----------------------------------
-        JMenuItem copyMenu = new JMenuItem("Копировать данные");
-        JMenuItem copyWithHeaderMenu = new JMenuItem("Копировать данные вместе с заголовком");
+        JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
+        JMenuItem copyWithHeaderMenu = new JMenuItem(ALL_DATA_COPY_MENU_TEXT);
 
         copyMenu.addActionListener(new ActionListener() {
 
@@ -150,9 +155,8 @@ public class JDataTableBase extends JTable {
         this.getTableHeader().setBackground(new Color(192, 192, 192));
         this.getTableHeader().setBorder(BorderFactory.
                 createEtchedBorder(new Color(133, 133, 133), null));
-        //-------------------------------------------------
         this.createPopupMenu();
-        this.font(new Font("Arial", Font.PLAIN, 12));
+        this.font(DEFAULT_FONT);
         this.setAutoResizeOff(true);
     }
 
@@ -162,6 +166,9 @@ public class JDataTableBase extends JTable {
         this.getTableHeader().setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 2));
     }
 
+    /**
+     * Implements copying table into system clipboard.
+     */
     private class JTableClipboard {
 
         StringCopier stringCopier;

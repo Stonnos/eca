@@ -12,6 +12,7 @@ import eca.core.converters.ModelConverter;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistory;
 import eca.dataminer.IterativeExperiment;
+import eca.gui.ClassifierInputOptionsService;
 import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
@@ -20,6 +21,7 @@ import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.tables.ExperimentTable;
+import eca.gui.tables.StatisticsTableBuilder;
 import eca.model.ClassifierDescriptor;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -57,6 +59,9 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String LOAD_BUTTON_TEXT = "Загрузить эксперимент";
 
     private static final Font TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 13);
+    private static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
+    private static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
+    private static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
 
     private final AbstractExperiment experiment;
 
@@ -116,18 +121,8 @@ public abstract class ExperimentFrame extends JFrame {
         }
     }
 
-
-    public final String getDataInfo(Instances data) {
-        StringBuilder str = new StringBuilder();
-        str.append("Данные: ").append(data.relationName()).append("\n");
-        str.append("Число объектов: ").append(data.numInstances()).append("\n");
-        str.append("Число атрибутов: ").append(data.numAttributes()).append("\n");
-        str.append("Число классов: ").append(data.numClasses()).append("\n");
-        return str.toString();
-    }
-
     public final void setDataInfo(Instances data) {
-        text.setText(getDataInfo(data));
+        text.setText(ClassifierInputOptionsService.getInstancesInfo(data));
         text.setCaretPosition(0);
     }
 
@@ -137,32 +132,33 @@ public abstract class ExperimentFrame extends JFrame {
 
     public final void setResults(Instances data) {
         final StringBuilder str = new StringBuilder();
-        str.append("Эксперимент завершен.\n");
-        str.append(getDataInfo(data));
-        str.append("Метод оценки точности: ");
+        str.append(EXPERIMENT_END_TEXT).append("\n");
+        str.append(ClassifierInputOptionsService.getInstancesInfo(data));
+        str.append(EVALUATION_METHOD_TEXT);
 
         getExperiment().getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
 
             @Override
             public Void evaluateModel() {
-                str.append("Использование обучающего множества");
+                str.append(StatisticsTableBuilder.TRAINING_DATA_METHOD_TEXT);
                 return null;
             }
 
             @Override
             public Void crossValidateModel() {
-                String s = getExperiment().getNumTests() > 1 ?
-                        getExperiment().getNumTests() + "*" : StringUtils.EMPTY;
-                str.append(s).append(getExperiment().getNumFolds()).append(
-                        " - блочная кросс-проверка на тестовой выборке");
+                String evaluationMethodStr = String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
+                        (getExperiment().getNumTests() > 1 ? getExperiment().getNumTests() + "*" : StringUtils.EMPTY),
+                        getExperiment().getNumFolds());
+
+                str.append(evaluationMethodStr);
                 return null;
             }
         });
 
-        str.append("\n\n").append("Наилучшие конфигурации классификаторов:\n");
+        str.append("\n\n").append(BEST_CLASSIFIER_STRUCTURES_TEXT).append("\n");
         for (int i = 0; i < Integer.min(table.getBestNumber(), table.getRowCount()); i++) {
             str.append(table.experimentModel().getClassifier(i).getClass().getSimpleName())
-                    .append(" №").append(i).append("\n");
+                    .append(StringUtils.SPACE).append("№").append(i).append("\n");
             AbstractClassifier cls = (AbstractClassifier) table.experimentModel().getClassifier(i);
             String[] options = cls.getOptions();
             for (int j = 0; j < options.length; j += 2) {

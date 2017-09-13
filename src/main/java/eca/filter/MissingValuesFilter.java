@@ -5,6 +5,7 @@
  */
 package eca.filter;
 
+import org.springframework.util.Assert;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
@@ -24,25 +25,23 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
 
     @Override
     public Instances filterInstances(Instances data) throws Exception {
-        if (data == null) {
-            throw new NullPointerException();
-        }
+        Assert.notNull(data, "Input data is not specified!");
         if (data.checkForStringAttributes()) {
-            throw new Exception("Алгоритм не работает со строковыми атрибутами!");
+            throw new Exception(FilterDictionary.STRING_ATTR_ERROR_TEXT);
         }
         if (data.classIndex() == -1) {
-            throw new Exception("Выберите атрибут класса!");
+            throw new Exception(FilterDictionary.CLASS_NOT_SELECTED_ERROR_TEXT);
         }
         if (data.classAttribute().isNumeric()) {
-            throw new Exception("Атрибут класса должен иметь категориальный тип!");
+            throw new Exception(FilterDictionary.BAD_CLASS_TYPE_ERROR_TEXT);
         }
         if (data.classAttribute().numValues() < 2) {
-            throw new Exception("Атрибут класса должен иметь не менее двух значений!");
+            throw new Exception(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
         }
         Instances train = new Instances(data);
         train.deleteWithMissingClass();
         if (train.isEmpty()) {
-            throw new Exception("Обучающее множество не содержит объектов с заданными классами!");
+            throw new Exception(FilterDictionary.EMPTY_INSTANCES_ERROR_TEXT);
         }
         missFilter.setInputFormat(train);
         train = weka.filters.Filter.useFilter(train, missFilter);
@@ -50,4 +49,4 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         return train;
     }
 
-} //End of class MissingValuesFilter
+}

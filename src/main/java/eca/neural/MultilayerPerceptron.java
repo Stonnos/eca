@@ -147,16 +147,15 @@ public class MultilayerPerceptron implements java.io.Serializable {
         hiddenLayersNum = 0;
         StringTokenizer tokenizer = new StringTokenizer(hiddenLayer, ",");
         if (!tokenizer.hasMoreElements()) {
-            throw new IllegalArgumentException("Количество скрытых слоев должно быть не менее одного!");
+            throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_HIDDEN_LAYERS_NUM_ERROR_TEXT);
         }
         while (tokenizer.hasMoreTokens()) {
             String str = tokenizer.nextToken();
             if (!str.matches("^[0-9]*$")) {
-                throw new IllegalArgumentException("Неправильный формат структуры скрытого слоя!");
+                throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_HIDDEN_LAYER_STRUCTURE);
             }
             if (Integer.valueOf(str).equals(0)) {
-                throw new IllegalArgumentException(
-                        "Количество нейронов в одном скрытом слое должно быть не менее одного!");
+                throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_NEURONS_NUM_IN_HIDDEN_LAYER_ERROR_TEXT);
             }
             hiddenLayersNum++;
         }
@@ -524,7 +523,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
     private void checkValue(int value) {
         if (value < MINIMUM_NUMBER_OF_NEURONS_IN_LAYER) {
             throw new IllegalArgumentException(
-                    String.format("Число нейронов должно быть больше %d!", MINIMUM_NUMBER_OF_NEURONS_IN_LAYER));
+                    String.format(NeuralNetworkDictionary.BAD_NEURONS_NUM_ERROR_FORMAT, MINIMUM_NUMBER_OF_NEURONS_IN_LAYER));
         }
     }
 

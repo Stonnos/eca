@@ -8,7 +8,7 @@ package eca.gui.tables;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.EnsembleClassifier;
-import eca.gui.ClassifierInputInfo;
+import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
@@ -66,7 +66,7 @@ public class EnsembleTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputInfo.getInputOptionsInfo(ensembleModel().get(row)));
+            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(ensembleModel().get(row)));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());

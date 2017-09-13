@@ -5,6 +5,7 @@
  */
 package eca.gui.panels;
 
+import eca.gui.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
@@ -70,7 +71,8 @@ public class ClassifyInstancePanel extends JPanel {
         JScrollPane bottom = new JScrollPane(classField);
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, table.data().classAttribute().name())));
-        bottom.setToolTipText(table.getAttributeInfo(table.data().classIndex()).toString());
+        bottom.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(table.data().classAttribute(),
+                table.getAttributeStatistics()));
         JPanel top = new JPanel(new GridBagLayout());
         //--------------------------------------------
         JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);

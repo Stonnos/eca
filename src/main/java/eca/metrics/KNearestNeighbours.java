@@ -127,7 +127,7 @@ public class KNearestNeighbours extends AbstractClassifier
     public void setNumNeighbours(int numNeighbours) {
         if (numNeighbours < MIN_NEIGHBOURS_NUMBER) {
             throw new IllegalArgumentException(
-                    String.format("Число ближайших соседей должно быть не менее %d!", MIN_NEIGHBOURS_NUMBER));
+                    String.format(KNNDictionary.BAD_NEIGHBOURS_NUM_ERROR_FORMAT, MIN_NEIGHBOURS_NUMBER));
         }
         this.numNeighbours = numNeighbours;
     }
@@ -142,7 +142,7 @@ public class KNearestNeighbours extends AbstractClassifier
     public void setWeight(double weight) {
         if (weight < MIN_WEIGHT || weight > MAX_WEIGHT) {
             throw new IllegalArgumentException(
-                    String.format("Вес должен лежать в интервале [%.1f, %.1f]!", MIN_WEIGHT, MAX_WEIGHT));
+                    String.format(KNNDictionary.BAD_WEIGHT_ERROR_FORMAT, MIN_WEIGHT, MAX_WEIGHT));
         }
         this.weight = weight;
     }

@@ -29,4 +29,7 @@ public class EnsembleDictionary {
     public static final String NETWORK_MIN_ERROR = "Минимальная допустимая ошибка сети:";
     public static final String NETWORK_MAX_ERROR = "Максимальная допустимая ошибка сети:";
 
+    public static final String EMPTY_ENSEMBLE_ERROR_TEXT =
+            "Не удалось построить модель: ни один классификатор не был включен в ансамбль!";
+
 }

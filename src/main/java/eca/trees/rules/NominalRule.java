@@ -19,14 +19,10 @@ public class NominalRule extends AbstractRule {
      * Creates <tt>NominalRule</tt> object.
      *
      * @param attribute split attribute
-     * @throws IllegalArgumentException if split attribute is not nominal
+     * @throws IllegalArgumentException if the value of split attribute is null
      */
     public NominalRule(Attribute attribute) {
         super(attribute);
-        if (!attribute.isNominal()) {
-            throw new IllegalArgumentException("attribute " + attribute
-                    + "must be nominal");
-        }
     }
 
     @Override

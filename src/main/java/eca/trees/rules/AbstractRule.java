@@ -5,6 +5,7 @@
  */
 package eca.trees.rules;
 
+import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instance;
 
@@ -24,9 +25,7 @@ public abstract class AbstractRule implements java.io.Serializable {
      * @throws IllegalArgumentException if the value of split attribute is null
      */
     protected AbstractRule(Attribute attribute) {
-        if (attribute == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(attribute, "Attribute is not specified!");
         this.attribute = attribute;
     }
 

@@ -1,0 +1,16 @@
+<html>
+<body style='font-size: 15'>
+<span style = 'font-size: 36'>$title</span><br>
+<i><span style = 'font-size: 28'>$description</span></i>
+<br>
+<br>
+&copy Copyright $title, Inc. 2015 - 2017
+<br>
+Все права защищены.
+<br>
+Автор: <i>$author</i><br>
+Email: <i>$email</i><br>
+Версия: <i>$version</i><br>
+Последняя дата обновления: <i>$lastUpdateDate</i>
+</body>
+</html>

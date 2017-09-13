@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
@@ -110,49 +111,6 @@ public class ClassifyInstanceTable extends JDataTableBase {
         return (ClassifyInstanceTableModel) this.getModel();
     }
 
-    public StringBuilder getAttributeInfo(int i) {
-        Attribute a = data().attribute(i);
-        StringBuilder info = new StringBuilder("<html><head><style>"
-                + ".attr {font-weight: bold;}</style></head><body>");
-        info.append("<table><tr>");
-        info.append("<td class = 'attr'>Атрибут:</td>").append("<td>").append(a.name()).append("</td>");
-        info.append("</tr><tr>");
-        info.append("<td class = 'attr'>Тип:</td>");
-        if (a.isNumeric()) {
-            info.append("<td>").append(a.isDate() ? AttributesTypesDictionary.DATE : AttributesTypesDictionary.NUMERIC).append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr'>Минимальное значение:</td>").
-                    append("<td>").append(attributeStatistics.getMin(a)).append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr'>Максимальное значение:</td>").
-                    append("<td>").append(attributeStatistics.getMax(a)).
-                    append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr'>Математическое ожидание:</td>").
-                    append("<td>").append(attributeStatistics.meanOrMode(a)).append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr'>Дисперсия:</td>").
-                    append("<td>").append(attributeStatistics.variance(a)).append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr'>Среднеквадратическое отклонение:</td>").
-                    append("<td>").append(attributeStatistics.stdDev(a)).append("</td>");
-            info.append("</tr>");
-        } else {
-            info.append("<td>").append(AttributesTypesDictionary.NOMINAL).append("</td>");
-            info.append("</tr><tr>");
-            info.append("<td class = 'attr' colspan = '2' style = 'text-align: center;'>Значения:</td>");
-            info.append("</tr>");
-            for (int k = 0; k < a.numValues(); k++) {
-                info.append("<tr>");
-                info.append("<td>Код:</td>").append("<td>").append(k).append(", Значение: ").
-                        append(a.value(k)).append("</td>");
-                info.append("</tr>");
-            }
-        }
-        info.append("</table></body></html>");
-        return info;
-    }
-
     /**
      *
      */
@@ -170,7 +128,8 @@ public class ClassifyInstanceTable extends JDataTableBase {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(getAttributeInfo(i).toString());
+            this.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(data.attribute(i),
+                    attributeStatistics).toString());
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());

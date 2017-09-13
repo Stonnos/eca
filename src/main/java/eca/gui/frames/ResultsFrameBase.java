@@ -13,11 +13,10 @@ import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleClassifier;
 import eca.ensemble.StackingClassifier;
-import eca.gui.ClassifierInputInfo;
+import eca.gui.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
-import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.tables.ClassificationCostsMatrix;
@@ -50,7 +49,6 @@ import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
-import weka.core.Attribute;
 import weka.core.Instances;
 
 import javax.imageio.ImageIO;
@@ -97,7 +95,7 @@ public class ResultsFrameBase extends JFrame {
 
     private final Classifier classifier;
     private final Instances data;
-    private final Evaluation ev;
+    private final Evaluation evaluation;
     private final ClassifierIndexer indexer = new ClassifierIndexer();
     private JTabbedPane pane;
     private JScrollPane resultPane;
@@ -110,14 +108,14 @@ public class ResultsFrameBase extends JFrame {
     private ROCCurvePanel rocCurvePanel;
 
     public ResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-                            Evaluation ev, final int digits)
+                            Evaluation evaluation, final int digits)
             throws Exception {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
         this.parent = parent;
         this.setIconImage(parent.getIconImage());
-        this.ev = ev;
+        this.evaluation = evaluation;
         this.makeGUI(digits);
         this.makeMenu(digits);
         this.setLocationRelativeTo(parent);
@@ -136,7 +134,7 @@ public class ResultsFrameBase extends JFrame {
     }
 
     public Evaluation evaluation() {
-        return ev;
+        return evaluation;
     }
 
     public final void addPanel(String title, Component panel) {
@@ -146,7 +144,7 @@ public class ResultsFrameBase extends JFrame {
     public final void setStatisticaTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ClassifierInputInfo.getInputOptionsInfo(classifier));
+        this.statTable.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier));
         resultPane.setViewportView(table);
     }
 
@@ -180,7 +178,7 @@ public class ResultsFrameBase extends JFrame {
                     if (file != null) {
                         InputData inputData = new InputData((AbstractClassifier) classifier, data);
                         ModelConverter.saveModel(file,
-                                new ModelDescriptor(inputData, ev, getTitle(), digits));
+                                new ModelDescriptor(inputData, evaluation, getTitle(), digits));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -197,7 +195,8 @@ public class ResultsFrameBase extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
-                    inputParamInfo = new InfoFrame(inputMenu.getText(), getInputInfo(), ResultsFrameBase.this);
+                    inputParamInfo = new InfoFrame(inputMenu.getText(),
+                            ClassifierInputOptionsService.getInputOptionsInfo(classifier), ResultsFrameBase.this);
                     ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
@@ -216,7 +215,8 @@ public class ResultsFrameBase extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (attributesInfo == null) {
-                    attributesInfo = new InfoFrame(attrMenu.getText(), getAttributesInfo(), ResultsFrameBase.this);
+                    attributesInfo = new InfoFrame(attrMenu.getText(),
+                            getAttributesInfo(), ResultsFrameBase.this);
                     ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
@@ -300,11 +300,11 @@ public class ResultsFrameBase extends JFrame {
         resultPane = new JScrollPane();
         resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
         //------------------------------------------------------
-        misMatrix = new MisClassificationMatrix(ev);
+        misMatrix = new MisClassificationMatrix(evaluation);
         JScrollPane misClassPane = new JScrollPane(misMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
         //----------------------------------------
-        costMatrix = new ClassificationCostsMatrix(ev, digits);
+        costMatrix = new ClassificationCostsMatrix(evaluation, digits);
         JScrollPane costsPane = new JScrollPane(costMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));
@@ -355,14 +355,13 @@ public class ResultsFrameBase extends JFrame {
                 }
             }
         });
-        //---------------------------------
-        rocCurvePanel = new ROCCurvePanel(new RocCurve(ev), this, digits);
+
+        rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
 
         pane.add(RESULTS_TEXT, resultPanel);
         pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
                 new ClassifyInstanceTable(data, digits), classifier));
         pane.add(ROC_CURVES_TEXT, rocCurvePanel);
-        //---------------------------------
         this.add(pane);
     }
 
@@ -405,95 +404,23 @@ public class ResultsFrameBase extends JFrame {
         }
     }
 
-    public String getAttributesInfo() {
-        String separator = System.getProperty("line.separator");
-        StringBuilder attrInfo = new StringBuilder();
-        for (int i = 0; i < data().numAttributes(); i++) {
-            attrInfo.append(getAttributeInfo(data().attribute(i))).append(separator).append(separator);
-        }
-        return attrInfo.toString();
-    }
-
-    public StringBuilder getAttributeInfo(Attribute a) {
-        String separator = System.getProperty("line.separator");
-        StringBuilder attrInfo = new StringBuilder();
-        ClassifyInstancePanel panel = (ClassifyInstancePanel) pane.getComponentAt(1);
-        attrInfo.append("Атрибут:  ").append(a.name()).append(separator);
-        attrInfo.append("Тип:  ");
-        if (a.isNumeric()) {
-            attrInfo.append(a.isDate() ? AttributesTypesDictionary.DATE : AttributesTypesDictionary.NUMERIC).append(separator);
-            attrInfo.append("Минимальное значение:  ").
-                    append(panel.getAttributeStatistics().getMin(a)).append(separator);
-            attrInfo.append("Максимальное значение:  ").
-                    append(panel.getAttributeStatistics().getMax(a)).
-                    append(separator);
-            attrInfo.append("Математическое ожидание:  ").
-                    append(panel.getAttributeStatistics().meanOrMode(a)).append(separator);
-            attrInfo.append("Дисперсия:  ")
-                    .append(panel.getAttributeStatistics().variance(a)).append(separator);
-            attrInfo.append("Среднеквадратическое отклонение:  ").
-                    append(panel.getAttributeStatistics().stdDev(a)).append(separator);
-        } else {
-            attrInfo.append(AttributesTypesDictionary.NOMINAL).append(separator);
-            attrInfo.append("Значения:").append(separator);
-            for (int k = 0; k < a.numValues(); k++) {
-                attrInfo.append("Код:  ").append(k).append(", Значение: ").
-                        append(a.value(k)).append(separator);
-            }
-        }
-        return attrInfo;
-    }
-
-    private String getInputInfo() {
-        String separator = System.getProperty("line.separator");
-        AbstractClassifier cls = (AbstractClassifier) classifier;
-        StringBuilder inputInfo = new StringBuilder();
-        String[] options = cls.getOptions();
-        setOptions(inputInfo, options);
-        if (cls instanceof AbstractHeterogeneousClassifier) {
-            inputInfo.append(separator).append("Входные параметры базовых классификаторов:").append(separator);
-            AbstractHeterogeneousClassifier ens = (AbstractHeterogeneousClassifier) cls;
-            ClassifiersSet set = ens.getClassifiersSet();
-            setOptionsForEnsemble(inputInfo, set.toList());
-        }
-        if (cls instanceof StackingClassifier) {
-            inputInfo.append(separator).append("\nВходные параметры базовых классификаторов:").append(separator);
-            StackingClassifier ens = (StackingClassifier) cls;
-            setOptionsForEnsemble(inputInfo, ens.getClassifiers().toList());
-            //----------------------------------------------------
-            inputInfo.append("Входные параметры мета-классификатора:");
-            String[] metaOptions = ((AbstractClassifier) ens.getMetaClassifier()).getOptions();
-            inputInfo.append(separator).append("Мета-классификатор:   ").
-                    append(ens.getMetaClassifier().getClass().getSimpleName()).
-                    append(separator).append("Параметры:").append(separator);
-            setOptions(inputInfo, metaOptions);
-        }
-        return inputInfo.toString();
-    }
-
-    private void setOptions(StringBuilder info, String[] options) {
-        String separator = System.getProperty("line.separator");
-        for (int i = 0; i < options.length; i += 2) {
-            info.append(options[i]).append("   ").append(options[i + 1]).append(separator);
-        }
-    }
-
-    private void setOptionsForEnsemble(StringBuilder info, ArrayList<Classifier> set) {
-        String separator = System.getProperty("line.separator");
-        for (int i = 0; i < set.size(); i++) {
-            AbstractClassifier single = (AbstractClassifier) set.get(i);
-            info.append("Базовый классификатор:  ").append(single.getClass().getSimpleName()).append(separator);
-            info.append("Входные параметры:").append(separator);
-            String[] singleOptions = single.getOptions();
-            setOptions(info, singleOptions);
-            info.append(separator);
-        }
+    private String getAttributesInfo() {
+        ClassifyInstancePanel classifyInstancePanel = (ClassifyInstancePanel) pane.getComponentAt(1);
+        return ClassifierInputOptionsService.getAttributesInfo(data, classifyInstancePanel.getAttributeStatistics());
     }
 
     /**
-     *
+     * Class for saving classification results into XLS file.
      */
     private class XlsResultsSaver {
+
+        static final String INPUT_OPTIONS_TEXT = "Входные параметры";
+        static final String INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS = "Входные параметры классификатора";
+        static final String INDIVIDUAL_CLASSIFIER = "Классификатор";
+        static final String CLASSIFIERS_INPUT_OPTIONS = "Входные параметры базовых классификаторов:";
+        static final String META_CLASSIFIER_INPUT_OPTIONS = "Входные параметры мета-классификатора";
+        static final String META_CLASSIFIER_TEXT = "Мета-классификатор:";
+        static final String INDIVIDUAL_CLASSIFIER_TEXT = "Базовый классификатор:";
 
         void save(File file) throws Exception {
             try (FileOutputStream stream = new FileOutputStream(file)) {
@@ -515,27 +442,27 @@ public class ResultsFrameBase extends JFrame {
         }
 
         void createXlsInputParamSheet(Workbook book, CellStyle style) {
-            Sheet sheet = book.createSheet("Входные параметры");
+            Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
             AbstractClassifier cls = (AbstractClassifier) classifier;
 
-            createTitle(sheet, style, "Входные параметры классификатора");
-            createPair(sheet, style, "Классификатор", cls.getClass().getSimpleName());
+            createTitle(sheet, style, INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS);
+            createPair(sheet, style, INDIVIDUAL_CLASSIFIER, cls.getClass().getSimpleName());
 
             String[] options = cls.getOptions();
             setXlsClassifierOptions(sheet, options);
             if (cls instanceof AbstractHeterogeneousClassifier) {
-                createTitle(sheet, style, "Входные параметры базовых классификаторов:");
+                createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
                 AbstractHeterogeneousClassifier ens = (AbstractHeterogeneousClassifier) cls;
                 ClassifiersSet set = ens.getClassifiersSet();
                 setXlsEnsembleOptions(sheet, style, set.toList());
             }
             if (cls instanceof StackingClassifier) {
-                createTitle(sheet, style, "Входные параметры базовых классификаторов:");
+                createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
                 StackingClassifier ens = (StackingClassifier) cls;
                 setXlsEnsembleOptions(sheet, style, ens.getClassifiers().toList());
-                createTitle(sheet, style, "Входные параметры мета-классификатора");
+                createTitle(sheet, style, META_CLASSIFIER_INPUT_OPTIONS);
                 String[] metaOptions = ((AbstractClassifier) ens.getMetaClassifier()).getOptions();
-                createPair(sheet, style, "Мета-классификатор:",
+                createPair(sheet, style, META_CLASSIFIER_TEXT,
                         ens.getMetaClassifier().getClass().getSimpleName());
                 setXlsClassifierOptions(sheet, metaOptions);
             }
@@ -556,8 +483,8 @@ public class ResultsFrameBase extends JFrame {
         void setXlsEnsembleOptions(Sheet sheet, CellStyle style, ArrayList<Classifier> set) {
             for (int i = 0; i < set.size(); i++) {
                 AbstractClassifier single = (AbstractClassifier) set.get(i);
-                createPair(sheet, style, "Базовый классификатор:", single.getClass().getSimpleName());
-                createTitle(sheet, style, "Входные параметры:");
+                createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, single.getClass().getSimpleName());
+                createTitle(sheet, style, INPUT_OPTIONS_TEXT);
                 String[] singleOptions = single.getOptions();
                 setXlsClassifierOptions(sheet, singleOptions);
             }

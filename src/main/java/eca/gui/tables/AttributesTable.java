@@ -44,6 +44,9 @@ public class AttributesTable extends JDataTableBase {
     private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
     private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
             "Формат даты для атрибута '%s' должен быть следующим: %s";
+
+    private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
+
     private final InstancesTable table;
 
     public AttributesTable(InstancesTable table, final JComboBox<String> classBox) {
@@ -131,7 +134,7 @@ public class AttributesTable extends JDataTableBase {
                 count++;
             }
         }
-        return count < 2;
+        return count < MIN_NUMBER_OF_SELECTED_ATTRIBUTES;
     }
 
     public final void check() throws Exception {

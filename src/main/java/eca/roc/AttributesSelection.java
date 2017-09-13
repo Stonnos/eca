@@ -66,10 +66,10 @@ public class AttributesSelection {
                 Instances set = createInstance(i);
                 Logistic model = new Logistic();
                 model.buildClassifier(set);
-                Evaluation e = new Evaluation(set);
-                e.evaluateModel(model, set);
+                Evaluation evaluation = new Evaluation(set);
+                evaluation.evaluateModel(model, set);
                 for (int k = 0; k < data.numClasses(); k++) {
-                    auc[i][k] = e.areaUnderROC(k);
+                    auc[i][k] = evaluation.areaUnderROC(k);
                     avgAUC[i] += auc[i][k];
                 }
                 avgAUC[i] /= data.numClasses();
