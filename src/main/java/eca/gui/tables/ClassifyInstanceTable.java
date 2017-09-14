@@ -7,7 +7,6 @@ package eca.gui.tables;
 
 import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
-import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.NumericFormat;

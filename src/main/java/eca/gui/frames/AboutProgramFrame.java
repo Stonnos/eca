@@ -5,7 +5,8 @@
  */
 package eca.gui.frames;
 
-import eca.ApplicationProperties;
+import eca.config.ApplicationProperties;
+import eca.gui.AboutProgramService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +34,7 @@ public class AboutProgramFrame extends JFrame {
         this.setLayout(new GridBagLayout());
 
         JPanel infoPanel = new JPanel();
-        JLabel info = new JLabel(makeInfo());
+        JLabel info = new JLabel(AboutProgramService.getAboutProgramHtmlString());
         ImageIcon icon =
                 new ImageIcon(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getLogotypeUrl()));
         info.setIcon(icon);
@@ -53,22 +54,6 @@ public class AboutProgramFrame extends JFrame {
 
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
-    }
-
-    private String makeInfo() {
-        StringBuilder info = new StringBuilder("<html><body style = 'font-size: 15'>");
-        info.append("<span style = 'font-size: 36'>").append(APPLICATION_PROPERTIES.getTitle()).append("</span><br>");
-        info.append("<i><span style = 'font-size: 28'>").append(APPLICATION_PROPERTIES.getTitleDescription())
-                .append("</span></i><br>");
-        info.append("<br>&copy Copyright ").append(APPLICATION_PROPERTIES.getTitle()).append(", Inc. 2015 - 2017<br>");
-        info.append("Все права защищены.<br>");
-        info.append("Автор: <i>").append(APPLICATION_PROPERTIES.getAuthor()).append("</i><br>");
-        info.append("Email: <i>").append(APPLICATION_PROPERTIES.getAuthorEmail()).append("</i><br>");
-        info.append("Версия: <i>").append(APPLICATION_PROPERTIES.getVersion()).append("</i><br>");
-        info.append("Последняя дата обновления: <i>").append(APPLICATION_PROPERTIES.getReleaseDateToString())
-                .append("</i>");
-        info.append("</body></html>");
-        return info.toString();
     }
 
 }

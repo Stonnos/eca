@@ -1,4 +1,4 @@
-package eca;
+package eca.config;
 
 import eca.io.FileUtils;
 

@@ -1,6 +1,6 @@
 package eca.gui.dialogs;
 
-import eca.EcaServiceProperties;
+import eca.config.EcaServiceProperties;
 import eca.gui.ButtonUtils;
 import eca.gui.tables.EcaServicePropertiesTable;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;

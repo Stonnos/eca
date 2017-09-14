@@ -1,4 +1,4 @@
-package eca;
+package eca.config;
 
 import java.io.InputStream;
 import java.util.Properties;

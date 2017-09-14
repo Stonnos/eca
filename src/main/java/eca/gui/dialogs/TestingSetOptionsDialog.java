@@ -5,7 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.ApplicationProperties;
+import eca.config.ApplicationProperties;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;

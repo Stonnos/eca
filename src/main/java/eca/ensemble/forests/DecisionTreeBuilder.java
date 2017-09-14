@@ -6,11 +6,13 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 
+import java.io.Serializable;
+
 /**
  * Class for creation decision tree models.
  * @author Roman Batygin
  */
-public class DecisionTreeBuilder implements DecisionTreeTypeVisitor<DecisionTreeClassifier> {
+public class DecisionTreeBuilder implements DecisionTreeTypeVisitor<DecisionTreeClassifier>, Serializable {
 
     @Override
     public DecisionTreeClassifier handleCartTree() {

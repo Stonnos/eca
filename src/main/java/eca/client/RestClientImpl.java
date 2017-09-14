@@ -1,6 +1,6 @@
 package eca.client;
 
-import eca.EcaServiceProperties;
+import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
 import eca.model.ClassifierDescriptor;

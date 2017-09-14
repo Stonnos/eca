@@ -6,10 +6,10 @@
 package eca.trees;
 
 import eca.core.Assert;
-import eca.core.ListOptionsHandler;
-import eca.core.RandomAttributesEnumeration;
 import eca.core.InstancesHandler;
+import eca.core.ListOptionsHandler;
 import eca.core.PermutationsSearch;
+import eca.core.RandomAttributesEnumeration;
 import eca.filter.MissingValuesFilter;
 import eca.generators.NumberGenerator;
 import eca.trees.rules.AbstractRule;

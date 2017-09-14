@@ -34,6 +34,23 @@ public class ExtraTreesClassifier extends RandomForests {
     private boolean useBootstrapSamples;
 
     /**
+     * Creates <tt>ExtraTreesClassifier</tt> object.
+     */
+    public ExtraTreesClassifier() {
+
+    }
+
+    /**
+     * Creates <tt>ExtraTreesClassifier</tt> object with K / 3 random attributes
+     * at each split, where K is the number of input attributes.
+     *
+     * @param data <tt>Instances</tt> object
+     */
+    public ExtraTreesClassifier(Instances data) {
+        super(data);
+    }
+
+    /**
      * Return the value of use bootstrap samples.
      * @return the value of use bootstrap samples
      */
@@ -66,7 +83,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     @Override
     public List<String> getListOptions() {
-        List<String> options = getListOptions();
+        List<String> options = super.getListOptions();
         options.add(DecisionTreeDictionary.NUM_RANDOM_SPLITS);
         options.add(String.valueOf(numRandomSplits));
         options.add(EnsembleDictionary.SAMPLING_METHOD);

@@ -5,11 +5,11 @@
  */
 package eca.gui.frames;
 
-import eca.ApplicationProperties;
-import eca.EcaServiceProperties;
 import eca.Reference;
 import eca.client.RestClient;
 import eca.client.RestClientImpl;
+import eca.config.ApplicationProperties;
+import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
 import eca.core.converters.DataSaver;
 import eca.core.evaluation.Evaluation;
@@ -26,9 +26,10 @@ import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.ModifiedHeterogeneousClassifier;
-import eca.ensemble.forests.RandomForests;
 import eca.ensemble.RandomNetworks;
 import eca.ensemble.StackingClassifier;
+import eca.ensemble.forests.ExtraTreesClassifier;
+import eca.ensemble.forests.RandomForests;
 import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
@@ -1139,7 +1140,9 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
+                    ID3 id3 = new ID3();
+                    id3.setUseBinarySplits(false);
+                    createTreeOptionDialog(ClassifiersNamesDictionary.ID3, id3);
                 }
             }
         });
@@ -1147,7 +1150,9 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
+                    C45 c45 = new C45();
+                    c45.setUseBinarySplits(false);
+                    createTreeOptionDialog(ClassifiersNamesDictionary.C45, c45);
                 }
             }
         });
@@ -1297,6 +1302,30 @@ public class JMainFrame extends JFrame {
             }
         });
         ensembleMenu.add(rndForestsItem);
+
+        JMenuItem extraTreesItem = new JMenuItem(EnsemblesNamesDictionary.EXTRA_TREES);
+        extraTreesItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+                        Instances data = data();
+                        RandomForestsOptionDialog frame
+                                = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNamesDictionary.EXTRA_TREES,
+                                new ExtraTreesClassifier(data), data);
+                        frame.showDialog();
+                        executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(),
+                                null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+        ensembleMenu.add(extraTreesItem);
+
         //-------------------------------------------------
         JMenuItem stackingItem = new JMenuItem(EnsemblesNamesDictionary.STACKING);
         stackingItem.addActionListener(new ActionListener() {

@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.ensemble.forests.DecisionTreeType;
+import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
@@ -35,12 +36,17 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     private static final String NUM_RANDOM_ATTR_TITLE = "Число случайных атрибутов:";
     private static final String RANDOM_ATTR_EXCEEDED_ERROR_FORMAT = "Число случайных атрибутов должно быть не больше %d";
     private static final String DECISION_TREE_ALGORITHM_TEXT = "Дерево решений: ";
+    private static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
+    private static final String USE_BOOTSTRAP_SAMPLE_TEXT = "Использование бутстрэп - выборок";
 
     private JTextField numClassifiersText;
     private JTextField minObjText;
     private JTextField maxDepthText;
     private JTextField numRandomAttrText;
     private JComboBox<String> treeAlgorithmBox;
+
+    private OptionsSetter optionsSetter;
+    private EmptyTextFieldSearch emptyTextFieldSearch;
 
     public RandomForestsOptionDialog(Window parent, String title,
                                      RandomForests forest, Instances data) {
@@ -70,30 +76,32 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             treeAlgorithmBox.addItem(treeType.getDescription());
         }
         //-------------------------------------------------------
-        optionPanel.add(new JLabel(TREES_NUM_TITLE),
-                new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numClassifiersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(MIN_OBJ_TITLE),
-                new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(minObjText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(MAX_DEPTH_TITLE),
-                new GridBagConstraints(0, 2, 1, 1, 1, 1,
-                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(maxDepthText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(NUM_RANDOM_ATTR_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(DECISION_TREE_ALGORITHM_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        optionPanel.add(treeAlgorithmBox, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
-        optionPanel.add(new JLabel(DECISION_TREE_ALGORITHM_TEXT), new GridBagConstraints(0, 4, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(treeAlgorithmBox, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(TREES_NUM_TITLE),
+                new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(numClassifiersText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+        optionPanel.add(new JLabel(MIN_OBJ_TITLE),
+                new GridBagConstraints(0, 2, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(minObjText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+        optionPanel.add(new JLabel(MAX_DEPTH_TITLE),
+                new GridBagConstraints(0, 3, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(maxDepthText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+        optionPanel.add(new JLabel(NUM_RANDOM_ATTR_TITLE), new GridBagConstraints(0, 4, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
+        addAdditionalFormFields(optionPanel);
 
         //------------------------------------
         JButton okButton = ButtonUtils.createOkButton();
@@ -110,8 +118,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersText, minObjText,
-                        maxDepthText, numRandomAttrText);
+                JTextField text = emptyTextFieldSearch.findFirstEmptyField();
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
                 } else if (Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
@@ -121,14 +128,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                     numRandomAttrText.requestFocusInWindow();
                 } else {
                     try {
-                        classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
-                        classifier.setMinObj(Integer.parseInt(minObjText.getText()));
-                        classifier.setMaxDepth(Integer.parseInt(maxDepthText.getText()));
-                        classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
-
-                        String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
-                        classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
-
+                        optionsSetter.setClassifierOptions();
                         dialogResult = true;
                         setVisible(false);
 
@@ -155,16 +155,96 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
 
     @Override
     public final void showDialog() {
-        this.setOptions();
+        optionsSetter.setFormOptions();
         super.showDialog();
     }
 
-    private void setOptions() {
-        numClassifiersText.setText(String.valueOf(classifier.getIterationsNum()));
-        minObjText.setText(String.valueOf(classifier.getMinObj()));
-        maxDepthText.setText(String.valueOf(classifier.getMaxDepth()));
-        numRandomAttrText.setText(String.valueOf(classifier.getNumRandomAttr()));
-        treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
+    private void addAdditionalFormFields(JPanel optionPanel) {
+        if (classifier instanceof ExtraTreesClassifier) {
+
+            ExtraTreesClassifier extraTreesClassifier = (ExtraTreesClassifier) classifier;
+
+            final JTextField numRandomSplitsField = new JTextField(TEXT_FIELD_LENGTH);
+            numRandomSplitsField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+            numRandomSplitsField.setInputVerifier(new TextFieldInputVerifier());
+
+            final JCheckBox useBootstrapSamplesCheckBox = new JCheckBox(USE_BOOTSTRAP_SAMPLE_TEXT);
+
+            optionsSetter = new OptionsSetter() {
+
+                @Override
+                void setFormOptions() {
+                    super.setFormOptions();
+                    numRandomSplitsField.setText(String.valueOf(extraTreesClassifier.getNumRandomSplits()));
+                    useBootstrapSamplesCheckBox.setSelected(extraTreesClassifier.isUseBootstrapSamples());
+                }
+
+                @Override
+                void setClassifierOptions() {
+                    super.setClassifierOptions();
+                    try {
+                        extraTreesClassifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsField.getText()));
+                    } catch (Exception ex) {
+                        numRandomSplitsField.requestFocusInWindow();
+                        throw new RuntimeException(ex);
+                    }
+                    extraTreesClassifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
+                }
+            };
+
+            emptyTextFieldSearch = new EmptyTextFieldSearch() {
+                @Override
+                public JTextField findFirstEmptyField() {
+                    return GuiUtils.searchFirstEmptyField(numClassifiersText, minObjText,
+                            maxDepthText, numRandomAttrText, numRandomSplitsField);
+                }
+            };
+
+            optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 5, 1, 1, 1, 1,
+                    GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+            optionPanel.add(numRandomSplitsField, new GridBagConstraints(1, 5, 1, 1, 1, 1,
+                    GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
+            optionPanel.add(useBootstrapSamplesCheckBox, new GridBagConstraints(0, 6, 2, 1, 1, 1,
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 20, 10), 0, 0));
+
+        } else {
+            optionsSetter = new OptionsSetter();
+
+            emptyTextFieldSearch = new EmptyTextFieldSearch() {
+                @Override
+                public JTextField findFirstEmptyField() {
+                    return GuiUtils.searchFirstEmptyField(numClassifiersText, minObjText,
+                            maxDepthText, numRandomAttrText);
+                }
+            };
+        }
+    }
+
+    private class OptionsSetter {
+
+        void setFormOptions() {
+            numClassifiersText.setText(String.valueOf(classifier.getIterationsNum()));
+            minObjText.setText(String.valueOf(classifier.getMinObj()));
+            maxDepthText.setText(String.valueOf(classifier.getMaxDepth()));
+            numRandomAttrText.setText(String.valueOf(classifier.getNumRandomAttr()));
+            treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
+        }
+
+        void setClassifierOptions() {
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
+            classifier.setMinObj(Integer.parseInt(minObjText.getText()));
+            classifier.setMaxDepth(Integer.parseInt(maxDepthText.getText()));
+            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
+            String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
+            classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
+        }
+
+    }
+
+    private interface EmptyTextFieldSearch {
+
+        JTextField findFirstEmptyField();
     }
 
 }
