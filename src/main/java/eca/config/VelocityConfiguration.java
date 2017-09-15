@@ -1,5 +1,6 @@
 package eca.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -9,7 +10,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  * Velocity configuration.
  * @author Roman Batygin
  */
-
+@Slf4j
 public class VelocityConfiguration {
 
     private static VelocityConfiguration velocityConfiguration;
@@ -22,7 +23,7 @@ public class VelocityConfiguration {
             velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
             velocityEngine.init();
         } catch (Exception ex) {
-
+            log.error("Error in init velocity engine: ", ex);
         }
     }
 

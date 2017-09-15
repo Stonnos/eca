@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 /**
- * Implemets saving text to file.
+ * Class for saving text to file.
  *
  * @author Roman Batygin
  */

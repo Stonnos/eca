@@ -1,5 +1,6 @@
 package eca.core.converters;
 
+import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
@@ -24,19 +25,22 @@ public class DataSaver {
      * @throws IOException
      */
     public static void saveData(File file, Instances data) throws IOException {
+        Assert.notNull(file, "File is not specified!");
+        Assert.notNull(data, "Data is not specified!");
         String name = file.getName();
-        if (name.endsWith(".xls") || name.endsWith(".xlsx")) {
+        if (name.endsWith(DataFileExtension.XLS) || name.endsWith(DataFileExtension.XLSX)) {
             XLSSaver saver = new XLSSaver();
             saver.setFile(file);
             saver.write(data);
         } else {
             AbstractFileSaver saver;
-            if (name.endsWith(".csv")) {
+            if (name.endsWith(DataFileExtension.CSV)) {
                 saver = new CSVSaver();
-            } else if (name.endsWith(".arff")) {
+            } else if (name.endsWith(DataFileExtension.ARFF)) {
                 saver = new ArffSaver();
             } else {
-                throw new IOException("Wrong file extension!");
+                throw new IOException(String.format("Can't save data %s to file '%s'",
+                        data.relationName(), file.getAbsoluteFile()));
             }
             saver.setFile(file);
             saver.setInstances(data);

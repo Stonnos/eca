@@ -158,8 +158,8 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
         for (int i = 1; i <= meta.getColumnCount(); i++) {
             if (!isNumeric(meta.getColumnType(i)) && !isNominal(meta.getColumnType(i)) &&
                     !isDate(meta.getColumnType(i))) {
-                throw new SQLException("Система не поддерживает тип данных: "
-                        + meta.getColumnTypeName(i));
+                throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
+                        meta.getColumnTypeName(i)));
             }
 
         }

@@ -6,6 +6,7 @@
 package eca.core.converters;
 
 import eca.gui.text.DateFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class XLSLoader {
 
     private InputStream inputStream;
@@ -136,9 +138,9 @@ public class XLSLoader {
                 }
                 data.add(o);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e.getMessage());
+        } catch (Exception ex) {
+            log.error("There was an error while reading data from file '{}'", file.getAbsoluteFile());
+            throw new Exception(ex.getMessage());
         }
         return data;
     }
@@ -192,7 +194,7 @@ public class XLSLoader {
     private void checkData(Sheet sheet) throws Exception {
 
         if (sheet.getRow(0).getLastCellNum() > sheet.getRow(0).getPhysicalNumberOfCells()) {
-            throw new Exception("Данные должны быть без пустых столбцов!");
+            throw new Exception(ConverterDictionary.EMPTY_COLUMNS_ERROR);
         }
 
         for (int i = 0; i < getColNum(sheet); i++) {
@@ -200,7 +202,7 @@ public class XLSLoader {
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Row row = sheet.getRow(j);
                 if (row == null) {
-                    throw new Exception("Данные не должны содержать посторонние записи!");
+                    throw new Exception(ConverterDictionary.BAD_DATA_FORMAT);
                 }
                 Cell cell = sheet.getRow(j).getCell(i);
                 if (cell != null) {
@@ -208,11 +210,12 @@ public class XLSLoader {
                             && cell.getCellTypeEnum() != CellType.NUMERIC
                             && cell.getCellTypeEnum() != CellType.BLANK
                             && cell.getCellTypeEnum() != CellType.BOOLEAN) {
-                        throw new Exception("Значения должны быть числовыми или текстовыми!");
+                        throw new Exception(ConverterDictionary.BAD_CELL_VALUES);
                     }
                     CellType t = cell.getCellTypeEnum();
                     if (cellType != null && !t.equals(CellType.BLANK) && !t.equals(cellType)) {
-                        throw new Exception("Столбец " + i + " содержит данные различных типов!");
+                        throw new Exception(String.format(
+                                ConverterDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
                         cellType = cell.getCellTypeEnum();
                     }

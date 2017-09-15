@@ -6,6 +6,8 @@
 package eca.net;
 
 import eca.core.converters.XLSLoader;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
 import weka.core.converters.ArffLoader;
@@ -13,13 +15,21 @@ import weka.core.converters.CSVLoader;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
 import java.util.function.BiPredicate;
+
+import static eca.core.converters.DataFileExtension.ARFF;
+import static eca.core.converters.DataFileExtension.CSV;
+import static eca.core.converters.DataFileExtension.XLS;
+import static eca.core.converters.DataFileExtension.XLSX;
+
 
 /**
  * Class for loading data from network using http and ftp protocols.
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class DataLoaderImpl implements DataLoader {
 
     /**
@@ -30,7 +40,7 @@ public class DataLoaderImpl implements DataLoader {
     /**
      * Available files extensions
      **/
-    private static final String[] FILE_EXTENSIONS = {".xls", ".xlsx", ".csv", ".arff"};
+    private static final String[] FILE_EXTENSIONS = {XLS, XLSX, CSV, ARFF};
 
     /**
      * Source url
@@ -71,14 +81,18 @@ public class DataLoaderImpl implements DataLoader {
      * @throws Exception if given url contains incorrect protocol or file extension
      */
     public final void setURL(URL url) throws Exception {
-        if (url == null) {
-            throw new IllegalArgumentException();
-        }
+        Assert.notNull(url, "URL is not specified!");
         if (!contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
-            throw new Exception("Протокол соединения должен быть http или ftp!");
+            String errorMessage = String.format(DataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
+                    Arrays.asList(PROTOCOLS));
+            log.error(errorMessage);
+            throw new Exception(errorMessage);
         }
         if (!contains(FILE_EXTENSIONS, url.getFile(), (x, y) -> x.endsWith(y))) {
-            throw new Exception("Допускаются только файлы форматов: xls, xlsx, csv, arff!");
+            String errorMessage = String.format(DataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+                    Arrays.asList(FILE_EXTENSIONS));
+            log.error(errorMessage);
+            throw new Exception(errorMessage);
         }
         this.url = url;
     }

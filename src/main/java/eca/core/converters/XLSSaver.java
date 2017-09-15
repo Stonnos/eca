@@ -6,6 +6,7 @@
 package eca.core.converters;
 
 import eca.gui.text.DateFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -23,23 +25,37 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
+ * Implements saving {@link Instances} into XLS file.
  * @author Roman Batygin
  */
+@Slf4j
 public class XLSSaver {
 
     private File file;
 
+    /**
+     * Sets file object.
+     * @param file {@link File} object
+     * @throws IOException
+     */
     public void setFile(File file) throws IOException {
-        if (!file.getName().endsWith(".xls") && !file.getName().endsWith(".xlsx")) {
+        Assert.notNull(file, "File is not specified!");
+        if (!file.getName().endsWith(DataFileExtension.XLS) && !file.getName().endsWith(DataFileExtension.XLSX)) {
             throw new IOException("Wrong file extension!");
         }
         file.createNewFile();
         this.file = file;
     }
 
+    /**
+     * Writes data into xls file.
+     * @param data {@link Instances} object
+     * @throws IOException
+     */
     public void write(Instances data) throws IOException {
+        Assert.notNull(data, "Data is not specified!");
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            Workbook book = file.getName().endsWith(".xls") ?
+            Workbook book = file.getName().endsWith(DataFileExtension.XLS) ?
                     new HSSFWorkbook() : new XSSFWorkbook();
             Font font = book.createFont();
             font.setBold(true);
@@ -51,13 +67,13 @@ public class XLSSaver {
             style.setFont(font);
             Sheet sheet = book.createSheet(data.relationName());
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            //----------------------------------------
+
             for (int i = 0; i < data.numAttributes(); i++) {
                 Cell cell = row.createCell(i);
                 cell.setCellStyle(style);
                 cell.setCellValue(data.attribute(i).name());
             }
-            //----------------------------------------
+
             for (int i = 0; i < data.numInstances(); i++) {
                 row = sheet.createRow(sheet.getPhysicalNumberOfRows());
                 for (int j = 0; j < data.numAttributes(); j++) {
@@ -75,11 +91,11 @@ public class XLSSaver {
                     }
                 }
             }
-            //----------------------------
+
             book.write(stream);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IOException(e);
+        } catch (IOException ex) {
+            log.error("There was an error while saving data into file : '{}'", file.getAbsoluteFile());
+            throw new IOException(ex);
         }
 
     }

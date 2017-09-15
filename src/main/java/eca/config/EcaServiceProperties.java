@@ -1,6 +1,7 @@
 package eca.config;
 
 import eca.io.FileUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +15,7 @@ import java.util.Set;
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class EcaServiceProperties {
 
     public static final String PROPERTIES_FILE = "eca-service.properties";
@@ -43,7 +44,8 @@ public class EcaServiceProperties {
     static {
         try (InputStream stream = new FileInputStream(getPropertiesFile())) {
             PROPERTIES.load(stream);
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            log.error("Can't load eca-service properties:", ex);
         }
     }
 

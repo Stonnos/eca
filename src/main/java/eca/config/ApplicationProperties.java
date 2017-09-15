@@ -1,12 +1,14 @@
 package eca.config;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class ApplicationProperties {
 
     private static final String PROPERTIES_FILE = "application.properties";
@@ -42,7 +44,8 @@ public class ApplicationProperties {
     static {
         try (InputStream stream = ApplicationProperties.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
             PROPERTIES.load(stream);
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            log.error("Can't load application properties:", ex);
         }
     }
 

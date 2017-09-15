@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.Reference;
 import eca.core.ClassifierIndexer;
+import eca.core.converters.DataFileExtension;
 import eca.core.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.AbstractHeterogeneousClassifier;
@@ -424,7 +425,7 @@ public class ResultsFrameBase extends JFrame {
 
         void save(File file) throws Exception {
             try (FileOutputStream stream = new FileOutputStream(file)) {
-                Workbook book = file.getName().endsWith(".xls") ?
+                Workbook book = file.getName().endsWith(DataFileExtension.XLS) ?
                         new HSSFWorkbook() : new XSSFWorkbook();
 
                 Font font = book.createFont();
@@ -584,7 +585,7 @@ public class ResultsFrameBase extends JFrame {
             short col1 = 0, col2 = 0;
             ClientAnchor anchor;
 
-            if (file.getName().endsWith(".xls")) {
+            if (file.getName().endsWith(DataFileExtension.XLS)) {
                 anchor = new HSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
             } else {
                 anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
