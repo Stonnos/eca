@@ -2,6 +2,7 @@ package eca.gui;
 
 import eca.config.ApplicationProperties;
 import eca.config.VelocityConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
@@ -11,7 +12,7 @@ import java.io.StringWriter;
  * About program service class.
  * @author Roman Batygin
  */
-
+@Slf4j
 public class AboutProgramService {
 
     private static final String TITLE = "title";
@@ -49,6 +50,7 @@ public class AboutProgramService {
             template.merge(context, stringWriter);
             aboutProgramHtmlString = stringWriter.toString();
         } catch (Exception e) {
+            log.error("Can't load velocity template", e);
         }
     }
 

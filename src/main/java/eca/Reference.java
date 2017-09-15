@@ -6,6 +6,7 @@
 package eca;
 
 import eca.io.FileUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.io.File;
  * Implements working with ECA user manual.
  * @author Roman Batygin
  */
+@Slf4j
 public class Reference {
 
     private static File REFERENCE_FILE;
@@ -24,7 +26,8 @@ public class Reference {
         try {
             REFERENCE_FILE = new File(FileUtils.getCurrentDir(), FILE_NAME);
             REFERENCE_FILE.setExecutable(true, false);
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            log.error("Can't load manual", ex);
         }
     }
 
