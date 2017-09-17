@@ -19,45 +19,17 @@ import eca.dataminer.AutomatedNeuralNetwork;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.ClassifiersSetBuilder;
 import eca.db.DataBaseConnection;
-import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.ensemble.AdaBoostClassifier;
-import eca.ensemble.CVIterativeBuilder;
-import eca.ensemble.HeterogeneousClassifier;
+import eca.ensemble.*;
 import eca.ensemble.Iterable;
-import eca.ensemble.IterativeBuilder;
-import eca.ensemble.ModifiedHeterogeneousClassifier;
-import eca.ensemble.RandomNetworks;
-import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ExecutorService;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.CallbackAction;
-import eca.gui.actions.DataBaseConnectionAction;
-import eca.gui.actions.DataGeneratorLoader;
-import eca.gui.actions.InstancesLoader;
-import eca.gui.actions.ModelLoader;
-import eca.gui.actions.URLLoader;
+import eca.gui.actions.*;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.BaseOptionsDialog;
-import eca.gui.dialogs.ClassifierBuilderDialog;
-import eca.gui.dialogs.DataGeneratorDialog;
-import eca.gui.dialogs.DatabaseConnectionDialog;
-import eca.gui.dialogs.DecisionTreeOptionsDialog;
-import eca.gui.dialogs.EcaServiceOptionsDialog;
-import eca.gui.dialogs.EnsembleOptionsDialog;
-import eca.gui.dialogs.ExecutorDialog;
-import eca.gui.dialogs.KNNOptionDialog;
-import eca.gui.dialogs.LoadDialog;
-import eca.gui.dialogs.LogisticOptionsDialogBase;
-import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.dialogs.RandomForestsOptionDialog;
-import eca.gui.dialogs.RandomNetworkOptionsDialog;
-import eca.gui.dialogs.SpinnerDialog;
-import eca.gui.dialogs.StackingOptionsDialog;
-import eca.gui.dialogs.TestingSetOptionsDialog;
+import eca.gui.dialogs.*;
 import eca.gui.dictionary.ClassifiersNamesDictionary;
 import eca.gui.dictionary.EnsemblesNamesDictionary;
 import eca.gui.tables.AttributesTable;
@@ -72,11 +44,7 @@ import eca.net.DataLoaderImpl;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
 import eca.regression.Logistic;
-import eca.trees.C45;
-import eca.trees.CART;
-import eca.trees.CHAID;
-import eca.trees.DecisionTreeClassifier;
-import eca.trees.ID3;
+import eca.trees.*;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -557,13 +525,13 @@ public class JMainFrame extends JFrame {
         public void createResultFrame(String title,
                                       Classifier classifier,
                                       Instances data,
-                                      Evaluation e,
+                                      Evaluation evaluation,
                                       int digits) throws Exception {
             ResultsFrameBase res = new ResultsFrameBase(JMainFrame.this,
-                    title, classifier, data, e,
+                    title, classifier, data, evaluation,
                     digits);
             StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-            res.setStatisticaTable(stat.createStatistics(classifier, e));
+            res.setStatisticaTable(stat.createStatistics(classifier, evaluation));
             ResultsFrameBase.createResults(res, digits);
             add(res);
             res.setVisible(true);
@@ -571,8 +539,9 @@ public class JMainFrame extends JFrame {
 
         public void add(ResultsFrameBase resultsFrameBase) {
             resultsFrameBases.add(resultsFrameBase);
-            addElement(DateFormat.SIMPLE_DATE_FORMAT.format(resultsFrameBase.getIndexer().getCurrentDate()) +
-                    "  " + resultsFrameBase.classifier().getClass().getSimpleName());
+            addElement(String.format("%s %s",
+                    DateFormat.SIMPLE_DATE_FORMAT.format(resultsFrameBase.getIndexer().getCurrentDate()),
+                    resultsFrameBase.classifier().getClass().getSimpleName()));
         }
 
         public ArrayList<ResultsFrameBase> getResultsFrameBases() {

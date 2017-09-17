@@ -23,7 +23,7 @@ import java.util.Random;
  */
 public class SimpleDataGenerator implements DataGenerator {
 
-    private static final String RELATION_NAME = "GeneratedData";
+    private static final String RELATION_NAME_FORMAT = "GeneratedData%d";
 
     private static final String CLASS_NAME = "class";
 
@@ -140,7 +140,8 @@ public class SimpleDataGenerator implements DataGenerator {
 
     @Override
     public Instances generate() {
-        Instances instances = new Instances(RELATION_NAME, generateAttributes(), numInstances);
+        Instances instances = new Instances(String.format(RELATION_NAME_FORMAT,
+                System.currentTimeMillis()), generateAttributes(), numInstances);
         instances.setClassIndex(instances.numAttributes() - 1);
 
         for (int i = 0; i < numInstances; i++) {

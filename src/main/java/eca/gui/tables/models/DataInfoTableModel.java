@@ -14,7 +14,7 @@ public class DataInfoTableModel extends AbstractTableModel {
     private static final String NUMBER_OF_INSTANCES_TEXT = "Число объектов";
     private static final String NUMBER_OF_ATTRS_TEXT = "Число атрибутов";
     private static final String NUMBER_OF_CLASSES_TEXT = "Число классов";
-    private Object[][] statistica;
+    private Object[][] statistics;
 
     private final String[] title = {"Статистика", "Значение"};
 
@@ -32,7 +32,7 @@ public class DataInfoTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return statistica.length;
+        return statistics.length;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DataInfoTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return statistica[row][column];
+        return statistics[row][column];
     }
 
     @Override
@@ -51,19 +51,19 @@ public class DataInfoTableModel extends AbstractTableModel {
     }
 
     private void init() {
-        statistica = new Object[4][title.length];
+        statistics = new Object[4][title.length];
         int current = 0;
-        statistica[current][0] = INSTANCES_NAME_TEXT;
-        statistica[current++][1] = data.relationName();
+        statistics[current][0] = INSTANCES_NAME_TEXT;
+        statistics[current++][1] = data.relationName();
 
-        statistica[current][0] = NUMBER_OF_INSTANCES_TEXT;
-        statistica[current++][1] = data.numInstances();
+        statistics[current][0] = NUMBER_OF_INSTANCES_TEXT;
+        statistics[current++][1] = data.numInstances();
 
-        statistica[current][0] = NUMBER_OF_ATTRS_TEXT;
-        statistica[current++][1] = data.numAttributes();
+        statistics[current][0] = NUMBER_OF_ATTRS_TEXT;
+        statistics[current++][1] = data.numAttributes();
 
-        statistica[current][0] = NUMBER_OF_CLASSES_TEXT;
-        statistica[current++][1] = data.numClasses();
+        statistics[current][0] = NUMBER_OF_CLASSES_TEXT;
+        statistics[current++][1] = data.numClasses();
     }
 
 }

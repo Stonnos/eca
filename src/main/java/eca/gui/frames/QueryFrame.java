@@ -8,6 +8,7 @@ package eca.gui.frames;
 import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.tables.InstancesSetTable;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
@@ -15,8 +16,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -47,6 +46,8 @@ public class QueryFrame extends JFrame {
     private JButton execute;
     private JButton interrupt;
 
+    private InstancesSetTable instancesSetTable;
+
     private SwingWorkerConstruction worker;
 
     private JMainFrame parent;
@@ -72,16 +73,16 @@ public class QueryFrame extends JFrame {
             }
 
         });
-        //-----------------------------------
+
         this.pack();
         this.setLocationRelativeTo(parent);
     }
 
-    public java.util.ArrayList<Instances> instances() {
-        int[] indices = sets.getSelectedIndices();
-        ArrayList<Instances> result = new ArrayList<>(indices.length);
-        for (int i : indices) {
-            result.add(model.instance(i));
+    public java.util.ArrayList<Instances> getSelectedInstances() {
+        int[] selectedRows = instancesSetTable.getSelectedRows();
+        ArrayList<Instances> result = new ArrayList<>(selectedRows.length);
+        for (int i : selectedRows) {
+            result.add(instancesSetTable.getInstancesSetTableModel().getInstances(i));
         }
         return result;
     }
@@ -168,26 +169,28 @@ public class QueryFrame extends JFrame {
         //-----------------------------------------------------
         progress = new JProgressBar();
         //-----------------------------------------------------
-        model = new ListModel();
-        sets = new JList<>(model);
-        JScrollPane setsPane = new JScrollPane(sets);
+        //model = new ListModel();
+        //sets = new JList<>(model);
+        instancesSetTable = new InstancesSetTable();
+        JScrollPane setsPane = new JScrollPane(instancesSetTable);
         setsPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
         setsPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        setsPane.setPreferredSize(new Dimension(400, 150));
 
-        sets.addMouseListener(new MouseAdapter() {
+        /*sets.addMouseListener(new MouseAdapter() {
 
             InstancesFrame instancesFrame;
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    int i = sets.locationToIndex(e.getPoint());
+                    //int i = instancesSetTable.get(e.getPoint());
                     instancesFrame = new InstancesFrame(model.instance(i), QueryFrame.this);
                     instancesFrame.setVisible(true);
                 }
             }
 
-        });
+        });*/
         //-----------------------------------------------------
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
@@ -203,10 +206,10 @@ public class QueryFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 interruptWorker();
-                if (sets.getSelectedIndices().length != 0) {
+                if (instancesSetTable.getSelectedRows().length != 0) {
                     try {
-                        for (Instances ins : instances()) {
-                            parent.createDataFrame(ins);
+                        for (Instances instances : getSelectedInstances()) {
+                            parent.createDataFrame(instances);
                         }
                         dispose();
                     } catch (Throwable ex) {
@@ -244,6 +247,8 @@ public class QueryFrame extends JFrame {
      */
     private static class ListModel extends DefaultListModel<String> {
 
+        static final String DATA_FORMAT = "Data: %s, rows: %d, columns: %d, classes: %d";
+
         ArrayList<Instances> instances = new ArrayList<>();
 
         public Instances instance(int i) {
@@ -252,7 +257,8 @@ public class QueryFrame extends JFrame {
 
         public void addInstances(Instances data) {
             instances.add(data);
-            this.addElement(data.relationName());
+            this.addElement(String.format(DATA_FORMAT, data.relationName(),
+                    data.numInstances(), data.numAttributes(), data.numClasses()));
         }
 
     } //End of class ListModel
@@ -288,8 +294,9 @@ public class QueryFrame extends JFrame {
             execute.setEnabled(true);
             interrupt.setEnabled(false);
             if (data != null) {
-                model.addInstances(data);
-                sets.setSelectedIndex(0);
+                instancesSetTable.addInstances(data);
+                //sets.setSelectedIndex(0);
+                //instancesSetTable.setSel
             } else {
                 if (errorMessage != null) {
                     JOptionPane.showMessageDialog(QueryFrame.this,
