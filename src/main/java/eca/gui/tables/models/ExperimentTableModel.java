@@ -20,12 +20,13 @@ import java.util.ArrayList;
  */
 public class ExperimentTableModel extends AbstractTableModel {
 
+    public static final String RESULT_TITLE = "Посмотреть";
+
     private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
 
     private final String[] titles = {"№", "Классификатор", "Точность, %", "Результаты"};
     private ArrayList<ClassifierDescriptor> experiment;
 
-    public static final String RESULT_TITLE = "Посмотреть";
     private final DecimalFormat format = NumericFormat.getInstance();
 
     public ExperimentTableModel(ArrayList<ClassifierDescriptor> experiment, int digits) throws Exception {

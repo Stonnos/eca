@@ -10,6 +10,8 @@ import eca.core.evaluation.Evaluation;
 import eca.ensemble.EnsembleClassifier;
 import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
+import eca.gui.JButtonEditor;
+import eca.gui.JButtonRenderer;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
 import weka.classifiers.Classifier;
@@ -30,15 +32,15 @@ public class EnsembleTable extends JDataTableBase {
 
     private final JFrame parent;
     private final int digits;
-    private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
     public EnsembleTable(EnsembleClassifier struct, JFrame parent, int digits) throws Exception {
         super(new EnsembleTableModel(struct));
         this.parent = parent;
         this.digits = digits;
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
-        this.getColumnModel().getColumn(2).setCellRenderer(new JButtonRenderer());
-        this.getColumnModel().getColumn(2).setCellEditor(new JButtonEditor(new JCheckBox()));
+        this.getColumnModel().getColumn(2)
+                .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
+        this.getColumnModel().getColumn(2).setCellEditor(new JButtonEnsembleEditor());
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent evt) {
@@ -77,86 +79,37 @@ public class EnsembleTable extends JDataTableBase {
     /**
      *
      */
-    private class JButtonRenderer extends JButton
-            implements TableCellRenderer {
+    private class JButtonEnsembleEditor extends JButtonEditor {
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setFont(new Font(EnsembleTable.this.getFont().getName(), Font.BOLD,
-                    EnsembleTable.this.getFont().getSize()));
-            this.setText(EnsembleTableModel.RESULT_TITLE);
-            return this;
-        }
-
-    } // End of class JButtonRender
-
-    private class JButtonEditor extends DefaultCellEditor {
-
-        private JButton button;
-        private boolean isPushed;
-        private ResultsFrameBase result;
         private Classifier classifier;
 
-        public JButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            this.setClickCountToStart(0);
-            button = new JButton();
-            button.setOpaque(true);
-            button.setCursor(handCursor);
-            button.setText(EnsembleTableModel.RESULT_TITLE);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
-            });
+        JButtonEnsembleEditor() {
+            super(EnsembleTableModel.RESULT_TITLE);
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            GuiUtils.updateForegroundAndBackGround(button, table, isSelected);
-            button.setFont(new Font(EnsembleTable.this.getFont().getName(), Font.BOLD,
-                    EnsembleTable.this.getFont().getSize()));
-            isPushed = true;
+        protected void doOnPushing(JTable table, Object value,
+                                   boolean isSelected, int row, int column) {
             classifier = ensembleModel().get(row);
-            return button;
         }
 
         @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                try {
-                    Instances data = ((InstancesHandler) classifier).getData();
-                    Evaluation e = new Evaluation(data);
-                    e.evaluateModel(classifier, data);
-                    result = new ResultsFrameBase(parent, classifier.getClass().getSimpleName(),
-                            classifier, data, e, digits);
-                    ResultsFrameBase.createResults(result, digits);
-                    StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-                    result.setStatisticaTable(stat.createStatistics(classifier, e));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
+        protected void doAfterPushing() {
+            try {
+                Instances data = ((InstancesHandler) classifier).getData();
+                Evaluation e = new Evaluation(data);
+                e.evaluateModel(classifier, data);
+                ResultsFrameBase result = new ResultsFrameBase(parent, classifier.getClass().getSimpleName(),
+                        classifier, data, e, digits);
+                ResultsFrameBase.createResults(result, digits);
+                StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
+                result.setStatisticaTable(stat.createStatistics(classifier, e));
                 result.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
-            isPushed = false;
-            return EnsembleTableModel.RESULT_TITLE;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
         }
     }
 

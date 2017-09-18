@@ -7,7 +7,10 @@ package eca.gui.tables;
 
 import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
+import eca.gui.JButtonEditor;
+import eca.gui.JButtonRenderer;
 import eca.gui.frames.ResultsFrameBase;
+import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
 import eca.model.ClassifierDescriptor;
 import weka.core.Instances;
@@ -37,8 +40,9 @@ public class ExperimentTable extends JDataTableBase {
         this.parent = parent;
         this.data = data;
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
-        this.getColumnModel().getColumn(3).setCellRenderer(new JButtonRenderer());
-        this.getColumnModel().getColumn(3).setCellEditor(new JButtonEditor(new JCheckBox()));
+        this.getColumnModel().getColumn(3)
+                .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
+        this.getColumnModel().getColumn(3).setCellEditor(new JButtonExperimentEditor());
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent evt) {
@@ -111,84 +115,37 @@ public class ExperimentTable extends JDataTableBase {
     /**
      *
      */
-    private class JButtonRenderer extends JButton
-            implements TableCellRenderer {
+    private class JButtonExperimentEditor extends JButtonEditor {
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setFont(new Font(ExperimentTable.this.getFont().getName(), Font.BOLD,
-                    ExperimentTable.this.getFont().getSize()));
-            this.setText(ExperimentTableModel.RESULT_TITLE);
-            return this;
-        }
+        private ClassifierDescriptor classifierDescriptor;
 
-    } // End of class JButtonRender
-
-    private class JButtonEditor extends DefaultCellEditor {
-
-        private JButton button;
-        private boolean isPushed;
-        private ResultsFrameBase result;
-        private ClassifierDescriptor object;
-
-        public JButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            this.setClickCountToStart(0);
-            button = new JButton();
-            button.setOpaque(true);
-            button.setCursor(handCursor);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
-            });
+        public JButtonExperimentEditor() {
+            super(ExperimentTableModel.RESULT_TITLE);
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            GuiUtils.updateForegroundAndBackGround(button, table, isSelected);
-            button.setText(ExperimentTableModel.RESULT_TITLE);
-            button.setFont(new Font(ExperimentTable.this.getFont().getName(), Font.BOLD,
-                    ExperimentTable.this.getFont().getSize()));
-            isPushed = true;
-            object = experimentModel().get(row);
-            return button;
+        protected void doOnPushing(JTable table, Object value,
+                                   boolean isSelected, int row, int column) {
+            classifierDescriptor = experimentModel().get(row);
         }
 
         @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                try {
-                    ExperimentTableModel model = experimentModel();
-                    result = new ResultsFrameBase(parent, object.getClassifier().getClass().getSimpleName(),
-                            object.getClassifier(), data, object.getEvaluation(), model.digits());
-                    ResultsFrameBase.createResults(result, model.digits());
-                    StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
-                    result.setStatisticaTable(stat.createStatistics(object.getClassifier(), object.getEvaluation()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
+        protected void doAfterPushing() {
+            try {
+                ExperimentTableModel model = experimentModel();
+                ResultsFrameBase result = new ResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
+                        .getSimpleName(), classifierDescriptor.getClassifier(), data,
+                        classifierDescriptor.getEvaluation(), model.digits());
+                ResultsFrameBase.createResults(result, model.digits());
+                StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
+                result.setStatisticaTable(stat.createStatistics(classifierDescriptor.getClassifier(),
+                        classifierDescriptor.getEvaluation()));
                 result.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
-            isPushed = false;
-            return ExperimentTableModel.RESULT_TITLE;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-
-        @Override
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
         }
     }
 

@@ -41,8 +41,6 @@ public class QueryFrame extends JFrame {
 
     private JTextArea queryArea;
     private JProgressBar progress;
-    private JList<String> sets;
-    private ListModel model;
     private JButton execute;
     private JButton interrupt;
 
@@ -166,32 +164,14 @@ public class QueryFrame extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(3, 3, 3, 3), 0, 0));
         queryPanel.add(interrupt, new GridBagConstraints(2, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(3, 3, 3, 0), 0, 0));
-        //-----------------------------------------------------
+
         progress = new JProgressBar();
-        //-----------------------------------------------------
-        //model = new ListModel();
-        //sets = new JList<>(model);
-        instancesSetTable = new InstancesSetTable();
+
+        instancesSetTable = new InstancesSetTable(this);
         JScrollPane setsPane = new JScrollPane(instancesSetTable);
         setsPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
-        setsPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        setsPane.setPreferredSize(new Dimension(400, 150));
+        setsPane.setPreferredSize(new Dimension(600, 150));
 
-        /*sets.addMouseListener(new MouseAdapter() {
-
-            InstancesFrame instancesFrame;
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    //int i = instancesSetTable.get(e.getPoint());
-                    instancesFrame = new InstancesFrame(model.instance(i), QueryFrame.this);
-                    instancesFrame.setVisible(true);
-                }
-            }
-
-        });*/
-        //-----------------------------------------------------
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -245,27 +225,6 @@ public class QueryFrame extends JFrame {
     /**
      *
      */
-    private static class ListModel extends DefaultListModel<String> {
-
-        static final String DATA_FORMAT = "Data: %s, rows: %d, columns: %d, classes: %d";
-
-        ArrayList<Instances> instances = new ArrayList<>();
-
-        public Instances instance(int i) {
-            return instances.get(i);
-        }
-
-        public void addInstances(Instances data) {
-            instances.add(data);
-            this.addElement(String.format(DATA_FORMAT, data.relationName(),
-                    data.numInstances(), data.numAttributes(), data.numClasses()));
-        }
-
-    } //End of class ListModel
-
-    /**
-     *
-     */
     private class SwingWorkerConstruction extends SwingWorker<Void, Void> {
 
         String query;
@@ -295,8 +254,6 @@ public class QueryFrame extends JFrame {
             interrupt.setEnabled(false);
             if (data != null) {
                 instancesSetTable.addInstances(data);
-                //sets.setSelectedIndex(0);
-                //instancesSetTable.setSel
             } else {
                 if (errorMessage != null) {
                     JOptionPane.showMessageDialog(QueryFrame.this,
