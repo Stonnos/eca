@@ -1,4 +1,4 @@
-package eca.logging;
+package eca.gui.logging;
 
 import org.springframework.util.Assert;
 

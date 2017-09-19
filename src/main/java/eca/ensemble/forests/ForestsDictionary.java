@@ -2,6 +2,7 @@ package eca.ensemble.forests;
 
 /**
  * Random forests dictionary class.
+ *
  * @author Roman Batygin
  */
 public class ForestsDictionary {

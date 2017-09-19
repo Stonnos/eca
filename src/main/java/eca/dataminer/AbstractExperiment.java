@@ -172,7 +172,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     protected final ClassifierDescriptor evaluateModel(Classifier model) throws Exception {
 
         Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
-               getEvaluationMethod(), getNumFolds(), getNumTests(), r);
+                getEvaluationMethod(), getNumFolds(), getNumTests(), r);
 
         ClassifierDescriptor object = new ClassifierDescriptor(model, evaluation);
         getHistory().add(object);

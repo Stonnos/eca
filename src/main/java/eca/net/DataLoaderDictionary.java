@@ -2,6 +2,7 @@ package eca.net;
 
 /**
  * Data loader dictionary class.
+ *
  * @author Roman Batygin
  */
 

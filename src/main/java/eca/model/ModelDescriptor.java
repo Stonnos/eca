@@ -9,6 +9,7 @@ import eca.core.evaluation.Evaluation;
 
 /**
  * Classification results model.
+ *
  * @author Roman Batygin
  */
 public class ModelDescriptor implements java.io.Serializable {

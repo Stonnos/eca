@@ -4,6 +4,7 @@ import eca.gui.dictionary.ClassifiersNamesDictionary;
 
 /**
  * Decision tree algorithm enum.
+ *
  * @author Roman Batygin
  */
 public enum DecisionTreeType {
@@ -52,7 +53,7 @@ public enum DecisionTreeType {
      * Visitor pattern common method
      *
      * @param decisionTreeTypeVisitor visitor class
-     * @param <T>         generic class
+     * @param <T>                     generic class
      * @return generic class
      */
     public abstract <T> T handle(DecisionTreeTypeVisitor<T> decisionTreeTypeVisitor);
@@ -65,6 +66,7 @@ public enum DecisionTreeType {
 
     /**
      * Returns algorithm description.
+     *
      * @return algorithm description
      */
     public String getDescription() {
@@ -73,6 +75,7 @@ public enum DecisionTreeType {
 
     /**
      * Finds decision tree type by description
+     *
      * @param description description string.
      * @return {@link DecisionTreeType} object
      */

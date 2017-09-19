@@ -41,7 +41,6 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     /**
      * Creates <tt>ModifiedHeterogeneousClassifier</tt> object.
-     *
      */
     public ModifiedHeterogeneousClassifier() {
 

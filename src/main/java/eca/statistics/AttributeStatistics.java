@@ -19,7 +19,8 @@ public class AttributeStatistics {
 
     /**
      * Creates <tt>AttributeStatistics</tt> object
-     * @param data {@link Instances} object
+     *
+     * @param data          {@link Instances} object
      * @param decimalFormat {@link DecimalFormat} object
      */
     public AttributeStatistics(Instances data, DecimalFormat decimalFormat) {
@@ -29,6 +30,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the maximum value of given attribute.
+     *
      * @param a {@link Attribute} object
      * @return the string representation of attribute maximum value
      */
@@ -44,6 +46,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the minimum value of given attribute.
+     *
      * @param a {@link Attribute} object
      * @return the string representation of attribute minimum value
      */
@@ -59,6 +62,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the mean value of given attribute.
+     *
      * @param a {@link Attribute} object
      * @return the string representation of attribute mean value
      */
@@ -69,6 +73,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the variance value of given attribute.
+     *
      * @param a {@link Attribute} object
      * @return the string representation of attribute variance value
      */
@@ -79,6 +84,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the std. dev. value of given attribute.
+     *
      * @param a {@link Attribute} object
      * @return the string representation of attribute std. dev. value
      */
@@ -89,6 +95,7 @@ public class AttributeStatistics {
 
     /**
      * Gets the number of values of given attribute.
+     *
      * @param attribute {@link Attribute} object
      * @param attribute attribute value for comparing
      * @return the number of values of given attribute.

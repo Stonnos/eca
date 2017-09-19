@@ -52,6 +52,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     /**
      * Return the value of use bootstrap samples.
+     *
      * @return the value of use bootstrap samples
      */
     public boolean isUseBootstrapSamples() {
@@ -60,6 +61,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     /**
      * Returns the number of random splits of each attribute.
+     *
      * @return the number of random splits of each attribute
      */
     public int getNumRandomSplits() {
@@ -68,9 +70,10 @@ public class ExtraTreesClassifier extends RandomForests {
 
     /**
      * Sets the number of random splits of each attribute.
+     *
      * @param numRandomSplits the number of random splits of each attribute
      * @throws IllegalArgumentException if the value the number of random splits is less than
-     * specified constant
+     *                                  specified constant
      */
     public void setNumRandomSplits(int numRandomSplits) {
         if (numRandomSplits < DecisionTreeClassifier.MIN_RANDOM_SPLITS) {
@@ -94,6 +97,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     /**
      * Sets the value of use bootstrap samples.
+     *
      * @param useBootstrapSamples the value of use bootstrap samples
      */
     public void setUseBootstrapSamples(boolean useBootstrapSamples) {

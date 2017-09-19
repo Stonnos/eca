@@ -97,7 +97,7 @@ public class QueryFrame extends JFrame {
         try {
             connection.close();
         } catch (Exception ex) {
-            log.error("There was an error:", ex);
+            log.error("There was an error:", ex.getMessage());
         }
     }
 
@@ -195,7 +195,7 @@ public class QueryFrame extends JFrame {
                         }
                         dispose();
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex);
+                        log.error("There was an error:", ex.getMessage());
                         JOptionPane.showMessageDialog(parent, ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
                     }
@@ -243,7 +243,7 @@ public class QueryFrame extends JFrame {
                 execute.setEnabled(false);
                 data = connection.executeQuery(query);
             } catch (Exception e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 errorMessage = e.getMessage();
             }
             return null;

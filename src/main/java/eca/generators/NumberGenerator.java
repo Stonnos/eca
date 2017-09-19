@@ -4,6 +4,7 @@ import java.util.Random;
 
 /**
  * Class for generating random numbers.
+ *
  * @author Roman Batygin
  */
 public class NumberGenerator {

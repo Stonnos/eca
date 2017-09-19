@@ -19,6 +19,7 @@ import java.util.Random;
  * <p>
  * Set number of instances (Default: 100) <p>
  * <p>
+ *
  * @author Roman Batygin
  */
 public class SimpleDataGenerator implements DataGenerator {

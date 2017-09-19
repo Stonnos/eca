@@ -10,9 +10,8 @@
     </appender>
 
 
-    <appender name="gui" class="eca.logging.JTextAreaAppender">
+    <appender name="gui" class="eca.gui.logging.JTextAreaAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %X{userLogin} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>

@@ -2,6 +2,7 @@ package eca.ensemble;
 
 /**
  * Ensemble algorithms dictionary class,
+ *
  * @author Roman Batygin
  */
 

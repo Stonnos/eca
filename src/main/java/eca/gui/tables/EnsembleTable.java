@@ -21,8 +21,6 @@ import weka.core.Instances;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
@@ -108,7 +106,7 @@ public class EnsembleTable extends JDataTableBase {
                 result.setStatisticaTable(stat.createStatistics(classifier, e));
                 result.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

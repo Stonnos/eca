@@ -5,11 +5,7 @@
  */
 package eca.trees;
 
-import eca.core.Assert;
-import eca.core.InstancesHandler;
-import eca.core.ListOptionsHandler;
-import eca.core.PermutationsSearch;
-import eca.core.RandomAttributesEnumeration;
+import eca.core.*;
 import eca.filter.MissingValuesFilter;
 import eca.generators.NumberGenerator;
 import eca.trees.rules.AbstractRule;
@@ -23,11 +19,7 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Abstract class for generating decision tree model. <p>
@@ -240,6 +232,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the value of random splits.
+     *
      * @return the value of random splits
      */
     public boolean isUseRandomSplits() {
@@ -248,6 +241,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the value of random splits.
+     *
      * @param useRandomSplits the value of random splits
      */
     public void setUseRandomSplits(boolean useRandomSplits) {
@@ -256,6 +250,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Returns the number of random splits of each attribute.
+     *
      * @return the number of random splits of each attribute
      */
     public int getNumRandomSplits() {
@@ -264,6 +259,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     /**
      * Sets the number of random splits of each attribute.
+     *
      * @param numRandomSplits the number of random splits of each attribute
      * @throws IllegalArgumentException if the value the number of random splits is less than {@value MIN_RANDOM_SPLITS}
      */

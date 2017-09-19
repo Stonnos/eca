@@ -1,4 +1,4 @@
-package eca.logging;
+package eca.gui.logging;
 
 import ch.qos.logback.core.OutputStreamAppender;
 import eca.gui.ConsoleTextArea;

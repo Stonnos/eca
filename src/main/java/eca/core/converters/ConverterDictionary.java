@@ -2,6 +2,7 @@ package eca.core.converters;
 
 /**
  * Converter module dictionary.
+ *
  * @author Roman Batygin
  */
 

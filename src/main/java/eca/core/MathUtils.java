@@ -2,12 +2,14 @@ package eca.core;
 
 /**
  * Utility class.
+ *
  * @author Roman Batygin
  */
 public class MathUtils {
 
     /**
      * Calculates <tt>n!</tt>.
+     *
      * @param n input number
      * @return the factorial value of number n
      */

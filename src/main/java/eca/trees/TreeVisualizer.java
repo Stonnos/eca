@@ -474,7 +474,7 @@ public class TreeVisualizer extends JPanel {
             str.append("</tr><tr>");
             String type = isLeaf() ? LEAF_TEXT : INNER_NODE_TEXT;
             str.append(String.format(CELL_FORMAT, NODE_TYPE_TEXT)).append("<td>")
-                .append(type).append("</td>");
+                    .append(type).append("</td>");
             str.append("</tr><tr>");
             str.append(String.format(CELL_FORMAT, OBJECTS_NUM_TEXT)).append("<td>").
                     append(String.valueOf(objectsNum())).append("</td>");

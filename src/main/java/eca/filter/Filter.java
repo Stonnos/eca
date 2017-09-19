@@ -5,12 +5,14 @@ import weka.core.Instances;
 
 /**
  * Data filter interface.
+ *
  * @author Roman Batygin
  */
 public interface Filter {
 
     /**
      * Filters input data.
+     *
      * @param data instances object
      * @return {@link Instances} object
      * @throws Exception
@@ -19,6 +21,7 @@ public interface Filter {
 
     /**
      * Filters input instance.
+     *
      * @param obj instance object
      * @return {@link Instance} object
      * @throws Exception

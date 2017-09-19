@@ -3,12 +3,7 @@ package eca.gui.tables;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.InstancesFrame;
-import eca.gui.frames.QueryFrame;
-import eca.gui.frames.ResultsFrameBase;
-import eca.gui.tables.models.EnsembleTableModel;
-import eca.gui.tables.models.ExperimentTableModel;
 import eca.gui.tables.models.InstancesSetTableModel;
-import eca.model.ClassifierDescriptor;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
@@ -63,7 +58,7 @@ public class InstancesSetTable extends JDataTableBase {
                 InstancesFrame instancesFrame = new InstancesFrame(data, parent);
                 instancesFrame.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 JOptionPane.showMessageDialog(parent, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

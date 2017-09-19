@@ -6,14 +6,8 @@
 package eca.core.converters;
 
 import eca.gui.text.DateFormat;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.Assert;
 import weka.core.Attribute;
@@ -26,15 +20,16 @@ import java.util.Date;
 
 /**
  * Implements saving {@link Instances} into XLS file.
+ *
  * @author Roman Batygin
  */
-@Slf4j
 public class XLSSaver {
 
     private File file;
 
     /**
      * Sets file object.
+     *
      * @param file {@link File} object
      * @throws IOException
      */
@@ -49,6 +44,7 @@ public class XLSSaver {
 
     /**
      * Writes data into xls file.
+     *
      * @param data {@link Instances} object
      * @throws IOException
      */
@@ -93,11 +89,7 @@ public class XLSSaver {
             }
 
             book.write(stream);
-        } catch (IOException ex) {
-            log.error("There was an error while saving data into file : '{}'", file.getAbsoluteFile());
-            throw new IOException(ex);
         }
-
     }
 
 }

@@ -55,7 +55,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,11 +62,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Random;
 
 /**
  * @author Roman Batygin
@@ -178,7 +174,7 @@ public class JMainFrame extends JFrame {
                     ImageIO.read(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl())));
             ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
         } catch (Exception e) {
-            log.warn("There was an error in frame initialization:", e);
+            log.warn("There was an error in frame initialization:", e.getMessage());
         }
     }
 
@@ -339,7 +335,7 @@ public class JMainFrame extends JFrame {
                             }
                         }
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(DataInternalFrame.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -689,7 +685,7 @@ public class JMainFrame extends JFrame {
                     frame.setSelected(true);
                     frame.getMenu().setSelected(true);
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                 }
             }
         });
@@ -750,7 +746,7 @@ public class JMainFrame extends JFrame {
                         //---------------------------------------
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -818,7 +814,7 @@ public class JMainFrame extends JFrame {
                         }
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -851,7 +847,7 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Throwable e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -888,7 +884,7 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -930,7 +926,7 @@ public class JMainFrame extends JFrame {
 
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -961,7 +957,7 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex);
+                        log.error("There was an error:", ex.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -1010,7 +1006,7 @@ public class JMainFrame extends JFrame {
                     }
                     ref.openReference();
                 } catch (Throwable e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -1040,7 +1036,7 @@ public class JMainFrame extends JFrame {
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         experimentFrame.setVisible(true);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1057,7 +1053,7 @@ public class JMainFrame extends JFrame {
                         createEnsembleExperiment(new ModifiedHeterogeneousClassifier(), modifiedHeteroEnsMenu.getText(),
                                 data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1073,7 +1069,7 @@ public class JMainFrame extends JFrame {
                     try {
                         createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1089,7 +1085,7 @@ public class JMainFrame extends JFrame {
                     try {
                         createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1105,7 +1101,7 @@ public class JMainFrame extends JFrame {
                     try {
                         createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1186,7 +1182,7 @@ public class JMainFrame extends JFrame {
                                 new Logistic(), set);
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1210,7 +1206,7 @@ public class JMainFrame extends JFrame {
                         frame.showDialog();
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1230,7 +1226,7 @@ public class JMainFrame extends JFrame {
                                 new KNearestNeighbours(), data());
                         executeSimpleBuilding(frame);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1288,7 +1284,7 @@ public class JMainFrame extends JFrame {
                         frame.showDialog();
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1311,7 +1307,7 @@ public class JMainFrame extends JFrame {
                         frame.showDialog();
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1333,7 +1329,7 @@ public class JMainFrame extends JFrame {
                                 new StackingClassifier(), data());
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1359,7 +1355,7 @@ public class JMainFrame extends JFrame {
                         executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);
 
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1389,7 +1385,7 @@ public class JMainFrame extends JFrame {
                                 new AttributesStatisticsFrame(data(), JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex);
+                        log.error("There was an error:", ex.getMessage());
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1403,7 +1399,8 @@ public class JMainFrame extends JFrame {
         loggingMenu.addActionListener(new ActionListener() {
 
             TextAreaFrame textAreaFrame = new TextAreaFrame(JMainFrame.this,
-                                                          ConsoleTextArea.getTextArea());;
+                    ConsoleTextArea.getTextArea());
+            ;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1445,7 +1442,7 @@ public class JMainFrame extends JFrame {
                     });
                 }
             } catch (Throwable e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 JOptionPane.showMessageDialog(JMainFrame.this,
                         e.getMessage(),
                         null, JOptionPane.WARNING_MESSAGE);
@@ -1458,7 +1455,7 @@ public class JMainFrame extends JFrame {
         try {
             selectedPanel().check();
         } catch (Exception e) {
-            log.error("There was an error:", e);
+            log.error("There was an error:", e.getMessage());
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
                     null, JOptionPane.WARNING_MESSAGE);
@@ -1474,7 +1471,7 @@ public class JMainFrame extends JFrame {
                     tree, data());
             executeSimpleBuilding(frame);
         } catch (Exception e) {
-            log.error("There was an error:", e);
+            log.error("There was an error:", e.getMessage());
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
                     null, JOptionPane.WARNING_MESSAGE);
@@ -1491,7 +1488,7 @@ public class JMainFrame extends JFrame {
             frame.showDialog();
             executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
         } catch (Exception e) {
-            log.error("There was an error:", e);
+            log.error("There was an error:", e.getMessage());
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
                     null, JOptionPane.WARNING_MESSAGE);

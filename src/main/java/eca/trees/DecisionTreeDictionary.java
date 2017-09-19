@@ -2,6 +2,7 @@ package eca.trees;
 
 /**
  * Decision tree dictionary class.
+ *
  * @author Roman Batygin
  */
 public class DecisionTreeDictionary {

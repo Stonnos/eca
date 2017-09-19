@@ -9,17 +9,19 @@ import java.util.Random;
 
 /**
  * Classifier evaluation service.
+ *
  * @author Roman Batygin
  */
 public class EvaluationService {
 
     /**
      * Evaluates classifier model using specified evaluation method.
-     * @param model {@link Classifier} model
-     * @param data {@link Instances} object
+     *
+     * @param model            {@link Classifier} model
+     * @param data             {@link Instances} object
      * @param evaluationMethod {@link EvaluationMethod} type
-     * @param numFolds number of folds for k * V cross validation method
-     * @param numTests number of tests for k * V cross validation method
+     * @param numFolds         number of folds for k * V cross validation method
+     * @param numTests         number of tests for k * V cross validation method
      * @return {@link Evaluation} object
      * @throws Exception
      */

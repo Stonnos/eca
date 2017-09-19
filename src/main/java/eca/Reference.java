@@ -13,6 +13,7 @@ import java.io.File;
 
 /**
  * Implements working with ECA user manual.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -33,6 +34,7 @@ public class Reference {
 
     /**
      * Opens {@value FILE_NAME} file.
+     *
      * @throws Exception if user manual file does not exists
      */
     public void openReference() throws Exception {

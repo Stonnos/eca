@@ -138,6 +138,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
 
     /**
      * Return decision tree type.
+     *
      * @return {@link DecisionTreeType} object
      */
     public DecisionTreeType getDecisionTreeType() {
@@ -146,6 +147,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
 
     /**
      * Sets decision tree type.
+     *
      * @param decisionTreeType {@link DecisionTreeType} object
      */
     public void setDecisionTreeType(DecisionTreeType decisionTreeType) {

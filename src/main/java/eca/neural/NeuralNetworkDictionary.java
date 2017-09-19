@@ -2,6 +2,7 @@ package eca.neural;
 
 /**
  * Neural network dictionary.
+ *
  * @author Roman Batygin
  */
 

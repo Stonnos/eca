@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 /**
  * Classifier evaluation model.
+ *
  * @author Roman Batygin
  */
 public class ClassifierDescriptor implements Serializable {

@@ -95,7 +95,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     @Override
     public String[] getOptions() {
-        return new String[] {KNNDictionary.NEIGHBOURS_NUM, String.valueOf(numNeighbours),
+        return new String[]{KNNDictionary.NEIGHBOURS_NUM, String.valueOf(numNeighbours),
                 KNNDictionary.NEIGHBOUR_WEIGHT, String.valueOf(weight),
                 KNNDictionary.DISTANCE_FUNCTION, metric.getClass().getSimpleName()};
     }

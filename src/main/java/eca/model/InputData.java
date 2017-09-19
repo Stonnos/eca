@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /**
  * Classifier input options model.
+ *
  * @author Roman Batygin
  */
 

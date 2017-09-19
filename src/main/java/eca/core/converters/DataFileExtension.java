@@ -2,6 +2,7 @@ package eca.core.converters;
 
 /**
  * File extension for input data.
+ *
  * @author Roman Batygin
  */
 

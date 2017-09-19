@@ -2,6 +2,7 @@ package eca.filter;
 
 /**
  * Data filter dictionary class.
+ *
  * @author Roman Batygin
  */
 public class FilterDictionary {

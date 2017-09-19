@@ -408,7 +408,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
 
         /**
          * Creates <tt>IterativeBuilder</tt> object.
-         * @param input input vector
+         *
+         * @param input  input vector
          * @param output output vector
          */
         public IterativeBuilder(double[][] input, double[][] output) {
@@ -420,6 +421,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
 
         /**
          * Returns the current number of iteration.
+         *
          * @return the current number of iteration
          */
         public int index() {
@@ -428,6 +430,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
 
         /**
          * Returns the value of step between iterations.
+         *
          * @return the value of step between iterations
          */
         public int step() {
@@ -436,6 +439,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
 
         /**
          * Performs the next iteration and returns its number.
+         *
          * @return the number of next iteration.
          * @throws Exception
          */
@@ -456,6 +460,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
 
         /**
          * Returns <tt>true</tt> if the next iteration is exists.
+         *
          * @return <tt>true</tt> if the next iteration is exists.
          */
         public boolean isNext() {

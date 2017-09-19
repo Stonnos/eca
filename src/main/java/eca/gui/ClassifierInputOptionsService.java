@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 /**
  * Classifier input options service.
+ *
  * @author Roman Batygin
  */
 public class ClassifierInputOptionsService {
@@ -49,6 +50,7 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns classifier input options html string.
+     *
      * @param classifier classifier object
      * @return classifier input options html string
      */
@@ -78,7 +80,8 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns attribute statistics string.
-     * @param a attribute
+     *
+     * @param a                   attribute
      * @param attributeStatistics {@link AttributeStatistics} object
      * @return attribute statistics string
      */
@@ -113,7 +116,8 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns all attributes statistics string.
-     * @param data input data
+     *
+     * @param data                input data
      * @param attributeStatistics {@link AttributeStatistics} object
      * @return all attributes statistics string
      */
@@ -128,6 +132,7 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns classifier input options string.
+     *
      * @param classifier classifier object
      * @return classifier input options string
      */
@@ -160,7 +165,8 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns attribute statistics html string.
-     * @param a attribute
+     *
+     * @param a                   attribute
      * @param attributeStatistics {@link AttributeStatistics} object
      * @return attribute statistics html string
      */
@@ -194,7 +200,7 @@ public class ClassifierInputOptionsService {
             info.append("<td>").append(AttributesTypesDictionary.NOMINAL).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr' colspan = '2' style = 'text-align: center;'>")
-                .append(NOMINAL_ATTR_VALUES_TEXT).append("</td>");
+                    .append(NOMINAL_ATTR_VALUES_TEXT).append("</td>");
             info.append("</tr>");
             for (int k = 0; k < a.numValues(); k++) {
                 info.append("<tr>");
@@ -212,6 +218,7 @@ public class ClassifierInputOptionsService {
 
     /**
      * Returns instances info string.
+     *
      * @param data {@link Instances} object
      * @return instances info string
      */

@@ -30,12 +30,7 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -308,7 +303,7 @@ public abstract class ExperimentFrame extends JFrame {
                                 new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData()));
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -349,7 +344,7 @@ public abstract class ExperimentFrame extends JFrame {
                         });
 
                     } catch (Throwable e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
@@ -429,7 +424,7 @@ public abstract class ExperimentFrame extends JFrame {
                             table.addExperiment(classifier);
                         }
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                     }
 
                     if (!isCancelled()) {
@@ -437,6 +432,7 @@ public abstract class ExperimentFrame extends JFrame {
                     }
                 }
             } catch (Throwable e) {
+                log.error("There was an error:", e.getMessage());
                 error = true;
                 text.setText(e.toString());
             }

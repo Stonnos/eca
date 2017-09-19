@@ -37,7 +37,7 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     private JCheckBox useBootstrapSamplesCheckBox;
 
     public RandomNetworkOptionsDialog(Window parent, String title,
-                                     RandomNetworks randomNetworks, Instances data) {
+                                      RandomNetworks randomNetworks, Instances data) {
         super(parent, title, randomNetworks, data);
         this.setResizable(false);
         this.createFormat();

@@ -8,6 +8,7 @@ import java.io.File;
 
 /**
  * Class for loading input data from file.
+ *
  * @author Roman Batygin
  */
 
@@ -15,6 +16,7 @@ public class DataLoader {
 
     /**
      * Loads {@link Instances} from file.
+     *
      * @param file file object
      * @return {@link Instances} object
      * @throws Exception

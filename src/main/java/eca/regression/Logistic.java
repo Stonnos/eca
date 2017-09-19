@@ -17,7 +17,7 @@ public class Logistic extends weka.classifiers.functions.Logistic
         implements InstancesHandler {
 
     public static final int MAX_ITS = 500;
-    
+
     private Instances data;
 
     public Logistic() {
@@ -37,7 +37,7 @@ public class Logistic extends weka.classifiers.functions.Logistic
 
     @Override
     public String[] getOptions() {
-        return new String[] {LogisticDictionary.MAX_ITS_NUM, String.valueOf(getMaxIts()),
+        return new String[]{LogisticDictionary.MAX_ITS_NUM, String.valueOf(getMaxIts()),
                 LogisticDictionary.OPTIMIZATION_METHOD, getUseConjugateGradientDescent()
                 ? LogisticDictionary.CONJUGATE_GRADIENT_DESCENT_METHOD : LogisticDictionary.NEWTON_METHOD};
     }

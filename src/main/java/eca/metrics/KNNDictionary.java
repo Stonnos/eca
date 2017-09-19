@@ -2,6 +2,7 @@ package eca.metrics;
 
 /**
  * K - nearest neighbours dictionary class.
+ *
  * @author Roman Batygin
  */
 public class KNNDictionary {

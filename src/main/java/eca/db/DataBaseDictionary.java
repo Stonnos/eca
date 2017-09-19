@@ -2,6 +2,7 @@ package eca.db;
 
 /**
  * Data base dictionary class.
+ *
  * @author Roman Batygin
  */
 

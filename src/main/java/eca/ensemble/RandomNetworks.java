@@ -50,7 +50,7 @@ public class RandomNetworks extends ThresholdClassifier {
 
     @Override
     public String[] getOptions() {
-        return new String[] {
+        return new String[]{
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, String.valueOf(getMinError()),
                 EnsembleDictionary.NETWORK_MAX_ERROR, String.valueOf(getMaxError()),
@@ -61,6 +61,7 @@ public class RandomNetworks extends ThresholdClassifier {
 
     /**
      * Return the value of use bootstrap samples.
+     *
      * @return the value of use bootstrap samples
      */
     public boolean isUseBootstrapSamples() {
@@ -69,6 +70,7 @@ public class RandomNetworks extends ThresholdClassifier {
 
     /**
      * Sets the value of use bootstrap samples.
+     *
      * @param useBootstrapSamples the value of use bootstrap samples
      */
     public void setUseBootstrapSamples(boolean useBootstrapSamples) {

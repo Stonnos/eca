@@ -1,21 +1,13 @@
 package eca.gui.frames;
 
-import eca.core.converters.TextSaver;
 import eca.gui.ButtonUtils;
-import eca.gui.ConsoleTextArea;
-import eca.gui.actions.CallbackAction;
-import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.JFontChooser;
-import eca.gui.tables.JDataTableBase;
-import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 /**
  * @author Roman Batygin
@@ -58,7 +50,7 @@ public class TextAreaFrame extends JFrame {
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets(4, 0, 4, 0), 0, 0));
+                new Insets(10, 0, 10, 0), 0, 0));
 
         this.getRootPane().setDefaultButton(closeButton);
         this.pack();
@@ -96,7 +88,9 @@ public class TextAreaFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 Color selectedColor = JColorChooser.showDialog(TextAreaFrame.this, FONT_COLOR_MENU_TEXT,
                         textArea.getForeground());
-                textArea.setForeground(selectedColor);
+                if (selectedColor != null) {
+                    textArea.setForeground(selectedColor);
+                }
             }
         });
         backgroundColorMenu.addActionListener(new ActionListener() {
@@ -105,7 +99,9 @@ public class TextAreaFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 Color selectedColor = JColorChooser.showDialog(TextAreaFrame.this, BACKGROUND_COLOR_MENU_TEXT,
                         textArea.getForeground());
-                textArea.setBackground(selectedColor);
+                if (selectedColor != null) {
+                    textArea.setBackground(selectedColor);
+                }
             }
         });
         this.setJMenuBar(menu);

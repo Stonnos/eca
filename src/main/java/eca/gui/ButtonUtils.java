@@ -33,7 +33,7 @@ public class ButtonUtils {
 
     public static JButton createCloseButton() {
         JButton button = new JButton(CLOSE_BUTTON);
-        Dimension dimension = new Dimension(100,25);
+        Dimension dimension = new Dimension(100, 25);
         button.setPreferredSize(dimension);
         button.setMinimumSize(dimension);
         return button;

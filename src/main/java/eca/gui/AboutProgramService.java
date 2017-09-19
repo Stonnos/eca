@@ -10,6 +10,7 @@ import java.io.StringWriter;
 
 /**
  * About program service class.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -56,6 +57,7 @@ public class AboutProgramService {
 
     /**
      * Returns about program html string.
+     *
      * @return about program html string
      */
     public static String getAboutProgramHtmlString() {

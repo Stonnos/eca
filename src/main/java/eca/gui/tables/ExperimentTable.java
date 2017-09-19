@@ -20,8 +20,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
@@ -144,7 +142,7 @@ public class ExperimentTable extends JDataTableBase {
                         classifierDescriptor.getEvaluation()));
                 result.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

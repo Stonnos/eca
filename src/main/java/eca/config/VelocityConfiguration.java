@@ -8,6 +8,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 /**
  * Velocity configuration.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -29,6 +30,7 @@ public class VelocityConfiguration {
 
     /**
      * Returns {@link VelocityConfiguration} instance.
+     *
      * @return {@link VelocityConfiguration} instance
      */
     public static VelocityConfiguration getVelocityConfiguration() {
@@ -40,6 +42,7 @@ public class VelocityConfiguration {
 
     /**
      * Returns velocity template.
+     *
      * @param name velocity template name
      * @return {@link Template} object
      */

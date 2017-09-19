@@ -7,14 +7,16 @@ package eca.statistics;
 
 /**
  * Statistics class.
+ *
  * @author Roman Batygin
  */
 public class Statistics {
 
     /**
      * Calculates Student critical value.
+     *
      * @param df - the number of freedom degrees
-     * @param p - p - value
+     * @param p  - p - value
      * @return the value of Student critical value
      */
     public static double studentCriticalValue(int df, double p) {
@@ -23,6 +25,7 @@ public class Statistics {
 
     /**
      * Calculates the value of Student confidence interval.
+     *
      * @param n - sample size
      * @param p - p - value
      * @param s - std. dev. value
@@ -34,7 +37,8 @@ public class Statistics {
 
     /**
      * Calculates the F - critical value.
-     * @param p - p - value
+     *
+     * @param p   - p - value
      * @param df1
      * @param df2
      * @return the F - critical value
@@ -59,7 +63,8 @@ public class Statistics {
 
     /**
      * Calculates the hi - square critical value.
-     * @param p - p - value
+     *
+     * @param p  - p - value
      * @param df - the number of freedom degrees
      * @return the hi - square critical value
      */

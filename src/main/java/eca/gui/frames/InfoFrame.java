@@ -20,7 +20,8 @@ public class InfoFrame extends JFrame {
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
     private static final Font DEFAULT_TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 12);
-    private JTextArea textInfo = new JTextArea(15, 40);;
+    private JTextArea textInfo = new JTextArea(15, 40);
+    ;
 
     public InfoFrame(String title, String str, JFrame parent) {
         this.setLayout(new GridBagLayout());
@@ -72,7 +73,7 @@ public class InfoFrame extends JFrame {
                         TextSaver.saveToFile(file, textInfo.getText());
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(InfoFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }

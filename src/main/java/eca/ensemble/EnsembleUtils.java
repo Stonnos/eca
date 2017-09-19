@@ -9,6 +9,7 @@ public class EnsembleUtils {
 
     /**
      * Calculates classifier weight.
+     *
      * @param error classifier error value
      * @return classifier weight
      */

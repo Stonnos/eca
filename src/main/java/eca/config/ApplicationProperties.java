@@ -12,29 +12,17 @@ import java.util.Properties;
 public class ApplicationProperties {
 
     private static final String PROPERTIES_FILE = "application.properties";
-
     private static final String ECA_VERSION_PROPERTY = "eca.version";
-
     private static final String ECA_RELEASE_DATE_PROPERTY = "eca.release.date";
-
     private static final String ECA_DIGITS_PROPERTY = "eca.digits";
-
     private static final String ECA_TITLE_PROPERTY = "eca.title";
-
     private static final String ECA_TITLE_DESCRIPTION_PROPERTY = "eca.title.description";
-
     private static final String ECA_ICON_URL_PROPERTY = "eca.icon.url";
-
     private static final String ECA_LOGOTYPE_URL_PROPERTY = "eca.logotype.url";
-
     private static final String ECA_AUTHOR_PROPERTY = "eca.author";
-
     private static final String ECA_AUTHOR_EMAIL_PROPERTY = "eca.author.email";
-
     private static final String ECA_TOOLTIP_DISMISS_TIME = "eca.tooltip.dismiss.time";
-
     private static final String CROSS_VALIDATION_FOLDS = "cross.validation.folds";
-
     private static final String CROSS_VALIDATION_TESTS = "cross.validation.tests";
 
     private static Properties PROPERTIES = new Properties();

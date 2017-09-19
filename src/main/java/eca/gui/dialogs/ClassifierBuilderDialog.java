@@ -106,7 +106,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                     setProgress(builder.getPercent());
                 }
             } catch (Throwable e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }
@@ -117,7 +117,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 try {
                     Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                 }
             }
 

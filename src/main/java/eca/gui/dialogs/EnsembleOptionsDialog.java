@@ -25,12 +25,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.text.DecimalFormat;
 
 /**
@@ -67,7 +62,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
             "Необходимо выбрать индивидуальные классификаторы!";
 
-    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNamesDictionary.ID3,
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[]{ClassifiersNamesDictionary.ID3,
             ClassifiersNamesDictionary.C45,
             ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
             ClassifiersNamesDictionary.NEURAL_NETWORK,

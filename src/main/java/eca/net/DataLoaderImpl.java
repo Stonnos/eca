@@ -6,7 +6,6 @@
 package eca.net;
 
 import eca.core.converters.XLSLoader;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
@@ -18,10 +17,7 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 
-import static eca.core.converters.DataFileExtension.ARFF;
-import static eca.core.converters.DataFileExtension.CSV;
-import static eca.core.converters.DataFileExtension.XLS;
-import static eca.core.converters.DataFileExtension.XLSX;
+import static eca.core.converters.DataFileExtension.*;
 
 
 /**
@@ -29,7 +25,6 @@ import static eca.core.converters.DataFileExtension.XLSX;
  *
  * @author Roman Batygin
  */
-@Slf4j
 public class DataLoaderImpl implements DataLoader {
 
     /**
@@ -83,16 +78,12 @@ public class DataLoaderImpl implements DataLoader {
     public final void setURL(URL url) throws Exception {
         Assert.notNull(url, "URL is not specified!");
         if (!contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
-            String errorMessage = String.format(DataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
-                    Arrays.asList(PROTOCOLS));
-            log.error(errorMessage);
-            throw new Exception(errorMessage);
+            throw new Exception(String.format(DataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
+                    Arrays.asList(PROTOCOLS)));
         }
         if (!contains(FILE_EXTENSIONS, url.getFile(), (x, y) -> x.endsWith(y))) {
-            String errorMessage = String.format(DataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
-                    Arrays.asList(FILE_EXTENSIONS));
-            log.error(errorMessage);
-            throw new Exception(errorMessage);
+            throw new Exception(String.format(DataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+                    Arrays.asList(FILE_EXTENSIONS)));
         }
         this.url = url;
     }

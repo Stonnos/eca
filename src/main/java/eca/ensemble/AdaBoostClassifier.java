@@ -43,7 +43,6 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     /**
      * Creates <tt>AdaBoostClassifier</tt> object.
-     *
      */
     public AdaBoostClassifier() {
 

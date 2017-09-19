@@ -23,11 +23,11 @@ public class ClassifierIndexer {
     }
 
     public String getExperimentIndex(Classifier classifier) {
-        return String.format("%sExperiment_%s",classifier.getClass().getSimpleName(), getCurrentDateToString());
+        return String.format("%sExperiment_%s", classifier.getClass().getSimpleName(), getCurrentDateToString());
     }
 
     public String getResultsIndex(Classifier classifier) {
-        return String.format("%sResults_%s",classifier.getClass().getSimpleName(), getCurrentDateToString());
+        return String.format("%sResults_%s", classifier.getClass().getSimpleName(), getCurrentDateToString());
     }
 
     public Date getCurrentDate() {

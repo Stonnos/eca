@@ -6,15 +6,8 @@
 package eca.core.converters;
 
 import eca.gui.text.DateFormat;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
@@ -35,7 +28,6 @@ import java.util.ArrayList;
  *
  * @author Roman Batygin
  */
-@Slf4j
 public class XLSLoader {
 
     private InputStream inputStream;
@@ -50,7 +42,7 @@ public class XLSLoader {
      */
     public void setFile(File file) throws Exception {
         Asserts.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(".xls") && !file.getName().endsWith(".xlsx")) {
+        if (!file.getName().endsWith(DataFileExtension.XLS) && !file.getName().endsWith(DataFileExtension.XLSX)) {
             throw new Exception("Wrong file extension!");
         }
         this.file = file;
@@ -92,55 +84,50 @@ public class XLSLoader {
      */
     public Instances getDataSet() throws Exception {
         Instances data;
-        try {
-            Workbook book = WorkbookFactory.create(inputStream == null ?
-                    new FileInputStream(file) : inputStream);
-            Sheet sheet = book.getSheetAt(0);
-            checkData(sheet);
-            data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
-                    sheet.getLastRowNum());
+        Workbook book = WorkbookFactory.create(inputStream == null ?
+                new FileInputStream(file) : inputStream);
+        Sheet sheet = book.getSheetAt(0);
+        checkData(sheet);
+        data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
+                sheet.getLastRowNum());
 
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-                DenseInstance o = new DenseInstance(data.numAttributes());
-                o.setDataset(data);
-                for (int j = 0; j < data.numAttributes(); j++) {
-                    Cell cell = sheet.getRow(i).getCell(j);
-                    if (cell == null) {
-                        o.setValue(j, Utils.missingValue());
-                    } else {
-                        switch (cell.getCellTypeEnum()) {
-                            case NUMERIC: {
-                                if (data.attribute(j).isDate()) {
-                                    o.setValue(j, cell.getDateCellValue().getTime());
-                                } else {
-                                    o.setValue(j, cell.getNumericCellValue());
-                                }
-                                break;
+        for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+            DenseInstance o = new DenseInstance(data.numAttributes());
+            o.setDataset(data);
+            for (int j = 0; j < data.numAttributes(); j++) {
+                Cell cell = sheet.getRow(i).getCell(j);
+                if (cell == null) {
+                    o.setValue(j, Utils.missingValue());
+                } else {
+                    switch (cell.getCellTypeEnum()) {
+                        case NUMERIC: {
+                            if (data.attribute(j).isDate()) {
+                                o.setValue(j, cell.getDateCellValue().getTime());
+                            } else {
+                                o.setValue(j, cell.getNumericCellValue());
                             }
+                            break;
+                        }
 
-                            case STRING: {
-                                String val = cell.getStringCellValue().trim();
-                                if (val.isEmpty()) {
-                                    o.setValue(j, Utils.missingValue());
-                                } else {
-                                    o.setValue(j, val);
-                                }
-                                break;
-                            }
-
-                            case BOOLEAN: {
-                                String val = String.valueOf(cell.getBooleanCellValue());
+                        case STRING: {
+                            String val = cell.getStringCellValue().trim();
+                            if (val.isEmpty()) {
+                                o.setValue(j, Utils.missingValue());
+                            } else {
                                 o.setValue(j, val);
-                                break;
                             }
+                            break;
+                        }
+
+                        case BOOLEAN: {
+                            String val = String.valueOf(cell.getBooleanCellValue());
+                            o.setValue(j, val);
+                            break;
                         }
                     }
                 }
-                data.add(o);
             }
-        } catch (Exception ex) {
-            log.error("There was an error while reading data from file '{}'", file.getAbsoluteFile());
-            throw new Exception(ex.getMessage());
+            data.add(o);
         }
         return data;
     }

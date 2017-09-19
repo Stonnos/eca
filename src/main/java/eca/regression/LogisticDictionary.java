@@ -2,6 +2,7 @@ package eca.regression;
 
 /**
  * Logistic dictionary.
+ *
  * @author Roman Batygin
  */
 public class LogisticDictionary {

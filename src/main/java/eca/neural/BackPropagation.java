@@ -62,7 +62,7 @@ public class BackPropagation extends LearningAlgorithm {
 
     @Override
     public String[] getOptions() {
-        return new String[] {NeuralNetworkDictionary.LEARNING_SPEED, String.valueOf(learningRate),
+        return new String[]{NeuralNetworkDictionary.LEARNING_SPEED, String.valueOf(learningRate),
                 NeuralNetworkDictionary.MOMENTUM, String.valueOf(momentum)};
     }
 
@@ -70,7 +70,7 @@ public class BackPropagation extends LearningAlgorithm {
         if (momentum < MIN_MOMENTUM || momentum >= MAX_MOMENTUM) {
             throw new IllegalArgumentException(
                     String.format("Значение коэффициента момента должно лежать в интервале (%.2f, %.2f]!",
-                    MIN_LEARNING_RATE, MAX_LEARNING_RATE));
+                            MIN_LEARNING_RATE, MAX_LEARNING_RATE));
         }
         this.momentum = momentum;
     }

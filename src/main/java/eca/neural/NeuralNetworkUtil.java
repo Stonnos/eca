@@ -14,6 +14,7 @@ import java.util.Set;
 
 /**
  * Neural network utility class.
+ *
  * @author Roman Batygin
  */
 public class NeuralNetworkUtil {
@@ -85,6 +86,7 @@ public class NeuralNetworkUtil {
      * in interval [a, b). Where: <p>
      * a - minimum neurons number in hidden layer <p>
      * b - maximum neurons number in hidden layer <p>
+     *
      * @param data {@link Instances} object
      * @return the random neurons number in hidden layer.
      */
@@ -151,7 +153,8 @@ public class NeuralNetworkUtil {
     /**
      * Calculates multilayer perceptron error by formula: <p>
      * <code>E = 0.5 * sum[i = 1..n](y[i]-d[i])^2</code>
-     * @param actual - actual values of output vector
+     *
+     * @param actual   - actual values of output vector
      * @param expected - expected values of output vector
      * @return the error value
      */

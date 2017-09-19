@@ -11,11 +11,7 @@ import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DateFormat;
 import eca.gui.text.DoubleDocument;
 import lombok.extern.slf4j.Slf4j;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Utils;
+import weka.core.*;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -109,7 +105,7 @@ public class AttributesTable extends JDataTableBase {
                                 classBox.insertItemAt(trimName, i);
                                 classBox.removeItemAt(i + 1);
                             } catch (Exception e) {
-                                log.error("There was an error:", e);
+                                log.error("There was an error:", e.getMessage());
                                 JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
                                         String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
                                         null, JOptionPane.WARNING_MESSAGE);

@@ -13,15 +13,15 @@ import java.awt.event.ActionListener;
  * @author Roman Batygin
  */
 
-public class InstancesFrame extends JDialog {
+public class InstancesFrame extends JFrame {
 
     private static final String DATA_FORMAT = "Данные: %s";
 
     private Instances data;
 
     public InstancesFrame(Instances data, Window parent) {
-        super(parent, String.format(DATA_FORMAT, data.relationName()));
         this.data = data;
+        this.setTitle(String.format(DATA_FORMAT, data.relationName()));
         this.setLayout(new GridBagLayout());
         //----------------------------------------------
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));

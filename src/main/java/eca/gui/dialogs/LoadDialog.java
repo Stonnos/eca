@@ -86,7 +86,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
             try {
                 action.apply();
             } catch (Throwable e) {
-                log.error("There was an error:", e);
+                log.error("There was an error:", e.getMessage());
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }

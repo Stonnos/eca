@@ -181,7 +181,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      */
     public double[] errorConfidenceInterval() {
         double x = errorConfidenceValue();
-        return new double[] {pctIncorrect() / 100.0 - x, pctIncorrect() / 100.0 + x};
+        return new double[]{pctIncorrect() / 100.0 - x, pctIncorrect() / 100.0 + x};
     }
 
     /**

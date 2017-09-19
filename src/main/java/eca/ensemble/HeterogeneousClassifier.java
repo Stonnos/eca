@@ -55,7 +55,6 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     /**
      * Creates <tt>HeterogeneousClassifier</tt> object.
-     *
      */
     public HeterogeneousClassifier() {
 

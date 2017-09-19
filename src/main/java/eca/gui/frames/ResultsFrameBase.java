@@ -20,12 +20,7 @@ import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
-import eca.gui.tables.ClassificationCostsMatrix;
-import eca.gui.tables.ClassifyInstanceTable;
-import eca.gui.tables.EnsembleTable;
-import eca.gui.tables.LogisticCoefficientsTable;
-import eca.gui.tables.MisClassificationMatrix;
-import eca.gui.tables.SignificantAttributesTable;
+import eca.gui.tables.*;
 import eca.model.InputData;
 import eca.model.ModelDescriptor;
 import eca.neural.NetworkVisualizer;
@@ -38,15 +33,8 @@ import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Picture;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
@@ -184,7 +172,7 @@ public class ResultsFrameBase extends JFrame {
                                 new ModelDescriptor(inputData, evaluation, getTitle(), digits));
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -243,7 +231,7 @@ public class ResultsFrameBase extends JFrame {
                     }
                     ref.openReference();
                 } catch (Exception e) {
-                    log.error("There was an error:", e);
+                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -259,7 +247,6 @@ public class ResultsFrameBase extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataFrame == null) {
                     dataFrame = new InstancesFrame(data, ResultsFrameBase.this);
-                    dataFrame.setModal(false);
                     ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
@@ -352,7 +339,7 @@ public class ResultsFrameBase extends JFrame {
                     try {
                         xlsResultsSaver.save(file);
                     } catch (Exception e) {
-                        log.error("There was an error:", e);
+                        log.error("There was an error:", e.getMessage());
                         JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
