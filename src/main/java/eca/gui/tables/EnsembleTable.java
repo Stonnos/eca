@@ -14,6 +14,7 @@ import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
+import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -28,6 +29,7 @@ import java.awt.event.MouseMotionAdapter;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class EnsembleTable extends JDataTableBase {
 
     private final JFrame parent;
@@ -106,7 +108,7 @@ public class EnsembleTable extends JDataTableBase {
                 result.setStatisticaTable(stat.createStatistics(classifier, e));
                 result.setVisible(true);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

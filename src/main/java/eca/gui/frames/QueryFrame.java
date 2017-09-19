@@ -9,6 +9,7 @@ import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.tables.InstancesSetTable;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class QueryFrame extends JFrame {
 
     private static final String DB_TITLE = "База данных";
@@ -95,7 +97,7 @@ public class QueryFrame extends JFrame {
         try {
             connection.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("There was an error:", ex);
         }
     }
 
@@ -193,8 +195,8 @@ public class QueryFrame extends JFrame {
                         }
                         dispose();
                     } catch (Throwable ex) {
-                        JOptionPane.showMessageDialog(parent,
-                                ex.getMessage(),
+                        log.error("There was an error:", ex);
+                        JOptionPane.showMessageDialog(parent, ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
                     }
 
@@ -241,7 +243,7 @@ public class QueryFrame extends JFrame {
                 execute.setEnabled(false);
                 data = connection.executeQuery(query);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 errorMessage = e.getMessage();
             }
             return null;

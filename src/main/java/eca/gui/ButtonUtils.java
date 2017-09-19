@@ -13,6 +13,8 @@ public class ButtonUtils {
 
     private static final String CANCEL_BUTTON_TEXT = "Cancel";
 
+    private static final String CLOSE_BUTTON = "Закрыть";
+
     private static final int BUTTON_WIDTH = 85;
 
     private static final int BUTTON_HEIGHT = 25;
@@ -27,6 +29,14 @@ public class ButtonUtils {
 
     public static JButton createCancelButton() {
         return createButton(CANCEL_BUTTON_TEXT);
+    }
+
+    public static JButton createCloseButton() {
+        JButton button = new JButton(CLOSE_BUTTON);
+        Dimension dimension = new Dimension(100,25);
+        button.setPreferredSize(dimension);
+        button.setMinimumSize(dimension);
+        return button;
     }
 
     public static JButton createButton(String title) {

@@ -9,6 +9,7 @@ import eca.gui.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
@@ -21,6 +22,7 @@ import java.awt.event.ActionListener;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class ClassifyInstancePanel extends JPanel {
 
     private static final String CLASSIFY_INFO = "Классифицировать новый пример";
@@ -92,7 +94,7 @@ public class ClassifyInstancePanel extends JPanel {
                             .append(table.getDecimalFormat().format(probability));
                     classField.setText(result.toString());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("There was an error:", e);
                     JOptionPane.showMessageDialog(ClassifyInstancePanel.this.getParent(),
                             e.getMessage(), null,
                             JOptionPane.WARNING_MESSAGE);

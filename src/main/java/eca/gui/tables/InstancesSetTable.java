@@ -9,6 +9,7 @@ import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
 import eca.gui.tables.models.InstancesSetTableModel;
 import eca.model.ClassifierDescriptor;
+import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ import javax.swing.*;
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class InstancesSetTable extends JDataTableBase {
 
     private JFrame parent;
@@ -62,7 +63,7 @@ public class InstancesSetTable extends JDataTableBase {
                 InstancesFrame instancesFrame = new InstancesFrame(data, parent);
                 instancesFrame.setVisible(true);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 JOptionPane.showMessageDialog(parent, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

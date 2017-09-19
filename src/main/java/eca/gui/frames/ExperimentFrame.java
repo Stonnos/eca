@@ -23,6 +23,7 @@ import eca.gui.dialogs.TestingSetOptionsDialog;
 import eca.gui.tables.ExperimentTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.model.ClassifierDescriptor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -42,6 +43,7 @@ import java.io.File;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public abstract class ExperimentFrame extends JFrame {
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
@@ -306,7 +308,7 @@ public abstract class ExperimentFrame extends JFrame {
                                 new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData()));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("There was an error:", e);
                     JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -347,6 +349,7 @@ public abstract class ExperimentFrame extends JFrame {
                         });
 
                     } catch (Throwable e) {
+                        log.error("There was an error:", e);
                         JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
@@ -426,6 +429,7 @@ public abstract class ExperimentFrame extends JFrame {
                             table.addExperiment(classifier);
                         }
                     } catch (Exception e) {
+                        log.error("There was an error:", e);
                     }
 
                     if (!isCancelled()) {

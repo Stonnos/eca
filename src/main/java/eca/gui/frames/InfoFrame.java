@@ -3,6 +3,7 @@ package eca.gui.frames;
 import eca.core.converters.TextSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.SaveModelChooser;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +14,13 @@ import java.io.File;
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class InfoFrame extends JFrame {
 
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
-    private JTextArea textInfo;
+    private static final Font DEFAULT_TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 12);
+    private JTextArea textInfo = new JTextArea(15, 40);;
 
     public InfoFrame(String title, String str, JFrame parent) {
         this.setLayout(new GridBagLayout());
@@ -27,11 +29,10 @@ public class InfoFrame extends JFrame {
             this.setIconImage(parent.getIconImage());
         } catch (Exception e) {
         }
-        textInfo = new JTextArea(15, 40);
         textInfo.setWrapStyleWord(true);
         textInfo.setLineWrap(true);
         textInfo.setEditable(false);
-        textInfo.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
+        textInfo.setFont(DEFAULT_TEXT_AREA_FONT);
         //----------------------------------------
         JScrollPane scrollPanel = new JScrollPane(textInfo);
         JButton okButton = ButtonUtils.createOkButton();
@@ -71,14 +72,14 @@ public class InfoFrame extends JFrame {
                         TextSaver.saveToFile(file, textInfo.getText());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("There was an error:", e);
                     JOptionPane.showMessageDialog(InfoFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
         this.setJMenuBar(menu);
-        //----------------------------------------
+
         textInfo.setText(str);
         textInfo.setCaretPosition(0);
         this.getRootPane().setDefaultButton(okButton);

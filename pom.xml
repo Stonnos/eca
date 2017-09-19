@@ -238,6 +238,7 @@
                                     <excludes>
                                         <exclude>application.properties</exclude>
                                         <exclude>aboutProgramTemplate.vm</exclude>
+                                        <exclude>logback.xml</exclude>
                                     </excludes>
                                 </resource>
                             </resources>

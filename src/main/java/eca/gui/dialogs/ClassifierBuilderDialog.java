@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.ensemble.IterativeBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ import java.beans.PropertyChangeListener;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
 
     private static final long DELAY = 300L;
@@ -104,7 +106,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                     setProgress(builder.getPercent());
                 }
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }
@@ -115,7 +117,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 try {
                     Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error("There was an error:", e);
                 }
             }
 

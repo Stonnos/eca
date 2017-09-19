@@ -10,6 +10,7 @@ import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DateFormat;
 import eca.gui.text.DoubleDocument;
+import lombok.extern.slf4j.Slf4j;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class AttributesTable extends JDataTableBase {
 
     private static final String RENAME_ATTR_MENU_TEXT = "Переименовать атрибут";
@@ -108,7 +109,7 @@ public class AttributesTable extends JDataTableBase {
                                 classBox.insertItemAt(trimName, i);
                                 classBox.removeItemAt(i + 1);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                log.error("There was an error:", e);
                                 JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
                                         String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
                                         null, JOptionPane.WARNING_MESSAGE);

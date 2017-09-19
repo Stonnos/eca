@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.config.ApplicationProperties;
 import eca.gui.AboutProgramService;
+import eca.gui.ButtonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,6 @@ public class AboutProgramFrame extends JFrame {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
     private static final String ABOUT_PROGRAM_TITLE = "О программе";
-    private static final String CLOSE_BUTTON = "Закрыть";
 
     public AboutProgramFrame(JFrame parent) {
         this.setIconImage(parent.getIconImage());
@@ -39,7 +39,7 @@ public class AboutProgramFrame extends JFrame {
                 new ImageIcon(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getLogotypeUrl()));
         info.setIcon(icon);
         infoPanel.add(info);
-        JButton okButton = new JButton(CLOSE_BUTTON);
+        JButton okButton = ButtonUtils.createCloseButton();
 
         okButton.addActionListener(new ActionListener() {
             @Override

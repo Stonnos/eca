@@ -15,8 +15,8 @@ public class InstancesSetTableModel extends AbstractTableModel {
     public static final int BUTTON_INDEX = 4;
     public static final String RESULT_TITLE = "Посмотреть";
 
-    private final String[] titles = {"Название", "Кол-во объектов", "Кол-во атрибутов",
-            "Кол-во классов", "Данные"};
+    private final String[] titles = {"Название", "Объекты", "Атрибуты",
+            "Классы", "Данные"};
 
     private ArrayList<Instances> instances = new ArrayList<>();
 

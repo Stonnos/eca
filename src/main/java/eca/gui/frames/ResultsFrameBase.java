@@ -35,6 +35,7 @@ import eca.roc.AttributesSelection;
 import eca.roc.RocCurve;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -69,6 +70,7 @@ import java.util.ArrayList;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class ResultsFrameBase extends JFrame {
 
     private static final String RESULTS_TEXT = "Результаты классификации";
@@ -182,7 +184,7 @@ public class ResultsFrameBase extends JFrame {
                                 new ModelDescriptor(inputData, evaluation, getTitle(), digits));
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("There was an error:", e);
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -241,6 +243,7 @@ public class ResultsFrameBase extends JFrame {
                     }
                     ref.openReference();
                 } catch (Exception e) {
+                    log.error("There was an error:", e);
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -349,7 +352,7 @@ public class ResultsFrameBase extends JFrame {
                     try {
                         xlsResultsSaver.save(file);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error("There was an error:", e);
                         JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }

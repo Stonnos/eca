@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.gui.actions.CallbackAction;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -16,6 +17,7 @@ import java.awt.event.WindowEvent;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class LoadDialog extends JDialog implements ExecutorDialog {
 
     private final CallbackAction action;
@@ -84,7 +86,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
             try {
                 action.apply();
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }

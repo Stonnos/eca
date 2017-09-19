@@ -13,6 +13,7 @@ import eca.gui.frames.ResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
 import eca.model.ClassifierDescriptor;
+import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class ExperimentTable extends JDataTableBase {
 
     private final JFrame parent;
@@ -142,7 +144,7 @@ public class ExperimentTable extends JDataTableBase {
                         classifierDescriptor.getEvaluation()));
                 result.setVisible(true);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("There was an error:", e);
                 JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

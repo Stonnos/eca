@@ -1,5 +1,7 @@
 package eca.gui.frames;
 
+import eca.gui.ButtonUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,7 +16,6 @@ import java.awt.event.MouseEvent;
 public class ResultHistoryFrame extends JFrame {
 
     private static final String TITLE = "История классификаторов";
-    private static final String CLOSE_BUTTON_TEXT = "Закрыть";
 
     private JMainFrame.ResultsHistory historyModel;
 
@@ -55,7 +56,7 @@ public class ResultHistoryFrame extends JFrame {
 
         infoPanel.add(historyPane);
 
-        JButton okButton = new JButton(CLOSE_BUTTON_TEXT);
+        JButton okButton = ButtonUtils.createCloseButton();
 
         okButton.addActionListener(new ActionListener() {
             @Override
