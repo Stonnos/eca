@@ -3,6 +3,7 @@ package eca.logging;
 import org.springframework.util.Assert;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -33,6 +34,11 @@ public class JTextAreaOutputStream extends OutputStream {
         }
         String text = new String(b, off, len);
         textArea.append(text);
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+        Document document = textArea.getDocument();
+        if (document.getLength() != 0) {
+            textArea.setCaretPosition(textArea.getDocument().getLength() - 1);
+        } else {
+            textArea.setCaretPosition(0);
+        }
     }
 }

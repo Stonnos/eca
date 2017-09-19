@@ -1,6 +1,7 @@
 package eca.gui;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import java.awt.*;
 
 /**

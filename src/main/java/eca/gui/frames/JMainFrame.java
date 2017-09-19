@@ -55,6 +55,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1401,14 +1402,11 @@ public class JMainFrame extends JFrame {
         JMenuItem loggingMenu = new JMenuItem("Открыть консоль");
         loggingMenu.addActionListener(new ActionListener() {
 
-            TextAreaFrame textAreaFrame;
+            TextAreaFrame textAreaFrame = new TextAreaFrame(JMainFrame.this,
+                                                          ConsoleTextArea.getTextArea());;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (textAreaFrame == null) {
-                    textAreaFrame = new TextAreaFrame(JMainFrame.this,
-                            ConsoleTextArea.getTextArea());
-                }
                 textAreaFrame.setVisible(true);
             }
         });

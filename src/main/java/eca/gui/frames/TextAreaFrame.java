@@ -3,6 +3,7 @@ package eca.gui.frames;
 import eca.core.converters.TextSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.ConsoleTextArea;
+import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.gui.tables.JDataTableBase;
@@ -10,6 +11,7 @@ import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
