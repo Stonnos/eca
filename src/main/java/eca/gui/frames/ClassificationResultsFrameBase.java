@@ -57,10 +57,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
+ * Classification results frame.
  * @author Roman Batygin
  */
 @Slf4j
-public class ResultsFrameBase extends JFrame {
+public class ClassificationResultsFrameBase extends JFrame {
 
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
@@ -99,8 +100,8 @@ public class ResultsFrameBase extends JFrame {
 
     private ROCCurvePanel rocCurvePanel;
 
-    public ResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-                            Evaluation evaluation, final int digits)
+    public ClassificationResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
+                                          Evaluation evaluation, final int digits)
             throws Exception {
         this.classifier = classifier;
         this.data = data;
@@ -166,7 +167,7 @@ public class ResultsFrameBase extends JFrame {
                         fileChooser = new SaveModelChooser();
                     }
                     fileChooser.setSelectedFile(new File(indexer.getIndex(classifier())));
-                    File file = fileChooser.getSelectedFile(ResultsFrameBase.this);
+                    File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                     if (file != null) {
                         InputData inputData = new InputData((AbstractClassifier) classifier, data);
                         ModelConverter.saveModel(file,
@@ -174,7 +175,7 @@ public class ResultsFrameBase extends JFrame {
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
+                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -182,14 +183,14 @@ public class ResultsFrameBase extends JFrame {
         //--------------------------------------------
         inputMenu.addActionListener(new ActionListener() {
 
-            InfoFrame inputParamInfo;
+            TextInfoFrame inputParamInfo;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
-                    inputParamInfo = new InfoFrame(inputMenu.getText(),
-                            ClassifierInputOptionsService.getInputOptionsInfo(classifier), ResultsFrameBase.this);
-                    ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
+                    inputParamInfo = new TextInfoFrame(inputMenu.getText(),
+                            ClassifierInputOptionsService.getInputOptionsInfo(classifier), ClassificationResultsFrameBase.this);
+                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
                             inputParamInfo.dispose();
@@ -202,14 +203,14 @@ public class ResultsFrameBase extends JFrame {
         //--------------------------------------------
         attrMenu.addActionListener(new ActionListener() {
 
-            InfoFrame attributesInfo;
+            TextInfoFrame attributesInfo;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (attributesInfo == null) {
-                    attributesInfo = new InfoFrame(attrMenu.getText(),
-                            getAttributesInfo(), ResultsFrameBase.this);
-                    ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
+                    attributesInfo = new TextInfoFrame(attrMenu.getText(),
+                            getAttributesInfo(), ClassificationResultsFrameBase.this);
+                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
                             attributesInfo.dispose();
@@ -233,7 +234,7 @@ public class ResultsFrameBase extends JFrame {
                     ref.openReference();
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
+                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
 
@@ -247,8 +248,8 @@ public class ResultsFrameBase extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataFrame == null) {
-                    dataFrame = new InstancesFrame(data, ResultsFrameBase.this);
-                    ResultsFrameBase.this.addWindowListener(new WindowAdapter() {
+                    dataFrame = new InstancesFrame(data, ClassificationResultsFrameBase.this);
+                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
                             dataFrame.dispose();
@@ -266,7 +267,7 @@ public class ResultsFrameBase extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (frame == null) {
-                    frame = new AttributesStatisticsFrame(data, ResultsFrameBase.this, digits);
+                    frame = new AttributesStatisticsFrame(data, ClassificationResultsFrameBase.this, digits);
                 }
                 frame.setVisible(true);
             }
@@ -328,7 +329,7 @@ public class ResultsFrameBase extends JFrame {
                         chooser = new SaveResultsChooser();
                     }
                     chooser.setSelectedFile(new File(indexer.getResultsIndex(classifier())));
-                    file = chooser.getSelectedFile(ResultsFrameBase.this);
+                    file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
                     if (file != null) {
                         if (xlsResultsSaver == null) {
                             xlsResultsSaver = new XlsResultsSaver();
@@ -337,7 +338,7 @@ public class ResultsFrameBase extends JFrame {
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
+                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -356,7 +357,7 @@ public class ResultsFrameBase extends JFrame {
         return parent;
     }
 
-    public static void createResults(ResultsFrameBase resultsFrameBase, int digits) throws Exception {
+    public static void createResults(ClassificationResultsFrameBase resultsFrameBase, int digits) throws Exception {
         if (resultsFrameBase != null) {
             if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
                 JScrollPane pane

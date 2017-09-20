@@ -14,17 +14,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * Implements dialog with text fields matrix.
  * @author Roman Batygin
  */
-public class JOptionPaneN extends JDialog {
+public class JTextFieldMatrixDialog extends JDialog {
+
+    private static final int MAX_FIELD_LENGTH = 255;
 
     private final JLabel[] labels;
     private final JTextField[] texts;
 
     private boolean dialogResult;
 
-    public JOptionPaneN(Window parent, String title, String[] names, String[] values, int rows,
-                        int length) {
+    public JTextFieldMatrixDialog(Window parent, String title, String[] names, String[] values, int rows,
+                                  int length) {
         super(parent, title);
         this.setLayout(new GridBagLayout());
         this.setModal(true);
@@ -36,7 +39,7 @@ public class JOptionPaneN extends JDialog {
         for (int i = 0; i < rows; i++) {
             labels[i] = new JLabel(names[i]);
             texts[i] = new JTextField(length);
-            texts[i].setDocument(new LengthDocument(255));
+            texts[i].setDocument(new LengthDocument(MAX_FIELD_LENGTH));
             texts[i].setText(values[i]);
             panel.add(labels[i]);
             panel.add(texts[i]);

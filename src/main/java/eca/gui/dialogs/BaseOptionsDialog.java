@@ -12,7 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * @param <T>
+ * Implements classifier input options dialog.
+ * @param <T> - classifier generic type
  * @author Roman Batygin
  */
 public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {

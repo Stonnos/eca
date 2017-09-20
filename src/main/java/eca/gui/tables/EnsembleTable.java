@@ -13,7 +13,7 @@ import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
-import eca.gui.frames.ResultsFrameBase;
+import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;
@@ -100,9 +100,9 @@ public class EnsembleTable extends JDataTableBase {
                 Instances data = ((InstancesHandler) classifier).getData();
                 Evaluation e = new Evaluation(data);
                 e.evaluateModel(classifier, data);
-                ResultsFrameBase result = new ResultsFrameBase(parent, classifier.getClass().getSimpleName(),
+                ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent, classifier.getClass().getSimpleName(),
                         classifier, data, e, digits);
-                ResultsFrameBase.createResults(result, digits);
+                ClassificationResultsFrameBase.createResults(result, digits);
                 StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
                 result.setStatisticsTable(stat.createStatistics(classifier, e));
                 result.setVisible(true);

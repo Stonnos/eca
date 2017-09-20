@@ -147,15 +147,15 @@ public class JMainFrame extends JFrame {
 
     private boolean isStarted;
 
-    private final TestingSetOptionsDialog testingSetFrame = new TestingSetOptionsDialog(this);
+    private final EvaluationMethodOptionsDialog testingSetFrame = new EvaluationMethodOptionsDialog(this);
 
-    private ResultHistoryFrame resultHistoryFrame;
+    private ClassificationResultHistoryFrame resultHistoryFrame;
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.makeGUI();
-        resultHistoryFrame = new ResultHistoryFrame(this, resultsHistory);
+        resultHistoryFrame = new ClassificationResultHistoryFrame(this, resultsHistory);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.algorithmsMenu.setEnabled(false);
         this.saveFileMenu.setEnabled(false);
@@ -525,19 +525,19 @@ public class JMainFrame extends JFrame {
 
         private static final String HISTORY_FORMAT = "%s %s";
 
-        private ArrayList<ResultsFrameBase> resultsFrameBases = new ArrayList<>();
+        private ArrayList<ClassificationResultsFrameBase> resultsFrameBases = new ArrayList<>();
 
         public void createResultFrame(String title,
                                       Classifier classifier,
                                       Instances data,
                                       Evaluation evaluation,
                                       int digits) throws Exception {
-            ResultsFrameBase res = new ResultsFrameBase(JMainFrame.this,
+            ClassificationResultsFrameBase res = new ClassificationResultsFrameBase(JMainFrame.this,
                     title, classifier, data, evaluation,
                     digits);
             StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
             res.setStatisticsTable(stat.createStatistics(classifier, evaluation));
-            ResultsFrameBase.createResults(res, digits);
+            ClassificationResultsFrameBase.createResults(res, digits);
             add(res);
             res.setVisible(true);
 
@@ -545,18 +545,18 @@ public class JMainFrame extends JFrame {
                     classifier.getClass().getSimpleName());
         }
 
-        public void add(ResultsFrameBase resultsFrameBase) {
+        public void add(ClassificationResultsFrameBase resultsFrameBase) {
             resultsFrameBases.add(resultsFrameBase);
             addElement(String.format(HISTORY_FORMAT,
                     DateFormat.SIMPLE_DATE_FORMAT.format(resultsFrameBase.getIndexer().getCurrentDate()),
                     resultsFrameBase.classifier().getClass().getSimpleName()));
         }
 
-        public ArrayList<ResultsFrameBase> getResultsFrameBases() {
+        public ArrayList<ClassificationResultsFrameBase> getResultsFrameBases() {
             return resultsFrameBases;
         }
 
-        public ResultsFrameBase getFrame(int i) {
+        public ClassificationResultsFrameBase getFrame(int i) {
             return resultsFrameBases.get(i);
         }
 
@@ -1381,13 +1381,13 @@ public class JMainFrame extends JFrame {
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
         loggingMenu.addActionListener(new ActionListener() {
 
-            TextAreaFrame textAreaFrame = new TextAreaFrame(JMainFrame.this,
+            ConsoleFrame consoleFrame = new ConsoleFrame(JMainFrame.this,
                     ConsoleTextArea.getTextArea());
             ;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                textAreaFrame.setVisible(true);
+                consoleFrame.setVisible(true);
             }
         });
         serviceMenu.add(loggingMenu);

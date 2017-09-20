@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  * @author Roman Batygin
  */
 @Slf4j
-public class TextAreaFrame extends JFrame {
+public class ConsoleFrame extends JFrame {
 
     private static final String TITLE = "Консоль";
     public static final String OPTIONS_MENU_TEXT = "Настройки";
@@ -24,7 +24,7 @@ public class TextAreaFrame extends JFrame {
     private JTextArea textArea;
 
 
-    public TextAreaFrame(JFrame parent, JTextArea textArea) {
+    public ConsoleFrame(JFrame parent, JTextArea textArea) {
         this.textArea = textArea;
         this.setLayout(new GridBagLayout());
         this.setTitle(TITLE);
@@ -72,7 +72,7 @@ public class TextAreaFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JFontChooser chooser = new JFontChooser(TextAreaFrame.this,
+                JFontChooser chooser = new JFontChooser(ConsoleFrame.this,
                         textArea.getFont());
                 chooser.setVisible(true);
                 if (chooser.dialogResult()) {
@@ -86,7 +86,7 @@ public class TextAreaFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                Color selectedColor = JColorChooser.showDialog(TextAreaFrame.this, FONT_COLOR_MENU_TEXT,
+                Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, FONT_COLOR_MENU_TEXT,
                         textArea.getForeground());
                 if (selectedColor != null) {
                     textArea.setForeground(selectedColor);
@@ -97,7 +97,7 @@ public class TextAreaFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                Color selectedColor = JColorChooser.showDialog(TextAreaFrame.this, BACKGROUND_COLOR_MENU_TEXT,
+                Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, BACKGROUND_COLOR_MENU_TEXT,
                         textArea.getForeground());
                 if (selectedColor != null) {
                     textArea.setBackground(selectedColor);

@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * Dialog frame for setting spinner data.
  * @author Roman Batygin
  */
 public class SpinnerDialog extends JDialog {

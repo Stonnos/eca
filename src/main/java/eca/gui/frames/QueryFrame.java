@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
+ * Frame for execution database queries.
  * @author Roman Batygin
  */
 @Slf4j

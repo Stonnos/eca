@@ -13,7 +13,7 @@ public class EnsemblesNamesDictionary {
     public static final String BOOSTING = "Алгоритм AdaBoost";
     public static final String MODIFIED_HETEROGENEOUS_ENSEMBLE = "Модифицированный неоднородный ансамблевый алгоритм";
     public static final String RANDOM_FORESTS = "Алгоритм Случайные леса";
-    public static final String EXTRA_TREES = "Алгоритм Extra Trees";
+    public static final String EXTRA_TREES = "Алгоритм Extra trees";
     public static final String STACKING = "Алгоритм Stacking";
     public static final String RANDOM_NETWORKS = "Алгоритм Случайные сети";
 }

@@ -10,7 +10,7 @@ import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
-import eca.gui.frames.ResultsFrameBase;
+import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
 import eca.model.ClassifierDescriptor;
@@ -134,10 +134,10 @@ public class ExperimentTable extends JDataTableBase {
         protected void doAfterPushing() {
             try {
                 ExperimentTableModel model = experimentModel();
-                ResultsFrameBase result = new ResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
+                ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
                         .getSimpleName(), classifierDescriptor.getClassifier(), data,
                         classifierDescriptor.getEvaluation(), model.digits());
-                ResultsFrameBase.createResults(result, model.digits());
+                ClassificationResultsFrameBase.createResults(result, model.digits());
                 StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
                 result.setStatisticsTable(stat.createStatistics(classifierDescriptor.getClassifier(),
                         classifierDescriptor.getEvaluation()));

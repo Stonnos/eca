@@ -13,10 +13,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
+ * Frame showing text information.
  * @author Roman Batygin
  */
 @Slf4j
-public class InfoFrame extends JFrame {
+public class TextInfoFrame extends JFrame {
 
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
@@ -24,7 +25,7 @@ public class InfoFrame extends JFrame {
     private JTextArea textInfo = new JTextArea(15, 40);
     ;
 
-    public InfoFrame(String title, String str, JFrame parent) {
+    public TextInfoFrame(String title, String str, JFrame parent) {
         this.setLayout(new GridBagLayout());
         this.setTitle(title);
         try {
@@ -70,13 +71,13 @@ public class InfoFrame extends JFrame {
                     if (fileChooser == null) {
                         fileChooser = new SaveModelChooser();
                     }
-                    File file = fileChooser.getSelectedFile(InfoFrame.this);
+                    File file = fileChooser.getSelectedFile(TextInfoFrame.this);
                     if (file != null) {
                         TextSaver.saveToFile(file, textInfo.getText());
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(InfoFrame.this, e.getMessage(),
+                    JOptionPane.showMessageDialog(TextInfoFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
             }

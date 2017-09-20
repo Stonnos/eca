@@ -39,26 +39,26 @@ public class Statistics {
      * Calculates the F - critical value.
      *
      * @param p   - p - value
-     * @param df1
-     * @param df2
+     * @param df1 - the number of freedom degrees greater variance
+     * @param df2 - the number of freedom degrees less variance
      * @return the F - critical value
      */
     public static double FCriticalValue(double p, int df1, int df2) {
-        double maxf = 99999.0;
-        double minf = .000001;
+        double maxF = 99999.0;
+        double minF = .000001;
         if (p <= 0.0 || p >= 1.0) {
             return 0.0;
         }
-        double fval = 1.0 / p;
-        while (Math.abs(maxf - minf) > .000001) {
-            if (weka.core.Statistics.FProbability(fval, df1, df2) < p) {
-                maxf = fval;
+        double fVal = 1.0 / p;
+        while (Math.abs(maxF - minF) > .000001) {
+            if (weka.core.Statistics.FProbability(fVal, df1, df2) < p) {
+                maxF = fVal;
             } else {
-                minf = fval;
+                minF = fVal;
             }
-            fval = (maxf + minf) * 0.5;
+            fVal = (maxF + minF) * 0.5;
         }
-        return fval;
+        return fVal;
     }
 
     /**
@@ -69,21 +69,21 @@ public class Statistics {
      * @return the hi - square critical value
      */
     public static double chiSquaredCriticalValue(double p, int df) {
-        double maxf = 99999.0;
-        double minf = .000001;
+        double maxF = 99999.0;
+        double minF = .000001;
         if (p <= 0.0 || p >= 1.0) {
             return 0.0;
         }
-        double fval = 1.0 / p;
-        while (Math.abs(maxf - minf) > .000001) {
-            if (weka.core.Statistics.chiSquaredProbability(fval, df) < p) {
-                maxf = fval;
+        double fVal = 1.0 / p;
+        while (Math.abs(maxF - minF) > .000001) {
+            if (weka.core.Statistics.chiSquaredProbability(fVal, df) < p) {
+                maxF = fVal;
             } else {
-                minf = fval;
+                minF = fVal;
             }
-            fval = (maxf + minf) * 0.5;
+            fVal = (maxF + minF) * 0.5;
         }
-        return fval;
+        return fVal;
     }
 
 }

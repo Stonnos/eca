@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.gui.dialogs.JOptionPaneN;
+import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.tables.models.InstancesTableModel;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
@@ -139,7 +139,7 @@ public class InstancesTable extends JDataTableBase {
                     String[] labels = {OLD_VALUE_TEXT,
                             NEW_VALUE_TEXT};
                     String[] values = {value, StringUtils.EMPTY};
-                    JOptionPaneN frame = new JOptionPaneN(null,
+                    JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null,
                             REPLACE_VALUE_TEXT, labels, values,
                             2, 10);
                     frame.setVisible(true);

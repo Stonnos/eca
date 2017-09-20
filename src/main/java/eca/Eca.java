@@ -1,11 +1,9 @@
 package eca;
 
 import eca.gui.frames.JMainFrame;
-import eca.gui.text.DateFormat;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
-import java.util.Date;
 
 /**
  * Main class.
@@ -20,7 +18,7 @@ public class Eca {
             @Override
             public void run() {
                 new JMainFrame().setVisible(true);
-                log.info("Eca application was started at {}.", DateFormat.SIMPLE_DATE_FORMAT.format(new Date()));
+                log.info("Eca application was started.");
             }
         });
 

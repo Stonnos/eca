@@ -16,6 +16,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 /**
+ * Implements loading process dialog.
  * @author Roman Batygin
  */
 @Slf4j

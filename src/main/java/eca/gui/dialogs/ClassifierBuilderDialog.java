@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
+ * Implements classifier iterative building dialog.
  * @author Roman Batygin
  */
 @Slf4j

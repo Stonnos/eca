@@ -10,10 +10,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
+ * Classification results history frame.
  * @author Roman Batygin
  */
 
-public class ResultHistoryFrame extends JFrame {
+public class ClassificationResultHistoryFrame extends JFrame {
 
     private static final String TITLE = "История классификаторов";
 
@@ -21,7 +22,7 @@ public class ResultHistoryFrame extends JFrame {
 
     private JList<String> historyList;
 
-    public ResultHistoryFrame(JFrame parent, JMainFrame.ResultsHistory historyModel) {
+    public ClassificationResultHistoryFrame(JFrame parent, JMainFrame.ResultsHistory historyModel) {
         this.setIconImage(parent.getIconImage());
         this.historyModel = historyModel;
         this.makeGUI();

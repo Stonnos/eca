@@ -19,9 +19,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
+ * Evaluation method options dialog.
  * @author Roman Batygin
  */
-public class TestingSetOptionsDialog extends JDialog {
+public class EvaluationMethodOptionsDialog extends JDialog {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
 
@@ -46,7 +47,7 @@ public class TestingSetOptionsDialog extends JDialog {
     private int numFolds = APPLICATION_PROPERTIES.getNumFolds();
     private int numTests = APPLICATION_PROPERTIES.getNumTests();
 
-    public TestingSetOptionsDialog(Window parent) {
+    public EvaluationMethodOptionsDialog(Window parent) {
         super(parent, OPTIONS_TITLE);
         this.setModal(true);
         this.setResizable(false);

@@ -20,7 +20,7 @@ import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.LoadDialog;
-import eca.gui.dialogs.TestingSetOptionsDialog;
+import eca.gui.dialogs.EvaluationMethodOptionsDialog;
 import eca.gui.tables.ExperimentTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.model.ClassifierDescriptor;
@@ -196,11 +196,11 @@ public abstract class ExperimentFrame extends JFrame {
         left = new JPanel(new GridBagLayout());
         JScrollPane right = new JScrollPane(table);
         JPanel leftBottom = new JPanel(new GridBagLayout());
-        left.setBorder(PanelBorderUtils.createTitledBorder(TestingSetOptionsDialog.methodTitle));
+        left.setBorder(PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.methodTitle));
         //-------------------------------------------------------------
         ButtonGroup group = new ButtonGroup();
-        useTrainingSet = new JRadioButton(TestingSetOptionsDialog.initialMethodTitle);
-        useTestingSet = new JRadioButton(TestingSetOptionsDialog.cvMethodTitle);
+        useTrainingSet = new JRadioButton(EvaluationMethodOptionsDialog.initialMethodTitle);
+        useTestingSet = new JRadioButton(EvaluationMethodOptionsDialog.cvMethodTitle);
         group.add(useTrainingSet);
         group.add(useTestingSet);
         //---------------------------------
@@ -238,11 +238,11 @@ public abstract class ExperimentFrame extends JFrame {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         left.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        left.add(new JLabel(TestingSetOptionsDialog.blocksNumTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        left.add(new JLabel(EvaluationMethodOptionsDialog.blocksNumTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         left.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        left.add(new JLabel(TestingSetOptionsDialog.testsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        left.add(new JLabel(EvaluationMethodOptionsDialog.testsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         left.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
