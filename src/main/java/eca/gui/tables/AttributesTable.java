@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.core.LoggerUtils;
 import eca.gui.GuiUtils;
 import eca.gui.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.AttributesTableModel;
@@ -105,7 +106,7 @@ public class AttributesTable extends JDataTableBase {
                                 classBox.insertItemAt(trimName, i);
                                 classBox.removeItemAt(i + 1);
                             } catch (Exception e) {
-                                log.error("There was an error:", e.getMessage());
+                                LoggerUtils.error(log, e);
                                 JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
                                         String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
                                         null, JOptionPane.WARNING_MESSAGE);

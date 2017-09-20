@@ -5,6 +5,7 @@
  */
 package eca.gui.frames;
 
+import eca.core.LoggerUtils;
 import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
@@ -97,7 +98,7 @@ public class QueryFrame extends JFrame {
         try {
             connection.close();
         } catch (Exception ex) {
-            log.error("There was an error:", ex.getMessage());
+            LoggerUtils.error(log, ex);
         }
     }
 
@@ -195,7 +196,7 @@ public class QueryFrame extends JFrame {
                         }
                         dispose();
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex.getMessage());
+                        LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(parent, ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
                     }
@@ -243,7 +244,7 @@ public class QueryFrame extends JFrame {
                 execute.setEnabled(false);
                 data = connection.executeQuery(query);
             } catch (Exception e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 errorMessage = e.getMessage();
             }
             return null;

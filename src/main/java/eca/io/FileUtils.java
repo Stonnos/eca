@@ -1,11 +1,16 @@
 package eca.io;
 
 /**
+ * File utils class.
  * @author Roman Batygin
  */
 
 public class FileUtils {
 
+    /**
+     * Returns project current directory (target directory).
+     * @return project current directory
+     */
     public static String getCurrentDir() {
         String path = System.getProperty("java.class.path");
         String fileSeparator = System.getProperty("file.separator");

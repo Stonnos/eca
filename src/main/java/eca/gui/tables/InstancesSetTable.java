@@ -1,5 +1,6 @@
 package eca.gui.tables;
 
+import eca.core.LoggerUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.InstancesFrame;
@@ -58,7 +59,7 @@ public class InstancesSetTable extends JDataTableBase {
                 InstancesFrame instancesFrame = new InstancesFrame(data, parent);
                 instancesFrame.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(parent, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

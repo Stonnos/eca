@@ -291,7 +291,7 @@ public class TreeVisualizer extends JPanel {
                         fileChooser = new SaveImageFileChooser();
                     }
                     fileChooser.setSelectedFile(new File(indexer.getIndex(tree)));
-                    File file = fileChooser.saveFile(TreeVisualizer.this.getParent());
+                    File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
                     if (file != null) {
                         ImageSaver.saveImage(file, getImage());
                     }

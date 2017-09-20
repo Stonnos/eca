@@ -8,6 +8,7 @@ package eca.gui.frames;
 import eca.core.ClassifierIndexer;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
+import eca.core.LoggerUtils;
 import eca.core.converters.ModelConverter;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistory;
@@ -59,6 +60,8 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
     private static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
     private static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
+
+    private final long experimentId = System.currentTimeMillis();
 
     private final AbstractExperiment experiment;
 
@@ -268,6 +271,8 @@ public abstract class ExperimentFrame extends JFrame {
                 table.clear();
                 doBegin();
                 worker.execute();
+                log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
+                        experiment.getClassifier().getClass().getSimpleName());
             }
         });
         //---------------------------------------------------------------
@@ -297,13 +302,13 @@ public abstract class ExperimentFrame extends JFrame {
                     }
                     ClassifierIndexer indexer = new ClassifierIndexer();
                     fileChooser.setSelectedFile(new File(indexer.getExperimentIndex(experiment.getClassifier())));
-                    File file = fileChooser.saveFile(ExperimentFrame.this);
+                    File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
                         ModelConverter.saveModel(file,
                                 new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData()));
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -344,10 +349,9 @@ public abstract class ExperimentFrame extends JFrame {
                         });
 
                     } catch (Throwable e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.ERROR_MESSAGE);
+                                e.getMessage(), null, JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -424,15 +428,19 @@ public abstract class ExperimentFrame extends JFrame {
                             table.addExperiment(classifier);
                         }
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                     }
 
                     if (!isCancelled()) {
-                        setProgress(object.getPercent());
+                        int percent = object.getPercent();
+                        if (percent != getProgress() && percent % 10 == 0) {
+                            log.info("Experiment {} progress: {} %.", experimentId, percent);
+                        }
+                        setProgress(percent);
                     }
                 }
             } catch (Throwable e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 error = true;
                 text.setText(e.toString());
             }
@@ -448,10 +456,12 @@ public abstract class ExperimentFrame extends JFrame {
             table.sort();
             if (!error) {
                 setResults();
+                log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
+                        experiment.getClassifier().getClass().getSimpleName());
             }
         }
 
-    } //End of class SwingWorkerConstruction
+    }
 
 
     /**

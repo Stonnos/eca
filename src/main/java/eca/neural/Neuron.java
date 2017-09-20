@@ -70,7 +70,7 @@ public class Neuron implements java.io.Serializable {
      */
     public Neuron(int index, ActivationFunction function, int type) {
         if (type != IN_LAYER && type != HIDDEN_LAYER && type != OUT_LAYER) {
-            throw new IllegalArgumentException("Wrong values of type: " + type);
+            throw new IllegalArgumentException("Wrong neuron type!");
         }
         this.index = index;
         this.function = function;

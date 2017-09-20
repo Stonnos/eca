@@ -13,6 +13,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 /**
+ * Implements copying image into system buffer.
  * @author Roman Batygin
  */
 public class ImageCopier implements Transferable, Copyable {
@@ -23,14 +24,11 @@ public class ImageCopier implements Transferable, Copyable {
             DataFlavor.imageFlavor,
     };
 
-    public ImageCopier(Image image) {
-        this.setImage(image);
-    }
-
-    public ImageCopier() {
-    }
-
-    public final void setImage(Image image) {
+    /**
+     * Sets image object.
+     * @param image {@link Image} object
+     */
+    public void setImage(Image image) {
         this.image = image;
     }
 
@@ -48,7 +46,7 @@ public class ImageCopier implements Transferable, Copyable {
     public Object getTransferData(DataFlavor flavor)
             throws UnsupportedFlavorException, IOException {
         if (isDataFlavorSupported(flavor)) {
-            return (Object) image;
+            return image;
         } else {
             throw new UnsupportedFlavorException(flavor);
         }

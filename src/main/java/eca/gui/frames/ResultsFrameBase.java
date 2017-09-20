@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.Reference;
 import eca.core.ClassifierIndexer;
+import eca.core.LoggerUtils;
 import eca.core.converters.DataFileExtension;
 import eca.core.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
@@ -132,7 +133,7 @@ public class ResultsFrameBase extends JFrame {
         pane.add(title, panel);
     }
 
-    public final void setStatisticaTable(JTable table) {
+    public final void setStatisticsTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
         this.statTable.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier));
@@ -165,14 +166,14 @@ public class ResultsFrameBase extends JFrame {
                         fileChooser = new SaveModelChooser();
                     }
                     fileChooser.setSelectedFile(new File(indexer.getIndex(classifier())));
-                    File file = fileChooser.saveFile(ResultsFrameBase.this);
+                    File file = fileChooser.getSelectedFile(ResultsFrameBase.this);
                     if (file != null) {
                         InputData inputData = new InputData((AbstractClassifier) classifier, data);
                         ModelConverter.saveModel(file,
                                 new ModelDescriptor(inputData, evaluation, getTitle(), digits));
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -231,7 +232,7 @@ public class ResultsFrameBase extends JFrame {
                     }
                     ref.openReference();
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -321,28 +322,23 @@ public class ResultsFrameBase extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                File file = null;
-                if (chooser == null) {
-                    chooser = new SaveResultsChooser();
-                }
-                chooser.setSelectedFile(new File(indexer.getResultsIndex(classifier())));
+                File file;
                 try {
-                    file = chooser.saveFile(ResultsFrameBase.this);
+                    if (chooser == null) {
+                        chooser = new SaveResultsChooser();
+                    }
+                    chooser.setSelectedFile(new File(indexer.getResultsIndex(classifier())));
+                    file = chooser.getSelectedFile(ResultsFrameBase.this);
+                    if (file != null) {
+                        if (xlsResultsSaver == null) {
+                            xlsResultsSaver = new XlsResultsSaver();
+                        }
+                        xlsResultsSaver.save(file);
+                    }
                 } catch (Exception e) {
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
-                }
-                if (file != null) {
-                    if (xlsResultsSaver == null) {
-                        xlsResultsSaver = new XlsResultsSaver();
-                    }
-                    try {
-                        xlsResultsSaver.save(file);
-                    } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
-                        JOptionPane.showMessageDialog(ResultsFrameBase.this, e.getMessage(),
-                                null, JOptionPane.ERROR_MESSAGE);
-                    }
                 }
             }
         });
@@ -360,37 +356,39 @@ public class ResultsFrameBase extends JFrame {
         return parent;
     }
 
-    public static void createResults(ResultsFrameBase res, int digits) throws Exception {
-        if (res != null) {
-            if (res.classifier() instanceof DecisionTreeClassifier) {
+    public static void createResults(ResultsFrameBase resultsFrameBase, int digits) throws Exception {
+        if (resultsFrameBase != null) {
+            if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
                 JScrollPane pane
-                        = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) res.classifier(),
+                        = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(),
                         digits));
-                res.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
+                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
                 JScrollBar bar = pane.getHorizontalScrollBar();
                 bar.setValue(bar.getMaximum());
-            } else if (res.classifier() instanceof NeuralNetwork) {
-                NeuralNetwork net = (NeuralNetwork) res.classifier();
-                JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, res, digits));
-                res.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
-            } else if (res.classifier() instanceof Logistic) {
+            } else if (resultsFrameBase.classifier() instanceof NeuralNetwork) {
+                NeuralNetwork net = (NeuralNetwork) resultsFrameBase.classifier();
+                JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, resultsFrameBase, digits));
+                resultsFrameBase.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
+            } else if (resultsFrameBase.classifier() instanceof Logistic) {
                 LogisticCoefficientsTable table
-                        = new LogisticCoefficientsTable((Logistic) res.classifier(), res.data(), digits);
+                        =
+                        new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
+                                digits);
                 JScrollPane pane = new JScrollPane(table);
-                res.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
+                resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
 
-                AttributesSelection roc = new AttributesSelection(res.data());
-                roc.calculate();
+                AttributesSelection attributesSelection = new AttributesSelection(resultsFrameBase.data());
+                attributesSelection.calculate();
                 SignificantAttributesTable signTable
-                        = new SignificantAttributesTable(roc, digits);
+                        = new SignificantAttributesTable(attributesSelection, digits);
                 JScrollPane signPane = new JScrollPane(signTable);
 
-                res.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
-            } else if (res.classifier() instanceof EnsembleClassifier) {
-                EnsembleTable table = new EnsembleTable((EnsembleClassifier) res.classifier(),
-                        res.getParentFrame(), digits);
+                resultsFrameBase.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
+            } else if (resultsFrameBase.classifier() instanceof EnsembleClassifier) {
+                EnsembleTable table = new EnsembleTable((EnsembleClassifier) resultsFrameBase.classifier(),
+                        resultsFrameBase.getParentFrame(), digits);
                 JScrollPane pane = new JScrollPane(table);
-                res.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
+                resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
             }
         }
     }

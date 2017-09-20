@@ -10,6 +10,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
+ * Implement mini-max normalization.
  * @author Roman Batygin
  */
 public class MinMaxNormalizer implements java.io.Serializable {
@@ -18,12 +19,20 @@ public class MinMaxNormalizer implements java.io.Serializable {
     private final double[] maXs;
     private final double[] miNs;
 
+    /**
+     * Creates <tt>MinMaxNormalizer</tt> object
+     * @param data {@link Instances} object
+     */
     public MinMaxNormalizer(Instances data) {
         this.data = data;
-        maXs = new double[data.numAttributes() - 1];
-        miNs = new double[data.numAttributes() - 1];
+        this.maXs = new double[data.numAttributes() - 1];
+        this.miNs = new double[data.numAttributes() - 1];
     }
 
+    /**
+     * Normalize instances object.
+     * @return {@link Instances} object
+     */
     public Instances normalizeInstances() {
         Instances set = new Instances(data);
         for (int i = 0; i < data.numAttributes() - 1; i++) {
@@ -37,6 +46,11 @@ public class MinMaxNormalizer implements java.io.Serializable {
         return set;
     }
 
+    /**
+     * Normalize instance.
+     * @param obj {@link Instance} object
+     * @return normalized instance
+     */
     public Instance normalizeInstance(Instance obj) {
         Instance x = new DenseInstance(data.numAttributes());
         x.setDataset(data);
@@ -47,6 +61,10 @@ public class MinMaxNormalizer implements java.io.Serializable {
         return x;
     }
 
+    /**
+     * Normalized input attributes values.
+     * @return normalized data as array
+     */
     public double[][] normalizeInputValues() {
         double[][] x = new double[data.numInstances()][data.numAttributes() - 1];
         for (int i = 0; i < data.numAttributes() - 1; i++) {
@@ -59,6 +77,10 @@ public class MinMaxNormalizer implements java.io.Serializable {
         return x;
     }
 
+    /**
+     * Normalized class attribute.
+     * @return normalized data as array
+     */
     public double[][] normalizeOutputValues() {
         double[][] y = new double[data.numInstances()][data.numClasses()];
         for (int j = 0; j < data.numInstances(); j++) {
@@ -68,18 +90,28 @@ public class MinMaxNormalizer implements java.io.Serializable {
         return y;
     }
 
+    /**
+     * Gets minimum values array.
+     * @return minimum values array
+     */
     public double[] getMiNs() {
         return miNs;
     }
 
+    /**
+     * Gets maximum values array.
+     * @return maximum values array
+     */
     public double[] getMaXs() {
         return maXs;
     }
 
-    public Instances data() {
-        return data;
-    }
 
+    /**
+     * Normalized instance.
+     * @param obj {@link Instance} object
+     * @return normalized object as array
+     */
     public double[] normalizeObject(Instance obj) {
         double[] x = new double[data.numAttributes() - 1];
         for (int i = 0; i < data.numAttributes() - 1; i++) {

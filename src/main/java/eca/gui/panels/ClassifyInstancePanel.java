@@ -94,7 +94,6 @@ public class ClassifyInstancePanel extends JPanel {
                             .append(table.getDecimalFormat().format(probability));
                     classField.setText(result.toString());
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
                     JOptionPane.showMessageDialog(ClassifyInstancePanel.this.getParent(),
                             e.getMessage(), null,
                             JOptionPane.WARNING_MESSAGE);

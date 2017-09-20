@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.core.LoggerUtils;
 import eca.gui.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
@@ -138,11 +139,11 @@ public class ExperimentTable extends JDataTableBase {
                         classifierDescriptor.getEvaluation(), model.digits());
                 ResultsFrameBase.createResults(result, model.digits());
                 StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
-                result.setStatisticaTable(stat.createStatistics(classifierDescriptor.getClassifier(),
+                result.setStatisticsTable(stat.createStatistics(classifierDescriptor.getClassifier(),
                         classifierDescriptor.getEvaluation()));
                 result.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

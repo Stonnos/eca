@@ -37,4 +37,10 @@ public class NeuralNetworkDictionary {
     public static final String BAD_NEURONS_NUM_IN_HIDDEN_LAYER_ERROR_TEXT =
             "Количество нейронов в одном скрытом слое должно быть не менее одного!";
 
+    public static final String BAD_LEARNING_SPEED_ERROR_FORMAT =
+            "Значение коэффициента скорости обучения должно лежать в интервале [%.2f, %.2f)!";
+
+    public static final String BAD_MOMENTUM_ERROR_FORMAT =
+            "Значение коэффициента момента должно лежать в интервале (%.2f, %.2f]!";
+
 }

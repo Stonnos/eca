@@ -27,7 +27,7 @@ public abstract class SaveFileChooser {
         chooser.setSelectedFile(file);
     }
 
-    public File saveFile(Component parent) {
+    public File getSelectedFile(Component parent) {
         if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
             for (FileFilter filter : chooser.getChoosableFileFilters()) {

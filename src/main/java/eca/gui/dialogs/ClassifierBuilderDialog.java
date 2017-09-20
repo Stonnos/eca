@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.core.LoggerUtils;
 import eca.ensemble.IterativeBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -106,7 +107,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                     setProgress(builder.getPercent());
                 }
             } catch (Throwable e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }
@@ -117,7 +118,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 try {
                     Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                 }
             }
 

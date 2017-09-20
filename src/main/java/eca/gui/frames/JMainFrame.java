@@ -11,6 +11,7 @@ import eca.client.RestClientImpl;
 import eca.config.ApplicationProperties;
 import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
+import eca.core.LoggerUtils;
 import eca.core.converters.DataSaver;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationService;
@@ -78,7 +79,8 @@ public class JMainFrame extends JFrame {
     private static final Color FRAME_COLOR = new Color(198, 226, 255);
 
     private static final String ENSEMBLE_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение ансамбля...";
-    private static final String NETWORK_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет обучение нейронной сети...";
+    private static final String NETWORK_BUILDING_PROGRESS_TITLE =
+            "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
@@ -122,12 +124,10 @@ public class JMainFrame extends JFrame {
     private static final String ATTRIBUTES_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String EXCEED_DATA_LIST_SIZE_ERROR_FORMAT = "Число листов с данными не должно превышать %d!";
+    private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
-    private static final int MIN_DECIMAL_PLACES = 1;
-    private static final int MAX_DECIMAL_PLACES = 7;
-    private static final int MAX_INPUT_DATA_LIST_SIZE = 25;
 
     private final JDesktopPane panels = new JDesktopPane();
 
@@ -147,8 +147,7 @@ public class JMainFrame extends JFrame {
 
     private boolean isStarted;
 
-    private final TestingSetOptionsDialog testingSetFrame
-            = new TestingSetOptionsDialog(this);
+    private final TestingSetOptionsDialog testingSetFrame = new TestingSetOptionsDialog(this);
 
     private ResultHistoryFrame resultHistoryFrame;
 
@@ -169,12 +168,12 @@ public class JMainFrame extends JFrame {
     private void init() {
         try {
             this.setTitle(APPLICATION_PROPERTIES.getTitle());
-            this.maximumFractionDigits = APPLICATION_PROPERTIES.getMaximumFractionDigits();
-            this.setIconImage(
-                    ImageIO.read(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl())));
+            this.maximumFractionDigits = APPLICATION_PROPERTIES.getDefaultFractionDigits();
+            this.setIconImage(ImageIO.read(getClass().getClassLoader()
+                    .getResource(APPLICATION_PROPERTIES.getIconUrl())));
             ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
         } catch (Exception e) {
-            log.warn("There was an error in frame initialization:", e.getMessage());
+            LoggerUtils.error(log, e);
         }
     }
 
@@ -292,8 +291,7 @@ public class JMainFrame extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     String name = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
-                            DATA_NAME_TEXT,
-                            NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
+                            DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
                             null, data.relationName());
                     if (name != null) {
                         String trimName = name.trim();
@@ -329,13 +327,13 @@ public class JMainFrame extends JFrame {
                                 fileChooser = new SaveDataFileChooser();
                             }
                             fileChooser.setSelectedFile(new File(instanceTable.data().relationName()));
-                            File file = fileChooser.saveFile(DataInternalFrame.this);
+                            File file = fileChooser.getSelectedFile(DataInternalFrame.this);
                             if (file != null) {
                                 DataSaver.saveData(file, DataInternalFrame.this.getData());
                             }
                         }
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(DataInternalFrame.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -538,12 +536,13 @@ public class JMainFrame extends JFrame {
                     title, classifier, data, evaluation,
                     digits);
             StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-            res.setStatisticaTable(stat.createStatistics(classifier, evaluation));
+            res.setStatisticsTable(stat.createStatistics(classifier, evaluation));
             ResultsFrameBase.createResults(res, digits);
             add(res);
             res.setVisible(true);
 
-            log.info("Evaluation for classifier {} has been successfully finished!", classifier.getClass().getSimpleName());
+            log.info("Evaluation for classifier {} has been successfully finished!",
+                    classifier.getClass().getSimpleName());
         }
 
         public void add(ResultsFrameBase resultsFrameBase) {
@@ -648,17 +647,18 @@ public class JMainFrame extends JFrame {
     }
 
     public void createDataFrame(Instances data) throws Exception {
-        if (panels.getComponentCount() >= MAX_INPUT_DATA_LIST_SIZE) {
+        if (panels.getComponentCount() >= APPLICATION_PROPERTIES.getMaximumListSizeOfData()) {
             throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
-                    MAX_INPUT_DATA_LIST_SIZE));
+                    APPLICATION_PROPERTIES.getMaximumListSizeOfData()));
         }
-        final DataInternalFrame frame = new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
+        final DataInternalFrame dataInternalFrame =
+                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
 
-        frame.addInternalFrameListener(new InternalFrameAdapter() {
+        dataInternalFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
-                windowsMenu.remove(frame.getMenu());
+                windowsMenu.remove(dataInternalFrame.getMenu());
                 if (panels.getComponentCount() == 0) {
                     algorithmsMenu.setEnabled(false);
                     saveFileMenu.setEnabled(false);
@@ -669,34 +669,34 @@ public class JMainFrame extends JFrame {
 
             @Override
             public void internalFrameActivated(InternalFrameEvent e) {
-                frame.getMenu().setSelected(true);
+                dataInternalFrame.getMenu().setSelected(true);
             }
 
             @Override
             public void internalFrameDeactivated(InternalFrameEvent e) {
-                frame.getMenu().setSelected(false);
+                dataInternalFrame.getMenu().setSelected(false);
             }
         });
         //-----------------------------
-        frame.getMenu().addActionListener(new ActionListener() {
+        dataInternalFrame.getMenu().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    frame.setSelected(true);
-                    frame.getMenu().setSelected(true);
+                    dataInternalFrame.setSelected(true);
+                    dataInternalFrame.getMenu().setSelected(true);
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                 }
             }
         });
         //--------------------------------------------
-        panels.add(frame);
-        frame.setVisible(true);
+        panels.add(dataInternalFrame);
+        dataInternalFrame.setVisible(true);
         algorithmsMenu.setEnabled(true);
         saveFileMenu.setEnabled(true);
         dataMinerMenu.setEnabled(true);
         attrStatisticsMenu.setEnabled(true);
-        windowsMenu.add(frame.getMenu());
+        windowsMenu.add(dataInternalFrame.getMenu());
         isStarted = true;
     }
 
@@ -746,7 +746,7 @@ public class JMainFrame extends JFrame {
                         //---------------------------------------
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -768,7 +768,8 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
                         NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits,
-                        MIN_DECIMAL_PLACES, MAX_DECIMAL_PLACES);
+                        APPLICATION_PROPERTIES.getMinimumFractionDigits(),
+                        APPLICATION_PROPERTIES.getMaximumFractionDigits());
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
                     maximumFractionDigits = dialog.getValue();
@@ -808,13 +809,13 @@ public class JMainFrame extends JFrame {
                             fileChooser = new SaveDataFileChooser();
                         }
                         fileChooser.setSelectedFile(new File(data().relationName()));
-                        File file = fileChooser.saveFile(JMainFrame.this);
+                        File file = fileChooser.getSelectedFile(JMainFrame.this);
                         if (file != null) {
                             DataSaver.saveData(file, data());
                         }
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -847,10 +848,9 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Throwable e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
                 conn.dispose();
@@ -866,15 +866,14 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 String path = (String) JOptionPane.showInputDialog(JMainFrame.this,
-                        URL_FILE_TEXT,
-                        LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                        URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                         null, DEFAULT_URL_FOR_DATA_LOADING);
+
                 if (path != null) {
                     try {
                         URLLoader loader = new URLLoader(new DataLoaderImpl(new URL(path.trim())));
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader,
-                                DATA_LOADING_MESSAGE);
+                                loader, DATA_LOADING_MESSAGE);
 
                         process(progress, new CallbackAction() {
                             @Override
@@ -884,7 +883,7 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -926,7 +925,7 @@ public class JMainFrame extends JFrame {
 
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -957,7 +956,7 @@ public class JMainFrame extends JFrame {
                         });
 
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex.getMessage());
+                        LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
                     }
@@ -1006,7 +1005,7 @@ public class JMainFrame extends JFrame {
                     }
                     ref.openReference();
                 } catch (Throwable e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -1036,10 +1035,9 @@ public class JMainFrame extends JFrame {
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         experimentFrame.setVisible(true);
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1053,10 +1051,9 @@ public class JMainFrame extends JFrame {
                         createEnsembleExperiment(new ModifiedHeterogeneousClassifier(), modifiedHeteroEnsMenu.getText(),
                                 data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1069,10 +1066,9 @@ public class JMainFrame extends JFrame {
                     try {
                         createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1085,10 +1081,9 @@ public class JMainFrame extends JFrame {
                     try {
                         createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1101,10 +1096,9 @@ public class JMainFrame extends JFrame {
                     try {
                         createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(), data());
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1178,14 +1172,12 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances set = data();
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
-                                ClassifiersNamesDictionary.LOGISTIC,
-                                new Logistic(), set);
+                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), set);
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
 
                 }
@@ -1201,15 +1193,13 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances set = data();
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
-                                ClassifiersNamesDictionary.NEURAL_NETWORK,
-                                new NeuralNetwork(set), set);
+                                ClassifiersNamesDictionary.NEURAL_NETWORK, new NeuralNetwork(set), set);
                         frame.showDialog();
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1222,11 +1212,11 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this, ClassifiersNamesDictionary.KNN,
-                                new KNearestNeighbours(), data());
+                        KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this,
+                                ClassifiersNamesDictionary.KNN, new KNearestNeighbours(), data());
                         executeSimpleBuilding(frame);
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
@@ -1278,16 +1268,15 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         Instances data = data();
-                        RandomForestsOptionDialog frame
-                                = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNamesDictionary.RANDOM_FORESTS,
-                                new RandomForests(data), data);
+                        RandomForestsOptionDialog frame =
+                                new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNamesDictionary.RANDOM_FORESTS,
+                                        new RandomForests(data), data);
                         frame.showDialog();
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1301,16 +1290,14 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         Instances data = data();
-                        RandomForestsOptionDialog frame
-                                = new RandomForestsOptionDialog(JMainFrame.this, EnsemblesNamesDictionary.EXTRA_TREES,
-                                new ExtraTreesClassifier(data), data);
+                        RandomForestsOptionDialog frame = new RandomForestsOptionDialog(JMainFrame.this,
+                                EnsemblesNamesDictionary.EXTRA_TREES, new ExtraTreesClassifier(data), data);
                         frame.showDialog();
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1324,15 +1311,13 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        StackingOptionsDialog frame
-                                = new StackingOptionsDialog(JMainFrame.this, EnsemblesNamesDictionary.STACKING,
-                                new StackingClassifier(), data());
+                        StackingOptionsDialog frame = new StackingOptionsDialog(JMainFrame.this,
+                                EnsemblesNamesDictionary.STACKING, new StackingClassifier(), data());
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1349,16 +1334,15 @@ public class JMainFrame extends JFrame {
 
                         Instances data = data();
                         RandomNetworkOptionsDialog networkOptionsDialog =
-                                new RandomNetworkOptionsDialog(JMainFrame.this, EnsemblesNamesDictionary.RANDOM_NETWORKS,
-                                        new RandomNetworks(), data);
+                                new RandomNetworkOptionsDialog(JMainFrame.this,
+                                        EnsemblesNamesDictionary.RANDOM_NETWORKS, new RandomNetworks(), data);
                         networkOptionsDialog.showDialog();
                         executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);
 
                     } catch (Exception e) {
-                        log.error("There was an error:", e.getMessage());
+                        LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
@@ -1385,17 +1369,16 @@ public class JMainFrame extends JFrame {
                                 new AttributesStatisticsFrame(data(), JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
                     } catch (Throwable ex) {
-                        log.error("There was an error:", ex.getMessage());
+                        LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                ex.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+                                ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
                     }
                 }
             }
         });
         serviceMenu.add(attrStatisticsMenu);
 
-        JMenuItem loggingMenu = new JMenuItem("Открыть консоль");
+        JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
         loggingMenu.addActionListener(new ActionListener() {
 
             TextAreaFrame textAreaFrame = new TextAreaFrame(JMainFrame.this,
@@ -1426,7 +1409,7 @@ public class JMainFrame extends JFrame {
                     executeWithEcaService(frame);
                 } else {
 
-                    IterativeBuilder iterativeBuilder = itClassifier((Iterable) frame.classifier(),
+                    IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(),
                             frame.data());
 
                     ClassifierBuilderDialog progress
@@ -1442,10 +1425,9 @@ public class JMainFrame extends JFrame {
                     });
                 }
             } catch (Throwable e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(JMainFrame.this,
-                        e.getMessage(),
-                        null, JOptionPane.WARNING_MESSAGE);
+                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
             }
 
         }
@@ -1455,7 +1437,7 @@ public class JMainFrame extends JFrame {
         try {
             selectedPanel().check();
         } catch (Exception e) {
-            log.error("There was an error:", e.getMessage());
+            LoggerUtils.error(log, e);
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
                     null, JOptionPane.WARNING_MESSAGE);
@@ -1471,7 +1453,7 @@ public class JMainFrame extends JFrame {
                     tree, data());
             executeSimpleBuilding(frame);
         } catch (Exception e) {
-            log.error("There was an error:", e.getMessage());
+            LoggerUtils.error(log, e);
             JOptionPane.showMessageDialog(JMainFrame.this,
                     e.getMessage(),
                     null, JOptionPane.WARNING_MESSAGE);
@@ -1488,14 +1470,13 @@ public class JMainFrame extends JFrame {
             frame.showDialog();
             executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
         } catch (Exception e) {
-            log.error("There was an error:", e.getMessage());
+            LoggerUtils.error(log, e);
             JOptionPane.showMessageDialog(JMainFrame.this,
-                    e.getMessage(),
-                    null, JOptionPane.WARNING_MESSAGE);
+                    e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    private IterativeBuilder itClassifier(final Iterable model, final Instances data)
+    private IterativeBuilder createIterativeClassifier(final Iterable model, final Instances data)
             throws Exception {
         switch (testingSetFrame.getEvaluationMethod()) {
             case TRAINING_DATA: {
@@ -1527,4 +1508,4 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-} //End of class JMainFrame
+}

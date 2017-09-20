@@ -50,7 +50,7 @@ public class BackPropagation extends LearningAlgorithm {
     public void setLearningRate(double learningRate) {
         if (learningRate <= MIN_LEARNING_RATE || learningRate > MAX_LEARNING_RATE) {
             throw new IllegalArgumentException(
-                    String.format("Значение коэффициента скорости обучения должно лежать в интервале [%.2f, %.2f)!",
+                    String.format(NeuralNetworkDictionary.BAD_LEARNING_SPEED_ERROR_FORMAT,
                             MIN_LEARNING_RATE, MAX_LEARNING_RATE));
         }
         this.learningRate = learningRate;
@@ -69,7 +69,7 @@ public class BackPropagation extends LearningAlgorithm {
     public void setMomentum(double momentum) {
         if (momentum < MIN_MOMENTUM || momentum >= MAX_MOMENTUM) {
             throw new IllegalArgumentException(
-                    String.format("Значение коэффициента момента должно лежать в интервале (%.2f, %.2f]!",
+                    String.format(NeuralNetworkDictionary.BAD_MOMENTUM_ERROR_FORMAT,
                             MIN_LEARNING_RATE, MAX_LEARNING_RATE));
         }
         this.momentum = momentum;

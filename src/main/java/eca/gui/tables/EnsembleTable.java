@@ -6,6 +6,7 @@
 package eca.gui.tables;
 
 import eca.core.InstancesHandler;
+import eca.core.LoggerUtils;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.EnsembleClassifier;
 import eca.gui.ClassifierInputOptionsService;
@@ -103,10 +104,10 @@ public class EnsembleTable extends JDataTableBase {
                         classifier, data, e, digits);
                 ResultsFrameBase.createResults(result, digits);
                 StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-                result.setStatisticaTable(stat.createStatistics(classifier, e));
+                result.setStatisticsTable(stat.createStatistics(classifier, e));
                 result.setVisible(true);
             } catch (Exception e) {
-                log.error("There was an error:", e.getMessage());
+                LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }

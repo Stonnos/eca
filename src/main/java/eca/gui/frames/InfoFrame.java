@@ -1,5 +1,6 @@
 package eca.gui.frames;
 
+import eca.core.LoggerUtils;
 import eca.core.converters.TextSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.SaveModelChooser;
@@ -29,6 +30,7 @@ public class InfoFrame extends JFrame {
         try {
             this.setIconImage(parent.getIconImage());
         } catch (Exception e) {
+            LoggerUtils.error(log, e);
         }
         textInfo.setWrapStyleWord(true);
         textInfo.setLineWrap(true);
@@ -68,12 +70,12 @@ public class InfoFrame extends JFrame {
                     if (fileChooser == null) {
                         fileChooser = new SaveModelChooser();
                     }
-                    File file = fileChooser.saveFile(InfoFrame.this);
+                    File file = fileChooser.getSelectedFile(InfoFrame.this);
                     if (file != null) {
                         TextSaver.saveToFile(file, textInfo.getText());
                     }
                 } catch (Exception e) {
-                    log.error("There was an error:", e.getMessage());
+                    LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(InfoFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }

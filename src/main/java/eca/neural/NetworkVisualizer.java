@@ -298,7 +298,7 @@ public class NetworkVisualizer extends JPanel {
                         fileChooser = new SaveImageFileChooser();
                     }
                     fileChooser.setSelectedFile(new File(indexer.getIndex(net)));
-                    File file = fileChooser.saveFile(frame);
+                    File file = fileChooser.getSelectedFile(frame);
                     if (file != null) {
                         ImageSaver.saveImage(file, getImage());
 

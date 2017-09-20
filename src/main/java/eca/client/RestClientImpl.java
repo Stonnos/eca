@@ -5,6 +5,7 @@ import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
 import eca.model.ClassifierDescriptor;
 import eca.model.InputData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -17,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author Roman Batygin
  */
-
+@Slf4j
 public class RestClientImpl implements RestClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
@@ -103,6 +104,9 @@ public class RestClientImpl implements RestClient {
             throw new RuntimeException("Eca service is not enabled!");
         }
 
+        log.info("Starting to send request into eca - service for model '{}', data '{}'.",
+                inputData.getClassifier().getClass().getSimpleName(), inputData.getData().relationName());
+
         byte[] model = SerializationUtils.serialize(inputData);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -143,6 +147,10 @@ public class RestClientImpl implements RestClient {
                         request, ByteArrayResource.class);
 
         HttpStatus httpStatus = response.getStatusCode();
+
+        log.info("Response from eca - service has been received for model '{}', data '{}' with status code: {}",
+                inputData.getClassifier().getClass().getSimpleName(), inputData.getData().relationName(),
+                httpStatus);
 
         if (httpStatus.equals(HttpStatus.OK)) {
             return (ClassifierDescriptor) SerializationUtils.deserialize(response.getBody().getByteArray());
