@@ -5,7 +5,7 @@
  */
 package eca.gui.tables.models;
 
-import eca.core.converters.InstancesConverter;
+import eca.converters.InstancesConverter;
 import eca.text.NumericFormat;
 import weka.core.Instances;
 

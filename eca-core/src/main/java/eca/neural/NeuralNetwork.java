@@ -7,7 +7,7 @@ package eca.neural;
 
 import eca.core.InstancesHandler;
 import eca.core.ListOptionsHandler;
-import eca.core.converters.MinMaxNormalizer;
+import eca.core.MinMaxNormalizer;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;

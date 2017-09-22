@@ -1,6 +1,6 @@
 package eca.dataminer;
 
-import eca.core.MathUtils;
+import eca.util.MathUtils;
 
 /**
  * Data miner utils class.

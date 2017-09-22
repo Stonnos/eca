@@ -5,16 +5,16 @@
  */
 package eca.gui.frames;
 
-import eca.core.ClassifierIndexer;
+import eca.gui.service.ClassifierIndexerService;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
-import eca.core.LoggerUtils;
-import eca.core.converters.ModelConverter;
+import eca.gui.logging.LoggerUtils;
+import eca.converters.ModelConverter;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistory;
 import eca.dataminer.IterativeExperiment;
-import eca.gui.ClassifierInputOptionsService;
-import eca.gui.ExecutorService;
+import eca.gui.service.ClassifierInputOptionsService;
+import eca.gui.service.ExecutorService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.OpenModelChooser;
@@ -300,7 +300,7 @@ public abstract class ExperimentFrame extends JFrame {
                     if (fileChooser == null) {
                         fileChooser = new SaveModelChooser();
                     }
-                    ClassifierIndexer indexer = new ClassifierIndexer();
+                    ClassifierIndexerService indexer = new ClassifierIndexerService();
                     fileChooser.setSelectedFile(new File(indexer.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {

@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.core.LoggerUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.GuiUtils;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.models.AttributesTableModel;

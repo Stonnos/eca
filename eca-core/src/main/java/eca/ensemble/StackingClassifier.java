@@ -258,8 +258,8 @@ public class StackingClassifier extends AbstractClassifier
         }
 
         for (int k = 0; k < classifiers.size(); k++) {
-            attr.add(new Attribute(classifiers.getClassifier(k).getClass().getSimpleName() +
-                    StringUtils.SPACE + String.valueOf(k), (ArrayList<String>) values.clone()));
+            attr.add(new Attribute(String.format("%s %d",
+                    classifiers.getClassifier(k).getClass().getSimpleName(), k), (ArrayList<String>) values.clone()));
         }
 
         attr.add((Attribute) classAttr.copy());

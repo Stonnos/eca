@@ -5,7 +5,7 @@
  */
 package eca.dataminer;
 
-import eca.core.PermutationsSearch;
+import eca.core.PermutationsSearcher;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
@@ -68,7 +68,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
         ClassifiersSet set = classifier.getClassifiersSet();
         ClassifiersSet currentSet = new ClassifiersSet();
         int[] marks = new int[classifier.getClassifiersSet().size()];
-        PermutationsSearch permutationsSearch = new PermutationsSearch();
+        PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         int numCombinations = getNumCombinations();
 
         AutomatedHeterogeneousBuilder() {

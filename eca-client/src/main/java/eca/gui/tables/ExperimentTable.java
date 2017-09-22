@@ -5,8 +5,8 @@
  */
 package eca.gui.tables;
 
-import eca.core.LoggerUtils;
-import eca.gui.ClassifierInputOptionsService;
+import eca.gui.logging.LoggerUtils;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;

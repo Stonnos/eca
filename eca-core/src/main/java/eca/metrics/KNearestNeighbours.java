@@ -6,7 +6,7 @@
 package eca.metrics;
 
 import eca.core.InstancesHandler;
-import eca.core.converters.MinMaxNormalizer;
+import eca.core.MinMaxNormalizer;
 import eca.filter.MissingValuesFilter;
 import eca.metrics.distances.Distance;
 import eca.metrics.distances.EuclidDistance;

@@ -1,6 +1,6 @@
 package eca.gui.tables;
 
-import eca.core.LoggerUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.InstancesFrame;

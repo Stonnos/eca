@@ -5,14 +5,14 @@
  */
 package eca.trees;
 
-import eca.core.ClassifierIndexer;
-import eca.core.converters.ImageSaver;
+import eca.gui.service.ClassifierIndexerService;
+import eca.converters.ImageSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.text.NumericFormat;
-import eca.io.buffer.ImageCopier;
+import eca.buffer.ImageCopier;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
@@ -282,7 +282,7 @@ public class TreeVisualizer extends JPanel {
         saveImage.addActionListener(new ActionListener() {
 
             SaveImageFileChooser fileChooser;
-            ClassifierIndexer indexer = new ClassifierIndexer();
+            ClassifierIndexerService indexer = new ClassifierIndexerService();
 
             @Override
             public void actionPerformed(ActionEvent evt) {

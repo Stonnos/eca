@@ -5,7 +5,7 @@
  */
 package eca.dataminer;
 
-import eca.core.PermutationsSearch;
+import eca.core.PermutationsSearcher;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.core.evaluation.EvaluationResults;
@@ -47,7 +47,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         ClassifiersSet set = classifier.getClassifiers();
         ClassifiersSet currentSet = new ClassifiersSet();
         int[] marks = new int[classifier.getClassifiers().size()];
-        PermutationsSearch permutationsSearch = new PermutationsSearch();
+        PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         int numCombinations = getNumCombinations();
 
         AutomatedStackingBuilder() {

@@ -7,7 +7,7 @@ package eca.gui.tables;
 
 
 import eca.gui.dialogs.JFontChooser;
-import eca.io.buffer.StringCopier;
+import eca.buffer.StringCopier;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

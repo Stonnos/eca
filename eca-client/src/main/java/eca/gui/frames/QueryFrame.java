@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.core.LoggerUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;

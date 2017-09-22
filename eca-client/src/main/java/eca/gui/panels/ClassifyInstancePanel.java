@@ -5,7 +5,7 @@
  */
 package eca.gui.panels;
 
-import eca.gui.ClassifierInputOptionsService;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;

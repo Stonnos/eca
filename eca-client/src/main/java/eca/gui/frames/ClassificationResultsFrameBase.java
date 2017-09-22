@@ -6,16 +6,16 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.core.ClassifierIndexer;
-import eca.core.LoggerUtils;
-import eca.core.converters.DataFileExtension;
-import eca.core.converters.ModelConverter;
+import eca.gui.service.ClassifierIndexerService;
+import eca.gui.logging.LoggerUtils;
+import eca.converters.DataFileExtension;
+import eca.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleClassifier;
 import eca.ensemble.StackingClassifier;
-import eca.gui.ClassifierInputOptionsService;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
@@ -89,7 +89,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private final Classifier classifier;
     private final Instances data;
     private final Evaluation evaluation;
-    private final ClassifierIndexer indexer = new ClassifierIndexer();
+    private final ClassifierIndexerService indexer = new ClassifierIndexerService();
     private JTabbedPane pane;
     private JScrollPane resultPane;
 
@@ -114,7 +114,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
-    public ClassifierIndexer getIndexer() {
+    public ClassifierIndexerService getIndexer() {
         return indexer;
     }
 

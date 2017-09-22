@@ -31,6 +31,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>eca</groupId>
+            <artifactId>eca-data-source</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>

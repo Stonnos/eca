@@ -5,7 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.core.LoggerUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.actions.CallbackAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

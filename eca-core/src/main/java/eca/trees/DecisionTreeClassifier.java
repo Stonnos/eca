@@ -662,7 +662,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private int[] findOptimalBinarySplit(SplitAlgorithm splitAlgorithm, SplitDescriptor splitDescriptor, int[] values) {
         int[] optValues = null;
         TreeNode x = splitDescriptor.getNode();
-        PermutationsSearch permutationsSearch = new PermutationsSearch();
+        PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         permutationsSearch.setValues(values);
         while (permutationsSearch.nextPermutation()) {
             createChildren(x, 2);

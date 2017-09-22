@@ -5,7 +5,7 @@
  */
 package eca.gui.actions;
 
-import eca.core.converters.DataLoader;
+import eca.converters.DataLoader;
 import weka.core.Instances;
 
 import java.io.File;
