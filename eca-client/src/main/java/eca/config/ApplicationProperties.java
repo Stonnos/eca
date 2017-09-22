@@ -7,6 +7,7 @@ import java.util.Properties;
 
 /**
  * Application properties config.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -46,6 +47,7 @@ public class ApplicationProperties {
 
     /**
      * Returns <tt>ApplicationProperties</tt> instance.
+     *
      * @return <tt>ApplicationProperties</tt> instance
      */
     public static ApplicationProperties getInstance() {
@@ -57,6 +59,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project version.
+     *
      * @return project version
      */
     public String getVersion() {
@@ -65,6 +68,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project release date.
+     *
      * @return project release date
      */
     public String getReleaseDateToString() {
@@ -73,6 +77,7 @@ public class ApplicationProperties {
 
     /**
      * Returns default fraction digits.
+     *
      * @return default fraction digits
      */
     public Integer getDefaultFractionDigits() {
@@ -81,6 +86,7 @@ public class ApplicationProperties {
 
     /**
      * Returns minimum fraction digits.
+     *
      * @return minimum fraction digits
      */
     public Integer getMinimumFractionDigits() {
@@ -89,6 +95,7 @@ public class ApplicationProperties {
 
     /**
      * Returns maximum fraction digits.
+     *
      * @return maximum fraction digits
      */
     public Integer getMaximumFractionDigits() {
@@ -97,6 +104,7 @@ public class ApplicationProperties {
 
     /**
      * Returns data maximum list size.
+     *
      * @return data maximum list size
      */
     public Integer getMaximumListSizeOfData() {
@@ -105,6 +113,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project title.
+     *
      * @return project title
      */
     public String getTitle() {
@@ -113,6 +122,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project icon url.
+     *
      * @return project icon url
      */
     public String getIconUrl() {
@@ -121,6 +131,7 @@ public class ApplicationProperties {
 
     /**
      * Returns logotype url.
+     *
      * @return logotype url
      */
     public String getLogotypeUrl() {
@@ -129,6 +140,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project author data.
+     *
      * @return project author data
      */
     public String getAuthor() {
@@ -137,6 +149,7 @@ public class ApplicationProperties {
 
     /**
      * Returns author email.
+     *
      * @return author email
      */
     public String getAuthorEmail() {
@@ -145,6 +158,7 @@ public class ApplicationProperties {
 
     /**
      * Returns project description.
+     *
      * @return project description
      */
     public String getTitleDescription() {
@@ -153,6 +167,7 @@ public class ApplicationProperties {
 
     /**
      * Returns tooltips dismiss time.
+     *
      * @return tooltips dismiss time
      */
     public Integer getTooltipDismissTime() {
@@ -161,6 +176,7 @@ public class ApplicationProperties {
 
     /**
      * Return the default number of folds value for k * V cross - validation method.
+     *
      * @return the default number of folds value for k * V cross - validation method
      */
     public Integer getNumFolds() {
@@ -169,6 +185,7 @@ public class ApplicationProperties {
 
     /**
      * Returns the default number of tests value for k * V cross - validation method.
+     *
      * @return the default number of tests value for k * V cross - validation method
      */
     public Integer getNumTests() {

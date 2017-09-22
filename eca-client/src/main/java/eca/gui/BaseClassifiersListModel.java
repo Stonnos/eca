@@ -1,7 +1,7 @@
 package eca.gui;
 
-import eca.gui.dialogs.*;
 import eca.dictionary.ClassifiersNamesDictionary;
+import eca.gui.dialogs.*;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;

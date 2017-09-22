@@ -5,12 +5,12 @@
  */
 package eca.gui.tables;
 
-import eca.gui.logging.LoggerUtils;
-import eca.gui.GuiUtils;
 import eca.dictionary.AttributesTypesDictionary;
+import eca.gui.GuiUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
-import eca.text.DateFormat;
 import eca.gui.text.DoubleDocument;
+import eca.text.DateFormat;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.*;
 

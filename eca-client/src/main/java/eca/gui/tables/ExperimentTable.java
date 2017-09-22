@@ -5,15 +5,15 @@
  */
 package eca.gui.tables;
 
-import eca.gui.logging.LoggerUtils;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
+import eca.gui.logging.LoggerUtils;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
-import eca.core.evaluation.EvaluationResults;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 

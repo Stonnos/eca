@@ -6,6 +6,7 @@ import java.awt.datatransfer.StringSelection;
 
 /**
  * Implements copying string into system buffer.
+ *
  * @author Roman Batygin
  */
 public class StringCopier implements Copyable {
@@ -14,6 +15,7 @@ public class StringCopier implements Copyable {
 
     /**
      * Returns string for copying.
+     *
      * @return string object.
      */
     public String getCopyString() {
@@ -22,6 +24,7 @@ public class StringCopier implements Copyable {
 
     /**
      * Sets the string for copying.
+     *
      * @param copyString string object
      */
     public void setCopyString(String copyString) {

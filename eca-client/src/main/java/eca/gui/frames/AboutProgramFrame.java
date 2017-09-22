@@ -6,8 +6,8 @@
 package eca.gui.frames;
 
 import eca.config.ApplicationProperties;
-import eca.gui.service.AboutProgramService;
 import eca.gui.ButtonUtils;
+import eca.gui.service.AboutProgramService;
 
 import javax.swing.*;
 import java.awt.*;

@@ -5,8 +5,8 @@
  */
 package eca.gui.dialogs;
 
-import eca.gui.logging.LoggerUtils;
 import eca.gui.actions.CallbackAction;
+import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 
 /**
  * Implements loading process dialog.
+ *
  * @author Roman Batygin
  */
 @Slf4j

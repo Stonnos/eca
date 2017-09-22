@@ -5,10 +5,10 @@
  */
 package eca.gui.frames;
 
-import eca.gui.logging.LoggerUtils;
 import eca.db.DataBaseConnection;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.InstancesSetTable;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 /**
  * Frame for execution database queries.
+ *
  * @author Roman Batygin
  */
 @Slf4j

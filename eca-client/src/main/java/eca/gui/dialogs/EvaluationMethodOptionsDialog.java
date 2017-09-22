@@ -20,6 +20,7 @@ import java.awt.event.ItemListener;
 
 /**
  * Evaluation method options dialog.
+ *
  * @author Roman Batygin
  */
 public class EvaluationMethodOptionsDialog extends JDialog {

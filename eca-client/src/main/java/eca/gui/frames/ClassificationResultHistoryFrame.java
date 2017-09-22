@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * Classification results history frame.
+ *
  * @author Roman Batygin
  */
 

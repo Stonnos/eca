@@ -5,25 +5,25 @@
  */
 package eca.gui.frames;
 
-import eca.gui.service.ClassifierIndexerService;
+import eca.converters.ModelConverter;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
-import eca.gui.logging.LoggerUtils;
-import eca.converters.ModelConverter;
+import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistory;
 import eca.dataminer.IterativeExperiment;
-import eca.gui.service.ClassifierInputOptionsService;
-import eca.gui.service.ExecutorService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
-import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
+import eca.gui.dialogs.LoadDialog;
+import eca.gui.logging.LoggerUtils;
+import eca.gui.service.ClassifierIndexerService;
+import eca.gui.service.ClassifierInputOptionsService;
+import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import eca.gui.tables.StatisticsTableBuilder;
-import eca.core.evaluation.EvaluationResults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;

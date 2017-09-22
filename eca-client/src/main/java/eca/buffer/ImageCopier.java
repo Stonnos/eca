@@ -14,6 +14,7 @@ import java.io.IOException;
 
 /**
  * Implements copying image into system buffer.
+ *
  * @author Roman Batygin
  */
 public class ImageCopier implements Transferable, Copyable {
@@ -26,6 +27,7 @@ public class ImageCopier implements Transferable, Copyable {
 
     /**
      * Sets image object.
+     *
      * @param image {@link Image} object
      */
     public void setImage(Image image) {

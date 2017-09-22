@@ -10,6 +10,7 @@ import java.util.Base64;
 
 /**
  * Evaluation request serializer.
+ *
  * @author Roman Batygin
  */
 

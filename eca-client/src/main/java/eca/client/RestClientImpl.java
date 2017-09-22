@@ -1,19 +1,17 @@
 package eca.client;
 
-import eca.client.dto.EvaluationResponse;
 import eca.client.dto.EvaluationRequestDto;
+import eca.client.dto.EvaluationResponse;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.model.InputData;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
-import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
 
 /**
  * @author Roman Batygin

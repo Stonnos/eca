@@ -30,7 +30,7 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.setResizable(false);
 
         JScrollPane scrollPanel = new JScrollPane(new EcaServicePropertiesTable(model));
-        scrollPanel.setPreferredSize(new Dimension(500, 200));
+        scrollPanel.setPreferredSize(new Dimension(500, 150));
 
         JButton okButton = ButtonUtils.createOkButton();
 

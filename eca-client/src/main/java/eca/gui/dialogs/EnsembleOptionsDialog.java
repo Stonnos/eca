@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
@@ -13,11 +14,10 @@ import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.dictionary.ClassifiersNamesDictionary;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
-import eca.text.NumericFormat;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.text.NumericFormat;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 

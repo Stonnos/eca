@@ -1,15 +1,15 @@
 package eca.gui.frames;
 
+import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
-import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.tables.JDataTableBase;
 import eca.gui.tables.models.AttributeTableModel;
 import eca.gui.tables.models.DataInfoTableModel;
 import eca.gui.tables.models.NominalAttributeTableModel;
 import eca.gui.tables.models.NumericAttributeTableModel;
-import eca.text.NumericFormat;
 import eca.statistics.AttributeStatistics;
+import eca.text.NumericFormat;
 import weka.core.Attribute;
 import weka.core.Instances;
 

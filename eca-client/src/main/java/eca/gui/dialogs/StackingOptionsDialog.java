@@ -5,12 +5,12 @@
  */
 package eca.gui.dialogs;
 
+import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
-import eca.dictionary.ClassifiersNamesDictionary;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;

@@ -7,8 +7,8 @@ package eca.dataminer;
 
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
-import eca.core.evaluation.EvaluationService;
 import eca.core.evaluation.EvaluationResults;
+import eca.core.evaluation.EvaluationService;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 

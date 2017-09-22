@@ -6,14 +6,14 @@
 package eca.gui.tables;
 
 import eca.core.InstancesHandler;
-import eca.gui.logging.LoggerUtils;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.EnsembleClassifier;
-import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
+import eca.gui.logging.LoggerUtils;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.EnsembleTableModel;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;

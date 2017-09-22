@@ -5,8 +5,8 @@
  */
 package eca.dataminer;
 
-import eca.generators.NumberGenerator;
 import eca.core.evaluation.EvaluationResults;
+import eca.generators.NumberGenerator;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;

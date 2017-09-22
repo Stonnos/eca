@@ -6,9 +6,9 @@
 package eca.dataminer;
 
 import eca.core.PermutationsSearcher;
+import eca.core.evaluation.EvaluationResults;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
-import eca.core.evaluation.EvaluationResults;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;

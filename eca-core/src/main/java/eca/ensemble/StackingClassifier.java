@@ -7,7 +7,6 @@ package eca.ensemble;
 
 import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
-import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;

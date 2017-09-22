@@ -6,8 +6,8 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
-import eca.text.NumericFormat;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.text.NumericFormat;
 import weka.core.Instances;
 
 import javax.swing.*;

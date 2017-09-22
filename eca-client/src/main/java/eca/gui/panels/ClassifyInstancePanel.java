@@ -5,8 +5,8 @@
  */
 package eca.gui.panels;
 
-import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
 import lombok.extern.slf4j.Slf4j;

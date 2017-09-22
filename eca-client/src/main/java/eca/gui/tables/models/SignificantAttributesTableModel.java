@@ -5,8 +5,8 @@
  */
 package eca.gui.tables.models;
 
-import eca.text.NumericFormat;
 import eca.roc.AttributesSelection;
+import eca.text.NumericFormat;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;

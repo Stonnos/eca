@@ -1,9 +1,9 @@
 package eca.gui.frames;
 
-import eca.gui.logging.LoggerUtils;
 import eca.converters.TextSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.SaveModelChooser;
+import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -14,6 +14,7 @@ import java.io.File;
 
 /**
  * Frame showing text information.
+ *
  * @author Roman Batygin
  */
 @Slf4j

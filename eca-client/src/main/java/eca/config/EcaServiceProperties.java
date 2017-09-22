@@ -9,6 +9,7 @@ import java.util.Set;
 
 /**
  * Eca - service properties config.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -35,6 +36,7 @@ public class EcaServiceProperties {
 
     /**
      * Returns <tt>EcaServiceProperties</tt> instance.
+     *
      * @return <tt>EcaServiceProperties</tt> instance.
      */
     public static EcaServiceProperties getInstance() {
@@ -46,7 +48,8 @@ public class EcaServiceProperties {
 
     /**
      * Puts the pair (key, value) to map.
-     * @param key key value
+     *
+     * @param key   key value
      * @param value value
      */
     public void put(String key, String value) {
@@ -55,6 +58,7 @@ public class EcaServiceProperties {
 
     /**
      * Saves properties to file.
+     *
      * @throws Exception
      */
     public void save() throws Exception {
@@ -66,6 +70,7 @@ public class EcaServiceProperties {
 
     /**
      * Returns properties size.
+     *
      * @return properties size
      */
     public int size() {
@@ -74,6 +79,7 @@ public class EcaServiceProperties {
 
     /**
      * Returns properties names.
+     *
      * @return properties names
      */
     public Set<String> getNames() {
@@ -82,6 +88,7 @@ public class EcaServiceProperties {
 
     /**
      * Gets property by key.
+     *
      * @param key key value
      * @return property value
      */
@@ -91,6 +98,7 @@ public class EcaServiceProperties {
 
     /**
      * Return eca - service enabled.
+     *
      * @return <tt>true</tt> if eca - service is enabled
      */
     public boolean getEcaServiceEnabled() {
@@ -99,6 +107,7 @@ public class EcaServiceProperties {
 
     /**
      * Returns eca - service url.
+     *
      * @return eca - service url
      */
     public String getEcaServiceUrl() {

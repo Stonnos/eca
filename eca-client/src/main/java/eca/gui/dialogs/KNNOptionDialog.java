@@ -10,13 +10,13 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
-import eca.text.NumericFormat;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.ChebyshevDistance;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.ManhattanDistance;
 import eca.metrics.distances.SquareEuclidDistance;
+import eca.text.NumericFormat;
 import weka.core.Instances;
 
 import javax.swing.*;

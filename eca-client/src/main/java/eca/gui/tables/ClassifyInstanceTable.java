@@ -5,12 +5,12 @@
  */
 package eca.gui.tables;
 
-import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.GuiUtils;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
-import eca.text.NumericFormat;
 import eca.statistics.AttributeStatistics;
+import eca.text.NumericFormat;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;

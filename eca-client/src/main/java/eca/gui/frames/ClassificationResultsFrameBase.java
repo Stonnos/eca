@@ -6,8 +6,6 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.gui.service.ClassifierIndexerService;
-import eca.gui.logging.LoggerUtils;
 import eca.converters.DataFileExtension;
 import eca.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
@@ -15,12 +13,14 @@ import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleClassifier;
 import eca.ensemble.StackingClassifier;
-import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
+import eca.gui.service.ClassifierIndexerService;
+import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.*;
 import eca.model.InputData;
 import eca.model.ModelDescriptor;
@@ -58,6 +58,7 @@ import java.util.ArrayList;
 
 /**
  * Classification results frame.
+ *
  * @author Roman Batygin
  */
 @Slf4j

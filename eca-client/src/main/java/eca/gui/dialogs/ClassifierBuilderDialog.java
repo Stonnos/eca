@@ -5,8 +5,8 @@
  */
 package eca.gui.dialogs;
 
-import eca.gui.logging.LoggerUtils;
 import eca.ensemble.IterativeBuilder;
+import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 
 /**
  * Implements classifier iterative building dialog.
+ *
  * @author Roman Batygin
  */
 @Slf4j

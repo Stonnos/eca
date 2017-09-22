@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 
 /**
  * Implements dialog with text fields matrix.
+ *
  * @author Roman Batygin
  */
 public class JTextFieldMatrixDialog extends JDialog {

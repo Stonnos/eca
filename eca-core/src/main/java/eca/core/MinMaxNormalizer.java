@@ -11,6 +11,7 @@ import weka.core.Instances;
 
 /**
  * Implement mini-max normalization.
+ *
  * @author Roman Batygin
  */
 public class MinMaxNormalizer implements java.io.Serializable {
@@ -21,6 +22,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Creates <tt>MinMaxNormalizer</tt> object
+     *
      * @param data {@link Instances} object
      */
     public MinMaxNormalizer(Instances data) {
@@ -31,6 +33,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Normalize instances object.
+     *
      * @return {@link Instances} object
      */
     public Instances normalizeInstances() {
@@ -48,6 +51,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Normalize instance.
+     *
      * @param obj {@link Instance} object
      * @return normalized instance
      */
@@ -63,6 +67,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Normalized input attributes values.
+     *
      * @return normalized data as array
      */
     public double[][] normalizeInputValues() {
@@ -79,6 +84,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Normalized class attribute.
+     *
      * @return normalized data as array
      */
     public double[][] normalizeOutputValues() {
@@ -92,6 +98,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Gets minimum values array.
+     *
      * @return minimum values array
      */
     public double[] getMiNs() {
@@ -100,6 +107,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Gets maximum values array.
+     *
      * @return maximum values array
      */
     public double[] getMaXs() {
@@ -109,6 +117,7 @@ public class MinMaxNormalizer implements java.io.Serializable {
 
     /**
      * Normalized instance.
+     *
      * @param obj {@link Instance} object
      * @return normalized object as array
      */

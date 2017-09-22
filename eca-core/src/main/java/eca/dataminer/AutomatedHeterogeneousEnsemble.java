@@ -6,11 +6,11 @@
 package eca.dataminer;
 
 import eca.core.PermutationsSearcher;
+import eca.core.evaluation.EvaluationResults;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Sampler;
-import eca.core.evaluation.EvaluationResults;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 

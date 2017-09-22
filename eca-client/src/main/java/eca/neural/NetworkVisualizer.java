@@ -5,15 +5,15 @@
  */
 package eca.neural;
 
-import eca.gui.service.ClassifierIndexerService;
+import eca.buffer.ImageCopier;
 import eca.converters.ImageSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
-import eca.text.NumericFormat;
-import eca.buffer.ImageCopier;
+import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
+import eca.text.NumericFormat;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 

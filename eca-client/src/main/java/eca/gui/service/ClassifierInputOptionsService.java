@@ -5,10 +5,10 @@
  */
 package eca.gui.service;
 
+import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
-import eca.dictionary.AttributesTypesDictionary;
 import eca.statistics.AttributeStatistics;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;

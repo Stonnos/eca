@@ -13,6 +13,7 @@ import java.awt.*;
 
 /**
  * Implements classifier input options dialog.
+ *
  * @param <T> - classifier generic type
  * @author Roman Batygin
  */

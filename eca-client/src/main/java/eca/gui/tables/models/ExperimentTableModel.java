@@ -5,9 +5,9 @@
  */
 package eca.gui.tables.models;
 
+import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.ClassifierComparator;
 import eca.text.NumericFormat;
-import eca.core.evaluation.EvaluationResults;
 import weka.classifiers.Classifier;
 
 import javax.swing.*;

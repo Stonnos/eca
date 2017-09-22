@@ -2,6 +2,7 @@ package eca.client.dto;
 
 /**
  * Evaluation response status.
+ *
  * @author Roman Batygin
  */
 public enum TechnicalStatus {

@@ -5,8 +5,8 @@
  */
 package eca.gui.tables.models;
 
-import eca.text.NumericFormat;
 import eca.regression.Logistic;
+import eca.text.NumericFormat;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
