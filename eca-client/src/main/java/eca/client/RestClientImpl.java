@@ -113,6 +113,10 @@ public class RestClientImpl implements RestClient {
 
         final EvaluationResponse classificationResultsDto = response.getBody();
 
+        log.info("Received response from eca - service with status [{}] for model '{}', data '{}'.",
+                classificationResultsDto.getStatus(), inputData.getClassifier().getClass().getSimpleName(),
+                inputData.getData().relationName());
+
         return classificationResultsDto.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
             @Override
             public EvaluationResults caseSuccessStatus() {
