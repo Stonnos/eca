@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.gui.MissingCellRenderer;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.tables.models.InstancesTableModel;
 import org.apache.commons.lang3.StringUtils;
@@ -157,7 +158,6 @@ public class InstancesTable extends JDataTableBase {
         popMenu.add(missMenu);
         popMenu.add(reValueMenu);
         this.getTableHeader().setComponentPopupMenu(popMenu);
-        ;
     }
 
     public final InstancesTableModel model() {

@@ -17,15 +17,16 @@ public class ExponentialFunction extends AbstractFunction {
      * Creates <tt>ExponentialFunction</tt> object.
      */
     public ExponentialFunction() {
+        super(ActivationFunctionType.EXPONENTIAL);
     }
 
     /**
      * Creates <tt>ExponentialFunction</tt> object with given coefficient.
      *
-     * @param a the value of coefficient
+     * @param coefficient the value of coefficient
      */
-    public ExponentialFunction(double a) {
-        super(a);
+    public ExponentialFunction(double coefficient) {
+        super(coefficient);
     }
 
     @Override

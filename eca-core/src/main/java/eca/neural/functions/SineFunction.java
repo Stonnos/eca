@@ -17,15 +17,16 @@ public class SineFunction extends AbstractFunction {
      * Creates <tt>SineFunction</tt> object.
      */
     public SineFunction() {
+        super(ActivationFunctionType.SINE);
     }
 
     /**
      * Creates <tt>SineFunction</tt> object with given coefficient.
      *
-     * @param a the value of coefficient
+     * @param coefficient the value of coefficient
      */
-    public SineFunction(double a) {
-        super(a);
+    public SineFunction(double coefficient) {
+        super(coefficient);
     }
 
     @Override

@@ -12,7 +12,11 @@ import weka.core.Instance;
  *
  * @author Roman Batygin
  */
-public class ChebyshevDistance implements Distance {
+public class ChebyshevDistance extends AbstractDistance {
+
+    public ChebyshevDistance() {
+        super(DistanceType.CHEBYSHEV);
+    }
 
     @Override
     public double distance(Instance x1, Instance x2) {

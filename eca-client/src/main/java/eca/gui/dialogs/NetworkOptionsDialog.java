@@ -83,7 +83,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     private JTextField momentumText;
 
     private JRadioButton logistic;
-    private JRadioButton tanh;
+    private JRadioButton hyperbolicTangent;
     private JRadioButton sine;
     private JRadioButton exp;
 
@@ -158,34 +158,37 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         hiddenLayerPanel.setToolTipText(recommendText);
         //-------------------------------------------------------------
         ButtonGroup group = new ButtonGroup();
-        logistic = new JRadioButton(ACTIVATIONS_FUNCTIONS[0]);
-        tanh = new JRadioButton(ACTIVATIONS_FUNCTIONS[1]);
-        sine = new JRadioButton(ACTIVATIONS_FUNCTIONS[2]);
-        exp = new JRadioButton(ACTIVATIONS_FUNCTIONS[3]);
-        logistic.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[0]);
-        tanh.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[1]);
-        sine.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[2]);
-        exp.setToolTipText(ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES[3]);
+
+        logistic = new JRadioButton(ActivationFunctionType.LOGISTIC.getDescription());
+        hyperbolicTangent = new JRadioButton(ActivationFunctionType.HYPERBOLIC_TANGENT.getDescription());
+        sine = new JRadioButton(ActivationFunctionType.SINE.getDescription());
+        exp = new JRadioButton(ActivationFunctionType.EXPONENTIAL.getDescription());
+
+        logistic.setToolTipText(ActivationFunctionType.LOGISTIC.getFormula());
+        hyperbolicTangent.setToolTipText(ActivationFunctionType.HYPERBOLIC_TANGENT.getFormula());
+        sine.setToolTipText(ActivationFunctionType.SINE.getFormula());
+        exp.setToolTipText(ActivationFunctionType.EXPONENTIAL.getFormula());
+
         group.add(logistic);
-        group.add(tanh);
+        group.add(hyperbolicTangent);
         group.add(sine);
         group.add(exp);
-        JLabel coeffLabel = new JLabel(COEFFICIENT_TITLE);
-        coeffLabel.setPreferredSize(labelDim);
-        coeffLabel.setHorizontalAlignment(JLabel.RIGHT);
+        JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
+        coefficientLabel.setPreferredSize(labelDim);
+        coefficientLabel.setHorizontalAlignment(JLabel.RIGHT);
         afCoeffText = new JTextField(TEXT_FIELD_LENGTH);
         afCoeffText.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
         afCoeffText.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------------------
         actFuncPanel.add(logistic, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-        actFuncPanel.add(tanh, new GridBagConstraints(0, 1, 2, 1, 1, 1,
+        actFuncPanel.add(hyperbolicTangent, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
         actFuncPanel.add(sine, new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
         actFuncPanel.add(exp, new GridBagConstraints(0, 3, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-        actFuncPanel.add(coeffLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1,
+        actFuncPanel.add(coefficientLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         actFuncPanel.add(afCoeffText, new GridBagConstraints(1, 4, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
@@ -260,7 +263,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                         network().setActivationFunction(selectedActFunc());
                         network().setMaxIterationsNum(Integer.parseInt(numItsText.getText()));
                         text = afCoeffText;
-                        actFunction().setCoefficient(doubleFormat.
+                        getActivationFunction().setCoefficient(doubleFormat.
                                 parse(afCoeffText.getText()).doubleValue());
                         text = estimateText;
                         network().setMinError(estimateFormat.
@@ -297,46 +300,6 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         this.getRootPane().setDefaultButton(okButton);
     }
 
-    public MultilayerPerceptron network() {
-        return classifier.network();
-    }
-
-    public int numHiddenLayers() {
-        return network().hiddenLayersNum();
-    }
-
-    public String getHiddenLayer() {
-        return network().getHiddenLayer();
-    }
-
-    public double minError() {
-        return network().getMinError();
-    }
-
-    public int maxIts() {
-        return network().getMaxIterationsNum();
-    }
-
-    public BackPropagation learningAlgorithm() {
-        return (BackPropagation) network().getLearningAlgorithm();
-    }
-
-    public AbstractFunction actFunction() {
-        return (AbstractFunction) network().getActivationFunction();
-    }
-
-    public double learningSpeed() {
-        return learningAlgorithm().getLearningRate();
-    }
-
-    public double momentum() {
-        return learningAlgorithm().getMomentum();
-    }
-
-    public double actFuncCoefficient() {
-        return actFunction().getCoefficient();
-    }
-
     @Override
     public void showDialog() {
         this.setOptions();
@@ -354,24 +317,24 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         inNeuronsText.setText(String.valueOf(network().inLayerNeuronsNum()));
         outNeuronsText.setText(String.valueOf(network().outLayerNeuronsNum()));
         hidLayersText.setText(getHiddenLayer());
-        afCoeffText.setText(doubleFormat.format(actFuncCoefficient()));
+        afCoeffText.setText(doubleFormat.format(activationFunctionCoefficient()));
         estimateText.setText(estimateFormat.format(minError()));
         numItsText.setText(String.valueOf(maxIts()));
         learnSpeedText.setText(estimateFormat.format(learningSpeed()));
         momentumText.setText(estimateFormat.format(momentum()));
-        //---------------------------------------------
-        String func = actFunction().getClass().getSimpleName();
-        switch (func) {
-            case "LogisticFunction":
+
+        ActivationFunctionType activationFunctionType = getActivationFunction().getActivationFunctionType();
+        switch (activationFunctionType) {
+            case LOGISTIC:
                 logistic.setSelected(true);
                 break;
-            case "TanhFunction":
-                tanh.setSelected(true);
+            case HYPERBOLIC_TANGENT:
+                hyperbolicTangent.setSelected(true);
                 break;
-            case "SineFunction":
+            case SINE:
                 sine.setSelected(true);
                 break;
-            case "ExponentialFunction":
+            case EXPONENTIAL:
                 exp.setSelected(true);
                 break;
         }
@@ -380,13 +343,49 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     private ActivationFunction selectedActFunc() {
         if (logistic.isSelected()) {
             return new LogisticFunction();
-        } else if (tanh.isSelected()) {
-            return new TanhFunction();
+        } else if (hyperbolicTangent.isSelected()) {
+            return new HyperbolicTangentFunction();
         } else if (sine.isSelected()) {
             return new SineFunction();
         } else {
             return new ExponentialFunction();
         }
+    }
+
+    private MultilayerPerceptron network() {
+        return classifier.network();
+    }
+
+    private String getHiddenLayer() {
+        return network().getHiddenLayer();
+    }
+
+    private double minError() {
+        return network().getMinError();
+    }
+
+    private int maxIts() {
+        return network().getMaxIterationsNum();
+    }
+
+    private BackPropagation learningAlgorithm() {
+        return (BackPropagation) network().getLearningAlgorithm();
+    }
+
+    private AbstractFunction getActivationFunction() {
+        return (AbstractFunction) network().getActivationFunction();
+    }
+
+    private double learningSpeed() {
+        return learningAlgorithm().getLearningRate();
+    }
+
+    private double momentum() {
+        return learningAlgorithm().getMomentum();
+    }
+
+    private double activationFunctionCoefficient() {
+        return getActivationFunction().getCoefficient();
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -22,29 +23,9 @@ import java.util.Random;
 public class Sampler implements java.io.Serializable {
 
     /**
-     * Initial sample type
-     **/
-    public static final int INITIAL = 0;
-
-    /**
-     * Bootstrap sample type
-     **/
-    public static final int BAGGING = 1;
-
-    /**
-     * Random sub sample type
-     **/
-    public static final int RANDOM = 2;
-
-    /**
-     * Random bootstrap sub sample type
-     **/
-    public static final int RANDOM_BAGGING = 3;
-
-    /**
      * Sampling type
      **/
-    private int sampling = INITIAL;
+    private SamplingMethod samplingMethod = SamplingMethod.INITIAL;
 
     private Random random = new Random();
 
@@ -53,8 +34,8 @@ public class Sampler implements java.io.Serializable {
      *
      * @return sampling method type
      */
-    public int getSampling() {
-        return sampling;
+    public SamplingMethod getSamplingMethod() {
+        return samplingMethod;
     }
 
     /**
@@ -63,37 +44,19 @@ public class Sampler implements java.io.Serializable {
      * @return sampling method description
      */
     public String getDescription() {
-        String info = null;
-        switch (sampling) {
-            case INITIAL:
-                info = "Исходное обучающее множество";
-                break;
-            case BAGGING:
-                info = "Бутстрэп выборки";
-                break;
-            case RANDOM:
-                info = "Случайные подвыборки";
-                break;
-            case RANDOM_BAGGING:
-                info = "Бутстрэп выборки случайного размера";
-                break;
-        }
-        return info;
+        return samplingMethod.getDescription();
     }
 
     /**
      * Sets sampling method type.
      *
-     * @param sampling sampling method type
+     * @param samplingMethod sampling method type
      * @throws IllegalArgumentException if the specified sampling type
-     *                                  is invalid
+     *                                  is null
      */
-    public void setSampling(int sampling) {
-        if (sampling != INITIAL && sampling != BAGGING
-                && sampling != RANDOM && sampling != RANDOM_BAGGING) {
-            throw new IllegalArgumentException("Wrong sampling value!");
-        }
-        this.sampling = sampling;
+    public void setSamplingMethod(SamplingMethod samplingMethod) {
+        Assert.notNull(samplingMethod, "Sampling method is not specified!");
+        this.samplingMethod = samplingMethod;
     }
 
     /**
@@ -120,23 +83,29 @@ public class Sampler implements java.io.Serializable {
      * @param data <tt>Instances</tt> object
      * @return training sub sample based on sampling type
      */
-    public Instances instances(Instances data) {
-        Instances sample = null;
-        switch (sampling) {
-            case INITIAL:
-                sample = initial(data);
-                break;
-            case BAGGING:
-                sample = bootstrap(data);
-                break;
-            case RANDOM:
-                sample = random(data);
-                break;
-            case RANDOM_BAGGING:
-                sample = createBag(data, size(data));
-                break;
-        }
-        return sample;
+    public Instances instances(final Instances data) {
+
+        return getSamplingMethod().handle(new SamplingMethodTypeVisitor<Instances>() {
+            @Override
+            public Instances caseInitial() {
+                return initial(data);
+            }
+
+            @Override
+            public Instances caseBagging() {
+                return bootstrap(data);
+            }
+
+            @Override
+            public Instances caseRandom() {
+                return random(data);
+            }
+
+            @Override
+            public Instances caseRandomBagging() {
+                return createBag(data, size(data));
+            }
+        });
     }
 
     /**
@@ -147,23 +116,29 @@ public class Sampler implements java.io.Serializable {
      * @param numAttr number of input attributes
      * @return
      */
-    public Instances instances(Instances data, int numAttr) {
-        Instances sample = null;
-        switch (sampling) {
-            case INITIAL:
-                sample = initial(data, numAttr);
-                break;
-            case BAGGING:
-                sample = bootstrap(data, numAttr, data.numInstances());
-                break;
-            case RANDOM:
-                sample = random(data, numAttr);
-                break;
-            case RANDOM_BAGGING:
-                sample = bootstrap(data, numAttr, size(data));
-                break;
-        }
-        return sample;
+    public Instances instances(final Instances data, final int numAttr) {
+
+        return getSamplingMethod().handle(new SamplingMethodTypeVisitor<Instances>() {
+            @Override
+            public Instances caseInitial() {
+                return initial(data, numAttr);
+            }
+
+            @Override
+            public Instances caseBagging() {
+                return bootstrap(data, numAttr, data.numInstances());
+            }
+
+            @Override
+            public Instances caseRandom() {
+                return random(data, numAttr);
+            }
+
+            @Override
+            public Instances caseRandomBagging() {
+                return bootstrap(data, numAttr, size(data));
+            }
+        });
     }
 
     /**

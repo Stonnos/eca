@@ -138,7 +138,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     protected void initialize() {
-        if (sampler.getSampling() == Sampler.INITIAL) {
+        if (sampler.getSamplingMethod() == SamplingMethod.INITIAL) {
             setIterationsNum(getClassifiersSet().size());
         }
 
@@ -166,7 +166,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
             Instances bag = sampler.instances(filteredData);
             Classifier model;
-            if (sampler.getSampling() == Sampler.INITIAL) {
+            if (sampler.getSamplingMethod() == SamplingMethod.INITIAL) {
                 model = getClassifiersSet().buildClassifier(index, bag);
             } else if (getUseRandomClassifier()) {
                 model = getClassifiersSet().buildRandomClassifier(bag);

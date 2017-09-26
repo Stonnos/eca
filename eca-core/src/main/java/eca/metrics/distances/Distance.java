@@ -8,7 +8,7 @@ package eca.metrics.distances;
 import weka.core.Instance;
 
 /**
- * Distance function model.
+ * Distance function interface.
  *
  * @author Roman Batygin
  */
@@ -22,5 +22,11 @@ public interface Distance extends java.io.Serializable {
      * @return the value of distance between x1 and x2 instances
      */
     double distance(Instance x1, Instance x2);
+
+    /**
+     * Returns distance function type.
+     * @return {@link DistanceType} object.
+     */
+    DistanceType getDistanceType();
 
 }

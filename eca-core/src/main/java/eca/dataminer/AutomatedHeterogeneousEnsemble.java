@@ -11,6 +11,7 @@ import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Sampler;
+import eca.ensemble.SamplingMethod;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
@@ -27,12 +28,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
     /**
      * Available sampling methods
      **/
-    private static final int[] SAMPLE_METHOD = {
-            Sampler.BAGGING,
-            Sampler.INITIAL,
-            Sampler.RANDOM,
-            Sampler.RANDOM_BAGGING
-    };
+    private static final SamplingMethod[] SAMPLE_METHOD = SamplingMethod.values();
 
     /**
      * Available voting methods
@@ -138,7 +134,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                 for (++a; a < VOTING_METHOD.length; ) {
                                     HeterogeneousClassifier m_Model =
                                             (HeterogeneousClassifier) AbstractClassifier.makeCopy(classifier);
-                                    m_Model.sampler().setSampling(SAMPLE_METHOD[s]);
+                                    m_Model.sampler().setSamplingMethod(SAMPLE_METHOD[s]);
                                     m_Model.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
                                     m_Model.setUseWeightedVotesMethod(VOTING_METHOD[a]);
                                     m_Model.setClassifiersSet(currentSet.clone());

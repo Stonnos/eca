@@ -103,7 +103,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
                 classifiers.add(model);
                 aggregator.setInstances(subSample);
                 if (getUseWeightedVotesMethod()) {
-                    ((WeightedVoting) votes).setWeight(0.5 * Math.log((1.0 - error) / error));
+                    ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
                 }
             }
             if (index == getIterationsNum() - 1) {

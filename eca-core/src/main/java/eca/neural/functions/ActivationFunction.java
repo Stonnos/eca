@@ -27,4 +27,10 @@ public interface ActivationFunction {
      * @return the value of activation function derivative
      */
     double derivative(double s);
+
+    /**
+     * Returns activation function type.
+     * @return {@link ActivationFunctionType} object
+     */
+    ActivationFunctionType getActivationFunctionType();
 }

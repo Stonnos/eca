@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.gui.MissingCellRenderer;
 import eca.gui.tables.models.ResultInstancesTableModel;
 import weka.core.Instances;
 

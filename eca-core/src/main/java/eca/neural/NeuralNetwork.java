@@ -97,7 +97,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF);
         ActivationFunction activationFunction = network().getActivationFunction();
-        options.add(activationFunction.getClass().getSimpleName());
+        options.add(activationFunction.getActivationFunctionType().getDescription());
 
         if (activationFunction instanceof AbstractFunction) {
             options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF_COEFFICIENT);
@@ -106,7 +106,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         options.add(NeuralNetworkDictionary.OUT_LAYER_AF);
         ActivationFunction outActivationFunction = network().getOutActivationFunction();
-        options.add(outActivationFunction.getClass().getSimpleName());
+        options.add(outActivationFunction.getActivationFunctionType().getDescription());
 
         if (outActivationFunction instanceof AbstractFunction) {
             options.add(NeuralNetworkDictionary.OUT_LAYER_AF_COEFFICIENT);

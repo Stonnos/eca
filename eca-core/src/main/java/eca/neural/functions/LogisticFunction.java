@@ -17,15 +17,16 @@ public class LogisticFunction extends AbstractFunction {
      * Creates <tt>LogisticFunction</tt> object.
      */
     public LogisticFunction() {
+        super(ActivationFunctionType.LOGISTIC);
     }
 
     /**
      * Creates <tt>LogisticFunction</tt> object with given coefficient.
      *
-     * @param a the value of coefficient
+     * @param coefficient the value of coefficient
      */
-    public LogisticFunction(double a) {
-        super(a);
+    public LogisticFunction(double coefficient) {
+        super(coefficient);
     }
 
     @Override

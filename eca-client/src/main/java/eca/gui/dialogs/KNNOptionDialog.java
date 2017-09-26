@@ -12,7 +12,9 @@ import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.metrics.KNearestNeighbours;
+import eca.metrics.distances.AbstractDistance;
 import eca.metrics.distances.ChebyshevDistance;
+import eca.metrics.distances.DistanceType;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.ManhattanDistance;
 import eca.metrics.distances.SquareEuclidDistance;
@@ -66,7 +68,7 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         weightText.setDocument(new DoubleDocument(INT_FIELD_LENGTH));
         weightText.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------
-        metric = new JComboBox(METRICS_TEXT);
+        metric = new JComboBox(DistanceType.getDescriptions());
         optionPanel.add(new JLabel(NUM_NEIGHBOURS_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -109,17 +111,21 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                         classifier.setWeight(estimateFormat.parse(weightText.getText()).doubleValue());
                         focus = numNeighboursText;
                         classifier.setNumNeighbours(Integer.parseInt(numNeighboursText.getText()));
-                        switch (metric.getSelectedIndex()) {
-                            case 0:
+
+                        DistanceType distanceType =
+                                DistanceType.findByDescription(metric.getSelectedItem().toString());
+
+                        switch (distanceType) {
+                            case EUCLID:
                                 classifier.setDistance(new EuclidDistance());
                                 break;
-                            case 1:
+                            case SQUARE_EUCLID:
                                 classifier.setDistance(new SquareEuclidDistance());
                                 break;
-                            case 2:
+                            case MANHATTAN:
                                 classifier.setDistance(new ManhattanDistance());
                                 break;
-                            case 3:
+                            case CHEBYSHEV:
                                 classifier.setDistance(new ChebyshevDistance());
                                 break;
                         }
@@ -157,23 +163,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
     private void setOptions() {
         numNeighboursText.setText(String.valueOf(classifier.getNumNeighbours()));
         weightText.setText(estimateFormat.format(classifier.getWeight()));
-        switch (classifier.distance().getClass().getSimpleName()) {
-            case "EuclidDistance":
-                metric.setSelectedIndex(0);
-                break;
-
-            case "SquareEuclidDistance":
-                metric.setSelectedIndex(1);
-                break;
-
-            case "ManhattanDistance":
-                metric.setSelectedIndex(2);
-                break;
-
-            case "ChebyshevDistance":
-                metric.setSelectedIndex(3);
-                break;
-        }
+        DistanceType distanceType = classifier.distance().getDistanceType();
+        metric.setSelectedItem(distanceType.getDescription());
     }
 
 }

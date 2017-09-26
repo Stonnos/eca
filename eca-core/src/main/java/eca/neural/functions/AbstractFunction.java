@@ -17,11 +17,17 @@ import java.text.DecimalFormat;
 public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable, Cloneable {
 
     /**
+     * Activation function type
+     */
+    private ActivationFunctionType activationFunctionType;
+
+    /**
      * Coefficient value
      **/
     private double coefficient = 1.0;
 
-    protected AbstractFunction() {
+    protected AbstractFunction(ActivationFunctionType activationFunctionType) {
+        this.activationFunctionType = activationFunctionType;
     }
 
     protected AbstractFunction(double coefficient) {
@@ -33,7 +39,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      *
      * @return the value of getCoefficient
      */
-    public final double getCoefficient() {
+    public double getCoefficient() {
         return coefficient;
     }
 
@@ -43,7 +49,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      * @param coefficient the value of getCoefficient
      * @throws IllegalArgumentException if the value of getCoefficient is equal to zero
      */
-    public final void setCoefficient(double coefficient) {
+    public void setCoefficient(double coefficient) {
         if (coefficient == 0) {
             throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_AF_COEFFICIENT_VALUE_ERROR_TEXT);
         }
@@ -55,7 +61,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      *
      * @return the string representation of getCoefficient value
      */
-    public final String coefficientToString(DecimalFormat decimalFormat) {
+    public String coefficientToString(DecimalFormat decimalFormat) {
         return String.format(NeuralNetworkDictionary.AF_COEFFICIENT_VALUE_FORMAT, decimalFormat.format(coefficient));
     }
 
@@ -64,4 +70,8 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
         return (AbstractFunction) super.clone();
     }
 
+    @Override
+    public ActivationFunctionType getActivationFunctionType() {
+        return activationFunctionType;
+    }
 }

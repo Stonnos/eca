@@ -11,27 +11,28 @@ package eca.neural.functions;
  *
  * @author Roman Batygin
  */
-public class TanhFunction extends AbstractFunction {
+public class HyperbolicTangentFunction extends AbstractFunction {
 
     /**
-     * Creates <tt>TanhFunction</tt> object.
+     * Creates <tt>HyperbolicTangentFunction</tt> object.
      */
-    public TanhFunction() {
+    public HyperbolicTangentFunction() {
+        super(ActivationFunctionType.HYPERBOLIC_TANGENT);
     }
 
     /**
-     * Creates <tt>TanhFunction</tt> object with given coefficient.
+     * Creates <tt>HyperbolicTangentFunction</tt> object with given coefficient.
      *
-     * @param a the value of coefficient
+     * @param coefficient the value of coefficient
      */
-    public TanhFunction(double a) {
-        super(a);
+    public HyperbolicTangentFunction(double coefficient) {
+        super(coefficient);
     }
 
     @Override
     public double process(double s) {
-        return (Math.exp(getCoefficient() * s) - Math.exp(-getCoefficient() * s)) /
-                (Math.exp(getCoefficient() * s) + Math.exp(-getCoefficient() * s));
+        return (Math.exp(getCoefficient() * s) - Math.exp(- getCoefficient() * s)) /
+                (Math.exp(getCoefficient() * s) + Math.exp(- getCoefficient() * s));
     }
 
     @Override

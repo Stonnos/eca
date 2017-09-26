@@ -12,7 +12,11 @@ import weka.core.Instance;
  *
  * @author Roman Batygin
  */
-public class ManhattanDistance implements Distance {
+public class ManhattanDistance extends AbstractDistance {
+
+    public ManhattanDistance() {
+        super(DistanceType.MANHATTAN);
+    }
 
     @Override
     public double distance(Instance x1, Instance x2) {

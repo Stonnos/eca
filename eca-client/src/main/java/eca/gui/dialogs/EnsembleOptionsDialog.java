@@ -10,6 +10,7 @@ import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Sampler;
+import eca.ensemble.SamplingMethod;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
@@ -41,11 +42,6 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private static final String SAMPLING_TITLE = "Формирование обучающих выборок";
 
-    private static final String[] SAMPLING_METHOD = {"Использование исходной выборки",
-            "Бутстрэп выборки",
-            "Случайные подвыборки",
-            "Бутстрэп выборки случайного размера"};
-
     private static final String CLS_SELECTION_TITLE = "Выбор классификатора на каждой итерации";
     private static final String[] CLS_SELECTION_METHOD = {"Случайный классификатор", "Оптимальный классификатор"};
 
@@ -62,11 +58,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
             "Необходимо выбрать индивидуальные классификаторы!";
 
-    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[]{ClassifiersNamesDictionary.ID3,
-            ClassifiersNamesDictionary.C45,
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {
+            ClassifiersNamesDictionary.ID3, ClassifiersNamesDictionary.C45,
             ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
             ClassifiersNamesDictionary.NEURAL_NETWORK,
-            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN};
+            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN
+    };
 
     private JTabbedPane pane;
     private JPanel firstPanel;
@@ -269,10 +266,10 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         samplePanel = new JPanel(new GridBagLayout());
         samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
-        initial = new JRadioButton(SAMPLING_METHOD[0]);
-        bagging = new JRadioButton(SAMPLING_METHOD[1]);
-        random = new JRadioButton(SAMPLING_METHOD[2]);
-        randomBagging = new JRadioButton(SAMPLING_METHOD[3]);
+        initial = new JRadioButton(SamplingMethod.INITIAL.getDescription());
+        bagging = new JRadioButton(SamplingMethod.BAGGING.getDescription());
+        random = new JRadioButton(SamplingMethod.RANDOM.getDescription());
+        randomBagging = new JRadioButton(SamplingMethod.RANDOM_BAGGING.getDescription());
         group.add(initial);
         group.add(bagging);
         group.add(random);
@@ -282,7 +279,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSampling(Sampler.INITIAL);
+                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.INITIAL);
                 }
             }
         });
@@ -290,7 +287,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSampling(Sampler.BAGGING);
+                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.BAGGING);
                 }
             }
         });
@@ -298,7 +295,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSampling(Sampler.RANDOM);
+                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.RANDOM);
                 }
             }
         });
@@ -306,7 +303,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSampling(Sampler.RANDOM_BAGGING);
+                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
                 }
             }
         });

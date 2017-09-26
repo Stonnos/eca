@@ -12,7 +12,11 @@ import weka.core.Instance;
  *
  * @author Roman Batygin
  */
-public class SquareEuclidDistance implements Distance {
+public class SquareEuclidDistance extends AbstractDistance {
+
+    public SquareEuclidDistance() {
+        super(DistanceType.SQUARE_EUCLID);
+    }
 
     @Override
     public double distance(Instance x1, Instance x2) {
