@@ -775,8 +775,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     protected final boolean isClean(TreeNode x) {
         for (int i = 0; i < x.objectsNum() - 1; i++) {
-            if (x.objects().instance(i).classValue()
-                    != x.objects().instance(i + 1).classValue()) {
+            if (x.objects().instance(i).classValue() != x.objects().instance(i + 1).classValue()) {
                 return false;
             }
         }

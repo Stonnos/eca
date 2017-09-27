@@ -7,13 +7,33 @@ package eca.metrics.distances;
 
 public enum DistanceType {
 
-    EUCLID(DistanceDictionary.EUCLID_DESCRIPTION),
+    EUCLID(DistanceDictionary.EUCLID_DESCRIPTION) {
+        @Override
+        public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
+            return distanceTypeVisitor.caseEuclid();
+        }
+    },
 
-    SQUARE_EUCLID(DistanceDictionary.SQUARE_EUCLID_DESCRIPTION),
+    SQUARE_EUCLID(DistanceDictionary.SQUARE_EUCLID_DESCRIPTION) {
+        @Override
+        public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
+            return distanceTypeVisitor.caseSquareEuclid();
+        }
+    },
 
-    MANHATTAN(DistanceDictionary.MANHATTAN_DISTANCE),
+    MANHATTAN(DistanceDictionary.MANHATTAN_DISTANCE) {
+        @Override
+        public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
+            return distanceTypeVisitor.caseManhattan();
+        }
+    },
 
-    CHEBYSHEV(DistanceDictionary.CHEBYSHEV_DISTANCE);
+    CHEBYSHEV(DistanceDictionary.CHEBYSHEV_DISTANCE) {
+        @Override
+        public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
+            return distanceTypeVisitor.caseChebyshev();
+        }
+    };
 
     private String description;
 
@@ -45,7 +65,7 @@ public enum DistanceType {
     }
 
     /**
-     * Finds decision tree type by description
+     * Finds distance function type by description
      *
      * @param description description string.
      * @return {@link DistanceType} object
@@ -58,4 +78,13 @@ public enum DistanceType {
         }
         return null;
     }
+
+    /**
+     * Visitor pattern common method
+     *
+     * @param distanceTypeVisitor visitor class
+     * @param <T> generic class
+     * @return generic class
+     */
+    public abstract <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor);
 }

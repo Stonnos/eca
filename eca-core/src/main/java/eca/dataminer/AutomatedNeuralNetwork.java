@@ -10,10 +10,11 @@ import eca.generators.NumberGenerator;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
+import eca.neural.functions.ActivationFunctionBuilder;
+import eca.neural.functions.ActivationFunctionType;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -30,37 +31,18 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
     /**
      * Available activation functions
      **/
-    private List<AbstractFunction> activationFunctions;
+    private static ActivationFunctionType[] ACTIVATION_FUNCTIONS_TYPES = ActivationFunctionType.values();
+
+    private final ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
 
     /**
      * Creates <tt>AutomatedNeuralNetwork</tt> object with given options
      *
-     * @param activationFunctions available activation functions
      * @param data                training set
      * @param classifier          classifier object
      */
-    public AutomatedNeuralNetwork(List<AbstractFunction> activationFunctions, Instances data,
-                                  NeuralNetwork classifier) {
+    public AutomatedNeuralNetwork(Instances data, NeuralNetwork classifier) {
         super(data, classifier);
-        this.setActivationFunctions(activationFunctions);
-    }
-
-    /**
-     * Returns available activation functions.
-     *
-     * @return available activation functions
-     */
-    public final List<AbstractFunction> getActivationFunctions() {
-        return activationFunctions;
-    }
-
-    /**
-     * Sets available activation functions.
-     *
-     * @param activationFunctions available activation functions
-     */
-    public final void setActivationFunctions(List<AbstractFunction> activationFunctions) {
-        this.activationFunctions = activationFunctions;
     }
 
     @Override
@@ -69,7 +51,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
     }
 
     /**
-     *
+     * Automated network builder.
      */
     private class AutomatedNetworkBuilder implements IterativeExperiment {
 
@@ -87,17 +69,19 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
 
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
 
-            AbstractFunction randomActivationFunction = activationFunctions.get(r.nextInt(activationFunctions.size()));
-            AbstractFunction cloneFunction = randomActivationFunction.clone();
+            ActivationFunctionType activationFunctionType =
+                    ACTIVATION_FUNCTIONS_TYPES[r.nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
+
+            AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
-            cloneFunction.setCoefficient(coefficientValue);
-            model.network().setActivationFunction(cloneFunction);
+            randomActivationFunction.setCoefficient(coefficientValue);
+            model.network().setActivationFunction(randomActivationFunction);
 
             model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
 
-            EvaluationResults classifierDescriptor = evaluateModel(model);
+            EvaluationResults evaluationResults = evaluateModel(model);
             ++index;
-            return classifierDescriptor;
+            return evaluationResults;
         }
 
         @Override

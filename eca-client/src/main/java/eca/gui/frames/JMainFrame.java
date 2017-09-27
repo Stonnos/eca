@@ -1029,8 +1029,7 @@ public class JMainFrame extends JFrame {
                     try {
                         Instances data = data();
                         AutomatedNeuralNetwork net =
-                                new AutomatedNeuralNetwork(NeuralNetworkUtil.getActivationFunctions(),
-                                        data, new NeuralNetwork(data));
+                                new AutomatedNeuralNetwork(data, new NeuralNetwork(data));
                         ExperimentFrame experimentFrame =
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         experimentFrame.setVisible(true);

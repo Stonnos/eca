@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.Enumeration;
 
 /**
  * @author Roman Batygin
@@ -51,16 +52,6 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
 
     private static final String COEFFICIENT_TITLE = "Значение коэффициента:";
 
-    private static final String[] ACTIVATIONS_FUNCTIONS = {"Логистическая",
-            "Гиперболический тангенс",
-            "Тригонометрический синус",
-            "Экспоненциальная"};
-
-    private static final String[] ACTIVATION_FUNCTIONS_TOOL_TIPS_MESSAGES = {"f(S)=1/(1+exp(-a*S))",
-            "f(S)=(exp(a*S)-exp(-a*S))/(exp(a*S)+exp(-a*S))",
-            "f(S)=sin(a*S)",
-            "f(S)=exp(-S^2/a^2)"};
-
     private static final String ERROR_TITLE = "Допустимая ошибка:";
 
     private static final String MAX_ITS_TITLE = "Максимальное число итераций:";
@@ -76,12 +67,13 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     private JTextField outNeuronsText;
 
     private JTextField hidLayersText;
-    private JTextField afCoeffText;
+    private JTextField afCoefficientText;
     private JTextField estimateText;
     private JTextField numItsText;
     private JTextField learnSpeedText;
     private JTextField momentumText;
 
+    private ButtonGroup activationFunctionsGroup;
     private JRadioButton logistic;
     private JRadioButton hyperbolicTangent;
     private JRadioButton sine;
@@ -89,6 +81,8 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
 
     private DecimalFormat doubleFormat = NumericFormat.getInstance();
     private DecimalFormat estimateFormat = NumericFormat.getInstance();
+
+    private ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
 
     public NetworkOptionsDialog(Window parent, String title, NeuralNetwork mlp, Instances data) {
         super(parent, title, mlp, data);
@@ -157,28 +151,28 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         hiddenLayerPanel.setToolTipText(recommendText);
         //-------------------------------------------------------------
-        ButtonGroup group = new ButtonGroup();
+        activationFunctionsGroup = new ButtonGroup();
 
         logistic = new JRadioButton(ActivationFunctionType.LOGISTIC.getDescription());
         hyperbolicTangent = new JRadioButton(ActivationFunctionType.HYPERBOLIC_TANGENT.getDescription());
-        sine = new JRadioButton(ActivationFunctionType.SINE.getDescription());
+        sine = new JRadioButton(ActivationFunctionType.SINUSOID.getDescription());
         exp = new JRadioButton(ActivationFunctionType.EXPONENTIAL.getDescription());
 
         logistic.setToolTipText(ActivationFunctionType.LOGISTIC.getFormula());
         hyperbolicTangent.setToolTipText(ActivationFunctionType.HYPERBOLIC_TANGENT.getFormula());
-        sine.setToolTipText(ActivationFunctionType.SINE.getFormula());
+        sine.setToolTipText(ActivationFunctionType.SINUSOID.getFormula());
         exp.setToolTipText(ActivationFunctionType.EXPONENTIAL.getFormula());
 
-        group.add(logistic);
-        group.add(hyperbolicTangent);
-        group.add(sine);
-        group.add(exp);
+        activationFunctionsGroup.add(logistic);
+        activationFunctionsGroup.add(hyperbolicTangent);
+        activationFunctionsGroup.add(sine);
+        activationFunctionsGroup.add(exp);
         JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
         coefficientLabel.setPreferredSize(labelDim);
         coefficientLabel.setHorizontalAlignment(JLabel.RIGHT);
-        afCoeffText = new JTextField(TEXT_FIELD_LENGTH);
-        afCoeffText.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
-        afCoeffText.setInputVerifier(new TextFieldInputVerifier());
+        afCoefficientText = new JTextField(TEXT_FIELD_LENGTH);
+        afCoefficientText.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
+        afCoefficientText.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------------------
         actFuncPanel.add(logistic, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
@@ -190,7 +184,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
         actFuncPanel.add(coefficientLabel, new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        actFuncPanel.add(afCoeffText, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+        actFuncPanel.add(afCoefficientText, new GridBagConstraints(1, 4, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         //-------------------------------------------------------------
         estimateText = new JTextField(TEXT_FIELD_LENGTH);
@@ -252,7 +246,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(hidLayersText, afCoeffText,
+                JTextField text = GuiUtils.searchFirstEmptyField(hidLayersText, afCoefficientText,
                         estimateText, numItsText, learnSpeedText, momentumText);
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(NetworkOptionsDialog.this, text);
@@ -260,11 +254,11 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                     text = hidLayersText;
                     try {
                         network().setHiddenLayer(hidLayersText.getText());
-                        network().setActivationFunction(selectedActFunc());
+                        network().setActivationFunction(getSelectedActivationFunction());
                         network().setMaxIterationsNum(Integer.parseInt(numItsText.getText()));
-                        text = afCoeffText;
+                        text = afCoefficientText;
                         getActivationFunction().setCoefficient(doubleFormat.
-                                parse(afCoeffText.getText()).doubleValue());
+                                parse(afCoefficientText.getText()).doubleValue());
                         text = estimateText;
                         network().setMinError(estimateFormat.
                                 parse(estimateText.getText()).doubleValue());
@@ -317,39 +311,60 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         inNeuronsText.setText(String.valueOf(network().inLayerNeuronsNum()));
         outNeuronsText.setText(String.valueOf(network().outLayerNeuronsNum()));
         hidLayersText.setText(getHiddenLayer());
-        afCoeffText.setText(doubleFormat.format(activationFunctionCoefficient()));
+        afCoefficientText.setText(doubleFormat.format(activationFunctionCoefficient()));
         estimateText.setText(estimateFormat.format(minError()));
         numItsText.setText(String.valueOf(maxIts()));
         learnSpeedText.setText(estimateFormat.format(learningSpeed()));
         momentumText.setText(estimateFormat.format(momentum()));
 
         ActivationFunctionType activationFunctionType = getActivationFunction().getActivationFunctionType();
-        switch (activationFunctionType) {
-            case LOGISTIC:
+
+        activationFunctionType.handle(new ActivationFunctionTypeVisitor<Void>() {
+
+            @Override
+            public Void caseLogistic() {
                 logistic.setSelected(true);
-                break;
-            case HYPERBOLIC_TANGENT:
+                return null;
+            }
+
+            @Override
+            public Void caseHyperbolicTangent() {
                 hyperbolicTangent.setSelected(true);
-                break;
-            case SINE:
+                return null;
+            }
+
+            @Override
+            public Void caseSine() {
                 sine.setSelected(true);
-                break;
-            case EXPONENTIAL:
+                return null;
+            }
+
+            @Override
+            public Void caseExponential() {
                 exp.setSelected(true);
-                break;
-        }
+                return null;
+            }
+        });
+
     }
 
-    private ActivationFunction selectedActFunc() {
-        if (logistic.isSelected()) {
-            return new LogisticFunction();
-        } else if (hyperbolicTangent.isSelected()) {
-            return new HyperbolicTangentFunction();
-        } else if (sine.isSelected()) {
-            return new SineFunction();
-        } else {
-            return new ExponentialFunction();
+    private ActivationFunction getSelectedActivationFunction() {
+
+        for (Enumeration<AbstractButton> buttonEnumeration = activationFunctionsGroup.getElements();
+                buttonEnumeration.hasMoreElements();) {
+
+            AbstractButton abstractButton = buttonEnumeration.nextElement();
+
+            if (abstractButton.isSelected()) {
+
+                ActivationFunctionType activationFunctionType =
+                        ActivationFunctionType.findByDescription(abstractButton.getText());
+
+                return activationFunctionType.handle(activationFunctionBuilder);
+            }
         }
+
+        return null;
     }
 
     private MultilayerPerceptron network() {

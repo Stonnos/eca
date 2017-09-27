@@ -46,15 +46,6 @@ public enum SamplingMethod {
         }
     };
 
-    /**
-     * Visitor pattern common method
-     *
-     * @param samplingMethodTypeVisitor visitor class
-     * @param <T>                     generic class
-     * @return generic class
-     */
-    public abstract <T> T handle(SamplingMethodTypeVisitor<T> samplingMethodTypeVisitor);
-
     private String description;
 
     SamplingMethod(String description) {
@@ -69,4 +60,13 @@ public enum SamplingMethod {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Visitor pattern common method
+     *
+     * @param samplingMethodTypeVisitor visitor class
+     * @param <T>                     generic class
+     * @return generic class
+     */
+    public abstract <T> T handle(SamplingMethodTypeVisitor<T> samplingMethodTypeVisitor);
 }

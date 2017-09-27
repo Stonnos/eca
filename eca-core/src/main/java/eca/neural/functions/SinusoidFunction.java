@@ -11,21 +11,21 @@ package eca.neural.functions;
  *
  * @author Roman Batygin
  */
-public class SineFunction extends AbstractFunction {
+public class SinusoidFunction extends AbstractFunction {
 
     /**
-     * Creates <tt>SineFunction</tt> object.
+     * Creates <tt>SinusoidFunction</tt> object.
      */
-    public SineFunction() {
-        super(ActivationFunctionType.SINE);
+    public SinusoidFunction() {
+        super(ActivationFunctionType.SINUSOID);
     }
 
     /**
-     * Creates <tt>SineFunction</tt> object with given coefficient.
+     * Creates <tt>SinusoidFunction</tt> object with given coefficient.
      *
      * @param coefficient the value of coefficient
      */
-    public SineFunction(double coefficient) {
+    public SinusoidFunction(double coefficient) {
         super(coefficient);
     }
 

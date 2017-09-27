@@ -8,16 +8,36 @@ package eca.neural.functions;
 public enum ActivationFunctionType {
 
     LOGISTIC(ActivationFunctionsDictionary.LOGISTIC_TEXT,
-            ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA),
+            ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseLogistic();
+        }
+    },
 
     HYPERBOLIC_TANGENT(ActivationFunctionsDictionary.HYPERBOLIC_TANGENT_TEXT,
-            ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA),
+            ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseHyperbolicTangent();
+        }
+    },
 
-    SINE(ActivationFunctionsDictionary.SINE_TEXT,
-            ActivationFunctionFormulasDictionary.SINE_FORMULA),
+    SINUSOID(ActivationFunctionsDictionary.SINUSOID_TEXT,
+            ActivationFunctionFormulasDictionary.SINUSOID_FORMULA) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseSine();
+        }
+    },
 
     EXPONENTIAL(ActivationFunctionsDictionary.EXPONENTIAL_TEXT,
-            ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA);
+            ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseExponential();
+        }
+    };
 
     private String description;
     private String formula;
@@ -43,4 +63,28 @@ public enum ActivationFunctionType {
     public String getFormula() {
         return formula;
     }
+
+    /**
+     * Finds activation function type by description
+     *
+     * @param description description string.
+     * @return {@link ActivationFunctionType} object
+     */
+    public static ActivationFunctionType findByDescription(String description) {
+        for (ActivationFunctionType activationFunctionType : values()) {
+            if (activationFunctionType.getDescription().equals(description)) {
+                return activationFunctionType;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Visitor pattern common method
+     *
+     * @param activationFunctionTypeVisitor visitor class
+     * @param <T>                     generic class
+     * @return generic class
+     */
+    public abstract <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor);
 }

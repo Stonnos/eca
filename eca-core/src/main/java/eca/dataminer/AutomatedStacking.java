@@ -127,10 +127,10 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     StackingClassifier model
                             = (StackingClassifier) AbstractClassifier.makeCopy(classifier);
                     model.setClassifiers(currentSet.clone());
-                    EvaluationResults classifierDescriptor = evaluateModel(model);
+                    EvaluationResults evaluationResults = evaluateModel(model);
                     state = 2;
                     index++;
-                    return classifierDescriptor;
+                    return evaluationResults;
                 }
 
             }

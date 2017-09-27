@@ -7,6 +7,8 @@ import eca.neural.MultilayerPerceptron;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
+import eca.neural.functions.ActivationFunctionBuilder;
+import eca.neural.functions.ActivationFunctionType;
 import weka.core.Instances;
 
 import java.util.List;
@@ -36,12 +38,14 @@ public class RandomNetworks extends ThresholdClassifier {
     /**
      * Available activation functions list
      */
-    private List<AbstractFunction> activationFunctionsList;
+    private static final ActivationFunctionType[] ACTIVATION_FUNCTION_TYPES = ActivationFunctionType.values();
 
     /**
      * USe bootstrap sample at each iteration?
      */
     private boolean useBootstrapSamples = true;
+
+    private final ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
@@ -54,8 +58,9 @@ public class RandomNetworks extends ThresholdClassifier {
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, String.valueOf(getMinError()),
                 EnsembleDictionary.NETWORK_MAX_ERROR, String.valueOf(getMaxError()),
-                EnsembleDictionary.SAMPLING_METHOD, isUseBootstrapSamples() ?
-                EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD : EnsembleDictionary.TRAINING_SAMPLE_METHOD
+                EnsembleDictionary.SAMPLING_METHOD,
+                isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
+                        : EnsembleDictionary.TRAINING_SAMPLE_METHOD
         };
     }
 
@@ -80,7 +85,6 @@ public class RandomNetworks extends ThresholdClassifier {
     @Override
     protected void initialize() throws Exception {
         votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
-        activationFunctionsList = NeuralNetworkUtil.getActivationFunctions();
     }
 
     /**
@@ -104,8 +108,11 @@ public class RandomNetworks extends ThresholdClassifier {
             NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
             MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
             multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
-            AbstractFunction randomActivationFunction
-                    = activationFunctionsList.get(random.nextInt(activationFunctionsList.size()));
+
+            ActivationFunctionType activationFunctionType =
+                    ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
+
+            AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
             AbstractFunction cloneFunction = randomActivationFunction.clone();
 
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
