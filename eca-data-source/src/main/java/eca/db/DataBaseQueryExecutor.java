@@ -17,7 +17,7 @@ import java.util.ArrayList;
  *
  * @author Roman Batygin
  */
-public class DataBaseConnection implements QueryExecutor, AutoCloseable {
+public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
 
     /**
      * Default relation name
@@ -57,11 +57,11 @@ public class DataBaseConnection implements QueryExecutor, AutoCloseable {
     private ConnectionDescriptor connectionDescriptor;
 
     /**
-     * Creates <tt>DataBaseConnection</tt> object.
+     * Creates <tt>DataBaseQueryExecutor</tt> object.
      *
      * @throws Exception
      */
-    public DataBaseConnection() throws Exception {
+    public DataBaseQueryExecutor() throws Exception {
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
         DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
         DriverManager.registerDriver(new org.postgresql.Driver());

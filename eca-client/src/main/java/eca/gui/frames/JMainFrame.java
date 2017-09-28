@@ -19,7 +19,8 @@ import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedNeuralNetwork;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.ClassifiersSetBuilder;
-import eca.db.DataBaseConnection;
+import eca.dataminer.KNearestNeighboursOptimizer;
+import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
 import eca.ensemble.*;
@@ -43,7 +44,6 @@ import eca.model.InputData;
 import eca.model.ModelDescriptor;
 import eca.net.DataLoaderImpl;
 import eca.neural.NeuralNetwork;
-import eca.neural.NeuralNetworkUtil;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
 import eca.trees.*;
@@ -125,6 +125,7 @@ public class JMainFrame extends JFrame {
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String EXCEED_DATA_LIST_SIZE_ERROR_FORMAT = "Число листов с данными не должно превышать %d!";
     private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
+    private static final String KNN_OPTIMIZER_MENU_TEXT = "Алгоритм вычисления оптимального числа ближайших соседей";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -833,7 +834,7 @@ public class JMainFrame extends JFrame {
                 conn.setVisible(true);
                 if (conn.dialogResult()) {
                     try {
-                        DataBaseConnection connection = new DataBaseConnection();
+                        DataBaseQueryExecutor connection = new DataBaseQueryExecutor();
                         connection.setConnectionDescriptor(conn.getConnectionDescriptor());
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 new DataBaseConnectionAction(connection),
@@ -1021,6 +1022,7 @@ public class JMainFrame extends JFrame {
                 new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
         JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
         JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
+        JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
         //--------------------------------------------------
         aNeuralMenu.addActionListener(new ActionListener() {
             @Override
@@ -1102,12 +1104,34 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+
+        knnOptimizerMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+                        Instances data = data();
+                        KNearestNeighboursOptimizer kNearestNeighboursOptimizer =
+                                new KNearestNeighboursOptimizer(data, new KNearestNeighbours());
+                        KNNOptimizerFrame knnOptimizerFrame = new KNNOptimizerFrame(kNearestNeighboursOptimizer,
+                                JMainFrame.this, maximumFractionDigits);
+                        knnOptimizerFrame.setUseEvaluationMethodOptions(false);
+                        knnOptimizerFrame.setVisible(true);
+                    } catch (Exception e) {
+                        LoggerUtils.error(log, e);
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
         //----------------------------------------
         dataMinerMenu.add(aNeuralMenu);
         dataMinerMenu.add(aHeteroEnsMenu);
         dataMinerMenu.add(modifiedHeteroEnsMenu);
         dataMinerMenu.add(aAdaBoostMenu);
         dataMinerMenu.add(aStackingMenu);
+        dataMinerMenu.add(knnOptimizerMenu);
         //-------------------------------
         JMenu classifiersMenu = new JMenu(INDIVIDUAL_CLASSIFIERS_MENU_TEXT);
         JMenu ensembleMenu = new JMenu(ENSEMBLE_CLASSIFIERS_MENU_TEXT);

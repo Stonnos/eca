@@ -70,7 +70,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
 
             ActivationFunctionType activationFunctionType =
-                    ACTIVATION_FUNCTIONS_TYPES[r.nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
+                    ACTIVATION_FUNCTIONS_TYPES[getRandom().nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
 
             AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);

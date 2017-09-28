@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.db.DataBaseConnection;
+import eca.db.DataBaseQueryExecutor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
@@ -42,7 +42,7 @@ public class QueryFrame extends JFrame {
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
     private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
 
-    private final DataBaseConnection connection;
+    private final DataBaseQueryExecutor connection;
 
     private JTextArea queryArea;
     private JProgressBar progress;
@@ -55,7 +55,7 @@ public class QueryFrame extends JFrame {
 
     private JMainFrame parent;
 
-    public QueryFrame(JMainFrame parent, DataBaseConnection connection) {
+    public QueryFrame(JMainFrame parent, DataBaseQueryExecutor connection) {
         this.parent = parent;
         this.connection = connection;
         this.setLayout(new GridBagLayout());

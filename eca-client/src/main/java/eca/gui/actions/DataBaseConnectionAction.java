@@ -5,20 +5,20 @@
  */
 package eca.gui.actions;
 
-import eca.db.DataBaseConnection;
+import eca.db.DataBaseQueryExecutor;
 
 /**
  * @author Roman Batygin
  */
 public class DataBaseConnectionAction implements CallbackAction {
 
-    private final DataBaseConnection connection;
+    private final DataBaseQueryExecutor connection;
 
-    public DataBaseConnectionAction(DataBaseConnection connection) {
+    public DataBaseConnectionAction(DataBaseQueryExecutor connection) {
         this.connection = connection;
     }
 
-    public DataBaseConnection getConnection() {
+    public DataBaseQueryExecutor getConnection() {
         return connection;
     }
 

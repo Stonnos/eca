@@ -14,7 +14,7 @@ public class ExperimentUtil {
      * The number of combinations is <code>P = sum[t = 1..r]r!/(t!(r-t)!)</code>
      *
      * @param r the number of individual models combination
-     * @return
+     * @return the number of individual models combination
      */
     public static int getNumClassifiersCombinations(int r) {
         int fact = MathUtils.fact(r);

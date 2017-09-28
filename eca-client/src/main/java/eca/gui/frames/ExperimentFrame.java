@@ -83,6 +83,8 @@ public abstract class ExperimentFrame extends JFrame {
     protected SwingWorker<Void, Void> worker;
     private final int digits;
 
+    private boolean useEvaluationMethodOptions = true;
+
     protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         this.experiment = experiment;
         this.digits = digits;
@@ -99,7 +101,18 @@ public abstract class ExperimentFrame extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
-    public final AbstractExperiment getExperiment() {
+    public boolean isUseEvaluationMethodOptions() {
+        return useEvaluationMethodOptions;
+    }
+
+    public void setUseEvaluationMethodOptions(boolean useEvaluationMethodOptions) {
+        if (!useEvaluationMethodOptions) {
+            setEvaluationMethodEnabled(false);
+        }
+        this.useEvaluationMethodOptions = useEvaluationMethodOptions;
+    }
+
+    public AbstractExperiment getExperiment() {
         return experiment;
     }
 
@@ -112,6 +125,12 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     public final void setStateForOptions(boolean flag) {
+        if (isUseEvaluationMethodOptions()) {
+            setEvaluationMethodEnabled(flag);
+        }
+    }
+
+    public final void setEvaluationMethodEnabled(boolean flag) {
         for (Component c : left.getComponents()) {
             c.setEnabled(flag);
         }

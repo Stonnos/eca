@@ -6,6 +6,7 @@
 package eca.net;
 
 import eca.converters.XLSLoader;
+import eca.utils.Utils;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
@@ -77,24 +78,15 @@ public class DataLoaderImpl implements DataLoader {
      */
     public final void setURL(URL url) throws Exception {
         Assert.notNull(url, "URL is not specified!");
-        if (!contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
+        if (!Utils.contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
             throw new Exception(String.format(DataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
                     Arrays.asList(PROTOCOLS)));
         }
-        if (!contains(FILE_EXTENSIONS, url.getFile(), (x, y) -> x.endsWith(y))) {
+        if (!Utils.contains(FILE_EXTENSIONS, url.getFile(), (x, y) -> x.endsWith(y))) {
             throw new Exception(String.format(DataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
         this.url = url;
-    }
-
-    private boolean contains(String[] list, String val, BiPredicate<String, String> predicate) {
-        for (int i = 0; i < list.length; i++) {
-            if (predicate.test(val, list[i])) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

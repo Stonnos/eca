@@ -1,7 +1,9 @@
 package eca.dataminer;
 
+import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
+import eca.core.evaluation.EvaluationService;
 import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.DistanceBuilder;
 import eca.metrics.distances.DistanceType;
@@ -58,26 +60,25 @@ public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeig
                 throw new NoSuchElementException();
             }
 
-            if (distanceIndex == DISTANCE_TYPES.length) {
-                neighbourIndex = 0;
-            }
+            neighbourIndex++;
 
             EvaluationResults evaluationResults = null;
 
-            for (neighbourIndex++; neighbourIndex <= getData().numInstances();) {
+            if (neighbourIndex <= getData().numInstances()) {
                 KNearestNeighbours model = (KNearestNeighbours) AbstractClassifier.makeCopy(classifier);
                 model.setNumNeighbours(neighbourIndex);
                 model.setDistance(DISTANCE_TYPES[distanceIndex].handle(distanceBuilder));
 
-                Evaluation evaluation = new Evaluation(getData());
+                Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
+                        EvaluationMethod.CROSS_VALIDATION, getData().numInstances(), 1, getRandom());
 
-                evaluation.kCrossValidateModel(model, getData(), getData().numInstances(), 1, r);
 
                 evaluationResults = new EvaluationResults(model, evaluation);
             }
 
             if (neighbourIndex == getData().numInstances()) {
                 distanceIndex++;
+                neighbourIndex = 0;
             }
 
             ++index;

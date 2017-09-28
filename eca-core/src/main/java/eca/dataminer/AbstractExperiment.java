@@ -5,6 +5,7 @@
  */
 package eca.dataminer;
 
+import eca.core.Assert;
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
@@ -70,7 +71,7 @@ public abstract class AbstractExperiment<T extends Classifier>
      **/
     protected T classifier;
 
-    protected final Random r = new Random();
+    private final Random random = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
         this(data, classifier, 100);
@@ -97,11 +98,13 @@ public abstract class AbstractExperiment<T extends Classifier>
         return numIterations;
     }
 
+    public Random getRandom() {
+        return random;
+    }
+
     @Override
     public final void setNumIterations(int numIterations) {
-        if (numIterations <= 0) {
-            throw new IllegalArgumentException("Число экспериментов должно быть больше нуля!");
-        }
+        Assert.greaterThanZero(numIterations, ExperimentDictionary.INVALID_EXPERIMENTS_NUM_ERROR_TEXT);
         this.numIterations = numIterations;
     }
 
@@ -172,7 +175,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     protected final EvaluationResults evaluateModel(Classifier model) throws Exception {
 
         Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
-                getEvaluationMethod(), getNumFolds(), getNumTests(), r);
+                getEvaluationMethod(), getNumFolds(), getNumTests(), getRandom());
 
         EvaluationResults object = new EvaluationResults(model, evaluation);
         getHistory().add(object);
