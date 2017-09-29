@@ -15,4 +15,7 @@ public interface ActivationFunctionTypeVisitor<T> {
     T caseSine();
 
     T caseExponential();
+
+    T caseSoftSign();
+
 }

@@ -149,9 +149,9 @@ public class StatisticsTableBuilder {
         model.addRow(new Entry(HIDDEN_LAYER_STRUCTURE_TEXT, mlp.network().getHiddenLayer()));
         model.addRow(new Entry(LINKS_NUM_TEXT, String.valueOf(mlp.network().getLinksNum())));
         model.addRow(new Entry(AF_OF_HIDDEN_LAYER_TEXT, mlp.network().getActivationFunction()
-                .getClass().getSimpleName()));
+                .getActivationFunctionType().getDescription()));
         model.addRow(new Entry(AF_OF_OUT_LAYER_TEXT, mlp.network()
-                .getOutActivationFunction().getClass().getSimpleName()));
+                .getOutActivationFunction().getActivationFunctionType().getDescription()));
         model.addRow(new Entry(LEARNING_ALGORITHM_TEXT, mlp.network().getLearningAlgorithm().getClass().getSimpleName()));
         return create(model);
     }
@@ -168,7 +168,7 @@ public class StatisticsTableBuilder {
 
     public final JTable createStatistics(KNearestNeighbours cls, Evaluation e) throws Exception {
         ResultsModel model = new ResultsModel(e, cls);
-        model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.distance().getClass().getSimpleName()));
+        model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.distance().getDistanceType().getDescription()));
         return create(model);
     }
 

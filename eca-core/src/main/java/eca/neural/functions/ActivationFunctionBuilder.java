@@ -27,4 +27,9 @@ public class ActivationFunctionBuilder implements ActivationFunctionTypeVisitor<
         return new ExponentialFunction();
     }
 
+    @Override
+    public AbstractFunction caseSoftSign() {
+        return new SoftSignFunction();
+    }
+
 }

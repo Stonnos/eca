@@ -1,5 +1,7 @@
 package eca.neural.functions;
 
+import eca.metrics.distances.DistanceType;
+
 /**
  * Activation function type.
  * @author Roman Batygin
@@ -36,6 +38,14 @@ public enum ActivationFunctionType {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseExponential();
+        }
+    },
+
+    SOFT_SIGN(ActivationFunctionsDictionary.SOFT_SIGN_TEXT,
+            ActivationFunctionFormulasDictionary.SOFT_SIGN_FORMULA) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseSoftSign();
         }
     };
 
@@ -77,6 +87,20 @@ public enum ActivationFunctionType {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns activation functions description.
+     * @return activation functions description
+     */
+    public static String[] getDescriptions() {
+        ActivationFunctionType[] values = values();
+        String[] descriptions = new String[values.length];
+
+        for (int i = 0; i < values.length; i++) {
+            descriptions[i] = values[i].getDescription();
+        }
+        return descriptions;
     }
 
     /**

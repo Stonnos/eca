@@ -14,6 +14,7 @@ import eca.gui.validators.TextFieldInputVerifier;
 import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.AbstractDistance;
 import eca.metrics.distances.ChebyshevDistance;
+import eca.metrics.distances.DistanceBuilder;
 import eca.metrics.distances.DistanceType;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.ManhattanDistance;
@@ -38,8 +39,6 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
     private static final String WEIGHT_MESSAGE = "Вес ближайшего соседа:";
     private static final String DISTANCE_MESSAGE = "Функция расстояния:";
 
-    private static final String[] METRICS_TEXT = {"Евкилидово расстояние", "Квадрат Евклидова расстояния",
-            "Манхеттенское расстояние", "Расстояние Чебышева"};
     private static final String NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT =
             "Число ближайших соседей должно быть не больше %d";
 
@@ -47,7 +46,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
     private final JTextField weightText;
     private final JComboBox<String> metric;
 
-    private DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private final DistanceBuilder distanceBuilder = new DistanceBuilder();
 
     public KNNOptionDialog(Window parent, String title,
                            KNearestNeighbours knn, Instances data) {
@@ -115,20 +115,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                         DistanceType distanceType =
                                 DistanceType.findByDescription(metric.getSelectedItem().toString());
 
-                        switch (distanceType) {
-                            case EUCLID:
-                                classifier.setDistance(new EuclidDistance());
-                                break;
-                            case SQUARE_EUCLID:
-                                classifier.setDistance(new SquareEuclidDistance());
-                                break;
-                            case MANHATTAN:
-                                classifier.setDistance(new ManhattanDistance());
-                                break;
-                            case CHEBYSHEV:
-                                classifier.setDistance(new ChebyshevDistance());
-                                break;
-                        }
+                        classifier.setDistance(distanceType.handle(distanceBuilder));
+
                         dialogResult = true;
                         setVisible(false);
                     } catch (Exception e) {
