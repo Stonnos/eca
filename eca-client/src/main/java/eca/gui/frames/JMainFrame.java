@@ -15,11 +15,7 @@ import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
-import eca.dataminer.AutomatedHeterogeneousEnsemble;
-import eca.dataminer.AutomatedNeuralNetwork;
-import eca.dataminer.AutomatedStacking;
-import eca.dataminer.ClassifiersSetBuilder;
-import eca.dataminer.KNearestNeighboursOptimizer;
+import eca.dataminer.*;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
@@ -125,7 +121,8 @@ public class JMainFrame extends JFrame {
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String EXCEED_DATA_LIST_SIZE_ERROR_FORMAT = "Число листов с данными не должно превышать %d!";
     private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
-    private static final String KNN_OPTIMIZER_MENU_TEXT = "Алгоритм вычисления оптимального числа ближайших соседей";
+    private static final String KNN_OPTIMIZER_MENU_TEXT =
+            "Автоматическое построение: алгоритм k - взвешенных ближайших соседей";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -1111,12 +1108,14 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         Instances data = data();
-                        KNearestNeighboursOptimizer kNearestNeighboursOptimizer =
-                                new KNearestNeighboursOptimizer(data, new KNearestNeighbours());
-                        KNNOptimizerFrame knnOptimizerFrame = new KNNOptimizerFrame(kNearestNeighboursOptimizer,
+                        AutomatedKNearestNeighbours automatedKNearestNeighbours =
+                                new AutomatedKNearestNeighbours(data, new KNearestNeighbours());
+
+                        AutomatedKNearestNeighboursFrame automatedKNearestNeighboursFrame =
+                                new AutomatedKNearestNeighboursFrame(automatedKNearestNeighbours,
                                 JMainFrame.this, maximumFractionDigits);
-                        knnOptimizerFrame.setUseEvaluationMethodOptions(false);
-                        knnOptimizerFrame.setVisible(true);
+
+                        automatedKNearestNeighboursFrame.setVisible(true);
                     } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,

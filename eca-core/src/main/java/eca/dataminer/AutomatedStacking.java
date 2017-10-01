@@ -44,9 +44,9 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
     private class AutomatedStackingBuilder implements IterativeExperiment {
 
         int index, state, it, metaClsIndex;
-        ClassifiersSet set = classifier.getClassifiers();
+        ClassifiersSet set = getClassifier().getClassifiers();
         ClassifiersSet currentSet = new ClassifiersSet();
-        int[] marks = new int[classifier.getClassifiers().size()];
+        int[] marks = new int[getClassifier().getClassifiers().size()];
         PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         int numCombinations = getNumCombinations();
 
@@ -83,8 +83,8 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
             switch (state) {
 
                 case 0: {
-                    Classifier metaClassifier = classifier.getClassifiers().getClassifierCopy(metaClsIndex);
-                    classifier.setMetaClassifier(metaClassifier);
+                    Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClsIndex);
+                    getClassifier().setMetaClassifier(metaClassifier);
                     state = 1;
                     break;
                 }
@@ -125,7 +125,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 
                 case 3: {
                     StackingClassifier model
-                            = (StackingClassifier) AbstractClassifier.makeCopy(classifier);
+                            = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
                     model.setClassifiers(currentSet.clone());
                     EvaluationResults evaluationResults = evaluateModel(model);
                     state = 2;

@@ -1,9 +1,7 @@
 package eca.dataminer;
 
-import eca.core.EvaluationMethod;
-import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
-import eca.core.evaluation.EvaluationService;
+import eca.generators.NumberGenerator;
 import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.DistanceBuilder;
 import eca.metrics.distances.DistanceType;
@@ -18,7 +16,7 @@ import java.util.NoSuchElementException;
  *
  * @author Roman Batygin
  */
-public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeighbours> {
+public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeighbours> {
 
     /**
      * Available distance types.
@@ -28,11 +26,11 @@ public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeig
     private final DistanceBuilder distanceBuilder = new DistanceBuilder();
 
     /**
-     * Creates <tt>KNearestNeighboursOptimizer</tt> object
+     * Creates <tt>AutomatedKNearestNeighbours</tt> object
      * @param data {@link Instances} object
      * @param kNearestNeighbours {@link KNearestNeighbours} object
      */
-    public KNearestNeighboursOptimizer(Instances data, KNearestNeighbours kNearestNeighbours) {
+    public AutomatedKNearestNeighbours(Instances data, KNearestNeighbours kNearestNeighbours) {
         super(data, kNearestNeighbours);
     }
 
@@ -47,8 +45,6 @@ public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeig
     private class KNearestNeighboursIterativeOptimizer implements IterativeExperiment {
 
         int index;
-        int distanceIndex;
-        int neighbourIndex;
 
         KNearestNeighboursIterativeOptimizer() {
             clearHistory();
@@ -60,26 +56,18 @@ public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeig
                 throw new NoSuchElementException();
             }
 
-            neighbourIndex++;
+            KNearestNeighbours kNearestNeighbours = (KNearestNeighbours) AbstractClassifier.makeCopy(getClassifier());
 
-            EvaluationResults evaluationResults = null;
+            int neighbours = getRandom().nextInt(getData().numInstances() - 1) + 1;
+            kNearestNeighbours.setNumNeighbours(neighbours);
 
-            if (neighbourIndex <= getData().numInstances()) {
-                KNearestNeighbours model = (KNearestNeighbours) AbstractClassifier.makeCopy(classifier);
-                model.setNumNeighbours(neighbourIndex);
-                model.setDistance(DISTANCE_TYPES[distanceIndex].handle(distanceBuilder));
+            DistanceType distanceType = DISTANCE_TYPES[getRandom().nextInt(DISTANCE_TYPES.length)];
+            kNearestNeighbours.setDistance(distanceType.handle(distanceBuilder));
 
-                Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
-                        EvaluationMethod.CROSS_VALIDATION, getData().numInstances(), 1, getRandom());
+            kNearestNeighbours.setWeight(NumberGenerator.random(KNearestNeighbours.MIN_WEIGHT,
+                    KNearestNeighbours.MAX_WEIGHT));
 
-
-                evaluationResults = new EvaluationResults(model, evaluation);
-            }
-
-            if (neighbourIndex == getData().numInstances()) {
-                distanceIndex++;
-                neighbourIndex = 0;
-            }
+            EvaluationResults evaluationResults = evaluateModel(kNearestNeighbours);
 
             ++index;
             return evaluationResults;
@@ -87,17 +75,14 @@ public class KNearestNeighboursOptimizer extends AbstractExperiment<KNearestNeig
 
         @Override
         public boolean hasNext() {
-            return index < getNumIts();
+            return index < getNumIterations();
         }
 
         @Override
         public int getPercent() {
-            return index * 100 / getNumIts();
+            return index * 100 / getNumIterations();
         }
 
-        private int getNumIts() {
-            return getData().numInstances() * DISTANCE_TYPES.length;
-        }
     }
 
 }

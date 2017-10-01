@@ -60,6 +60,9 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
     private static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
     private static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
+    private static final String NUMBER_PREFIX = "№";
+    private static final int DEFAULT_WIDTH = 1100;
+    private static final int DEFAULT_HEIGHT = 600;
 
     private final long experimentId = System.currentTimeMillis();
 
@@ -83,8 +86,6 @@ public abstract class ExperimentFrame extends JFrame {
     protected SwingWorker<Void, Void> worker;
     private final int digits;
 
-    private boolean useEvaluationMethodOptions = true;
-
     protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         this.experiment = experiment;
         this.digits = digits;
@@ -101,17 +102,6 @@ public abstract class ExperimentFrame extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
-    public boolean isUseEvaluationMethodOptions() {
-        return useEvaluationMethodOptions;
-    }
-
-    public void setUseEvaluationMethodOptions(boolean useEvaluationMethodOptions) {
-        if (!useEvaluationMethodOptions) {
-            setEvaluationMethodEnabled(false);
-        }
-        this.useEvaluationMethodOptions = useEvaluationMethodOptions;
-    }
-
     public AbstractExperiment getExperiment() {
         return experiment;
     }
@@ -125,12 +115,6 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     public final void setStateForOptions(boolean flag) {
-        if (isUseEvaluationMethodOptions()) {
-            setEvaluationMethodEnabled(flag);
-        }
-    }
-
-    public final void setEvaluationMethodEnabled(boolean flag) {
         for (Component c : left.getComponents()) {
             c.setEnabled(flag);
         }
@@ -177,7 +161,7 @@ public abstract class ExperimentFrame extends JFrame {
         str.append("\n\n").append(BEST_CLASSIFIER_STRUCTURES_TEXT).append("\n");
         for (int i = 0; i < Integer.min(table.getBestNumber(), table.getRowCount()); i++) {
             str.append(table.experimentModel().getClassifier(i).getClass().getSimpleName())
-                    .append(StringUtils.SPACE).append("№").append(i).append("\n");
+                    .append(StringUtils.SPACE).append(NUMBER_PREFIX).append(i).append("\n");
             AbstractClassifier cls = (AbstractClassifier) table.experimentModel().getClassifier(i);
             String[] options = cls.getOptions();
             for (int j = 0; j < options.length; j += 2) {
@@ -197,7 +181,7 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     private void makeGUI() throws Exception {
-        this.setSize(1100, 600);
+        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setLayout(new GridBagLayout());
         table = new ExperimentTable(new java.util.ArrayList<>(), this, experiment.getData(), digits);
         JPanel top = new JPanel(new GridBagLayout());
@@ -378,19 +362,19 @@ public abstract class ExperimentFrame extends JFrame {
         //---------------------------------------------------------------
         leftBottom.add(optionsButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
-                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         leftBottom.add(startButton,
                 new GridBagConstraints(0, 1, 1, 1, 1, 0,
-                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         leftBottom.add(stopButton,
                 new GridBagConstraints(0, 2, 1, 1, 1, 0,
-                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         leftBottom.add(loadButton,
                 new GridBagConstraints(0, 3, 1, 1, 1, 0,
-                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         leftBottom.add(saveButton,
                 new GridBagConstraints(0, 4, 1, 1, 1, 0,
-                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 2, 10, 2), 0, 0));
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         //---------------------------------------------------------------
         right.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         top.add(left,

@@ -11,6 +11,8 @@ import eca.filter.MissingValuesFilter;
 import eca.metrics.distances.Distance;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.InstanceDistance;
+import eca.text.NumericFormat;
+import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -18,6 +20,7 @@ import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 /**
@@ -67,6 +70,11 @@ public class KNearestNeighbours extends AbstractClassifier
      **/
     private Distance metric;
 
+    /**
+     * Decimal format.
+     */
+    private DecimalFormat decimalFormat = NumericFormat.getInstance();
+
     private MinMaxNormalizer normalizer;
     private InstanceDistance[] distances;
     private final NominalToBinary ntbFilter = new NominalToBinary();
@@ -93,10 +101,29 @@ public class KNearestNeighbours extends AbstractClassifier
         return data;
     }
 
+    /**
+     * Returns decimal format.
+     *
+     * @return {@link DecimalFormat} object
+     */
+    public DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
+
+    /**
+     * Sets decimal format.
+     *
+     * @param decimalFormat {@link DecimalFormat} object
+     */
+    public void setDecimalFormat(DecimalFormat decimalFormat) {
+        Assert.notNull(decimalFormat, "Decimal format is not specified!");
+        this.decimalFormat = decimalFormat;
+    }
+
     @Override
     public String[] getOptions() {
         return new String[]{KNNDictionary.NEIGHBOURS_NUM, String.valueOf(numNeighbours),
-                KNNDictionary.NEIGHBOUR_WEIGHT, String.valueOf(weight),
+                KNNDictionary.NEIGHBOUR_WEIGHT, getDecimalFormat().format(weight),
                 KNNDictionary.DISTANCE_FUNCTION, metric.getDistanceType().getDescription()};
     }
 

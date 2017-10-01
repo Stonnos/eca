@@ -10,7 +10,6 @@ import eca.core.evaluation.EvaluationResults;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.Sampler;
 import eca.ensemble.SamplingMethod;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -61,9 +60,9 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
     private class AutomatedHeterogeneousBuilder implements IterativeExperiment {
 
         int i, s, a = -1, index, state, it;
-        ClassifiersSet set = classifier.getClassifiersSet();
+        ClassifiersSet set = getClassifier().getClassifiersSet();
         ClassifiersSet currentSet = new ClassifiersSet();
-        int[] marks = new int[classifier.getClassifiersSet().size()];
+        int[] marks = new int[getClassifier().getClassifiersSet().size()];
         PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         int numCombinations = getNumCombinations();
 
@@ -128,12 +127,12 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                 }
 
                 case 2: {
-                    if (classifier instanceof HeterogeneousClassifier) {
+                    if (getClassifier() instanceof HeterogeneousClassifier) {
                         for (; s < SAMPLE_METHOD.length; s++) {
                             for (; i < CLASSIFIER_SELECTION_METHOD.length; i++) {
                                 for (++a; a < VOTING_METHOD.length; ) {
                                     HeterogeneousClassifier m_Model =
-                                            (HeterogeneousClassifier) AbstractClassifier.makeCopy(classifier);
+                                            (HeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
                                     m_Model.sampler().setSamplingMethod(SAMPLE_METHOD[s]);
                                     m_Model.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
                                     m_Model.setUseWeightedVotesMethod(VOTING_METHOD[a]);
@@ -151,7 +150,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                         state = 1;
                     } else {
                         AbstractHeterogeneousClassifier model
-                                = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(classifier);
+                                = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
                         model.setClassifiersSet(currentSet.clone());
                         index++;
                         EvaluationResults evaluationResults = evaluateModel(model);
@@ -172,7 +171,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
         }
 
         int getAdditionalParamCombinationsNum() {
-            if (classifier instanceof HeterogeneousClassifier) {
+            if (getClassifier() instanceof HeterogeneousClassifier) {
                 return SAMPLE_METHOD.length * CLASSIFIER_SELECTION_METHOD.length * VOTING_METHOD.length;
             } else {
                 return 1;

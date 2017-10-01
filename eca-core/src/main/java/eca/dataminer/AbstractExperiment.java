@@ -69,7 +69,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     /**
      * Classifier object
      **/
-    protected T classifier;
+    private final T classifier;
 
     private final Random random = new Random();
 

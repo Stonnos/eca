@@ -67,7 +67,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
                 throw new NoSuchElementException();
             }
 
-            NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(classifier);
+            NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(getClassifier());
 
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTIONS_TYPES[getRandom().nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
