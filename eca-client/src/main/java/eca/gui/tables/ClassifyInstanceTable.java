@@ -9,7 +9,10 @@ import eca.gui.GuiUtils;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
+import eca.gui.text.IntegerDocument;
+import eca.gui.text.LengthDocument;
 import eca.statistics.AttributeStatistics;
+import eca.text.DateFormat;
 import eca.text.NumericFormat;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -23,6 +26,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Enumeration;
 
 /**
@@ -31,10 +36,12 @@ import java.util.Enumeration;
 public class ClassifyInstanceTable extends JDataTableBase {
 
     private static final int DOUBLE_FIELD_LENGTH = 12;
+    private static final int INT_FIELD_LENGTH = 8;
     private static final int MAX_FIELD_LENGTH = 255;
     private static final int ROW_HEIGHT = 18;
     private static final String ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT = "Не задано значение атрибута '%s'";
-    private static final String INCORRECT_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
+    private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
+    private static final String INVALID_DATE_FORMAT_ERROR = "Недопустимый формат даты для атрибута '%s'";
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
     private AttributeStatistics attributeStatistics;
 
@@ -42,14 +49,18 @@ public class ClassifyInstanceTable extends JDataTableBase {
         super(new ClassifyInstanceTableModel(data));
         decimalFormat.setMaximumFractionDigits(digits);
         attributeStatistics = new AttributeStatistics(data, decimalFormat);
+
         TableColumn column = this.getColumnModel().getColumn(ClassifyInstanceTableModel.TEXT_INDEX);
         this.getColumnModel().getColumn(0).setPreferredWidth(50);
         this.getColumnModel().getColumn(0).setMaxWidth(50);
         this.getColumnModel().getColumn(0).setMinWidth(50);
-        JTextField text = new JTextField(DOUBLE_FIELD_LENGTH);
-        text.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
-        column.setCellEditor(new DefaultCellEditor(text));
-        this.getColumnModel().getColumn(1).setCellRenderer(new AttributeRenderer(data));
+        this.getColumnModel().getColumn(3).setPreferredWidth(200);
+        this.getColumnModel().getColumn(3).setMinWidth(200);
+
+        JTextField textField = new JTextField(DOUBLE_FIELD_LENGTH);
+        column.setCellEditor(new AttributeTextFieldEditor(textField));
+
+        this.getColumnModel().getColumn(1).setCellRenderer(new AttributeRenderer());
         this.setRowHeight(ROW_HEIGHT);
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -72,15 +83,15 @@ public class ClassifyInstanceTable extends JDataTableBase {
     }
 
     public Instances data() {
-        return model().data();
+        return getClassifyInstanceTableModel().data();
     }
 
     public Instance instance() throws Exception {
-        Object[] vector = model().values();
+        Object[] vector = getClassifyInstanceTableModel().values();
         Instances data = data();
         Enumeration<Attribute> en = data.enumerateAttributes();
-        Instance ins = new DenseInstance(data.numAttributes());
-        ins.setDataset(data);
+        Instance instance = new DenseInstance(data.numAttributes());
+        instance.setDataset(data);
         try {
             while (en.hasMoreElements()) {
                 Attribute a = en.nextElement();
@@ -88,16 +99,25 @@ public class ClassifyInstanceTable extends JDataTableBase {
                 if (strValue == null || strValue.isEmpty()) {
                     throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
                 }
-                double value = decimalFormat.parse(strValue).doubleValue();
-                if (a.isNominal() && (!strValue.matches("^[0-9]+$") || !a.isInRange(value))) {
-                    throw new Exception(String.format(INCORRECT_ATTR_VALUE_ERROR_FORMAT, a.name()));
+                if (a.isDate()) {
+                    try {
+                        Date date = DateFormat.SIMPLE_DATE_FORMAT.parse(strValue);
+                        instance.setValue(a, date.getTime());
+                    } catch (ParseException e) {
+                        throw new Exception(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
+                    }
+                } else {
+                    double value = decimalFormat.parse(strValue).doubleValue();
+                    if (a.isNominal() && (!strValue.matches("^[0-9]+$") || !a.isInRange(value))) {
+                        throw new Exception(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
+                    }
+                    instance.setValue(a, value);
                 }
-                ins.setValue(a, value);
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-        return ins;
+        return instance;
     }
 
     public void reset() {
@@ -106,7 +126,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         }
     }
 
-    public ClassifyInstanceTableModel model() {
+    public ClassifyInstanceTableModel getClassifyInstanceTableModel() {
         return (ClassifyInstanceTableModel) this.getModel();
     }
 
@@ -116,15 +136,10 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private class AttributeRenderer extends JTextField
             implements TableCellRenderer {
 
-        Instances data;
-
-        AttributeRenderer(Instances data) {
-            this.data = data;
-        }
-
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
+            Instances data = getClassifyInstanceTableModel().data();
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(data.attribute(i),
@@ -136,5 +151,35 @@ public class ClassifyInstanceTable extends JDataTableBase {
         }
 
     } // End of class AttributeRender
+
+    /**
+     *
+     */
+    private class AttributeTextFieldEditor extends DefaultCellEditor {
+
+        AttributeTextFieldEditor(JTextField textField) {
+            super(textField);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected,
+                                                     int row, int column) {
+            Component component = super.getTableCellEditorComponent(table, value, isSelected, row, column);
+            Instances data = getClassifyInstanceTableModel().data();
+            int i = row >= data.classIndex() ? row + 1 : row;
+            JTextField textField = (JTextField) component;
+
+            if (data.attribute(i).isDate()) {
+                textField.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
+            } else if (data.attribute(i).isNumeric()) {
+                textField.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
+            } else {
+                textField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+            }
+
+            return component;
+        }
+    }
 
 }

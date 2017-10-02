@@ -6,6 +6,7 @@
 package eca.gui.tables.models;
 
 import eca.dictionary.AttributesTypesDictionary;
+import eca.text.DateFormat;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -19,10 +20,11 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
     public static final int TEXT_INDEX = 4;
     private static final String ANY_NUMBER_TEXT = "Любое число";
     private static final String NOMINAL_ATTR_VALUES_INTERVAL_FORMAT = "Целое от [0,%d]";
+    private static final String DATE_ATTR_FORMAT = "Дата в формате: %s";
 
     private final Instances data;
     private final Object[] values;
-    private final String[] titles = {"№", "Атрибут", "Тип", "Диапазон", "Значение"};
+    private final String[] titles = {"№", "Атрибут", "Тип", "Диапазон значений", "Значение"};
 
     public ClassifyInstanceTableModel(Instances data) {
         this.data = data;
@@ -62,8 +64,14 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                     return AttributesTypesDictionary.NOMINAL;
                 }
             case 3:
-                return a.isNominal() ? String.format(NOMINAL_ATTR_VALUES_INTERVAL_FORMAT, a.numValues() - 1)
-                        : ANY_NUMBER_TEXT;
+                if (a.isDate()) {
+                    return String.format(DATE_ATTR_FORMAT, DateFormat.DATE_FORMAT);
+                }
+                else if (a.isNumeric()) {
+                    return ANY_NUMBER_TEXT;
+                } else {
+                    return String.format(NOMINAL_ATTR_VALUES_INTERVAL_FORMAT, a.numValues() - 1);
+                }
             case TEXT_INDEX:
                 return values[i];
             default:
