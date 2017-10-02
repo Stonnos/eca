@@ -69,9 +69,9 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
         options[k++] = EnsembleDictionary.MIN_ERROR;
-        options[k++] = String.valueOf(getMinError());
+        options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
-        options[k++] = String.valueOf(getMaxError());
+        options[k++] = COMMON_DECIMAL_FORMAT.format(getMaxError());
         for (int i = k++, j = 0; i < options.length; i += 2, j++) {
             options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
@@ -142,7 +142,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     /**
-     *
+     * AdaBoost iterative builder.
      */
     private class AdaBoostBuilder extends AbstractBuilder {
 

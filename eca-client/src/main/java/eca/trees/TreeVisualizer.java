@@ -17,6 +17,7 @@ import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,8 +68,8 @@ public class TreeVisualizer extends JPanel {
     private Font ruleFont = new Font("Arial", Font.BOLD, 11);
     private final DecimalFormat fmt = NumericFormat.getInstance();
 
-    private double screen_width = 100.0;
-    private double step_between_levels = 100.0;
+    private double screenWidth = 100.0;
+    private double stepBetweenLevels = 100.0;
 
     private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
@@ -79,14 +80,8 @@ public class TreeVisualizer extends JPanel {
         this.setLayout(null);
     }
 
-    public final DecisionTreeClassifier getTree() {
-        return tree;
-    }
-
     public final void setTree(DecisionTreeClassifier tree) {
-        if (tree == null) {
-            throw new NullPointerException();
-        }
+        Assert.notNull(tree, "Tree is not specified!");
         this.tree = tree;
         this.createNodes();
         this.computeCoordinates(tree.root);
@@ -314,8 +309,8 @@ public class TreeVisualizer extends JPanel {
     }
 
     private void resizeTree() {
-        screen_width = 100;
-        step_between_levels = nodeHeight >= 50 ? 180 : 100;
+        screenWidth = 100;
+        stepBetweenLevels = nodeHeight >= 50 ? 180 : 100;
         computeCoordinates(tree.root);
         setDimension();
         getRootPane().repaint();
@@ -337,7 +332,7 @@ public class TreeVisualizer extends JPanel {
         NodeDescriptor p = treeNodes.get(x.index());
         p.setRect(p.x2() + i * MAX_SIZE + (i - 1) * nodeHeight,
                 p.y1(), nodeWidth, nodeHeight);
-        screen_width = Double.max(screen_width, p.x1());
+        screenWidth = Double.max(screenWidth, p.x1());
         if (!x.isLeaf()) {
             for (TreeNode child : x.children()) {
                 shiftTree(child, i);
@@ -348,7 +343,7 @@ public class TreeVisualizer extends JPanel {
     private void computeCoordinates(TreeNode x) {
         if (x.isLeaf()) {
             NodeDescriptor p = treeNodes.get(x.index());
-            p.setRect(screen_width, x.getDepth() * step_between_levels,
+            p.setRect(screenWidth, x.getDepth() * stepBetweenLevels,
                     nodeWidth, nodeHeight);
         } else {
             TreeNode left = x.getChild(0);
@@ -362,7 +357,7 @@ public class TreeVisualizer extends JPanel {
             NodeDescriptor root = treeNodes.get(x.index());
             NodeDescriptor l = treeNodes.get(left.index());
             NodeDescriptor r = treeNodes.get(right.index());
-            root.setRect((l.x1() + r.x1()) / 2, x.getDepth() * step_between_levels,
+            root.setRect((l.x1() + r.x1()) / 2, x.getDepth() * stepBetweenLevels,
                     nodeWidth, nodeHeight);
         }
     }
@@ -538,8 +533,8 @@ public class TreeVisualizer extends JPanel {
     } //End of class NodeDescriptor
 
     private void setDimension() {
-        Dimension dim = new Dimension((int) (screen_width + 100),
-                (int) (tree.depth() * (nodeHeight + step_between_levels)));
+        Dimension dim = new Dimension((int) (screenWidth + 100),
+                (int) (tree.depth() * (nodeHeight + stepBetweenLevels)));
         this.setPreferredSize(dim);
         this.setMinimumSize(dim);
         this.setMaximumSize(dim);

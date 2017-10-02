@@ -21,6 +21,13 @@ public class NumericFormat implements java.io.Serializable {
         custom.setDecimalSeparator(DECIMAL_SEPARATOR);
         format.setDecimalFormatSymbols(custom);
         format.setGroupingUsed(false);
+        format.setMaximumFractionDigits(Integer.MAX_VALUE);
+        return format;
+    }
+
+    public static final DecimalFormat getInstance(int maximumFractionDigits) {
+        DecimalFormat format = getInstance();
+        format.setMaximumFractionDigits(maximumFractionDigits);
         return format;
     }
 

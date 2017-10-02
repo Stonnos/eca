@@ -5,6 +5,7 @@
  */
 package eca.neural.functions;
 
+import eca.core.Assert;
 import eca.neural.NeuralNetworkDictionary;
 
 import java.text.DecimalFormat;
@@ -50,19 +51,8 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
      * @throws IllegalArgumentException if the value of getCoefficient is equal to zero
      */
     public void setCoefficient(double coefficient) {
-        if (coefficient == 0) {
-            throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_AF_COEFFICIENT_VALUE_ERROR_TEXT);
-        }
+        Assert.greaterThanZero(coefficient, NeuralNetworkDictionary.BAD_AF_COEFFICIENT_VALUE_ERROR_TEXT);
         this.coefficient = coefficient;
-    }
-
-    /**
-     * Returns the string representation of getCoefficient value.
-     *
-     * @return the string representation of getCoefficient value
-     */
-    public String coefficientToString(DecimalFormat decimalFormat) {
-        return String.format(NeuralNetworkDictionary.AF_COEFFICIENT_VALUE_FORMAT, decimalFormat.format(coefficient));
     }
 
     @Override

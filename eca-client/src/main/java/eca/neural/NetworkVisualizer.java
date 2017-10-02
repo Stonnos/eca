@@ -47,13 +47,15 @@ public class NetworkVisualizer extends JPanel {
     private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
 
+    private static final String SEPARATOR = System.getProperty("line.separator");
+
     private double neuronDiam = 25.0;
 
     private final NeuralNetwork net;
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
 
-    private final DecimalFormat fmt = NumericFormat.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormat.getInstance();
 
     private Color linkColor = Color.GRAY;
     private Color inLayerColor = Color.BLUE;
@@ -70,7 +72,7 @@ public class NetworkVisualizer extends JPanel {
     public NetworkVisualizer(NeuralNetwork net, JFrame frame, int digits) {
         this.net = net;
         this.frame = frame;
-        fmt.setMaximumFractionDigits(digits);
+        decimalFormat.setMaximumFractionDigits(digits);
         //----------------------------------------------
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -441,21 +443,23 @@ public class NetworkVisualizer extends JPanel {
                     createInfo();
                 }
             });
-            infoLabel.setToolTipText(
-                    TOOL_TIP_TEXT);
+            infoLabel.setToolTipText(TOOL_TIP_TEXT);
         }
 
         StringBuilder getInfo() {
             StringBuilder text = new StringBuilder(String.format(NODE_INDEX_TEXT, neuron.index()));
-            text.append("\n");
+            text.append(SEPARATOR);
             if (neuron.getType() != Neuron.IN_LAYER) {
                 text.append(ACTIVATION_FUNCTION_TEXT);
-                text.append(neuron.getActivationFunction().getClass().getSimpleName()).append("\n");
+                text.append(neuron.getActivationFunction().getActivationFunctionType().getDescription())
+                        .append(SEPARATOR);
                 if (neuron.getActivationFunction() instanceof AbstractFunction) {
-                    text.append(((AbstractFunction) neuron.getActivationFunction()).coefficientToString(fmt))
-                            .append("\n");
+                    AbstractFunction abstractFunction = (AbstractFunction) neuron.getActivationFunction();
+                    text.append(String.format(abstractFunction.getActivationFunctionType().getFormula(),
+                            decimalFormat.format(abstractFunction.getCoefficient())));
                 }
             }
+            text.append(SEPARATOR);
             text.append(LAYER_TEXT).append(StringUtils.SPACE);
             switch (neuron.getType()) {
                 case Neuron.IN_LAYER:
@@ -468,13 +472,12 @@ public class NetworkVisualizer extends JPanel {
                     text.append(HIDDEN_LAYER_TEXT);
                     break;
             }
-            text.append("\n");
+            text.append(SEPARATOR);
             for (Iterator<NeuralLink> link = neuron.outLinks(); link.hasNext(); ) {
                 NeuralLink edge = link.next();
-                text.append(String.format(NEURAL_LINK_FORMAT,
-                        edge.source().index(), edge.target().index(),
-                        fmt.format(edge.getWeight())));
-                text.append("\n");
+                text.append(String.format(NEURAL_LINK_FORMAT, edge.source().index(), edge.target().index(),
+                        decimalFormat.format(edge.getWeight())));
+                text.append(SEPARATOR);
             }
             return text;
         }

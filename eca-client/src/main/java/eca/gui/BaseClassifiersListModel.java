@@ -28,9 +28,12 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
 
     private Window parent;
 
-    public BaseClassifiersListModel(Instances data, Window parent) {
+    private int digits;
+
+    public BaseClassifiersListModel(Instances data, Window parent, int digits) {
         this.data = data;
         this.parent = parent;
+        this.digits = digits;
     }
 
     public ArrayList<BaseOptionsDialog> getFrames() {
@@ -105,8 +108,10 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
                 break;
 
             case ClassifiersNamesDictionary.NEURAL_NETWORK:
+                NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
                 frames.add(new NetworkOptionsDialog(parent,
-                        ClassifiersNamesDictionary.NEURAL_NETWORK, new NeuralNetwork(data), data));
+                        ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data));
                 break;
 
             case ClassifiersNamesDictionary.LOGISTIC:
@@ -115,8 +120,10 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
                 break;
 
             case ClassifiersNamesDictionary.KNN:
+                KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
                 frames.add(new KNNOptionDialog(parent,
-                        ClassifiersNamesDictionary.KNN, new KNearestNeighbours(), data));
+                        ClassifiersNamesDictionary.KNN, kNearestNeighbours, data));
                 break;
 
         }

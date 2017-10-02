@@ -1,14 +1,16 @@
 package eca.neural.functions;
 
-import eca.metrics.distances.DistanceType;
-
 /**
  * Activation function type.
+ *
  * @author Roman Batygin
  */
 
 public enum ActivationFunctionType {
 
+    /**
+     * Logistic function.
+     */
     LOGISTIC(ActivationFunctionsDictionary.LOGISTIC_TEXT,
             ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA) {
         @Override
@@ -17,6 +19,9 @@ public enum ActivationFunctionType {
         }
     },
 
+    /**
+     * Hyperbolic tangent function.
+     */
     HYPERBOLIC_TANGENT(ActivationFunctionsDictionary.HYPERBOLIC_TANGENT_TEXT,
             ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA) {
         @Override
@@ -25,6 +30,9 @@ public enum ActivationFunctionType {
         }
     },
 
+    /**
+     * Sinusoid function.
+     */
     SINUSOID(ActivationFunctionsDictionary.SINUSOID_TEXT,
             ActivationFunctionFormulasDictionary.SINUSOID_FORMULA) {
         @Override
@@ -33,6 +41,9 @@ public enum ActivationFunctionType {
         }
     },
 
+    /**
+     * Exponential function.
+     */
     EXPONENTIAL(ActivationFunctionsDictionary.EXPONENTIAL_TEXT,
             ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA) {
         @Override
@@ -41,6 +52,9 @@ public enum ActivationFunctionType {
         }
     },
 
+    /**
+     * Soft sign function.
+     */
     SOFT_SIGN(ActivationFunctionsDictionary.SOFT_SIGN_TEXT,
             ActivationFunctionFormulasDictionary.SOFT_SIGN_FORMULA) {
         @Override
@@ -68,6 +82,7 @@ public enum ActivationFunctionType {
 
     /**
      * Returns activation function formula.
+     *
      * @return activation function formula
      */
     public String getFormula() {
@@ -91,6 +106,7 @@ public enum ActivationFunctionType {
 
     /**
      * Returns activation functions description.
+     *
      * @return activation functions description
      */
     public static String[] getDescriptions() {
@@ -107,7 +123,7 @@ public enum ActivationFunctionType {
      * Visitor pattern common method
      *
      * @param activationFunctionTypeVisitor visitor class
-     * @param <T>                     generic class
+     * @param <T>                           generic class
      * @return generic class
      */
     public abstract <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor);

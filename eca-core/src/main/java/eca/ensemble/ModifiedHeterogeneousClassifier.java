@@ -57,7 +57,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new SpaceBuilder(data);
+        return new ModifiedHeterogeneousBuilder(data);
     }
 
     @Override
@@ -72,13 +72,13 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     }
 
     /**
-     *
+     * Modified heterogeneous classifier iterative builder.
      */
-    private class SpaceBuilder extends AbstractBuilder {
+    private class ModifiedHeterogeneousBuilder extends AbstractBuilder {
 
         Random random = new Random();
 
-        SpaceBuilder(Instances dataSet) throws Exception {
+        ModifiedHeterogeneousBuilder(Instances dataSet) throws Exception {
             super(dataSet);
         }
 

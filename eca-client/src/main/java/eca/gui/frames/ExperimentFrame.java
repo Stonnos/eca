@@ -106,6 +106,10 @@ public abstract class ExperimentFrame extends JFrame {
         return experiment;
     }
 
+    public int getDigits() {
+        return digits;
+    }
+
     public final void setStateForButtons(boolean flag) {
         startButton.setEnabled(flag);
         optionsButton.setEnabled(flag);

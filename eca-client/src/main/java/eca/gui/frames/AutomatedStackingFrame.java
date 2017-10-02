@@ -29,7 +29,7 @@ public class AutomatedStackingFrame extends ExperimentFrame {
         AutomatedStacking exp = (AutomatedStacking) this.getExperiment();
         StackingOptionsDialog options
                 = new StackingOptionsDialog(this, OPTIONS_TITLE,
-                exp.getClassifier(), exp.getData());
+                exp.getClassifier(), exp.getData(), getDigits());
         options.setMetaEnabled(false);
         try {
             options.addClassifiers(exp.getClassifier().getClassifiers().clone());

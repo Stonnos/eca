@@ -5,6 +5,9 @@
  */
 package eca.neural;
 
+import eca.text.NumericFormat;
+
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
 /**
@@ -24,6 +27,9 @@ public class BackPropagation extends LearningAlgorithm {
     public static final double MAX_LEARNING_RATE = 1.0;
     public static final double MIN_MOMENTUM = 0.0;
     public static final double MAX_MOMENTUM = 1.0;
+
+    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
+
     /**
      * Learning rate value
      **/
@@ -62,8 +68,8 @@ public class BackPropagation extends LearningAlgorithm {
 
     @Override
     public String[] getOptions() {
-        return new String[]{NeuralNetworkDictionary.LEARNING_SPEED, String.valueOf(learningRate),
-                NeuralNetworkDictionary.MOMENTUM, String.valueOf(momentum)};
+        return new String[]{NeuralNetworkDictionary.LEARNING_SPEED, COMMON_DECIMAL_FORMAT.format(learningRate),
+                NeuralNetworkDictionary.MOMENTUM, COMMON_DECIMAL_FORMAT.format(momentum)};
     }
 
     public void setMomentum(double momentum) {

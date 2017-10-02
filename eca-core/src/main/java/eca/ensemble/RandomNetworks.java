@@ -56,8 +56,8 @@ public class RandomNetworks extends ThresholdClassifier {
     public String[] getOptions() {
         return new String[]{
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
-                EnsembleDictionary.NETWORK_MIN_ERROR, String.valueOf(getMinError()),
-                EnsembleDictionary.NETWORK_MAX_ERROR, String.valueOf(getMaxError()),
+                EnsembleDictionary.NETWORK_MIN_ERROR, COMMON_DECIMAL_FORMAT.format(getMinError()),
+                EnsembleDictionary.NETWORK_MAX_ERROR, COMMON_DECIMAL_FORMAT.format(getMaxError()),
                 EnsembleDictionary.SAMPLING_METHOD,
                 isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
                         : EnsembleDictionary.TRAINING_SAMPLE_METHOD
@@ -88,7 +88,7 @@ public class RandomNetworks extends ThresholdClassifier {
     }
 
     /**
-     *
+     * Random networks iterative builder.
      */
     private class NetworkBuilder extends AbstractBuilder {
 
@@ -113,11 +113,10 @@ public class RandomNetworks extends ThresholdClassifier {
                     ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
 
             AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
-            AbstractFunction cloneFunction = randomActivationFunction.clone();
 
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
-            cloneFunction.setCoefficient(coefficientValue);
-            multilayerPerceptron.setActivationFunction(cloneFunction);
+            randomActivationFunction.setCoefficient(coefficientValue);
+            multilayerPerceptron.setActivationFunction(randomActivationFunction);
 
             Instances sample;
             if (isUseBootstrapSamples()) {

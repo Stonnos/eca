@@ -27,7 +27,8 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
 
     /**
      * Creates <tt>AutomatedKNearestNeighbours</tt> object
-     * @param data {@link Instances} object
+     *
+     * @param data               {@link Instances} object
      * @param kNearestNeighbours {@link KNearestNeighbours} object
      */
     public AutomatedKNearestNeighbours(Instances data, KNearestNeighbours kNearestNeighbours) {
@@ -36,17 +37,17 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
 
     @Override
     public IterativeExperiment getIterativeExperiment() {
-        return new KNearestNeighboursIterativeOptimizer();
+        return new KNearestNeighboursIterativeBuilder();
     }
 
     /**
-     * K - nearest neighbourIndex iterative optimizer.
+     * K - nearest neighbours iterative builder.
      */
-    private class KNearestNeighboursIterativeOptimizer implements IterativeExperiment {
+    private class KNearestNeighboursIterativeBuilder implements IterativeExperiment {
 
         int index;
 
-        KNearestNeighboursIterativeOptimizer() {
+        KNearestNeighboursIterativeBuilder() {
             clearHistory();
         }
 

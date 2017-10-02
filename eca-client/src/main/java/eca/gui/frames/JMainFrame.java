@@ -1213,9 +1213,11 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        Instances set = data();
+                        Instances data = data();
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
-                                ClassifiersNamesDictionary.NEURAL_NETWORK, new NeuralNetwork(set), set);
+                                ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data);
                         frame.showDialog();
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     } catch (Exception e) {
@@ -1234,8 +1236,11 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
+                        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
+
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this,
-                                ClassifiersNamesDictionary.KNN, new KNearestNeighbours(), data());
+                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, data());
                         executeSimpleBuilding(frame);
                     } catch (Exception e) {
                         LoggerUtils.error(log, e);
@@ -1334,7 +1339,8 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         StackingOptionsDialog frame = new StackingOptionsDialog(JMainFrame.this,
-                                EnsemblesNamesDictionary.STACKING, new StackingClassifier(), data());
+                                EnsemblesNamesDictionary.STACKING, new StackingClassifier(), data(),
+                                maximumFractionDigits);
                         executeSimpleBuilding(frame);
                     } catch (Throwable e) {
                         LoggerUtils.error(log, e);
@@ -1471,8 +1477,7 @@ public class JMainFrame extends JFrame {
     private void createTreeOptionDialog(String title, DecisionTreeClassifier tree) {
         try {
             DecisionTreeOptionsDialog frame
-                    = new DecisionTreeOptionsDialog(JMainFrame.this, title,
-                    tree, data());
+                    = new DecisionTreeOptionsDialog(JMainFrame.this, title, tree, data());
             executeSimpleBuilding(frame);
         } catch (Exception e) {
             LoggerUtils.error(log, e);
@@ -1486,8 +1491,7 @@ public class JMainFrame extends JFrame {
                                             boolean sample) {
         try {
             EnsembleOptionsDialog frame
-                    = new EnsembleOptionsDialog(JMainFrame.this, title, ens,
-                    data());
+                    = new EnsembleOptionsDialog(JMainFrame.this, title, ens, data(), maximumFractionDigits);
             frame.setSampleEnabled(sample);
             frame.showDialog();
             executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
@@ -1514,7 +1518,7 @@ public class JMainFrame extends JFrame {
 
     private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,
                                           String title, Instances data) throws Exception {
-        classifier.setClassifiersSet(ClassifiersSetBuilder.createClassifiersSet(data));
+        classifier.setClassifiersSet(ClassifiersSetBuilder.createClassifiersSet(data, maximumFractionDigits));
         AutomatedHeterogeneousEnsemble exp = new AutomatedHeterogeneousEnsemble(classifier, data);
         AutomatedHeterogeneousEnsembleFrame frame
                 = new AutomatedHeterogeneousEnsembleFrame(title, exp, this, maximumFractionDigits);
@@ -1523,7 +1527,7 @@ public class JMainFrame extends JFrame {
 
     private void createStackingExperiment(StackingClassifier classifier,
                                           String title, Instances data) throws Exception {
-        classifier.setClassifiers(ClassifiersSetBuilder.createClassifiersSet(data));
+        classifier.setClassifiers(ClassifiersSetBuilder.createClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking exp = new AutomatedStacking(classifier, data);
         AutomatedStackingFrame frame
                 = new AutomatedStackingFrame(title, exp, this, maximumFractionDigits);

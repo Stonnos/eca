@@ -1,11 +1,17 @@
 package eca.ensemble;
 
+import eca.text.NumericFormat;
+
+import java.text.DecimalFormat;
+
 /**
  * Abstract class for generating error threshold classifier model.
  *
  * @author Roman Batygin
  */
 public abstract class ThresholdClassifier extends IterativeEnsembleClassifier {
+
+    public static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
 
     public static final double MIN_ERROR_THRESHOLD = 0.0;
 
@@ -31,7 +37,7 @@ public abstract class ThresholdClassifier extends IterativeEnsembleClassifier {
     public void setMaxError(double maxError) {
         if (maxError <= minError || maxError > MAX_ERROR_THRESHOLD) {
             throw new IllegalArgumentException(
-                    String.format("Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!",
+                    String.format(EnsembleDictionary.INVALID_ERROR_THRESHOLD_TEXT,
                             MIN_ERROR_THRESHOLD, MAX_ERROR_THRESHOLD));
         }
         this.maxError = maxError;
@@ -65,7 +71,7 @@ public abstract class ThresholdClassifier extends IterativeEnsembleClassifier {
     public void setMinError(double minError) {
         if (minError < MIN_ERROR_THRESHOLD || minError >= maxError) {
             throw new IllegalArgumentException(
-                    String.format("Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!",
+                    String.format(EnsembleDictionary.INVALID_ERROR_THRESHOLD_TEXT,
                             MIN_ERROR_THRESHOLD, MAX_ERROR_THRESHOLD));
         }
         this.minError = minError;

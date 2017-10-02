@@ -28,7 +28,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
     protected void setOptions() {
         AutomatedHeterogeneousEnsemble exp = (AutomatedHeterogeneousEnsemble) this.getExperiment();
         EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, OPTIONS_TITLE, exp.getClassifier(),
-                exp.getData());
+                exp.getData(), getDigits());
         options.setSampleEnabled(false);
         options.addClassifiers(exp.getClassifier().getClassifiersSet().clone());
         options.showDialog();

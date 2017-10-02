@@ -5,6 +5,7 @@
  */
 package eca.neural;
 
+import eca.core.DecimalFormatHandler;
 import eca.core.InstancesHandler;
 import eca.core.ListOptionsHandler;
 import eca.core.MinMaxNormalizer;
@@ -14,11 +15,15 @@ import eca.ensemble.IterativeBuilder;
 import eca.filter.MissingValuesFilter;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
+import eca.text.NumericFormat;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,9 +33,13 @@ import java.util.NoSuchElementException;
  *
  * @author Roman Batygin
  */
-public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler, ListOptionsHandler {
+public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler,
+        ListOptionsHandler, DecimalFormatHandler {
 
     private static final int NIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;
+
+    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
+
     /**
      * Initial training set
      **/
@@ -40,6 +49,11 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * Multilayer perceptron
      **/
     private final MultilayerPerceptron network;
+
+    /**
+     * Decimal format.
+     */
+    private DecimalFormat decimalFormat = NumericFormat.getInstance();
 
     private MinMaxNormalizer normalizer;
     private final MissingValuesFilter filter = new MissingValuesFilter();
@@ -51,6 +65,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * @param data training data
      */
     public NeuralNetwork(Instances data) {
+        Assert.notNull(data, "Instances is not specified!");
         this.data = data;
         this.network = new MultilayerPerceptron(data.numAttributes() - 1,
                 data.numClasses());
@@ -70,6 +85,11 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     public NeuralNetwork(Instances data, ActivationFunction function) {
         this(data);
         network.setActivationFunction(function);
+    }
+
+    @Override
+    public DecimalFormat getDecimalFormat() {
+        return decimalFormat;
     }
 
     @Override
@@ -93,15 +113,17 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(NeuralNetworkDictionary.MAX_ITS);
         options.add(String.valueOf(network().getMaxIterationsNum()));
         options.add(NeuralNetworkDictionary.ERROR_THRESHOLD);
-        options.add(String.valueOf(network().getMinError()));
+        options.add(COMMON_DECIMAL_FORMAT.format(network().getMinError()));
 
         options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF);
         ActivationFunction activationFunction = network().getActivationFunction();
         options.add(activationFunction.getActivationFunctionType().getDescription());
 
         if (activationFunction instanceof AbstractFunction) {
-            options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF_COEFFICIENT);
-            options.add(String.valueOf(((AbstractFunction) activationFunction).getCoefficient()));
+            AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
+            options.add(StringUtils.EMPTY);
+            options.add(String.format(abstractFunction.getActivationFunctionType().getFormula(),
+                    getDecimalFormat().format(abstractFunction.getCoefficient())));
         }
 
         options.add(NeuralNetworkDictionary.OUT_LAYER_AF);
@@ -109,8 +131,10 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(outActivationFunction.getActivationFunctionType().getDescription());
 
         if (outActivationFunction instanceof AbstractFunction) {
-            options.add(NeuralNetworkDictionary.OUT_LAYER_AF_COEFFICIENT);
-            options.add(String.valueOf(((AbstractFunction) outActivationFunction).getCoefficient()));
+            AbstractFunction abstractFunction = (AbstractFunction) outActivationFunction;
+            options.add(StringUtils.EMPTY);
+            options.add(String.format(abstractFunction.getActivationFunctionType().getFormula(),
+                    getDecimalFormat().format(abstractFunction.getCoefficient())));
         }
 
         options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
@@ -200,7 +224,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     }
 
     /**
-     *
+     * Neural network iterative builder.
      */
     private class NetworkBuilder extends IterativeBuilder {
 

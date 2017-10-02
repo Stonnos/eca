@@ -26,17 +26,22 @@ public class ClassifiersSetBuilder {
      * Creates <tt>ClassifiersSet</tt> object.
      *
      * @param data <tt>Instances</tt> object (training data)
+     * @param maximumFractionDigits maximum fraction digits
      * @return <tt>ClassifiersSet</tt> object
      */
-    public static ClassifiersSet createClassifiersSet(Instances data) {
+    public static ClassifiersSet createClassifiersSet(Instances data, int maximumFractionDigits) {
         ClassifiersSet set = new ClassifiersSet();
         set.addClassifier(new CART());
         set.addClassifier(new ID3());
         set.addClassifier(new C45());
         set.addClassifier(new CHAID());
         set.addClassifier(new Logistic());
-        set.addClassifier(new NeuralNetwork(data));
-        set.addClassifier(new KNearestNeighbours());
+        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
+        set.addClassifier(neuralNetwork);
+        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
+        set.addClassifier(kNearestNeighbours);
         return set;
     }
 }

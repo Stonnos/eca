@@ -9,7 +9,6 @@ import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.Sampler;
 import eca.ensemble.SamplingMethod;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
@@ -73,7 +72,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private JTextField classifierMaxErrorText;
     private JList<String> algorithms;
     private JList<String> selectedAlgorithms;
-    private BaseClassifiersListModel model;
+    private BaseClassifiersListModel baseClassifiersListModel;
     private JPanel samplePanel;
     private JRadioButton initial;
     private JRadioButton bagging;
@@ -88,12 +87,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private JRadioButton optimalCls;
 
     public EnsembleOptionsDialog(JFrame parent, String title,
-                                 AbstractHeterogeneousClassifier classifier, Instances data) {
+                                 AbstractHeterogeneousClassifier classifier, Instances data, final int digits) {
         super(parent, title, classifier, data);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.createFormat();
-        this.makeGUI();
+        this.makeGUI(digits);
         this.pack();
         this.setLocationRelativeTo(parent);
         numClassifiersText.requestFocusInWindow();
@@ -110,13 +109,13 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     }
 
     public void addClassifiers(ClassifiersSet classifiers) {
-        model.clear();
+        baseClassifiersListModel.clear();
         for (Classifier c : classifiers) {
-            model.addClassifier(c);
+            baseClassifiersListModel.addClassifier(c);
         }
     }
 
-    private void makeGUI() {
+    private void makeGUI(final int digits) {
         pane = new JTabbedPane();
         Dimension dim1 = new Dimension(620, 375);
 
@@ -164,8 +163,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         algorithmsPane.setPreferredSize(dim);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TITLE));
         JPanel selectedPanel = new JPanel(new GridBagLayout());
-        model = new BaseClassifiersListModel(data(), this);
-        selectedAlgorithms = new JList<>(model);
+        baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
+        selectedAlgorithms = new JList<>(baseClassifiersListModel);
         selectedAlgorithms.setMinimumSize(dim);
         selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
@@ -181,14 +180,14 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                model.addElement(algorithms.getSelectedValue());
+                baseClassifiersListModel.addElement(algorithms.getSelectedValue());
             }
         });
         //-------------------------------------------------------------
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                model.remove(selectedAlgorithms.getSelectedIndex());
+                baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
                 removeButton.setEnabled(false);
             }
         });
@@ -202,7 +201,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         selectedAlgorithms.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                removeButton.setEnabled(!model.isEmpty());
+                removeButton.setEnabled(!baseClassifiersListModel.isEmpty());
             }
         });
         //-------------------------------------------------------------
@@ -211,8 +210,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int i = selectedAlgorithms.locationToIndex(e.getPoint());
-                    if (model.getWindow(i) != null) {
-                        model.getWindow(i).showDialog();
+                    if (baseClassifiersListModel.getWindow(i) != null) {
+                        baseClassifiersListModel.getWindow(i).showDialog();
                     }
                 }
             }
@@ -426,7 +425,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             return false;
         }
         //-----------------------------
-        if (model.isEmpty()) {
+        if (baseClassifiersListModel.isEmpty()) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
                     INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
@@ -438,7 +437,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private void createEnsemble() {
         ClassifiersSet set = new ClassifiersSet();
-        for (BaseOptionsDialog frame : model.getFrames()) {
+        for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
             set.addClassifier(frame.classifier());
         }
         classifier.setClassifiersSet(set);

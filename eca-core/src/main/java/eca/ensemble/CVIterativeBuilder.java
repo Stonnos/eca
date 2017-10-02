@@ -54,7 +54,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private int cvIndex = -1;
     private int validIndex;
     private Instances currentSet;
-    private Random r = new Random();
+    private Random random = new Random();
     private double[] error;
 
     /**
@@ -99,7 +99,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
             for (cvIndex++; cvIndex < numFolds; ) {
                 if (cvIndex == 0) {
                     currentSet = new Instances(data);
-                    currentSet.randomize(r);
+                    currentSet.randomize(random);
                     currentSet.stratify(numFolds);
                 }
                 Instances train = currentSet.trainCV(numFolds, cvIndex);

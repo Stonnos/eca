@@ -33,4 +33,9 @@ public class EnsembleDictionary {
     public static final String EMPTY_ENSEMBLE_ERROR_TEXT =
             "Не удалось построить модель: ни один классификатор не был включен в ансамбль!";
 
+    public static final String INVALID_ERROR_THRESHOLD_TEXT =
+            "Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!";
+
+    public static final String INVALID_NUM_ITS_ERROR_FORMAT = "Число итераций должно быть не менее %d!";
+
 }

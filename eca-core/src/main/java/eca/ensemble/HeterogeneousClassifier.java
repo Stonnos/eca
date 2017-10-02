@@ -118,9 +118,9 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
         options[k++] = EnsembleDictionary.MIN_ERROR;
-        options[k++] = String.valueOf(getMinError());
+        options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
-        options[k++] = String.valueOf(getMaxError());
+        options[k++] = COMMON_DECIMAL_FORMAT.format(getMaxError());
         options[k++] = EnsembleDictionary.VOTING_METHOD;
         options[k++] = getUseWeightedVotesMethod() ?
                 EnsembleDictionary.WEIGHTED_VOTING : EnsembleDictionary.MAJORITY_VOTING;
@@ -150,7 +150,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     /**
-     *
+     * Heterogeneous classifier iterative builder.
      */
     private class HeterogeneousBuilder extends AbstractBuilder {
 

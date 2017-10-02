@@ -5,6 +5,7 @@
  */
 package eca.metrics;
 
+import eca.core.DecimalFormatHandler;
 import eca.core.InstancesHandler;
 import eca.core.MinMaxNormalizer;
 import eca.filter.MissingValuesFilter;
@@ -37,7 +38,7 @@ import java.util.Arrays;
  * @author Roman Batygin
  */
 public class KNearestNeighbours extends AbstractClassifier
-        implements InstancesHandler {
+        implements InstancesHandler, DecimalFormatHandler {
 
     public static final double MIN_WEIGHT = 0.5;
 
@@ -106,18 +107,9 @@ public class KNearestNeighbours extends AbstractClassifier
      *
      * @return {@link DecimalFormat} object
      */
+    @Override
     public DecimalFormat getDecimalFormat() {
         return decimalFormat;
-    }
-
-    /**
-     * Sets decimal format.
-     *
-     * @param decimalFormat {@link DecimalFormat} object
-     */
-    public void setDecimalFormat(DecimalFormat decimalFormat) {
-        Assert.notNull(decimalFormat, "Decimal format is not specified!");
-        this.decimalFormat = decimalFormat;
     }
 
     @Override
@@ -189,6 +181,7 @@ public class KNearestNeighbours extends AbstractClassifier
      * @param metric the distance function object
      */
     public void setDistance(Distance metric) {
+        Assert.notNull(metric, "Distance is not specified!");
         this.metric = metric;
     }
 
