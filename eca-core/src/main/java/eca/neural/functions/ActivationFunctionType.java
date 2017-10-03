@@ -12,7 +12,8 @@ public enum ActivationFunctionType {
      * Logistic function.
      */
     LOGISTIC(ActivationFunctionsDictionary.LOGISTIC_TEXT,
-            ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA) {
+            ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA,
+            ActivationFunctionFormulasDictionary.LOGISTIC_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseLogistic();
@@ -23,7 +24,8 @@ public enum ActivationFunctionType {
      * Hyperbolic tangent function.
      */
     HYPERBOLIC_TANGENT(ActivationFunctionsDictionary.HYPERBOLIC_TANGENT_TEXT,
-            ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA) {
+            ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA,
+            ActivationFunctionFormulasDictionary.HYPERBOLIC_TANGENT_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseHyperbolicTangent();
@@ -34,7 +36,8 @@ public enum ActivationFunctionType {
      * Sinusoid function.
      */
     SINUSOID(ActivationFunctionsDictionary.SINUSOID_TEXT,
-            ActivationFunctionFormulasDictionary.SINUSOID_FORMULA) {
+            ActivationFunctionFormulasDictionary.SINUSOID_FORMULA,
+            ActivationFunctionFormulasDictionary.SINUSOID_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseSine();
@@ -45,7 +48,8 @@ public enum ActivationFunctionType {
      * Exponential function.
      */
     EXPONENTIAL(ActivationFunctionsDictionary.EXPONENTIAL_TEXT,
-            ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA) {
+            ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA,
+            ActivationFunctionFormulasDictionary.EXPONENTIAL_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseExponential();
@@ -56,7 +60,8 @@ public enum ActivationFunctionType {
      * Soft sign function.
      */
     SOFT_SIGN(ActivationFunctionsDictionary.SOFT_SIGN_TEXT,
-            ActivationFunctionFormulasDictionary.SOFT_SIGN_FORMULA) {
+            ActivationFunctionFormulasDictionary.SOFT_SIGN_FORMULA,
+            ActivationFunctionFormulasDictionary.SOFT_SIGN_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseSoftSign();
@@ -65,10 +70,12 @@ public enum ActivationFunctionType {
 
     private String description;
     private String formula;
+    private String formulaFormat;
 
-    ActivationFunctionType(String description, String formula) {
+    ActivationFunctionType(String description, String formula, String formulaFormat) {
         this.description = description;
         this.formula = formula;
+        this.formulaFormat = formulaFormat;
     }
 
     /**
@@ -87,6 +94,14 @@ public enum ActivationFunctionType {
      */
     public String getFormula() {
         return formula;
+    }
+
+    /**
+     * Returns activation function formula format.
+     * @return activation function formula format
+     */
+    public String getFormulaFormat() {
+        return formulaFormat;
     }
 
     /**

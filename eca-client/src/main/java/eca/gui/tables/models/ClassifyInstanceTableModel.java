@@ -17,7 +17,12 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ClassifyInstanceTableModel extends AbstractTableModel {
 
-    public static final int TEXT_INDEX = 4;
+    public static final int NUMERATOR_COLUMN_INDEX = 0;
+    public static final int ATTRIBUTE_INFO_COLUMN_INDEX = 1;
+    public static final int ATTRIBUTE_TYPE_COLUMN_INDEX = 2;
+    public static final int ADDITIONAL_INFO_COLUMN_INDEX = 3;
+    public static final int INPUT_TEXT_COLUMN_INDEX = 4;
+
     private static final String ANY_NUMBER_TEXT = "Любое число";
     private static final String NOMINAL_ATTR_VALUES_INTERVAL_FORMAT = "Целое от [0,%d]";
     private static final String DATE_ATTR_FORMAT = "Дата в формате: %s";
@@ -43,7 +48,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column == TEXT_INDEX;
+        return column == INPUT_TEXT_COLUMN_INDEX;
     }
 
     @Override
@@ -51,11 +56,11 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
         int i = row >= data.classIndex() ? row + 1 : row;
         Attribute a = data.attribute(i);
         switch (column) {
-            case 0:
+            case NUMERATOR_COLUMN_INDEX:
                 return row + 1;
-            case 1:
+            case ATTRIBUTE_INFO_COLUMN_INDEX:
                 return a.name();
-            case 2:
+            case ATTRIBUTE_TYPE_COLUMN_INDEX:
                 if (a.isDate()) {
                     return AttributesTypesDictionary.DATE;
                 } else if (a.isNumeric()) {
@@ -63,7 +68,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                 } else {
                     return AttributesTypesDictionary.NOMINAL;
                 }
-            case 3:
+            case ADDITIONAL_INFO_COLUMN_INDEX:
                 if (a.isDate()) {
                     return String.format(DATE_ATTR_FORMAT, DateFormat.DATE_FORMAT);
                 }
@@ -72,7 +77,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                 } else {
                     return String.format(NOMINAL_ATTR_VALUES_INTERVAL_FORMAT, a.numValues() - 1);
                 }
-            case TEXT_INDEX:
+            case INPUT_TEXT_COLUMN_INDEX:
                 return values[i];
             default:
                 return null;
@@ -81,7 +86,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == TEXT_INDEX) {
+        if (columnIndex == INPUT_TEXT_COLUMN_INDEX) {
             int i = rowIndex >= data.classIndex() ? rowIndex + 1 : rowIndex;
             values[i] = aValue;
             fireTableCellUpdated(rowIndex, columnIndex);

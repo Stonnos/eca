@@ -120,10 +120,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(activationFunction.getActivationFunctionType().getDescription());
 
         if (activationFunction instanceof AbstractFunction) {
-            AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
-            options.add(StringUtils.EMPTY);
-            options.add(String.format(abstractFunction.getActivationFunctionType().getFormula(),
-                    getDecimalFormat().format(abstractFunction.getCoefficient())));
+            fillActivationFunctionOptions(activationFunction, options);
         }
 
         options.add(NeuralNetworkDictionary.OUT_LAYER_AF);
@@ -131,10 +128,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(outActivationFunction.getActivationFunctionType().getDescription());
 
         if (outActivationFunction instanceof AbstractFunction) {
-            AbstractFunction abstractFunction = (AbstractFunction) outActivationFunction;
-            options.add(StringUtils.EMPTY);
-            options.add(String.format(abstractFunction.getActivationFunctionType().getFormula(),
-                    getDecimalFormat().format(abstractFunction.getCoefficient())));
+            fillActivationFunctionOptions(outActivationFunction, options);
         }
 
         options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
@@ -201,6 +195,18 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
             Utils.normalize(y);
         }
         return y;
+    }
+
+    private void fillActivationFunctionOptions(ActivationFunction activationFunction, List<String> options) {
+        AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
+        options.add(StringUtils.EMPTY);
+
+        if (abstractFunction.getCoefficient() != 1.0) {
+            options.add(String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
+                    getDecimalFormat().format(abstractFunction.getCoefficient())));
+        } else {
+            options.add(abstractFunction.getActivationFunctionType().getFormula());
+        }
     }
 
     private void initialize(Instances data) throws Exception {

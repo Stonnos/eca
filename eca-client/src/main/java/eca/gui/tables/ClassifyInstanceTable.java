@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Enumeration;
 
 /**
+ * Instances classification panel.
  * @author Roman Batygin
  */
 public class ClassifyInstanceTable extends JDataTableBase {
@@ -39,28 +40,40 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final int INT_FIELD_LENGTH = 8;
     private static final int MAX_FIELD_LENGTH = 255;
     private static final int ROW_HEIGHT = 18;
+
+    private static final int NUMERATOR_COLUMN_WIDTH = 50;
+    private static final int ADDITIONAL_INFO_COLUMN_WIDTH = 200;
+
     private static final String ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT = "Не задано значение атрибута '%s'";
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private static final String INVALID_DATE_FORMAT_ERROR = "Недопустимый формат даты для атрибута '%s'";
+    private static final String INTEGER_REGEX = "^[0-9]+$";
+
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
-    private AttributeStatistics attributeStatistics;
+    private final AttributeStatistics attributeStatistics;
 
     public ClassifyInstanceTable(Instances data, int digits) {
         super(new ClassifyInstanceTableModel(data));
         decimalFormat.setMaximumFractionDigits(digits);
         attributeStatistics = new AttributeStatistics(data, decimalFormat);
 
-        TableColumn column = this.getColumnModel().getColumn(ClassifyInstanceTableModel.TEXT_INDEX);
-        this.getColumnModel().getColumn(0).setPreferredWidth(50);
-        this.getColumnModel().getColumn(0).setMaxWidth(50);
-        this.getColumnModel().getColumn(0).setMinWidth(50);
-        this.getColumnModel().getColumn(3).setPreferredWidth(200);
-        this.getColumnModel().getColumn(3).setMinWidth(200);
+        TableColumn column = this.getColumnModel().getColumn(ClassifyInstanceTableModel.INPUT_TEXT_COLUMN_INDEX);
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.NUMERATOR_COLUMN_INDEX)
+                .setPreferredWidth(NUMERATOR_COLUMN_WIDTH);
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.NUMERATOR_COLUMN_INDEX)
+                .setMaxWidth(NUMERATOR_COLUMN_WIDTH);
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.NUMERATOR_COLUMN_INDEX)
+                .setMinWidth(NUMERATOR_COLUMN_WIDTH);
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.ADDITIONAL_INFO_COLUMN_INDEX)
+                .setPreferredWidth(ADDITIONAL_INFO_COLUMN_WIDTH);
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.ADDITIONAL_INFO_COLUMN_INDEX)
+                .setMinWidth(ADDITIONAL_INFO_COLUMN_WIDTH);
 
         JTextField textField = new JTextField(DOUBLE_FIELD_LENGTH);
         column.setCellEditor(new AttributeTextFieldEditor(textField));
 
-        this.getColumnModel().getColumn(1).setCellRenderer(new AttributeRenderer());
+        this.getColumnModel().getColumn(ClassifyInstanceTableModel.ATTRIBUTE_INFO_COLUMN_INDEX)
+                .setCellRenderer(new AttributeStatisticsRenderer());
         this.setRowHeight(ROW_HEIGHT);
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -108,7 +121,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
                     }
                 } else {
                     double value = decimalFormat.parse(strValue).doubleValue();
-                    if (a.isNominal() && (!strValue.matches("^[0-9]+$") || !a.isInRange(value))) {
+                    if (a.isNominal() && (!strValue.matches(INTEGER_REGEX) || !a.isInRange(value))) {
                         throw new Exception(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
                     }
                     instance.setValue(a, value);
@@ -122,7 +135,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
 
     public void reset() {
         for (int i = 0; i < this.getRowCount(); i++) {
-            this.setValueAt(null, i, ClassifyInstanceTableModel.TEXT_INDEX);
+            this.setValueAt(null, i, ClassifyInstanceTableModel.INPUT_TEXT_COLUMN_INDEX);
         }
     }
 
@@ -131,9 +144,9 @@ public class ClassifyInstanceTable extends JDataTableBase {
     }
 
     /**
-     *
+     * Attribute statistics renderer.
      */
-    private class AttributeRenderer extends JTextField
+    private class AttributeStatisticsRenderer extends JTextField
             implements TableCellRenderer {
 
         @Override
@@ -150,10 +163,10 @@ public class ClassifyInstanceTable extends JDataTableBase {
             return this;
         }
 
-    } // End of class AttributeRender
+    }
 
     /**
-     *
+     * Attribute text field editor.
      */
     private class AttributeTextFieldEditor extends DefaultCellEditor {
 
