@@ -1027,8 +1027,10 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         Instances data = data();
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedNeuralNetwork net =
-                                new AutomatedNeuralNetwork(data, new NeuralNetwork(data));
+                                new AutomatedNeuralNetwork(data, neuralNetwork);
                         ExperimentFrame experimentFrame =
                                 new AutomatedNeuralNetworkFrame(net, JMainFrame.this, maximumFractionDigits);
                         experimentFrame.setVisible(true);
@@ -1108,8 +1110,10 @@ public class JMainFrame extends JFrame {
                 if (dataValidated()) {
                     try {
                         Instances data = data();
+                        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedKNearestNeighbours automatedKNearestNeighbours =
-                                new AutomatedKNearestNeighbours(data, new KNearestNeighbours());
+                                new AutomatedKNearestNeighbours(data, kNearestNeighbours);
 
                         AutomatedKNearestNeighboursFrame automatedKNearestNeighboursFrame =
                                 new AutomatedKNearestNeighboursFrame(automatedKNearestNeighbours,
