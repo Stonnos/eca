@@ -39,10 +39,10 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     private static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
     private static final String USE_BOOTSTRAP_SAMPLE_TEXT = "Использование бутстрэп - выборок";
 
-    private JTextField numClassifiersText;
-    private JTextField minObjText;
-    private JTextField maxDepthText;
-    private JTextField numRandomAttrText;
+    private JTextField numClassifiersTextField;
+    private JTextField minObjTextField;
+    private JTextField maxDepthTextField;
+    private JTextField numRandomAttrTextField;
     private JComboBox<String> treeAlgorithmBox;
 
     private OptionsSetter optionsSetter;
@@ -58,18 +58,18 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
         //------------------------------------
-        numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
-        numClassifiersText.setDocument(new IntegerDocument(5));
-        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
-        minObjText = new JTextField(TEXT_FIELD_LENGTH);
-        minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        minObjText.setInputVerifier(new TextFieldInputVerifier());
-        maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
-        maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        maxDepthText.setInputVerifier(new TextFieldInputVerifier());
-        numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
-        numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        numRandomAttrText.setInputVerifier(new TextFieldInputVerifier());
+        numClassifiersTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numClassifiersTextField.setDocument(new IntegerDocument(5));
+        numClassifiersTextField.setInputVerifier(new TextFieldInputVerifier());
+        minObjTextField = new JTextField(TEXT_FIELD_LENGTH);
+        minObjTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        minObjTextField.setInputVerifier(new TextFieldInputVerifier());
+        maxDepthTextField = new JTextField(TEXT_FIELD_LENGTH);
+        maxDepthTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        maxDepthTextField.setInputVerifier(new TextFieldInputVerifier());
+        numRandomAttrTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numRandomAttrTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numRandomAttrTextField.setInputVerifier(new TextFieldInputVerifier());
         treeAlgorithmBox = new JComboBox<>();
 
         for (DecisionTreeType treeType : DecisionTreeType.values()) {
@@ -84,21 +84,21 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         optionPanel.add(new JLabel(TREES_NUM_TITLE),
                 new GridBagConstraints(0, 1, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numClassifiersText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        optionPanel.add(numClassifiersTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(new JLabel(MIN_OBJ_TITLE),
                 new GridBagConstraints(0, 2, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(minObjText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        optionPanel.add(minObjTextField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(new JLabel(MAX_DEPTH_TITLE),
                 new GridBagConstraints(0, 3, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(maxDepthText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        optionPanel.add(maxDepthTextField, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(new JLabel(NUM_RANDOM_ATTR_TITLE), new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+        optionPanel.add(numRandomAttrTextField, new GridBagConstraints(1, 4, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         addAdditionalFormFields(optionPanel);
@@ -121,11 +121,11 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 JTextField text = emptyTextFieldSearch.findFirstEmptyField();
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
-                } else if (Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
+                } else if (Integer.parseInt(numRandomAttrTextField.getText()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
                             String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
                             INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    numRandomAttrText.requestFocusInWindow();
+                    numRandomAttrTextField.requestFocusInWindow();
                 } else {
                     try {
                         optionsSetter.setClassifierOptions();
@@ -150,7 +150,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);
-        numClassifiersText.requestFocusInWindow();
+        numClassifiersTextField.requestFocusInWindow();
     }
 
     @Override
@@ -195,8 +195,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             emptyTextFieldSearch = new EmptyTextFieldSearch() {
                 @Override
                 public JTextField findFirstEmptyField() {
-                    return GuiUtils.searchFirstEmptyField(numClassifiersText, minObjText,
-                            maxDepthText, numRandomAttrText, numRandomSplitsField);
+                    return GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
+                            maxDepthTextField, numRandomAttrTextField, numRandomSplitsField);
                 }
             };
 
@@ -214,8 +214,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             emptyTextFieldSearch = new EmptyTextFieldSearch() {
                 @Override
                 public JTextField findFirstEmptyField() {
-                    return GuiUtils.searchFirstEmptyField(numClassifiersText, minObjText,
-                            maxDepthText, numRandomAttrText);
+                    return GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
+                            maxDepthTextField, numRandomAttrTextField);
                 }
             };
         }
@@ -224,18 +224,18 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     private class OptionsSetter {
 
         void setFormOptions() {
-            numClassifiersText.setText(String.valueOf(classifier.getIterationsNum()));
-            minObjText.setText(String.valueOf(classifier.getMinObj()));
-            maxDepthText.setText(String.valueOf(classifier.getMaxDepth()));
-            numRandomAttrText.setText(String.valueOf(classifier.getNumRandomAttr()));
+            numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
+            minObjTextField.setText(String.valueOf(classifier.getMinObj()));
+            maxDepthTextField.setText(String.valueOf(classifier.getMaxDepth()));
+            numRandomAttrTextField.setText(String.valueOf(classifier.getNumRandomAttr()));
             treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
         }
 
         void setClassifierOptions() {
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
-            classifier.setMinObj(Integer.parseInt(minObjText.getText()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthText.getText()));
-            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
+            classifier.setMinObj(Integer.parseInt(minObjTextField.getText()));
+            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText()));
+            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText()));
             String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
             classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
         }

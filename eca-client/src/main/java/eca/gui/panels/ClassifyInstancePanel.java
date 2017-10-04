@@ -34,6 +34,7 @@ public class ClassifyInstancePanel extends JPanel {
     private static final String CLASS_CODE_TEXT = "Код класса: ";
     private static final String CLASS_VALUE_TEXT = "Значение класса: ";
     private static final String CLASS_PROBABILITY_TEXT = "Вероятность класса: ";
+    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(400, 300);
 
     private Classifier classifier;
     private final ClassifyInstanceTable table;
@@ -62,7 +63,7 @@ public class ClassifyInstancePanel extends JPanel {
 
     private void makeGUI() {
         JScrollPane pane = new JScrollPane(table);
-        pane.setPreferredSize(new Dimension(400, 300));
+        pane.setPreferredSize(SCROLL_PANE_PREFERRED_SIZE);
         pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         //--------------------------------------------

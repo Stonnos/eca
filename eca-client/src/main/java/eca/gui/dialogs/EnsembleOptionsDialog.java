@@ -11,6 +11,7 @@ import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.SamplingMethod;
 import eca.gui.BaseClassifiersListModel;
+import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
@@ -64,27 +65,32 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN
     };
 
+    private static final int ALGORITHMS_LIST_WIDTH = 320;
+    private static final int ALGORITHMS_HEIGHT_HEIGHT = 265;
+    private static final Dimension TAB_DIMENSION = new Dimension(620, 375);
+
+    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+
     private JTabbedPane pane;
     private JPanel firstPanel;
     private JPanel secondPanel;
-    private JTextField numClassifiersText;
-    private JTextField classifierMinErrorText;
-    private JTextField classifierMaxErrorText;
+    private JTextField numClassifiersTextField;
+    private JTextField classifierMinErrorTextField;
+    private JTextField classifierMaxErrorTextField;
     private JList<String> algorithms;
     private JList<String> selectedAlgorithms;
     private BaseClassifiersListModel baseClassifiersListModel;
     private JPanel samplePanel;
-    private JRadioButton initial;
-    private JRadioButton bagging;
-    private JRadioButton random;
-    private JRadioButton randomBagging;
-    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private JRadioButton initialRadioButton;
+    private JRadioButton baggingRadioButton;
+    private JRadioButton randomRadioButton;
+    private JRadioButton randomBaggingRadioButton;
 
-    private JRadioButton majority;
-    private JRadioButton weighted;
+    private JRadioButton majorityRadioButton;
+    private JRadioButton weightedRadioButton;
 
-    private JRadioButton randomCls;
-    private JRadioButton optimalCls;
+    private JRadioButton randomClsRadioButton;
+    private JRadioButton optimalClsRadioButton;
 
     public EnsembleOptionsDialog(JFrame parent, String title,
                                  AbstractHeterogeneousClassifier classifier, Instances data, final int digits) {
@@ -95,7 +101,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         this.makeGUI(digits);
         this.pack();
         this.setLocationRelativeTo(parent);
-        numClassifiersText.requestFocusInWindow();
+        numClassifiersTextField.requestFocusInWindow();
     }
 
     @Override
@@ -117,42 +123,40 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private void makeGUI(final int digits) {
         pane = new JTabbedPane();
-        Dimension dim1 = new Dimension(620, 375);
 
         firstPanel = new JPanel(new GridBagLayout());
-        firstPanel.setPreferredSize(dim1);
+        firstPanel.setPreferredSize(TAB_DIMENSION);
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
-        numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
-        numClassifiersText.setDocument(new IntegerDocument(FIELD_LENGTH));
-        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
-        classifierMinErrorText = new JTextField(TEXT_FIELD_LENGTH);
-        classifierMinErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
-        classifierMinErrorText.setInputVerifier(new TextFieldInputVerifier());
-        classifierMaxErrorText = new JTextField(TEXT_FIELD_LENGTH);
-        classifierMaxErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
-        classifierMaxErrorText.setInputVerifier(new TextFieldInputVerifier());
+        numClassifiersTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numClassifiersTextField.setDocument(new IntegerDocument(FIELD_LENGTH));
+        numClassifiersTextField.setInputVerifier(new TextFieldInputVerifier());
+        classifierMinErrorTextField = new JTextField(TEXT_FIELD_LENGTH);
+        classifierMinErrorTextField.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMinErrorTextField.setInputVerifier(new TextFieldInputVerifier());
+        classifierMaxErrorTextField = new JTextField(TEXT_FIELD_LENGTH);
+        classifierMaxErrorTextField.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMaxErrorTextField.setInputVerifier(new TextFieldInputVerifier());
         //----------------------------------------------------
         firstPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
         optionPanel.add(new JLabel(ITS_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numClassifiersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        optionPanel.add(numClassifiersTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         optionPanel.add(new JLabel(MIN_ERROR_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(classifierMinErrorText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        optionPanel.add(classifierMinErrorTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         optionPanel.add(new JLabel(MAX_ERROR_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(classifierMaxErrorText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        optionPanel.add(classifierMaxErrorTextField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        //-------------------------------------------------------------
-        //-------------------------------------------------------------
-        Dimension dim = new Dimension(320, 265);
+
+        Dimension dim = new Dimension(ALGORITHMS_LIST_WIDTH, ALGORITHMS_HEIGHT_HEIGHT);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
         algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         algorithms.setPreferredSize(dim);
@@ -205,18 +209,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             }
         });
         //-------------------------------------------------------------
-        selectedAlgorithms.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int i = selectedAlgorithms.locationToIndex(e.getPoint());
-                    if (baseClassifiersListModel.getWindow(i) != null) {
-                        baseClassifiersListModel.getWindow(i).showDialog();
-                    }
-                }
-            }
-
-        });
+        selectedAlgorithms.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithms,
+                baseClassifiersListModel));
         //-------------------------------------------------------------
         algorithmsPanel.add(algorithmsPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
@@ -239,12 +233,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersText,
-                        classifierMinErrorText, classifierMaxErrorText);
+                JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
+                        classifierMinErrorTextField, classifierMaxErrorTextField);
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
                 } else if (isValidate()) {
-                    createEnsemble();
+                    createClassifiersSet();
                     dialogResult = true;
                     setVisible(false);
                 }
@@ -265,16 +259,16 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         samplePanel = new JPanel(new GridBagLayout());
         samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
-        initial = new JRadioButton(SamplingMethod.INITIAL.getDescription());
-        bagging = new JRadioButton(SamplingMethod.BAGGING.getDescription());
-        random = new JRadioButton(SamplingMethod.RANDOM.getDescription());
-        randomBagging = new JRadioButton(SamplingMethod.RANDOM_BAGGING.getDescription());
-        group.add(initial);
-        group.add(bagging);
-        group.add(random);
-        group.add(randomBagging);
+        initialRadioButton = new JRadioButton(SamplingMethod.INITIAL.getDescription());
+        baggingRadioButton = new JRadioButton(SamplingMethod.BAGGING.getDescription());
+        randomRadioButton = new JRadioButton(SamplingMethod.RANDOM.getDescription());
+        randomBaggingRadioButton = new JRadioButton(SamplingMethod.RANDOM_BAGGING.getDescription());
+        group.add(initialRadioButton);
+        group.add(baggingRadioButton);
+        group.add(randomRadioButton);
+        group.add(randomBaggingRadioButton);
         //--------------------------------
-        initial.addItemListener(new ItemListener() {
+        initialRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -282,7 +276,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        bagging.addItemListener(new ItemListener() {
+        baggingRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -290,7 +284,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        random.addItemListener(new ItemListener() {
+        randomRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -298,7 +292,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        randomBagging.addItemListener(new ItemListener() {
+        randomBaggingRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -306,15 +300,15 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        initial.setSelected(true);
+        initialRadioButton.setSelected(true);
         //-----------------------------------------------
-        samplePanel.add(initial, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        samplePanel.add(initialRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        samplePanel.add(bagging, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        samplePanel.add(baggingRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        samplePanel.add(random, new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        samplePanel.add(randomRadioButton, new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        samplePanel.add(randomBagging, new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        samplePanel.add(randomBaggingRadioButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         secondPanel.add(samplePanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -322,12 +316,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         JPanel clsMethodPanel = new JPanel(new GridBagLayout());
         clsMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(CLS_SELECTION_TITLE));
         ButtonGroup clsGroup = new ButtonGroup();
-        randomCls = new JRadioButton(CLS_SELECTION_METHOD[0]);
-        optimalCls = new JRadioButton(CLS_SELECTION_METHOD[1]);
-        clsGroup.add(randomCls);
-        clsGroup.add(optimalCls);
+        randomClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[0]);
+        optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
+        clsGroup.add(randomClsRadioButton);
+        clsGroup.add(optimalClsRadioButton);
         //--------------------------------
-        randomCls.addItemListener(new ItemListener() {
+        randomClsRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -335,7 +329,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        optimalCls.addItemListener(new ItemListener() {
+        optimalClsRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -343,10 +337,10 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        randomCls.setSelected(true);
-        clsMethodPanel.add(randomCls, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        randomClsRadioButton.setSelected(true);
+        clsMethodPanel.add(randomClsRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        clsMethodPanel.add(optimalCls, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        clsMethodPanel.add(optimalClsRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         secondPanel.add(clsMethodPanel, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
@@ -354,12 +348,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         JPanel votesPanel = new JPanel(new GridBagLayout());
         votesPanel.setBorder(PanelBorderUtils.createTitledBorder(VOTES_TITLE));
         ButtonGroup votesGroup = new ButtonGroup();
-        majority = new JRadioButton(VOTES_METHOD[0]);
-        weighted = new JRadioButton(VOTES_METHOD[1]);
-        votesGroup.add(majority);
-        votesGroup.add(weighted);
+        majorityRadioButton = new JRadioButton(VOTES_METHOD[0]);
+        weightedRadioButton = new JRadioButton(VOTES_METHOD[1]);
+        votesGroup.add(majorityRadioButton);
+        votesGroup.add(weightedRadioButton);
         //--------------------------------
-        majority.addItemListener(new ItemListener() {
+        majorityRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -367,7 +361,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        weighted.addItemListener(new ItemListener() {
+        weightedRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
@@ -375,10 +369,10 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 }
             }
         });
-        majority.setSelected(true);
-        votesPanel.add(majority, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        majorityRadioButton.setSelected(true);
+        votesPanel.add(majorityRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        votesPanel.add(weighted, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        votesPanel.add(weightedRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         secondPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
@@ -401,22 +395,22 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     }
 
     private void setOptions() {
-        numClassifiersText.setText(String.valueOf(classifier.getIterationsNum()));
-        classifierMaxErrorText.setText(estimateFormat.format(classifier.getMaxError()));
-        classifierMinErrorText.setText(estimateFormat.format(classifier.getMinError()));
+        numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
+        classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
+        classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
     }
 
     private boolean isValidate() {
-        JTextField textField = classifierMinErrorText;
+        JTextField textField = classifierMinErrorTextField;
         try {
-            textField = numClassifiersText;
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
-            textField = classifierMinErrorText;
+            textField = numClassifiersTextField;
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
+            textField = classifierMinErrorTextField;
             classifier.setMinError(estimateFormat
-                    .parse(classifierMinErrorText.getText()).doubleValue());
-            textField = classifierMaxErrorText;
+                    .parse(classifierMinErrorTextField.getText()).doubleValue());
+            textField = classifierMaxErrorTextField;
             classifier.setMaxError(estimateFormat
-                    .parse(classifierMaxErrorText.getText()).doubleValue());
+                    .parse(classifierMaxErrorTextField.getText()).doubleValue());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
@@ -435,11 +429,11 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         return true;
     }
 
-    private void createEnsemble() {
-        ClassifiersSet set = new ClassifiersSet();
+    private void createClassifiersSet() {
+        ClassifiersSet classifiersSet = new ClassifiersSet();
         for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
-            set.addClassifier(frame.classifier());
+            classifiersSet.addClassifier(frame.classifier());
         }
-        classifier.setClassifiersSet(set);
+        classifier.setClassifiersSet(classifiersSet);
     }
 }

@@ -27,7 +27,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Enumeration;
 
 /**
  * @author Roman Batygin
@@ -63,21 +62,17 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
             "Рекомендуемое число нейронов в скрытом слое:  %d <= N <= %d";
     private static final int HIDDEN_LAYER_STRING_LENGTH = 200;
 
-    private JTextField inNeuronsText;
-    private JTextField outNeuronsText;
+    private static final Dimension LABEL_DIM = new Dimension(270, 20);
 
-    private JTextField hidLayersText;
-    private JTextField afCoefficientText;
-    private JTextField estimateText;
-    private JTextField numItsText;
-    private JTextField learnSpeedText;
-    private JTextField momentumText;
+    private JTextField inNeuronsTextField;
+    private JTextField outNeuronsTextField;
 
-    private ButtonGroup activationFunctionsGroup;
-    private JRadioButton logistic;
-    private JRadioButton hyperbolicTangent;
-    private JRadioButton sine;
-    private JRadioButton exp;
+    private JTextField hidLayersTextField;
+    private JTextField afCoefficientTextField;
+    private JTextField estimateTextField;
+    private JTextField numItsTextField;
+    private JTextField learnSpeedTextField;
+    private JTextField momentumTextField;
 
     private JComboBox<String> activationFunctionsBox;
 
@@ -94,38 +89,36 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         this.makeOptionGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
-        hidLayersText.requestFocusInWindow();
+        hidLayersTextField.requestFocusInWindow();
     }
 
     private void makeOptionGUI() {
-        Dimension labelDim = new Dimension(270, 20);
-        //---------------------------------------------------
         JPanel defaultPanel = new JPanel(new GridBagLayout());
         defaultPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         //--------------------------------------------------
-        inNeuronsText = new JTextField(TEXT_FIELD_LENGTH);
-        inNeuronsText.setEditable(false);
-        inNeuronsText.setBackground(Color.WHITE);
-        outNeuronsText = new JTextField(TEXT_FIELD_LENGTH);
-        outNeuronsText.setEditable(false);
-        outNeuronsText.setBackground(Color.WHITE);
+        inNeuronsTextField = new JTextField(TEXT_FIELD_LENGTH);
+        inNeuronsTextField.setEditable(false);
+        inNeuronsTextField.setBackground(Color.WHITE);
+        outNeuronsTextField = new JTextField(TEXT_FIELD_LENGTH);
+        outNeuronsTextField.setEditable(false);
+        outNeuronsTextField.setBackground(Color.WHITE);
         //----------------------------------------------------
         JLabel inLabel = new JLabel(IN_LAYER_NEURONS_NUM_TITLE);
-        inLabel.setPreferredSize(labelDim);
+        inLabel.setPreferredSize(LABEL_DIM);
         inLabel.setHorizontalAlignment(JLabel.RIGHT);
         JLabel outLabel = new JLabel(OUT_LAYER_NEURONS_NUM_TITLE);
-        outLabel.setPreferredSize(labelDim);
+        outLabel.setPreferredSize(LABEL_DIM);
         outLabel.setHorizontalAlignment(JLabel.RIGHT);
         //-------------------------------------------------
         defaultPanel.add(inLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        defaultPanel.add(inNeuronsText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        defaultPanel.add(inNeuronsTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         defaultPanel.add(outLabel,
                 new GridBagConstraints(0, 1, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        defaultPanel.add(outNeuronsText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        defaultPanel.add(outNeuronsTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         //------------------------------------------------------------
         JPanel hiddenLayerPanel = new JPanel(new GridBagLayout());
@@ -135,12 +128,12 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         JPanel learningPanel = new JPanel(new GridBagLayout());
         learningPanel.setBorder(PanelBorderUtils.createTitledBorder(LEARNING_ALGORITHM_TITLE));
         //-------------------------------------------------------------
-        hidLayersText = new JTextField(TEXT_FIELD_LENGTH);
-        hidLayersText.setDocument(new ListDocument(HIDDEN_LAYER_STRING_LENGTH));
-        hidLayersText.setInputVerifier(new ListInputVerifier());
+        hidLayersTextField = new JTextField(TEXT_FIELD_LENGTH);
+        hidLayersTextField.setDocument(new ListDocument(HIDDEN_LAYER_STRING_LENGTH));
+        hidLayersTextField.setInputVerifier(new ListInputVerifier());
         //----------------------------------------------------
         JLabel hidLabel = new JLabel(HIDDEN_LAYER_STRUCTURE_TITLE);
-        hidLabel.setPreferredSize(labelDim);
+        hidLabel.setPreferredSize(LABEL_DIM);
         hidLabel.setHorizontalAlignment(JLabel.RIGHT);
         String recommendText = String.format(RECOMMENDED_HIDDEN_LAYER_MESSAGE,
                 NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data()),
@@ -149,96 +142,69 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         hiddenLayerPanel.add(hidLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        hiddenLayerPanel.add(hidLayersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        hiddenLayerPanel.add(hidLayersTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         hiddenLayerPanel.setToolTipText(recommendText);
-        //-------------------------------------------------------------
-        /*activationFunctionsGroup = new ButtonGroup();
-
-        logistic = new JRadioButton(ActivationFunctionType.LOGISTIC.getDescription());
-        hyperbolicTangent = new JRadioButton(ActivationFunctionType.HYPERBOLIC_TANGENT.getDescription());
-        sine = new JRadioButton(ActivationFunctionType.SINUSOID.getDescription());
-        exp = new JRadioButton(ActivationFunctionType.EXPONENTIAL.getDescription());
-
-        logistic.setToolTipText(ActivationFunctionType.LOGISTIC.getFormula());
-        hyperbolicTangent.setToolTipText(ActivationFunctionType.HYPERBOLIC_TANGENT.getFormula());
-        sine.setToolTipText(ActivationFunctionType.SINUSOID.getFormula());
-        exp.setToolTipText(ActivationFunctionType.EXPONENTIAL.getFormula());
-
-        activationFunctionsGroup.add(logistic);
-        activationFunctionsGroup.add(hyperbolicTangent);
-        activationFunctionsGroup.add(sine);
-        activationFunctionsGroup.add(exp);*/
 
         activationFunctionsBox = new JComboBox(ActivationFunctionType.getDescriptions());
 
         JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
-        coefficientLabel.setPreferredSize(labelDim);
+        coefficientLabel.setPreferredSize(LABEL_DIM);
         coefficientLabel.setHorizontalAlignment(JLabel.RIGHT);
-        afCoefficientText = new JTextField(TEXT_FIELD_LENGTH);
-        afCoefficientText.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
-        afCoefficientText.setInputVerifier(new TextFieldInputVerifier());
-        //--------------------------------------------------------
-        /*actFuncPanel.add(logistic, new GridBagConstraints(0, 0, 2, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-        actFuncPanel.add(hyperbolicTangent, new GridBagConstraints(0, 1, 2, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-        actFuncPanel.add(sine, new GridBagConstraints(0, 2, 2, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-        actFuncPanel.add(exp, new GridBagConstraints(0, 3, 2, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 0, 0), 0, 0));
-                */
+        afCoefficientTextField = new JTextField(TEXT_FIELD_LENGTH);
+        afCoefficientTextField.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
+        afCoefficientTextField.setInputVerifier(new TextFieldInputVerifier());
 
         actFuncPanel.add(activationFunctionsBox, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(15, 10, 0, 0), 0, 0));
         actFuncPanel.add(coefficientLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        actFuncPanel.add(afCoefficientText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        actFuncPanel.add(afCoefficientTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         //-------------------------------------------------------------
-        estimateText = new JTextField(TEXT_FIELD_LENGTH);
-        estimateText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
-        estimateText.setInputVerifier(new TextFieldInputVerifier());
-        numItsText = new JTextField(TEXT_FIELD_LENGTH);
-        numItsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        numItsText.setInputVerifier(new TextFieldInputVerifier());
-        learnSpeedText = new JTextField(TEXT_FIELD_LENGTH);
-        learnSpeedText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
-        learnSpeedText.setInputVerifier(new TextFieldInputVerifier());
+        estimateTextField = new JTextField(TEXT_FIELD_LENGTH);
+        estimateTextField.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        estimateTextField.setInputVerifier(new TextFieldInputVerifier());
+        numItsTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numItsTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numItsTextField.setInputVerifier(new TextFieldInputVerifier());
+        learnSpeedTextField = new JTextField(TEXT_FIELD_LENGTH);
+        learnSpeedTextField.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        learnSpeedTextField.setInputVerifier(new TextFieldInputVerifier());
 
-        momentumText = new JTextField(TEXT_FIELD_LENGTH);
-        momentumText.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
-        momentumText.setInputVerifier(new TextFieldInputVerifier());
+        momentumTextField = new JTextField(TEXT_FIELD_LENGTH);
+        momentumTextField.setDocument(new EstimateDocument(INT_FIELD_LENGTH));
+        momentumTextField.setInputVerifier(new TextFieldInputVerifier());
         //------------------------------------------------------------
         JLabel errLabel = new JLabel(ERROR_TITLE);
-        errLabel.setPreferredSize(labelDim);
+        errLabel.setPreferredSize(LABEL_DIM);
         errLabel.setHorizontalAlignment(JLabel.RIGHT);
         JLabel itsLabel = new JLabel(MAX_ITS_TITLE);
-        itsLabel.setPreferredSize(labelDim);
+        itsLabel.setPreferredSize(LABEL_DIM);
         itsLabel.setHorizontalAlignment(JLabel.RIGHT);
         JLabel speedLabel = new JLabel(SPEED_COEFFICIENT_TITLE);
-        speedLabel.setPreferredSize(labelDim);
+        speedLabel.setPreferredSize(LABEL_DIM);
         speedLabel.setHorizontalAlignment(JLabel.RIGHT);
         JLabel momentumLabel = new JLabel(MOMENTUM_COEFFICIENT_TITLE);
-        speedLabel.setPreferredSize(labelDim);
+        speedLabel.setPreferredSize(LABEL_DIM);
         speedLabel.setHorizontalAlignment(JLabel.RIGHT);
         //------------------------------------------------------------
         learningPanel.add(errLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        learningPanel.add(estimateText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        learningPanel.add(estimateTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         learningPanel.add(itsLabel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        learningPanel.add(numItsText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        learningPanel.add(numItsTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         learningPanel.add(speedLabel, new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        learningPanel.add(learnSpeedText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        learningPanel.add(learnSpeedTextField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         learningPanel.add(momentumLabel, new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        learningPanel.add(momentumText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        learningPanel.add(momentumTextField, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         //------------------------------------------------------------------
         JButton okButton = ButtonUtils.createOkButton();
@@ -255,27 +221,27 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(hidLayersText, afCoefficientText,
-                        estimateText, numItsText, learnSpeedText, momentumText);
+                JTextField text = GuiUtils.searchFirstEmptyField(hidLayersTextField, afCoefficientTextField,
+                        estimateTextField, numItsTextField, learnSpeedTextField, momentumTextField);
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(NetworkOptionsDialog.this, text);
                 } else {
-                    text = hidLayersText;
+                    text = hidLayersTextField;
                     try {
-                        network().setHiddenLayer(hidLayersText.getText());
+                        network().setHiddenLayer(hidLayersTextField.getText());
                         network().setActivationFunction(getSelectedActivationFunction());
-                        network().setMaxIterationsNum(Integer.parseInt(numItsText.getText()));
-                        text = afCoefficientText;
+                        network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText()));
+                        text = afCoefficientTextField;
                         getActivationFunction().setCoefficient(doubleFormat.
-                                parse(afCoefficientText.getText()).doubleValue());
-                        text = estimateText;
+                                parse(afCoefficientTextField.getText()).doubleValue());
+                        text = estimateTextField;
                         network().setMinError(estimateFormat.
-                                parse(estimateText.getText()).doubleValue());
-                        text = learnSpeedText;
+                                parse(estimateTextField.getText()).doubleValue());
+                        text = learnSpeedTextField;
                         learningAlgorithm().setLearningRate(estimateFormat.
-                                parse(learnSpeedText.getText()).doubleValue());
+                                parse(learnSpeedTextField.getText()).doubleValue());
                         learningAlgorithm().setMomentum(estimateFormat.
-                                parse(momentumText.getText()).doubleValue());
+                                parse(momentumTextField.getText()).doubleValue());
                         dialogResult = true;
                         setVisible(false);
                     } catch (Exception e) {
@@ -307,7 +273,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     public void showDialog() {
         this.setOptions();
         super.showDialog();
-        hidLayersText.requestFocusInWindow();
+        hidLayersTextField.requestFocusInWindow();
     }
 
     private void createFormats() {
@@ -317,73 +283,21 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
     }
 
     private void setOptions() {
-        inNeuronsText.setText(String.valueOf(network().inLayerNeuronsNum()));
-        outNeuronsText.setText(String.valueOf(network().outLayerNeuronsNum()));
-        hidLayersText.setText(getHiddenLayer());
-        afCoefficientText.setText(doubleFormat.format(activationFunctionCoefficient()));
-        estimateText.setText(estimateFormat.format(minError()));
-        numItsText.setText(String.valueOf(maxIts()));
-        learnSpeedText.setText(estimateFormat.format(learningSpeed()));
-        momentumText.setText(estimateFormat.format(momentum()));
-
+        inNeuronsTextField.setText(String.valueOf(network().inLayerNeuronsNum()));
+        outNeuronsTextField.setText(String.valueOf(network().outLayerNeuronsNum()));
+        hidLayersTextField.setText(getHiddenLayer());
+        afCoefficientTextField.setText(doubleFormat.format(activationFunctionCoefficient()));
+        estimateTextField.setText(estimateFormat.format(minError()));
+        numItsTextField.setText(String.valueOf(maxIts()));
+        learnSpeedTextField.setText(estimateFormat.format(learningSpeed()));
+        momentumTextField.setText(estimateFormat.format(momentum()));
         ActivationFunctionType activationFunctionType = getActivationFunction().getActivationFunctionType();
         activationFunctionsBox.setSelectedItem(activationFunctionType.getDescription());
-
-        /*activationFunctionType.handle(new ActivationFunctionTypeVisitor<Void>() {
-
-            @Override
-            public Void caseLogistic() {
-                logistic.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void caseHyperbolicTangent() {
-                hyperbolicTangent.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void caseSine() {
-                sine.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void caseExponential() {
-                exp.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void caseSoftSign() {
-                exp.setSelected(true);
-                return null;
-            }
-
-        });*/
-
     }
 
     private ActivationFunction getSelectedActivationFunction() {
-
-        /*for (Enumeration<AbstractButton> buttonEnumeration = activationFunctionsGroup.getElements();
-                buttonEnumeration.hasMoreElements();) {
-
-            AbstractButton abstractButton = buttonEnumeration.nextElement();
-
-            if (abstractButton.isSelected()) {
-
-                ActivationFunctionType activationFunctionType =
-                        ActivationFunctionType.findByDescription(abstractButton.getText());
-
-                return activationFunctionType.handle(activationFunctionBuilder);
-            }
-        }*/
-
         ActivationFunctionType activationFunctionType =
                 ActivationFunctionType.findByDescription(activationFunctionsBox.getSelectedItem().toString());
-
         return activationFunctionType.handle(activationFunctionBuilder);
     }
 

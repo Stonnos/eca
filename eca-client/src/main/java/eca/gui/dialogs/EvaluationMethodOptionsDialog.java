@@ -38,8 +38,8 @@ public class EvaluationMethodOptionsDialog extends JDialog {
     public static final int MAXIMUM_NUMBER_OF_TESTS = 100;
     public static final String OPTIONS_TITLE = "Настройки";
 
-    private JRadioButton useTrainingSet;
-    private JRadioButton useTestingSet;
+    private JRadioButton useTrainingSetRadioButton;
+    private JRadioButton useTestingSetRadioButton;
     private JSpinner foldsSpinner = new JSpinner();
     private JSpinner testsSpinner = new JSpinner();
 
@@ -61,22 +61,22 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         evaluationMethod.accept(new EvaluationMethodVisitor<Void>() {
             @Override
             public Void evaluateModel() {
-                useTrainingSet.setSelected(true);
+                useTrainingSetRadioButton.setSelected(true);
                 return null;
             }
 
             @Override
             public Void crossValidateModel() {
-                useTestingSet.setSelected(true);
+                useTestingSetRadioButton.setSelected(true);
                 return null;
             }
         });
     }
 
     public final void setParams() {
-        evaluationMethod = useTrainingSet.isSelected() ?
+        evaluationMethod = useTrainingSetRadioButton.isSelected() ?
                 EvaluationMethod.TRAINING_DATA : EvaluationMethod.CROSS_VALIDATION;
-        if (useTestingSet.isSelected()) {
+        if (useTestingSetRadioButton.isSelected()) {
             numFolds = ((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue();
             numTests = ((SpinnerNumberModel) testsSpinner.getModel()).getNumber().intValue();
         }
@@ -94,10 +94,10 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(methodTitle));
         ButtonGroup group = new ButtonGroup();
-        useTrainingSet = new JRadioButton(initialMethodTitle);
-        useTestingSet = new JRadioButton(cvMethodTitle);
-        group.add(useTrainingSet);
-        group.add(useTestingSet);
+        useTrainingSetRadioButton = new JRadioButton(initialMethodTitle);
+        useTestingSetRadioButton = new JRadioButton(cvMethodTitle);
+        group.add(useTrainingSetRadioButton);
+        group.add(useTestingSetRadioButton);
         //---------------------------------
         foldsSpinner.setModel(new SpinnerNumberModel(numFolds, MINIMUM_NUMBER_OF_FOLDS,
                 MAXIMUM_NUMBER_OF_FOLDS, 1));
@@ -106,11 +106,11 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         foldsSpinner.setEnabled(false);
         testsSpinner.setEnabled(false);
         //--------------------------------
-        useTestingSet.addItemListener(new ItemListener() {
+        useTestingSetRadioButton.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
-                foldsSpinner.setEnabled(useTestingSet.isSelected());
-                testsSpinner.setEnabled(useTestingSet.isSelected());
+                foldsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
+                testsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
             }
         });
         //---------------------------------
@@ -134,9 +134,9 @@ public class EvaluationMethodOptionsDialog extends JDialog {
             }
         });
         //-----------------------------------------------
-        panel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+        panel.add(useTrainingSetRadioButton, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        panel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
+        panel.add(useTestingSetRadioButton, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         panel.add(new JLabel(blocksNumTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));

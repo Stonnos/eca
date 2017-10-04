@@ -7,6 +7,8 @@ package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.logging.LoggerUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +20,7 @@ import java.awt.event.ItemListener;
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class JFontChooser extends JDialog {
 
     private static final int MIN_FONT_SIZE = 8;
@@ -32,8 +35,9 @@ public class JFontChooser extends JDialog {
     private static final String FONT_EXAMPLE_TITLE = "Образец";
     private static final String FONT_EXAMPLE = "Аа Яя Aa Zz";
     private static final int DEFAULT_FONT_SIZE = 12;
+    private static final Dimension COMBO_BOX_DIM = new Dimension(175, 25);
 
-    private JComboBox<String> fontType;
+    private JComboBox<String> fontTypeBox;
     private JComboBox<String> fontSize;
     private JComboBox<String> fontStyle;
     private JTextArea exampleField;
@@ -43,7 +47,11 @@ public class JFontChooser extends JDialog {
     private boolean dialogResult;
 
     static {
-        FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        try {
+            FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        } catch (Throwable ex) {
+            LoggerUtils.error(log, ex);
+        }
     }
 
     public JFontChooser(Window parent, Font font) {
@@ -60,7 +68,7 @@ public class JFontChooser extends JDialog {
     }
 
     public String getFontType() {
-        return fontType.getSelectedItem().toString();
+        return fontTypeBox.getSelectedItem().toString();
     }
 
     public int getFontSize() {
@@ -96,14 +104,13 @@ public class JFontChooser extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
         //---------------------------------
-        fontType = new JComboBox<>(FONTS);
+        fontTypeBox = new JComboBox<>(FONTS);
         fontSize = new JComboBox<>();
         fontStyle = new JComboBox<>(STYLES);
-        Dimension comboBoxDim = new Dimension(175, 25);
-        fontType.setPreferredSize(comboBoxDim);
-        fontSize.setPreferredSize(comboBoxDim);
-        fontStyle.setPreferredSize(comboBoxDim);
-        fontType.setRenderer(new DefaultListCellRenderer() {
+        fontTypeBox.setPreferredSize(COMBO_BOX_DIM);
+        fontSize.setPreferredSize(COMBO_BOX_DIM);
+        fontStyle.setPreferredSize(COMBO_BOX_DIM);
+        fontTypeBox.setRenderer(new DefaultListCellRenderer() {
 
             @Override
             public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
@@ -147,7 +154,7 @@ public class JFontChooser extends JDialog {
             fontSize.addItem(String.valueOf(i));
         }
         fontSize.setSelectedItem(String.valueOf(font.getSize()));
-        fontType.setSelectedItem(font.getName());
+        fontTypeBox.setSelectedItem(font.getName());
         switch (font.getStyle()) {
             case Font.PLAIN:
                 fontStyle.setSelectedIndex(0);
@@ -169,7 +176,7 @@ public class JFontChooser extends JDialog {
                 setExample();
             }
         };
-        fontType.addItemListener(listener);
+        fontTypeBox.addItemListener(listener);
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
         //----------------------------------
@@ -184,7 +191,7 @@ public class JFontChooser extends JDialog {
         panel.add(new JLabel(FONT_TYPE_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        panel.add(fontType, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        panel.add(fontTypeBox, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         panel.add(new JLabel(FONT_SIZE_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));

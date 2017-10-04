@@ -3,23 +3,30 @@ package eca.client;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.TechnicalStatusVisitor;
+import eca.client.exception.EcaServiceException;
 import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.model.InputData;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Implements service for communication with eca - service api.
+ *
  * @author Roman Batygin
  */
 @Slf4j
 public class RestClientImpl implements RestClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
+    private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE = "Empty response has been received!";
+    private static final String ERROR_MESSAGE_FORMAT = "These was an error [%d, %s]";
+    private static final String TIMEOUT_MESSAGE = "There was a timeout.";
 
     /**
      * Evaluation test method
@@ -111,7 +118,19 @@ public class RestClientImpl implements RestClient {
         ResponseEntity<EvaluationResponse> response = restTemplate.postForEntity(PROPERTIES.getEcaServiceUrl(),
                 evaluationRequestDto, EvaluationResponse.class);
 
+        if (!HttpStatus.OK.equals(response.getStatusCode())) {
+            String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
+                    response.getStatusCode().getReasonPhrase(), response.getStatusCode().value());
+            log.error(errorMessage);
+            throw new EcaServiceException(errorMessage);
+        }
+
         final EvaluationResponse classificationResultsDto = response.getBody();
+
+        if (classificationResultsDto == null) {
+            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+        }
 
         log.info("Received response from eca - service with status [{}] for model '{}', data '{}'.",
                 classificationResultsDto.getStatus(), inputData.getClassifier().getClass().getSimpleName(),
@@ -125,12 +144,12 @@ public class RestClientImpl implements RestClient {
 
             @Override
             public EvaluationResults caseErrorStatus() {
-                throw new RuntimeException(classificationResultsDto.getErrorMessage());
+                throw new EcaServiceException(classificationResultsDto.getErrorMessage());
             }
 
             @Override
             public EvaluationResults caseTimeoutStatus() {
-                throw new RuntimeException("There was a timeout.");
+                throw new EcaServiceException(TIMEOUT_MESSAGE);
             }
         });
 

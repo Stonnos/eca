@@ -45,13 +45,13 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
     private OptionsSetter optionsSetter;
 
-    private JTextField minObjText;
-    private JTextField maxDepthText;
-    private JCheckBox randomBox;
-    private JTextField numRandomAttrText;
+    private JTextField minObjTextField;
+    private JTextField maxDepthTextField;
+    private JCheckBox randomTreeBox;
+    private JTextField numRandomAttrTextField;
     private JCheckBox binaryTreeBox;
     private JCheckBox randomSplitsBox;
-    private JTextField numRandomSplitsText;
+    private JTextField numRandomSplitsTextField;
 
     public DecisionTreeOptionsDialog(Window parent, String title,
                                      DecisionTreeClassifier tree, Instances data) {
@@ -62,22 +62,22 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_MESSAGE));
-        minObjText = new JTextField(TEXT_FIELD_LENGTH);
-        minObjText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        minObjText.setInputVerifier(new TextFieldInputVerifier());
-        maxDepthText = new JTextField(TEXT_FIELD_LENGTH);
-        maxDepthText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
-        maxDepthText.setInputVerifier(new TextFieldInputVerifier());
+        minObjTextField = new JTextField(TEXT_FIELD_LENGTH);
+        minObjTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        minObjTextField.setInputVerifier(new TextFieldInputVerifier());
+        maxDepthTextField = new JTextField(TEXT_FIELD_LENGTH);
+        maxDepthTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        maxDepthTextField.setInputVerifier(new TextFieldInputVerifier());
 
-        randomBox = new JCheckBox(RANDOM_TREE_MESSAGE);
+        randomTreeBox = new JCheckBox(RANDOM_TREE_MESSAGE);
 
-        numRandomAttrText = new JTextField(TEXT_FIELD_LENGTH);
-        numRandomAttrText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numRandomAttrTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numRandomAttrTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
-        randomBox.addItemListener(new ItemListener() {
+        randomTreeBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
-                numRandomAttrText.setEditable(randomBox.isSelected());
+                numRandomAttrTextField.setEditable(randomTreeBox.isSelected());
             }
         });
 
@@ -85,13 +85,13 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
 
         randomSplitsBox = new JCheckBox(RANDOM_SPLITS_TEXT);
 
-        numRandomSplitsText = new JTextField(TEXT_FIELD_LENGTH);
-        numRandomSplitsText.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+        numRandomSplitsTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numRandomSplitsTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
         randomSplitsBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent evt) {
-                numRandomSplitsText.setEditable(randomSplitsBox.isSelected());
+                numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected());
             }
         });
 
@@ -102,17 +102,17 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         optionPanel.add(new JLabel(MIN_OBJ_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(minObjText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        optionPanel.add(minObjTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(new JLabel(MAX_DEPTH_MESSAGE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(maxDepthText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        optionPanel.add(maxDepthTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(randomBox, new GridBagConstraints(0, 2, 2, 1, 1, 1,
+        optionPanel.add(randomTreeBox, new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
         optionPanel.add(new JLabel(NUM_RANDOM_ATTR_MESSAGE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numRandomAttrText, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        optionPanel.add(numRandomAttrTextField, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(binaryTreeBox, new GridBagConstraints(0, 4, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
@@ -120,7 +120,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 15, 0, 10), 0, 0));
         optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 6, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numRandomSplitsText, new GridBagConstraints(1, 6, 1, 1, 1, 1,
+        optionPanel.add(numRandomSplitsTextField, new GridBagConstraints(1, 6, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         addAdditionalFormFields(optionPanel);
@@ -142,14 +142,14 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 JTextField text = findFirstEmptyField();
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
-                } else if (randomBox.isSelected()
-                        && Integer.parseInt(numRandomAttrText.getText()) > data.numAttributes() - 1) {
+                } else if (randomTreeBox.isSelected()
+                        && Integer.parseInt(numRandomAttrTextField.getText()) > data.numAttributes() - 1) {
 
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
                             String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
                             INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
 
-                    numRandomAttrText.requestFocusInWindow();
+                    numRandomAttrTextField.requestFocusInWindow();
                 } else {
                     try {
                         optionsSetter.setClassifierOptions();
@@ -173,7 +173,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);
-        minObjText.requestFocusInWindow();
+        minObjTextField.requestFocusInWindow();
     }
 
     private void addAdditionalFormFields(JPanel optionPanel) {
@@ -208,18 +208,18 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     public final void showDialog() {
         optionsSetter.setFormOptions();
         super.showDialog();
-        minObjText.requestFocusInWindow();
+        minObjTextField.requestFocusInWindow();
     }
 
     private JTextField findFirstEmptyField() {
-        if (isEmpty(minObjText)) {
-            return minObjText;
-        } else if (isEmpty(maxDepthText)) {
-            return maxDepthText;
-        } else if (randomBox.isSelected() && isEmpty(numRandomAttrText)) {
-            return numRandomAttrText;
-        } else if (isEmpty(numRandomSplitsText)) {
-            return numRandomSplitsText;
+        if (isEmpty(minObjTextField)) {
+            return minObjTextField;
+        } else if (isEmpty(maxDepthTextField)) {
+            return maxDepthTextField;
+        } else if (randomTreeBox.isSelected() && isEmpty(numRandomAttrTextField)) {
+            return numRandomAttrTextField;
+        } else if (isEmpty(numRandomSplitsTextField)) {
+            return numRandomSplitsTextField;
         } else {
             return null;
         }
@@ -228,32 +228,32 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     private class OptionsSetter {
 
         void setFormOptions() {
-            minObjText.setText(String.valueOf(classifier.getMinObj()));
-            maxDepthText.setText(String.valueOf(classifier.getMaxDepth()));
-            randomBox.setSelected(classifier.isRandomTree());
-            numRandomAttrText.setText(String.valueOf(classifier.numRandomAttr()));
-            numRandomAttrText.setEditable(randomBox.isSelected());
+            minObjTextField.setText(String.valueOf(classifier.getMinObj()));
+            maxDepthTextField.setText(String.valueOf(classifier.getMaxDepth()));
+            randomTreeBox.setSelected(classifier.isRandomTree());
+            numRandomAttrTextField.setText(String.valueOf(classifier.numRandomAttr()));
+            numRandomAttrTextField.setEditable(randomTreeBox.isSelected());
             binaryTreeBox.setSelected(classifier.getUseBinarySplits());
             randomSplitsBox.setSelected(classifier.isUseRandomSplits());
-            numRandomSplitsText.setText(String.valueOf(classifier.getNumRandomSplits()));
-            numRandomSplitsText.setEditable(randomSplitsBox.isSelected());
+            numRandomSplitsTextField.setText(String.valueOf(classifier.getNumRandomSplits()));
+            numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected());
         }
 
         void setClassifierOptions() {
-            classifier.setMinObj(Integer.parseInt(minObjText.getText()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthText.getText()));
-            if (randomBox.isSelected()) {
+            classifier.setMinObj(Integer.parseInt(minObjTextField.getText()));
+            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText()));
+            if (randomTreeBox.isSelected()) {
                 classifier.setRandomTree(true);
-                classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrText.getText()));
+                classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText()));
             }
             classifier.setUseBinarySplits(binaryTreeBox.isSelected());
             classifier.setUseRandomSplits(randomSplitsBox.isSelected());
 
             if (classifier.isUseRandomSplits()) {
                 try {
-                    classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsText.getText()));
+                    classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText()));
                 } catch (Exception e) {
-                    numRandomSplitsText.requestFocusInWindow();
+                    numRandomSplitsTextField.requestFocusInWindow();
                     throw new RuntimeException(e);
                 }
             }

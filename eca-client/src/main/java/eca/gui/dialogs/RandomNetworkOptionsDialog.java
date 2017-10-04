@@ -31,9 +31,9 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
 
     private final DecimalFormat estimateFormat = NumericFormat.getInstance();
 
-    private JTextField numClassifiersText;
-    private JTextField classifierMinErrorText;
-    private JTextField classifierMaxErrorText;
+    private JTextField numClassifiersTextField;
+    private JTextField classifierMinErrorTextField;
+    private JTextField classifierMaxErrorTextField;
     private JCheckBox useBootstrapSamplesCheckBox;
 
     public RandomNetworkOptionsDialog(Window parent, String title,
@@ -50,7 +50,7 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     public void showDialog() {
         this.setOptions();
         super.showDialog();
-        numClassifiersText.requestFocusInWindow();
+        numClassifiersTextField.requestFocusInWindow();
     }
 
     private void createFormat() {
@@ -59,9 +59,9 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     }
 
     private void setOptions() {
-        numClassifiersText.setText(String.valueOf(classifier.getIterationsNum()));
-        classifierMaxErrorText.setText(estimateFormat.format(classifier.getMaxError()));
-        classifierMinErrorText.setText(estimateFormat.format(classifier.getMinError()));
+        numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
+        classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
+        classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
         useBootstrapSamplesCheckBox.setSelected(classifier.isUseBootstrapSamples());
     }
 
@@ -69,31 +69,31 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         this.setLayout(new GridBagLayout());
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
-        numClassifiersText = new JTextField(TEXT_FIELD_LENGTH);
-        numClassifiersText.setDocument(new IntegerDocument(FIELD_LENGTH));
-        numClassifiersText.setInputVerifier(new TextFieldInputVerifier());
-        classifierMinErrorText = new JTextField(TEXT_FIELD_LENGTH);
-        classifierMinErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
-        classifierMinErrorText.setInputVerifier(new TextFieldInputVerifier());
-        classifierMaxErrorText = new JTextField(TEXT_FIELD_LENGTH);
-        classifierMaxErrorText.setDocument(new EstimateDocument(FIELD_LENGTH));
-        classifierMaxErrorText.setInputVerifier(new TextFieldInputVerifier());
+        numClassifiersTextField = new JTextField(TEXT_FIELD_LENGTH);
+        numClassifiersTextField.setDocument(new IntegerDocument(FIELD_LENGTH));
+        numClassifiersTextField.setInputVerifier(new TextFieldInputVerifier());
+        classifierMinErrorTextField = new JTextField(TEXT_FIELD_LENGTH);
+        classifierMinErrorTextField.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMinErrorTextField.setInputVerifier(new TextFieldInputVerifier());
+        classifierMaxErrorTextField = new JTextField(TEXT_FIELD_LENGTH);
+        classifierMaxErrorTextField.setDocument(new EstimateDocument(FIELD_LENGTH));
+        classifierMaxErrorTextField.setInputVerifier(new TextFieldInputVerifier());
 
         useBootstrapSamplesCheckBox = new JCheckBox(USE_BOOTSTRAP_SAMPLE_TEXT);
 
         optionPanel.add(new JLabel(ITS_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(numClassifiersText, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        optionPanel.add(numClassifiersTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         optionPanel.add(new JLabel(MIN_ERROR_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(classifierMinErrorText, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        optionPanel.add(classifierMinErrorTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(new JLabel(MAX_ERROR_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
-        optionPanel.add(classifierMaxErrorText, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        optionPanel.add(classifierMaxErrorTextField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(useBootstrapSamplesCheckBox, new GridBagConstraints(0, 3, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 20, 10), 0, 0));
@@ -112,20 +112,21 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                JTextField textField = GuiUtils.searchFirstEmptyField(numClassifiersText, classifierMinErrorText,
-                        classifierMaxErrorText);
+                JTextField textField = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
+                        classifierMinErrorTextField,
+                        classifierMaxErrorTextField);
                 if (textField != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(RandomNetworkOptionsDialog.this, textField);
                 } else {
                     try {
-                        textField = numClassifiersText;
-                        classifier.setIterationsNum(Integer.parseInt(numClassifiersText.getText()));
-                        textField = classifierMinErrorText;
+                        textField = numClassifiersTextField;
+                        classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
+                        textField = classifierMinErrorTextField;
                         classifier.setMinError(estimateFormat
-                                .parse(classifierMinErrorText.getText()).doubleValue());
-                        textField = classifierMaxErrorText;
+                                .parse(classifierMinErrorTextField.getText()).doubleValue());
+                        textField = classifierMaxErrorTextField;
                         classifier.setMaxError(estimateFormat
-                                .parse(classifierMaxErrorText.getText()).doubleValue());
+                                .parse(classifierMaxErrorTextField.getText()).doubleValue());
                         classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
                         dialogResult = true;
                         setVisible(false);

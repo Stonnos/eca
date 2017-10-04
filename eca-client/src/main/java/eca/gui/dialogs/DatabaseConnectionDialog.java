@@ -52,7 +52,6 @@ public class DatabaseConnectionDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();
-        //-----------------------------------
         this.pack();
         this.setLocationRelativeTo(parent);
         hostField.requestFocusInWindow();

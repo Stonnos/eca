@@ -21,6 +21,9 @@ public class EcaServiceOptionsDialog extends JDialog {
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
 
     private static final String TITLE = "Настройки сервиса ECA";
+    private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
+    private static final String INVALID_PROPERTY_ERROR_FORMAT = "Недопустимое значение свойства '%s'";
+    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
 
     private final EcaServiceOptionsTableModel model = new EcaServiceOptionsTableModel();
 
@@ -30,7 +33,7 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.setResizable(false);
 
         JScrollPane scrollPanel = new JScrollPane(new EcaServicePropertiesTable(model));
-        scrollPanel.setPreferredSize(new Dimension(500, 150));
+        scrollPanel.setPreferredSize(SCROLL_PANE_PREFERRED_SIZE);
 
         JButton okButton = ButtonUtils.createOkButton();
 
@@ -43,15 +46,13 @@ public class EcaServiceOptionsDialog extends JDialog {
                     for (Iterator<Entry> iterator = model.getOptions(); iterator.hasNext(); ) {
                         Entry entry = iterator.next();
                         if (StringUtils.isBlank(entry.getValue())) {
-                            throw new Exception(String.format("Укажите значение свойства '%s'",
-                                    entry.getKey()));
+                            throw new Exception(String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
                         }
 
                         if (entry.getKey().equals(EcaServiceProperties.ECA_SERVICE_ENABLED)) {
                             if (!entry.getValue().equalsIgnoreCase("false") &&
                                     !entry.getValue().equalsIgnoreCase("true")) {
-                                throw new Exception(String.format("Недопустимое значение свойства '%s'",
-                                        entry.getKey()));
+                                throw new Exception(String.format(INVALID_PROPERTY_ERROR_FORMAT, entry.getKey()));
                             }
                         }
 

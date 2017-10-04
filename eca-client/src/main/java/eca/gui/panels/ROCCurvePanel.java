@@ -36,55 +36,61 @@ public class ROCCurvePanel extends JPanel {
     private static final String TITLE = "График ROC кривой";
     private static final String X_AXIS_TITLE = "100 - Специфичность (Specificity), %";
     private static final String Y_AXIS_TITLE = "Чувствительность (Sensitivity), %";
+    private static final String ROC_CURVE_DATA_TITLE = "Данные ROC - кривой";
+    private static final String SHOW_DATA_MENU_TEXT = "Показать данные";
+    private static final String ALL_CLASSES_TEXT = "Все классы";
+    private static final String CLASS_FORMAT = "Класс %s";
+    private static final int IMAGE_WIDTH = 650;
+    private static final int IMAGE_HEIGHT = 500;
+    private static final Dimension PLOT_BOX_DIM = new Dimension(300, 25);
 
-    private final RocCurve curve;
-    private ChartPanel panel;
+    private final RocCurve rocCurve;
+    private ChartPanel chartPanel;
     private JFreeChart[] plots;
     private JFrame[] frames;
     private JComboBox<String> plotBox;
-    private final JFrame frame;
+    private final JFrame parentFrame;
 
-    public ROCCurvePanel(RocCurve curve, JFrame frame, final int digits) {
-        this.curve = curve;
-        this.frame = frame;
+    public ROCCurvePanel(RocCurve rocCurve, JFrame parentFrame, final int digits) {
+        this.rocCurve = rocCurve;
+        this.parentFrame = parentFrame;
         this.createPlots();
         this.createFrames();
         this.setLayout(new GridBagLayout());
         //---------------------------------
         plotBox = new JComboBox<>();
-        Dimension dim = new Dimension(300, 25);
-        plotBox.setPreferredSize(dim);
-        plotBox.setMaximumSize(dim);
-        plotBox.setMinimumSize(dim);
-        Attribute classAttr = curve.getData().classAttribute();
+        plotBox.setPreferredSize(PLOT_BOX_DIM);
+        plotBox.setMaximumSize(PLOT_BOX_DIM);
+        plotBox.setMinimumSize(PLOT_BOX_DIM);
+        Attribute classAttr = rocCurve.getData().classAttribute();
         for (Enumeration i = classAttr.enumerateValues(); i.hasMoreElements(); ) {
-            plotBox.addItem("Класс " + i.nextElement());
+            plotBox.addItem(String.format(CLASS_FORMAT, i.nextElement()));
         }
-        plotBox.addItem("Все классы");
+        plotBox.addItem(ALL_CLASSES_TEXT);
         plotBox.setSelectedIndex(plots.length - 1);
         plotBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                panel.setChart(plots[plotBox.getSelectedIndex()]);
+                chartPanel.setChart(plots[plotBox.getSelectedIndex()]);
             }
         });
         //---------------------------------
-        JMenuItem dataMenu = new JMenuItem("Показать данные");
+        JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
         dataMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 int i = plotBox.getSelectedIndex();
                 if (i < plots.length - 1) {
                     if (frames[i] == null) {
-                        frames[i] = new DataFrame(curve.getROCCurve(i), digits,
-                                curve.getData().classAttribute().value(i));
+                        frames[i] = new DataFrame(rocCurve.getROCCurve(i), digits,
+                                rocCurve.getData().classAttribute().value(i));
                     }
                     frames[i].setVisible(true);
                 }
             }
         });
         //-----------------------------------------
-        panel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+        chartPanel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
 
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -101,9 +107,9 @@ public class ROCCurvePanel extends JPanel {
 
             }
         });
-        panel.getPopupMenu().add(dataMenu);
+        chartPanel.getPopupMenu().add(dataMenu);
         //--------------------------------
-        frame.addWindowListener(new WindowAdapter() {
+        parentFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
                 for (JFrame frame : frames) {
@@ -114,24 +120,24 @@ public class ROCCurvePanel extends JPanel {
             }
         });
         //---------------------------------
-        this.add(panel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        this.add(chartPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         this.add(plotBox, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 5, 0), 0, 0));
     }
 
     private void createFrames() {
-        frames = new DataFrame[curve.getData().numClasses()];
+        frames = new DataFrame[rocCurve.getData().numClasses()];
     }
 
     private void createPlots() {
-        plots = new JFreeChart[curve.getData().numClasses() + 1];
+        plots = new JFreeChart[rocCurve.getData().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
 
-        for (int i = 0; i < curve.getData().numClasses(); i++) {
-            Instances rocSet = curve.getROCCurve(i);
+        for (int i = 0; i < rocCurve.getData().numClasses(); i++) {
+            Instances rocSet = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
-            XYSeries points = new XYSeries(curve.getData().classAttribute().value(i));
+            XYSeries points = new XYSeries(rocCurve.getData().classAttribute().value(i));
             for (int j = 0; j < rocSet.numInstances(); j++) {
                 Instance obj = rocSet.instance(j);
                 points.add(obj.value(4) * 100, obj.value(5) * 100);
@@ -144,18 +150,15 @@ public class ROCCurvePanel extends JPanel {
                             PlotOrientation.VERTICAL,
                             true, true, false);
         }
-        plots[plots.length - 1] = ChartFactory
-                .createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
-                        allPlots,
-                        PlotOrientation.VERTICAL,
-                        true, true, false);
+        plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
+                        allPlots, PlotOrientation.VERTICAL, true, true, false);
 
-        panel = new ChartPanel(plots[plots.length - 1]);
+        chartPanel = new ChartPanel(plots[plots.length - 1]);
     }
 
     public Image createImage() {
-        JFreeChart chart = panel.getChart();
-        return chart.createBufferedImage(650, 500);
+        JFreeChart chart = chartPanel.getChart();
+        return chart.createBufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT);
     }
 
     /**
@@ -164,9 +167,9 @@ public class ROCCurvePanel extends JPanel {
     private class DataFrame extends JFrame {
 
         DataFrame(Instances data, int digits, String className) {
-            this.setTitle("Данные ROC - кривой");
+            this.setTitle(ROC_CURVE_DATA_TITLE);
             this.setLayout(new GridBagLayout());
-            this.setIconImage(frame.getIconImage());
+            this.setIconImage(parentFrame.getIconImage());
             ROCThresholdTable table = new ROCThresholdTable(data, digits, className);
             JScrollPane scrollPanel = new JScrollPane(table);
             JButton okButton = ButtonUtils.createOkButton();
@@ -186,7 +189,7 @@ public class ROCCurvePanel extends JPanel {
                     new Insets(4, 0, 4, 0), 0, 0));
             //----------------------------------------
             this.pack();
-            this.setLocationRelativeTo(frame);
+            this.setLocationRelativeTo(parentFrame);
             this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         }
     }

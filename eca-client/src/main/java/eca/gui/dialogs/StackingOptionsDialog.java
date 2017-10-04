@@ -9,6 +9,7 @@ import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
+import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.metrics.KNearestNeighbours;
@@ -47,17 +48,19 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             ClassifiersNamesDictionary.NEURAL_NETWORK,
             ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN};
 
-    private JList<String> algorithms;
-    private JList<String> selectedAlgorithms;
+    private static final Dimension ALGORITHMS_LIST_DIM = new Dimension(300, 180);
+
+    private JList<String> algorithmsList;
+    private JList<String> selectedAlgorithmsList;
     private BaseClassifiersListModel baseClassifiersListModel;
     private JComboBox<String> metaClassifierBox;
-    private JButton options;
+    private JButton metaOptionsButton;
 
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private final JSpinner foldsSpinner = new JSpinner();
 
-    private BaseOptionsDialog metaCls;
+    private BaseOptionsDialog metaClsOptionsDialog;
 
     public StackingOptionsDialog(Window parent, String title,
                                  StackingClassifier stackingClassifier, Instances data, final int digits) {
@@ -73,7 +76,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
 
     public void setMetaEnabled(boolean flag) {
         metaClassifierBox.setEnabled(flag);
-        options.setEnabled(flag);
+        metaOptionsButton.setEnabled(flag);
     }
 
     public void addClassifiers(ClassifiersSet classifiers) {
@@ -118,24 +121,23 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             }
         });
 
-        Dimension dim = new Dimension(300, 180);
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
-        algorithms.setPreferredSize(dim);
-        algorithms.setMinimumSize(dim);
-        algorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
+        algorithmsList.setPreferredSize(ALGORITHMS_LIST_DIM);
+        algorithmsList.setMinimumSize(ALGORITHMS_LIST_DIM);
+        algorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //-------------------------------------------------
-        JScrollPane algorithmsPane = new JScrollPane(algorithms);
-        algorithmsPane.setPreferredSize(dim);
+        JScrollPane algorithmsPane = new JScrollPane(algorithmsList);
+        algorithmsPane.setPreferredSize(ALGORITHMS_LIST_DIM);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TEXT));
         JPanel selectedPanel = new JPanel(new GridBagLayout());
         baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
-        selectedAlgorithms = new JList<>(baseClassifiersListModel);
-        selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
+        selectedAlgorithmsList = new JList<>(baseClassifiersListModel);
+        selectedAlgorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane selectedPane = new JScrollPane(selectedAlgorithmsList);
         selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
         selectedPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TEXT));
-        selectedPane.setPreferredSize(dim);
+        selectedPane.setPreferredSize(ALGORITHMS_LIST_DIM);
         //-----------------------------------------------------------------
         final JButton addButton = new JButton(ADD_CLASSIFIER_BUTTON_TEXT);
         addButton.setEnabled(false);
@@ -145,43 +147,33 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.addElement(algorithms.getSelectedValue());
+                baseClassifiersListModel.addElement(algorithmsList.getSelectedValue());
             }
         });
         //-------------------------------------------------------------
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
+                baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());
                 removeButton.setEnabled(false);
             }
         });
         //-------------------------------------------------------------
-        algorithms.addListSelectionListener(new ListSelectionListener() {
+        algorithmsList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 addButton.setEnabled(true);
             }
         });
-        selectedAlgorithms.addListSelectionListener(new ListSelectionListener() {
+        selectedAlgorithmsList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 removeButton.setEnabled(!baseClassifiersListModel.isEmpty());
             }
         });
         //-------------------------------------------------------------
-        selectedAlgorithms.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int i = selectedAlgorithms.locationToIndex(e.getPoint());
-                    if (baseClassifiersListModel.getWindow(i) != null) {
-                        baseClassifiersListModel.getWindow(i).showDialog();
-                    }
-                }
-            }
-
-        });
+        selectedAlgorithmsList.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithmsList,
+                baseClassifiersListModel));
         //-------------------------------------------------------------
         algorithmsPanel.add(algorithmsPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
@@ -205,41 +197,41 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                 try {
                     switch ((String) metaClassifierBox.getSelectedItem()) {
                         case ClassifiersNamesDictionary.ID3:
-                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.ID3, new ID3(), data);
                             break;
 
                         case ClassifiersNamesDictionary.C45:
-                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.C45, new C45(), data);
                             break;
 
                         case ClassifiersNamesDictionary.CART:
-                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.CART, new CART(), data);
                             break;
 
                         case ClassifiersNamesDictionary.CHAID:
-                            metaCls = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.CHAID, new CHAID(), data);
                             break;
 
                         case ClassifiersNamesDictionary.NEURAL_NETWORK:
                             NeuralNetwork neuralNetwork = new NeuralNetwork(data);
                             neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
-                            metaCls = new NetworkOptionsDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new NetworkOptionsDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data);
                             break;
 
                         case ClassifiersNamesDictionary.LOGISTIC:
-                            metaCls = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data);
                             break;
 
                         case ClassifiersNamesDictionary.KNN:
                             KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                             kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
-                            metaCls = new KNNOptionDialog(StackingOptionsDialog.this,
+                            metaClsOptionsDialog = new KNNOptionDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.KNN, kNearestNeighbours, data);
                             break;
                     }
@@ -250,11 +242,11 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             }
         });
         metaClassifierBox.setSelectedIndex(1);
-        options = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
-        options.addActionListener(new ActionListener() {
+        metaOptionsButton = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
+        metaOptionsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                metaCls.showDialog();
+                metaClsOptionsDialog.showDialog();
             }
         });
         //----------------------------------------------------------------
@@ -262,7 +254,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         metaPanel.setBorder(PanelBorderUtils.createTitledBorder(META_CLASSIFIER_TITLE));
         metaPanel.add(metaClassifierBox, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        metaPanel.add(options, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        metaPanel.add(metaOptionsButton, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
         this.add(metaPanel, new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
@@ -287,7 +279,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                         set.addClassifier(frame.classifier());
                     }
                     classifier.setClassifiers(set);
-                    classifier.setMetaClassifier(metaCls.classifier());
+                    classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
                     dialogResult = true;
                     setVisible(false);
                 }

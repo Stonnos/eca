@@ -40,7 +40,6 @@ public class DataGeneratorDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();
-        //-----------------------------------
         this.pack();
         this.setLocationRelativeTo(parent);
         numAttributesField.requestFocusInWindow();
