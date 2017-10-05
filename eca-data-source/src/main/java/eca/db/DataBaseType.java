@@ -7,6 +7,9 @@ package eca.db;
 
 public enum DataBaseType {
 
+    /**
+     * MySQL data base.
+     */
     MYSQL(DataBaseDictionaryTypes.MYSQL, false) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
@@ -14,6 +17,9 @@ public enum DataBaseType {
         }
     },
 
+    /**
+     * PostgreSQL data base.
+     */
     POSTGRESQL(DataBaseDictionaryTypes.POSTGRESQL, false) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
@@ -21,6 +27,9 @@ public enum DataBaseType {
         }
     },
 
+    /**
+     * Oracle data base.
+     */
     ORACLE(DataBaseDictionaryTypes.ORACLE, false) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
@@ -28,6 +37,9 @@ public enum DataBaseType {
         }
     },
 
+    /**
+     * Microsoft Access data base.
+     */
     MS_ACCESS(DataBaseDictionaryTypes.MS_ACCESS, true) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
@@ -35,6 +47,9 @@ public enum DataBaseType {
         }
     },
 
+    /**
+     * SQL server data base.
+     */
     MSSQL(DataBaseDictionaryTypes.MSSQL, false) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
@@ -42,6 +57,9 @@ public enum DataBaseType {
         }
     },
 
+    /**
+     * SQLite data base.
+     */
     SQLITE(DataBaseDictionaryTypes.SQLITE, true) {
         @Override
         public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {

@@ -7,6 +7,9 @@ package eca.metrics.distances;
 
 public enum DistanceType {
 
+    /**
+     * Euclid distance
+     */
     EUCLID(DistanceDictionary.EUCLID_DESCRIPTION) {
         @Override
         public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
@@ -14,6 +17,9 @@ public enum DistanceType {
         }
     },
 
+    /**
+     * Square euclid distance
+     */
     SQUARE_EUCLID(DistanceDictionary.SQUARE_EUCLID_DESCRIPTION) {
         @Override
         public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
@@ -21,6 +27,9 @@ public enum DistanceType {
         }
     },
 
+    /**
+     * Manhattan distance
+     */
     MANHATTAN(DistanceDictionary.MANHATTAN_DISTANCE) {
         @Override
         public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
@@ -28,6 +37,9 @@ public enum DistanceType {
         }
     },
 
+    /**
+     * Chebyshev distance
+     */
     CHEBYSHEV(DistanceDictionary.CHEBYSHEV_DISTANCE) {
         @Override
         public <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor) {
