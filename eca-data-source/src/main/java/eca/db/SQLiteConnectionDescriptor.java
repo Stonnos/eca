@@ -5,7 +5,7 @@ package eca.db;
  *
  * @author Roman Batygin
  */
-public class SQLiteConnectionDescriptor extends MSAccessConnectionDescriptor {
+public class SQLiteConnectionDescriptor extends ConnectionDescriptor {
 
     /**
      * Creates <tt>SQLiteConnectionDescriptor</tt> object with given options.
@@ -16,14 +16,19 @@ public class SQLiteConnectionDescriptor extends MSAccessConnectionDescriptor {
      * @param password     user password
      */
     public SQLiteConnectionDescriptor(String host, String dataBaseName, String login, String password) {
-        super(host, dataBaseName, login, password);
+        super(DataBaseType.SQLITE, host, 0, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>SQLiteConnectionDescriptor</tt> object with default options.
      */
     public SQLiteConnectionDescriptor() {
+        super(DataBaseType.SQLITE);
+    }
 
+    @Override
+    public String getUrl() {
+        return getProtocol() + getHost() + getDataBaseName();
     }
 
     @Override

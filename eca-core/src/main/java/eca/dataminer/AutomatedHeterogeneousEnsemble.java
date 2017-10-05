@@ -10,7 +10,7 @@ import eca.core.evaluation.EvaluationResults;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.SamplingMethod;
+import eca.ensemble.sampling.SamplingMethod;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 

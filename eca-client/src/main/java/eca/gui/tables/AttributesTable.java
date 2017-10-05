@@ -50,7 +50,6 @@ public class AttributesTable extends JDataTableBase {
     public AttributesTable(InstancesTable table, final JComboBox<String> classBox) {
         super(new AttributesTableModel(table.data()));
         this.table = table;
-        //-------------------------------------------------------
         this.getColumnModel().getColumn(0).setPreferredWidth(50);
         this.getColumnModel().getColumn(0).setMaxWidth(50);
         this.getColumnModel().getColumn(0).setMinWidth(50);
@@ -263,7 +262,7 @@ public class AttributesTable extends JDataTableBase {
     private class ComboBoxRenderer extends JComboBox<String>
             implements TableCellRenderer {
 
-        public ComboBoxRenderer() {
+        ComboBoxRenderer() {
             this.addItem(AttributesTypesDictionary.NUMERIC);
             this.addItem(AttributesTypesDictionary.NOMINAL);
             this.addItem(AttributesTypesDictionary.DATE);
@@ -286,10 +285,9 @@ public class AttributesTable extends JDataTableBase {
      */
     private class JComboBoxEditor extends DefaultCellEditor {
 
-        public JComboBoxEditor(JComboBox<String> box) {
+        JComboBoxEditor(JComboBox<String> box) {
             super(box);
             this.setClickCountToStart(0);
-
         }
 
         @Override

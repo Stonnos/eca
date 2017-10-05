@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instance;

@@ -18,19 +18,14 @@ public class MSAccessConnectionDescriptor extends ConnectionDescriptor {
      * @param password     user password
      */
     public MSAccessConnectionDescriptor(String host, String dataBaseName, String login, String password) {
-        super(host, 0, dataBaseName, login, password);
+        super(DataBaseType.MS_ACCESS, host, 0, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>MSAccessConnectionDescriptor</tt> object with default options.
      */
     public MSAccessConnectionDescriptor() {
-
-    }
-
-    @Override
-    public boolean isEmbedded() {
-        return true;
+        super(DataBaseType.MS_ACCESS);
     }
 
     @Override

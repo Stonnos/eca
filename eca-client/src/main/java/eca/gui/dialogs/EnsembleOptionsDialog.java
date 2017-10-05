@@ -9,7 +9,7 @@ import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
-import eca.ensemble.SamplingMethod;
+import eca.ensemble.sampling.SamplingMethod;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.ButtonUtils;

@@ -8,14 +8,39 @@ package eca.neural.functions;
  */
 public interface ActivationFunctionTypeVisitor<T> {
 
+    /**
+     * Method executed in case if activation function type is LOGISTIC.
+     *
+     * @return generic object
+     */
     T caseLogistic();
 
+    /**
+     * Method executed in case if activation function type is HYPERBOLIC_TANGENT.
+     *
+     * @return generic object
+     */
     T caseHyperbolicTangent();
 
-    T caseSine();
+    /**
+     * Method executed in case if activation function type is SINUSOID.
+     *
+     * @return generic object
+     */
+    T caseSinusoid();
 
+    /**
+     * Method executed in case if activation function type is EXPONENTIAL.
+     *
+     * @return generic object
+     */
     T caseExponential();
 
+    /**
+     * Method executed in case if activation function type is SOFT_SIGN.
+     *
+     * @return generic object
+     */
     T caseSoftSign();
 
 }

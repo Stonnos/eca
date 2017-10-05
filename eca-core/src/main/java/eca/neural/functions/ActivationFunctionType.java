@@ -40,7 +40,7 @@ public enum ActivationFunctionType {
             ActivationFunctionFormulasDictionary.SINUSOID_FORMULA_FORMAT) {
         @Override
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
-            return activationFunctionTypeVisitor.caseSine();
+            return activationFunctionTypeVisitor.caseSinusoid();
         }
     },
 

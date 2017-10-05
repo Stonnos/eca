@@ -18,7 +18,7 @@ public class ActivationFunctionBuilder implements ActivationFunctionTypeVisitor<
     }
 
     @Override
-    public AbstractFunction caseSine() {
+    public AbstractFunction caseSinusoid() {
         return new SinusoidFunction();
     }
 

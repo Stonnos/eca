@@ -33,7 +33,8 @@ public class ExperimentTable extends JDataTableBase {
 
     private final JFrame parent;
     private final Instances data;
-    private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
+    private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
+
 
     public ExperimentTable(ArrayList<EvaluationResults> experiment,
                            JFrame parent, Instances data, int digits) throws Exception {
@@ -63,6 +64,7 @@ public class ExperimentTable extends JDataTableBase {
 
     public void addExperiment(EvaluationResults val) {
         experimentModel().add(val);
+        classificationResultsFrameBases.add(null);
     }
 
     public void clear() {
@@ -118,30 +120,36 @@ public class ExperimentTable extends JDataTableBase {
      */
     private class JButtonExperimentEditor extends JButtonEditor {
 
-        private EvaluationResults classifierDescriptor;
+        EvaluationResults classifierDescriptor;
+        int index;
 
-        public JButtonExperimentEditor() {
+        JButtonExperimentEditor() {
             super(ExperimentTableModel.RESULT_TITLE);
         }
 
         @Override
         protected void doOnPushing(JTable table, Object value,
                                    boolean isSelected, int row, int column) {
-            classifierDescriptor = experimentModel().get(row);
+            this.index = row;
+            this.classifierDescriptor = experimentModel().get(row);
         }
 
         @Override
         protected void doAfterPushing() {
             try {
-                ExperimentTableModel model = experimentModel();
-                ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
-                        .getSimpleName(), classifierDescriptor.getClassifier(), data,
-                        classifierDescriptor.getEvaluation(), model.digits());
-                ClassificationResultsFrameBase.createResults(result, model.digits());
-                StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
-                result.setStatisticsTable(stat.createStatistics(classifierDescriptor.getClassifier(),
-                        classifierDescriptor.getEvaluation()));
-                result.setVisible(true);
+                if (classificationResultsFrameBases.get(index) == null) {
+                    ExperimentTableModel model = experimentModel();
+                    ClassificationResultsFrameBase result =
+                            new ClassificationResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
+                                    .getSimpleName(), classifierDescriptor.getClassifier(), data,
+                                    classifierDescriptor.getEvaluation(), model.digits());
+                    ClassificationResultsFrameBase.createResults(result, model.digits());
+                    StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
+                    result.setStatisticsTable(stat.createStatistics(classifierDescriptor.getClassifier(),
+                            classifierDescriptor.getEvaluation()));
+                    classificationResultsFrameBases.set(index, result);
+                }
+                classificationResultsFrameBases.get(index).setVisible(true);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),

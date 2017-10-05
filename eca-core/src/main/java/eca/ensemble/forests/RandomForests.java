@@ -9,7 +9,7 @@ import eca.core.ListOptionsHandler;
 import eca.ensemble.Aggregator;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.IterativeEnsembleClassifier;
-import eca.ensemble.Sampler;
+import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.DecisionTreeDictionary;

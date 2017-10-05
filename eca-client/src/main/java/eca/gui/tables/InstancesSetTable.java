@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * @author Roman Batygin
@@ -17,6 +18,7 @@ import javax.swing.*;
 public class InstancesSetTable extends JDataTableBase {
 
     private JFrame parent;
+    private ArrayList<InstancesFrame> instancesFrameArrayList = new ArrayList<>();
 
     public InstancesSetTable(JFrame parent) {
         super(new InstancesSetTableModel());
@@ -34,6 +36,7 @@ public class InstancesSetTable extends JDataTableBase {
 
     public void addInstances(Instances data) {
         getInstancesSetTableModel().add(data);
+        instancesFrameArrayList.add(null);
     }
 
     /**
@@ -41,23 +44,27 @@ public class InstancesSetTable extends JDataTableBase {
      */
     private class JButtonInstancesEditor extends JButtonEditor {
 
-        private Instances data;
+        Instances data;
+        int index;
 
-        public JButtonInstancesEditor() {
+        JButtonInstancesEditor() {
             super(InstancesSetTableModel.RESULT_TITLE);
         }
 
         @Override
         protected void doOnPushing(JTable table, Object value,
                                    boolean isSelected, int row, int column) {
-            data = getInstancesSetTableModel().getInstances(row);
+            this.index = row;
+            this.data = getInstancesSetTableModel().getInstances(row);
         }
 
         @Override
         protected void doAfterPushing() {
             try {
-                InstancesFrame instancesFrame = new InstancesFrame(data, parent);
-                instancesFrame.setVisible(true);
+                if (instancesFrameArrayList.get(index) == null) {
+                    instancesFrameArrayList.set(index, new InstancesFrame(data, parent));
+                }
+                instancesFrameArrayList.get(index).setVisible(true);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(parent, e.getMessage(),

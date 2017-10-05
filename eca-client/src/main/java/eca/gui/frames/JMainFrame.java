@@ -238,7 +238,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        public DataInternalFrame(Instances data, JMenuItem menu) throws Exception {
+        DataInternalFrame(Instances data, JMenuItem menu) throws Exception {
             this.setLayout(new GridBagLayout());
             this.makeUpperPanel();
             this.makeLowerPanel();
@@ -254,23 +254,23 @@ public class JMainFrame extends JFrame {
             this.pack();
         }
 
-        public final void setMenu(JMenuItem menu) {
+        void setMenu(JMenuItem menu) {
             this.menu = menu;
         }
 
-        public final JMenuItem getMenu() {
+        JMenuItem getMenu() {
             return menu;
         }
 
-        public Instances getData() throws Exception {
+        Instances getData() throws Exception {
             return attributesTable.createData();
         }
 
-        public void check() throws Exception {
+        void check() throws Exception {
             attributesTable.check();
         }
 
-        public final void setFrameColor(Color color) {
+        void setFrameColor(Color color) {
             this.setBackground(color);
             upperPanel.setBackground(color);
             lowerPanel.setBackground(color);
@@ -279,7 +279,7 @@ public class JMainFrame extends JFrame {
             attrScrollPane.setBackground(color);
         }
 
-        private void createPopMenu() {
+        void createPopMenu() {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem(DATA_CHANGE_NAME_MENU_TEXT);
             JMenuItem colorMenu = new JMenuItem(CHOOSE_COLOR_MENU_TEXT);
@@ -345,13 +345,13 @@ public class JMainFrame extends JFrame {
             this.setComponentPopupMenu(popMenu);
         }
 
-        private void setRelationInfo() {
+        void setRelationInfo() {
             relationName.setText(data.relationName());
             numInstances.setText(String.valueOf(data.numInstances()));
             numAttributes.setText(String.valueOf(data.numAttributes()));
         }
 
-        private void makeUpperPanel() {
+        void makeUpperPanel() {
             upperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             upperPanel.setBorder(PanelBorderUtils.createTitledBorder(UPPER_TITLE));
             //----------------------------------------------
@@ -377,7 +377,7 @@ public class JMainFrame extends JFrame {
             //----------------------------------------------
         }
 
-        private void makeLowerPanel() {
+        void makeLowerPanel() {
             lowerPanel = new JPanel(new GridBagLayout());
             //--------------------------------------------
             dataScrollPane = new JScrollPane();
@@ -398,7 +398,7 @@ public class JMainFrame extends JFrame {
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         }
 
-        private void makeAttrPanel() {
+        void makeAttrPanel() {
             attrPanel = new JPanel(new GridBagLayout());
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
             selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
@@ -451,7 +451,7 @@ public class JMainFrame extends JFrame {
                     new Insets(0, 0, 2, 0), 0, 0));
         }
 
-        private void convertDataToTables() {
+        void convertDataToTables() {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
             }

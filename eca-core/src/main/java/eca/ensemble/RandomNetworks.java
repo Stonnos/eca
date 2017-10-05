@@ -1,6 +1,7 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
+import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.WeightedVoting;
 import eca.generators.NumberGenerator;
 import eca.neural.MultilayerPerceptron;
@@ -11,7 +12,6 @@ import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
 import weka.core.Instances;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 

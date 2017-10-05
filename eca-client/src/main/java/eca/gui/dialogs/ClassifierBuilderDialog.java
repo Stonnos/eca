@@ -88,7 +88,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
      */
     private class SwingWorkerConstruction extends SwingWorker<Void, Void> {
 
-        public SwingWorkerConstruction() {
+        SwingWorkerConstruction() {
             this.addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
                 public void propertyChange(PropertyChangeEvent evt) {

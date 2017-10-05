@@ -411,7 +411,7 @@ public abstract class ExperimentFrame extends JFrame {
         IterativeExperiment object;
         boolean error;
 
-        public SwingWorkerConstruction() {
+        SwingWorkerConstruction() {
             object = getExperiment().getIterativeExperiment();
             this.addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
@@ -479,11 +479,11 @@ public abstract class ExperimentFrame extends JFrame {
         ExperimentHistory experiment;
         final File file;
 
-        public ExperimentLoader(File file) {
+        ExperimentLoader(File file) {
             this.file = file;
         }
 
-        public ExperimentHistory getExperiment() {
+        ExperimentHistory getExperiment() {
             return experiment;
         }
 

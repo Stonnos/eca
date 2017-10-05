@@ -22,14 +22,14 @@ public class OracleConnectionDescriptor extends ConnectionDescriptor {
      * @param password     user password
      */
     public OracleConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
-        super(host, port, dataBaseName, login, password);
+        super(DataBaseType.ORACLE, host, port, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>OracleConnectionDescriptor</tt> object with default options.
      */
     public OracleConnectionDescriptor() {
-
+        super(DataBaseType.ORACLE);
     }
 
     @Override

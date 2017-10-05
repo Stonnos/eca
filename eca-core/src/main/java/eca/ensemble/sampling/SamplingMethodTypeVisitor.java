@@ -1,4 +1,4 @@
-package eca.ensemble;
+package eca.ensemble.sampling;
 
 /**
  * @author Roman Batygin

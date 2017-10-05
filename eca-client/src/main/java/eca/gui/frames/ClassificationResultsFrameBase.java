@@ -387,7 +387,8 @@ public class ClassificationResultsFrameBase extends JFrame {
 
                 resultsFrameBase.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
             } else if (resultsFrameBase.classifier() instanceof EnsembleClassifier) {
-                EnsembleTable table = new EnsembleTable((EnsembleClassifier) resultsFrameBase.classifier(),
+                EnsembleClassifier ensembleClassifier = (EnsembleClassifier) resultsFrameBase.classifier();
+                EnsembleTable table = new EnsembleTable(ensembleClassifier.getStructure(),
                         resultsFrameBase.getParentFrame(), digits);
                 JScrollPane pane = new JScrollPane(table);
                 resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);

@@ -17,14 +17,14 @@ public class MSSQLConnectionDescriptor extends ConnectionDescriptor {
      * @param password     user password
      */
     public MSSQLConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
-        super(host, port, dataBaseName, login, password);
+        super(DataBaseType.MSSQL, host, port, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>MSSQLConnectionDescriptor</tt> object with default options.
      */
     public MSSQLConnectionDescriptor() {
-
+        super(DataBaseType.MSSQL);
     }
 
     @Override

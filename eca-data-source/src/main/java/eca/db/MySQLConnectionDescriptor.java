@@ -22,14 +22,14 @@ public class MySQLConnectionDescriptor extends ConnectionDescriptor {
      * @param password     user password
      */
     public MySQLConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
-        super(host, port, dataBaseName, login, password);
+        super(DataBaseType.MYSQL, host, port, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>MySQLConnectionDescriptor</tt> object with default options.
      */
     public MySQLConnectionDescriptor() {
-
+        super(DataBaseType.MYSQL);
     }
 
     @Override

@@ -5,7 +5,7 @@ package eca.db;
  *
  * @author Roman Batygin
  */
-public class PostgreSQLConnectionDescriptor extends MySQLConnectionDescriptor {
+public class PostgreSQLConnectionDescriptor extends ConnectionDescriptor {
 
     /**
      * Creates <tt>PostgreSQLConnectionDescriptor</tt> object with given options.
@@ -17,13 +17,19 @@ public class PostgreSQLConnectionDescriptor extends MySQLConnectionDescriptor {
      * @param password     user password
      */
     public PostgreSQLConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
-        super(host, port, dataBaseName, login, password);
+        super(DataBaseType.POSTGRESQL, host, port, dataBaseName, login, password);
     }
 
     /**
      * Creates <tt>PostgreSQLConnectionDescriptor</tt> object with default options.
      */
     public PostgreSQLConnectionDescriptor() {
+        super(DataBaseType.POSTGRESQL);
+    }
+
+    @Override
+    public String getUrl() {
+        return getProtocol() + getHost() + ":" + getPort() + "/" + getDataBaseName();
     }
 
     @Override

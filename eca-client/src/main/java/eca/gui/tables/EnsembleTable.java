@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
 
 /**
  * @author Roman Batygin
@@ -33,11 +34,13 @@ public class EnsembleTable extends JDataTableBase {
 
     private final JFrame parent;
     private final int digits;
+    private ClassificationResultsFrameBase[] classificationResultsFrameBases;
 
-    public EnsembleTable(EnsembleClassifier struct, JFrame parent, int digits) throws Exception {
-        super(new EnsembleTableModel(struct));
+    public EnsembleTable(ArrayList<Classifier> classifierArrayList, JFrame parent, int digits) throws Exception {
+        super(new EnsembleTableModel(classifierArrayList));
         this.parent = parent;
         this.digits = digits;
+        this.classificationResultsFrameBases = new ClassificationResultsFrameBase[classifierArrayList.size()];
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
         this.getColumnModel().getColumn(2)
                 .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
@@ -82,7 +85,8 @@ public class EnsembleTable extends JDataTableBase {
      */
     private class JButtonEnsembleEditor extends JButtonEditor {
 
-        private Classifier classifier;
+        Classifier classifier;
+        int index;
 
         JButtonEnsembleEditor() {
             super(EnsembleTableModel.RESULT_TITLE);
@@ -91,21 +95,25 @@ public class EnsembleTable extends JDataTableBase {
         @Override
         protected void doOnPushing(JTable table, Object value,
                                    boolean isSelected, int row, int column) {
-            classifier = ensembleModel().get(row);
+            this.index = row;
+            this.classifier = ensembleModel().get(row);
         }
 
         @Override
         protected void doAfterPushing() {
             try {
-                Instances data = ((InstancesHandler) classifier).getData();
-                Evaluation e = new Evaluation(data);
-                e.evaluateModel(classifier, data);
-                ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent, classifier.getClass().getSimpleName(),
-                        classifier, data, e, digits);
-                ClassificationResultsFrameBase.createResults(result, digits);
-                StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-                result.setStatisticsTable(stat.createStatistics(classifier, e));
-                result.setVisible(true);
+                if (classificationResultsFrameBases[index] == null) {
+                    Instances data = ((InstancesHandler) classifier).getData();
+                    Evaluation e = new Evaluation(data);
+                    e.evaluateModel(classifier, data);
+                    ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent,
+                            classifier.getClass().getSimpleName(), classifier, data, e, digits);
+                    ClassificationResultsFrameBase.createResults(result, digits);
+                    StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
+                    result.setStatisticsTable(stat.createStatistics(classifier, e));
+                    classificationResultsFrameBases[index] = result;
+                }
+                classificationResultsFrameBases[index].setVisible(true);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(EnsembleTable.this.getParent(), e.getMessage(),

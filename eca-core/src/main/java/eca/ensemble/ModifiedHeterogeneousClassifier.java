@@ -6,6 +6,7 @@
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
+import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;

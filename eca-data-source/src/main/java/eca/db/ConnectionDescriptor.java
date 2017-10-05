@@ -14,16 +14,16 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class ConnectionDescriptor implements java.io.Serializable {
 
+    private DataBaseType dataBaseType;
+
     private String host = StringUtils.EMPTY;
     private int port;
     private String dataBaseName = StringUtils.EMPTY;
     private String login = StringUtils.EMPTY;
     private String password = StringUtils.EMPTY;
 
-    /**
-     * Creates <tt>ConnectionDescriptor</tt> object with default options.
-     */
-    protected ConnectionDescriptor() {
+    protected ConnectionDescriptor(DataBaseType dataBaseType) {
+        this.dataBaseType = dataBaseType;
     }
 
     /**
@@ -35,7 +35,10 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
      * @param login        user login
      * @param password     user password
      */
-    protected ConnectionDescriptor(String host, int port, String dataBaseName, String login, String password) {
+    protected ConnectionDescriptor(DataBaseType dataBaseType,
+                                   String host, int port, String dataBaseName,
+                                   String login, String password) {
+        this(dataBaseType);
         this.host = host;
         this.port = port;
         this.dataBaseName = dataBaseName;
@@ -44,12 +47,11 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
     }
 
     /**
-     * Return <tt>true</tt> if database is embedded.
-     *
-     * @return <tt>true</tt> if database is embedded
+     * Returns data base type.
+     * @return data base type
      */
-    public boolean isEmbedded() {
-        return false;
+    public DataBaseType getDataBaseType() {
+        return dataBaseType;
     }
 
     /**

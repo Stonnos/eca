@@ -18,16 +18,16 @@ import java.util.ArrayList;
 public class EnsembleTableModel extends AbstractTableModel {
 
     private final String[] titles = {"№", "Классификатор", "Результаты"};
-    private final ArrayList<Classifier> struct;
+    private final ArrayList<Classifier> classifierArrayList;
 
     public static final String RESULT_TITLE = "Посмотреть";
 
-    public EnsembleTableModel(EnsembleClassifier struct) throws Exception {
-        this.struct = struct.getStructure();
+    public EnsembleTableModel(ArrayList<Classifier> classifierArrayList) throws Exception {
+        this.classifierArrayList = classifierArrayList;
     }
 
     public Classifier get(int i) {
-        return struct.get(i);
+        return classifierArrayList.get(i);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class EnsembleTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return struct.size();
+        return classifierArrayList.size();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class EnsembleTableModel extends AbstractTableModel {
             case 0:
                 return row;
             case 1:
-                return struct.get(row).getClass().getSimpleName();
+                return classifierArrayList.get(row).getClass().getSimpleName();
             default:
                 return RESULT_TITLE;
         }

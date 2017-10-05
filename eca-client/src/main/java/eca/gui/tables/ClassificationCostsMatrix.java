@@ -20,7 +20,6 @@ public class ClassificationCostsMatrix extends JDataTableBase {
         this.setAutoResizeOff(false);
     }
 
-
     public DecimalFormat getFormat() {
         return ((ClassificationCostsTableModel) this.getModel()).getFormat();
     }
