@@ -1,4 +1,4 @@
-package eca.utils;
+package eca.util;
 
 import java.util.function.BiPredicate;
 

@@ -31,7 +31,12 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -343,7 +348,7 @@ public abstract class ExperimentFrame extends JFrame {
                             public void apply() throws Exception {
                                 table.setRenderer(Color.RED);
                                 ExperimentHistory history = loader.getExperiment();
-                                table.experimentModel().setExperiment(history.getExperiment());
+                                table.setExperiment(history.getExperiment());
                                 setResults(history.getDataSet());
                             }
                         }, new CallbackAction() {

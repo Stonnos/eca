@@ -1,7 +1,7 @@
 package eca.gui.tables.models;
 
 import eca.config.EcaServiceProperties;
-import eca.model.Entry;
+import eca.util.Entry;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;

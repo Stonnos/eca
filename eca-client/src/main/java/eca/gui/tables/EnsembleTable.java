@@ -7,7 +7,6 @@ package eca.gui.tables;
 
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
-import eca.ensemble.EnsembleClassifier;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;

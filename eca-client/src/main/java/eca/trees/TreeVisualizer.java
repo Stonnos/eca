@@ -6,7 +6,6 @@
 package eca.trees;
 
 import eca.buffer.ImageCopier;
-import eca.converters.ImageSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -16,6 +15,7 @@ import eca.text.NumericFormat;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
+import eca.util.ImageSaver;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 

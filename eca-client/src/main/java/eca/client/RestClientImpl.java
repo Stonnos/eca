@@ -7,13 +7,14 @@ import eca.client.exception.EcaServiceException;
 import eca.config.EcaServiceProperties;
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
-import eca.model.InputData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
 
 /**
  * Implements service for communication with eca - service api.
@@ -101,16 +102,15 @@ public class RestClientImpl implements RestClient {
     }
 
     @Override
-    public EvaluationResults performRequest(InputData inputData) {
+    public EvaluationResults performRequest(AbstractClassifier classifier, Instances data) {
 
-        Assert.notNull(inputData, "Input data must be specified!");
-        Assert.notNull(inputData.getClassifier(), "Classifier must be specified!");
-        Assert.notNull(inputData.getData(), "Instances must be specified!");
+        Assert.notNull(classifier, "Classifier must be specified!");
+        Assert.notNull(data, "Instances must be specified!");
 
         log.info("Starting to send request into eca - service for model '{}', data '{}'.",
-                inputData.getClassifier().getClass().getSimpleName(), inputData.getData().relationName());
+                classifier.getClass().getSimpleName(), data.relationName());
 
-        EvaluationRequestDto evaluationRequestDto = createRequest(inputData);
+        EvaluationRequestDto evaluationRequestDto = createRequest(classifier, data);
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -133,8 +133,7 @@ public class RestClientImpl implements RestClient {
         }
 
         log.info("Received response from eca - service with status [{}] for model '{}', data '{}'.",
-                classificationResultsDto.getStatus(), inputData.getClassifier().getClass().getSimpleName(),
-                inputData.getData().relationName());
+                classificationResultsDto.getStatus(), classifier.getClass().getSimpleName(), data.relationName());
 
         return classificationResultsDto.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
             @Override
@@ -155,10 +154,10 @@ public class RestClientImpl implements RestClient {
 
     }
 
-    private EvaluationRequestDto createRequest(InputData inputData) {
+    private EvaluationRequestDto createRequest(AbstractClassifier classifier, Instances data) {
         EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
-        evaluationRequestDto.setClassifier(inputData.getClassifier());
-        evaluationRequestDto.setData(inputData.getData());
+        evaluationRequestDto.setClassifier(classifier);
+        evaluationRequestDto.setData(data);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {
             evaluationRequestDto.setNumFolds(numFolds);

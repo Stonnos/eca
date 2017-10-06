@@ -1,4 +1,4 @@
-package eca.utils;
+package eca.util;
 
 /**
  * File utils class.

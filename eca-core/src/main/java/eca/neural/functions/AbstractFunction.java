@@ -8,8 +8,6 @@ package eca.neural.functions;
 import eca.core.Assert;
 import eca.neural.NeuralNetworkDictionary;
 
-import java.text.DecimalFormat;
-
 /**
  * Implements abstract activation function with getCoefficient.
  *

@@ -1,9 +1,9 @@
 package eca.gui.frames;
 
-import eca.converters.TextSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.logging.LoggerUtils;
+import eca.util.TextSaver;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;

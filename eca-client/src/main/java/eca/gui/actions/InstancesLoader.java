@@ -5,7 +5,7 @@
  */
 package eca.gui.actions;
 
-import eca.converters.DataLoader;
+import eca.data.DataLoader;
 import weka.core.Instances;
 
 import java.io.File;
@@ -16,9 +16,11 @@ import java.io.File;
 public class InstancesLoader implements CallbackAction {
 
     private Instances data;
+    private final DataLoader dataLoader;
     private final File file;
 
-    public InstancesLoader(File file) {
+    public InstancesLoader(DataLoader dataLoader, File file) {
+        this.dataLoader = dataLoader;
         this.file = file;
     }
 
@@ -28,7 +30,7 @@ public class InstancesLoader implements CallbackAction {
 
     @Override
     public void apply() throws Exception {
-        data = DataLoader.getDataSet(file);
+        data = dataLoader.getDataSet(file);
     }
 
 }

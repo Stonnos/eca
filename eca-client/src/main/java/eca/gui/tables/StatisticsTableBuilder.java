@@ -9,11 +9,11 @@ import eca.core.evaluation.Evaluation;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.StackingClassifier;
 import eca.metrics.KNearestNeighbours;
-import eca.model.Entry;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.NumericFormat;
 import eca.trees.DecisionTreeClassifier;
+import eca.util.Entry;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
 

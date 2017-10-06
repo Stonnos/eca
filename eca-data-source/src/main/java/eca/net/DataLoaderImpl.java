@@ -5,8 +5,8 @@
  */
 package eca.net;
 
-import eca.converters.XLSLoader;
-import eca.utils.Utils;
+import eca.data.XLSLoader;
+import eca.util.Utils;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
@@ -16,9 +16,11 @@ import weka.core.converters.CSVLoader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.function.BiPredicate;
 
-import static eca.converters.DataFileExtension.*;
+import static eca.data.DataFileExtension.ARFF;
+import static eca.data.DataFileExtension.CSV;
+import static eca.data.DataFileExtension.XLS;
+import static eca.data.DataFileExtension.XLSX;
 
 
 /**
@@ -44,6 +46,11 @@ public class DataLoaderImpl implements DataLoader {
     private URL url;
 
     /**
+     * Date format
+     */
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
+
+    /**
      * Creates object with given <tt>URL</tt>
      *
      * @param url source url
@@ -53,6 +60,23 @@ public class DataLoaderImpl implements DataLoader {
         this.setURL(url);
     }
 
+    /**
+     * Returns date format.
+     * @return date format
+     */
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    /**
+     * Sets date format.
+     * @param dateFormat date format
+     */
+    public void setDateFormat(String dateFormat) {
+        Assert.notNull(dateFormat, "Date format is not specified!");
+        this.dateFormat = dateFormat;
+    }
+
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
@@ -60,6 +84,7 @@ public class DataLoaderImpl implements DataLoader {
         if (url.getFile().endsWith(FILE_EXTENSIONS[0]) || url.getFile().endsWith(FILE_EXTENSIONS[1])) {
             XLSLoader loader = new XLSLoader();
             loader.setInputStream(connection.getInputStream());
+            loader.setDateFormat(dateFormat);
             data = loader.getDataSet();
         } else {
             AbstractFileLoader saver = url.getFile().endsWith(FILE_EXTENSIONS[2])

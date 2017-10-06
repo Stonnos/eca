@@ -1,10 +1,10 @@
-package eca.converters;
+package eca.util;
 
-import eca.text.DateFormat;
 import weka.core.Attribute;
 import weka.core.Instances;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -19,10 +19,12 @@ public class InstancesConverter {
      * Converts <tt>Instances</tt> object to list.
      *
      * @param data   <tt>Instances</tt>
-     * @param format <tt> DecimalFormat</tt> object
+     * @param format <tt>DecimalFormat</tt> object
+     * @param simpleDateFormat <tt>SimpleDateFormat</tt> object
      * @return list representation of <tt>Instances</tt> object
      */
-    public static ArrayList<ArrayList<Object>> toArray(Instances data, DecimalFormat format) {
+    public static ArrayList<ArrayList<Object>> toArray(Instances data, DecimalFormat format,
+                                                       SimpleDateFormat simpleDateFormat) {
         ArrayList<ArrayList<Object>> values = new ArrayList<>(data.numInstances());
         for (int i = 0; i < data.numInstances(); i++) {
             ArrayList<Object> row = new ArrayList<>(data.numAttributes());
@@ -31,7 +33,7 @@ public class InstancesConverter {
                 if (data.instance(i).isMissing(attr)) {
                     row.add(null);
                 } else if (attr.isDate()) {
-                    row.add(DateFormat.SIMPLE_DATE_FORMAT.format(new Date((long) data.instance(i).value(j))));
+                    row.add(simpleDateFormat.format(new Date((long) data.instance(i).value(j))));
                 } else {
                     row.add(attr.isNumeric() ? format.format(data.instance(i).value(j))
                             : data.instance(i).stringValue(j));

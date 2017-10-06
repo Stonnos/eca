@@ -1,6 +1,6 @@
 package eca.converters;
 
-import eca.utils.SerializationUtils;
+import eca.util.SerializationUtils;
 import org.springframework.util.Assert;
 
 import java.io.File;
@@ -12,6 +12,8 @@ import java.io.File;
  */
 public class ModelConverter {
 
+    public static final String FILE_EXTENSION = ".txt";
+
     /**
      * Serialise and saves given object to file.
      *
@@ -22,7 +24,7 @@ public class ModelConverter {
     public static void saveModel(File file, Object model) throws Exception {
         Assert.notNull(file, "File is not specified!");
         Assert.notNull(model, "Object is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.TXT)) {
+        if (!file.getName().endsWith(FILE_EXTENSION)) {
             throw new Exception(String.format("Can't save object %s to file '%s'",
                     model, file.getAbsoluteFile()));
         }
@@ -38,7 +40,7 @@ public class ModelConverter {
      */
     public static Object loadModel(File file) throws Exception {
         Assert.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.TXT)) {
+        if (!file.getName().endsWith(FILE_EXTENSION)) {
             throw new Exception(String.format("Can't load object from file '%s'", file.getAbsoluteFile()));
         }
         return SerializationUtils.deserialize(file.getAbsolutePath());

@@ -67,6 +67,12 @@ public class ExperimentTable extends JDataTableBase {
         classificationResultsFrameBases.add(null);
     }
 
+    public void setExperiment(ArrayList<EvaluationResults> evaluationResults) {
+        for (EvaluationResults results : evaluationResults) {
+            addExperiment(results);
+        }
+    }
+
     public void clear() {
         experimentModel().clear();
     }

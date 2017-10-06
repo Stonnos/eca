@@ -1,4 +1,4 @@
-package eca.converters;
+package eca.util;
 
 import org.springframework.util.Assert;
 
@@ -15,6 +15,8 @@ import java.io.IOException;
  */
 public class ImageSaver {
 
+    public static final String PNG = ".png";
+
     /**
      * Saves image to file.
      *
@@ -25,7 +27,7 @@ public class ImageSaver {
     public static void saveImage(File file, Image img) throws IOException {
         Assert.notNull(file, "File is not specified!");
         Assert.notNull(img, "Image is not specified!");
-        if (file.getName().endsWith(DataFileExtension.PNG)) {
+        if (file.getName().endsWith(PNG)) {
             ImageIO.write((BufferedImage) img, "png", file);
         } else {
             throw new IOException(String.format("Can't save image to file '%s'", file.getAbsoluteFile()));

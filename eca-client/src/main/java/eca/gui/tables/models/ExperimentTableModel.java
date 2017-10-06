@@ -42,11 +42,6 @@ public class ExperimentTableModel extends AbstractTableModel {
         return experiment;
     }
 
-    public void setExperiment(ArrayList<EvaluationResults> experiment) {
-        this.experiment = experiment;
-        fireTableDataChanged();
-    }
-
     public EvaluationResults get(int i) {
         return experiment.get(i);
     }

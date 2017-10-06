@@ -1,7 +1,11 @@
 package eca.gui;
 
 import eca.dictionary.ClassifiersNamesDictionary;
-import eca.gui.dialogs.*;
+import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.KNNOptionDialog;
+import eca.gui.dialogs.LogisticOptionsDialogBase;
+import eca.gui.dialogs.NetworkOptionsDialog;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;

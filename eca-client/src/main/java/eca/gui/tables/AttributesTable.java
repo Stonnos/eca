@@ -12,7 +12,11 @@ import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.text.DateFormat;
 import lombok.extern.slf4j.Slf4j;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Utils;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;

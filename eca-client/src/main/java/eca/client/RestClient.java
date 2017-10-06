@@ -1,7 +1,8 @@
 package eca.client;
 
 import eca.core.evaluation.EvaluationResults;
-import eca.model.InputData;
+import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
 
 /**
  * Implements service for communication with eca - service api.
@@ -13,9 +14,10 @@ public interface RestClient {
     /**
      * Sends request to eca - service.
      *
-     * @param inputData {@link InputData} object.
+     * @param classifier {@link AbstractClassifier} object
+     * @param data {@link Instances} object
      * @return {@link EvaluationResults} object
      */
-    EvaluationResults performRequest(InputData inputData);
+    EvaluationResults performRequest(AbstractClassifier classifier, Instances data);
 
 }

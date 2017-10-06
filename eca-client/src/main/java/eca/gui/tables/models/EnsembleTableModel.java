@@ -5,7 +5,6 @@
  */
 package eca.gui.tables.models;
 
-import eca.ensemble.EnsembleClassifier;
 import weka.classifiers.Classifier;
 
 import javax.swing.*;

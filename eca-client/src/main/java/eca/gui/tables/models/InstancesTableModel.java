@@ -5,8 +5,9 @@
  */
 package eca.gui.tables.models;
 
-import eca.converters.InstancesConverter;
+import eca.text.DateFormat;
 import eca.text.NumericFormat;
+import eca.util.InstancesConverter;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
@@ -28,8 +29,8 @@ public class InstancesTableModel extends AbstractTableModel {
 
     public InstancesTableModel(Instances data) {
         this.data = data;
-        format.setMaximumFractionDigits(MAX_FRACTION_DIGITS);
-        values = InstancesConverter.toArray(data, format);
+        this.format.setMaximumFractionDigits(MAX_FRACTION_DIGITS);
+        this.values = InstancesConverter.toArray(data, format, DateFormat.SIMPLE_DATE_FORMAT);
     }
 
     public DecimalFormat format() {

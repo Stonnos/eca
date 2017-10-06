@@ -9,9 +9,9 @@ import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
-import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -26,7 +26,10 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 /**
  * @author Roman Batygin

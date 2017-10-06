@@ -6,9 +6,9 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.converters.DataFileExtension;
 import eca.converters.ModelConverter;
 import eca.core.evaluation.Evaluation;
+import eca.data.DataFileExtension;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleClassifier;
@@ -16,14 +16,19 @@ import eca.ensemble.StackingClassifier;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
+import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ClassifierInputOptionsService;
-import eca.gui.tables.*;
-import eca.model.InputData;
-import eca.model.ModelDescriptor;
+import eca.gui.tables.ClassificationCostsMatrix;
+import eca.gui.tables.ClassifyInstanceTable;
+import eca.gui.tables.EnsembleTable;
+import eca.gui.tables.LogisticCoefficientsTable;
+import eca.gui.tables.MisClassificationMatrix;
+import eca.gui.tables.SignificantAttributesTable;
+import eca.converters.model.ClassificationModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -34,8 +39,15 @@ import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
@@ -55,6 +67,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Classification results frame.
@@ -170,9 +183,11 @@ public class ClassificationResultsFrameBase extends JFrame {
                     fileChooser.setSelectedFile(new File(indexer.getIndex(classifier())));
                     File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                     if (file != null) {
-                        InputData inputData = new InputData((AbstractClassifier) classifier, data);
+                        HashMap<String, String> props = new HashMap<>();
+                        props.put(ClassificationModelDictionary.DESCRIPTION_KEY, getTitle());
+                        props.put(ClassificationModelDictionary.DIGITS_KEY, String.valueOf(digits));
                         ModelConverter.saveModel(file,
-                                new ModelDescriptor(inputData, evaluation, getTitle(), digits));
+                                new ClassificationModel((AbstractClassifier) classifier, data, evaluation, props));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);

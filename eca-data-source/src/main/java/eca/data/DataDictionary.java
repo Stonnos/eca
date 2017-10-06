@@ -1,12 +1,12 @@
-package eca.converters;
+package eca.data;
 
 /**
- * Converter module dictionary.
+ * Data module dictionary.
  *
  * @author Roman Batygin
  */
 
-public class ConverterDictionary {
+public class DataDictionary {
 
     public static final String EMPTY_COLUMNS_ERROR = "Данные должны быть без пустых столбцов!";
     public static final String BAD_DATA_FORMAT = "Данные не должны содержать пустые строки!";

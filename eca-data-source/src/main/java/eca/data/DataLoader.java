@@ -1,4 +1,4 @@
-package eca.converters;
+package eca.data;
 
 import org.springframework.util.Assert;
 import weka.core.Instances;
@@ -14,6 +14,25 @@ import java.io.File;
 
 public class DataLoader {
 
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * Returns date format.
+     * @return date format
+     */
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    /**
+     * Sets date format.
+     * @param dateFormat date format
+     */
+    public void setDateFormat(String dateFormat) {
+        Assert.notNull(dateFormat, "Date format is not specified!");
+        this.dateFormat = dateFormat;
+    }
+
     /**
      * Loads {@link Instances} from file.
      *
@@ -21,7 +40,7 @@ public class DataLoader {
      * @return {@link Instances} object
      * @throws Exception
      */
-    public static Instances getDataSet(File file) throws Exception {
+    public Instances getDataSet(File file) throws Exception {
         Assert.notNull(file, "File is not specified!");
         Instances data;
         if (file.getName().endsWith(DataFileExtension.CSV)
@@ -33,6 +52,7 @@ public class DataLoader {
                 || file.getName().endsWith(DataFileExtension.XLSX)) {
             XLSLoader loader = new XLSLoader();
             loader.setFile(file);
+            loader.setDateFormat(dateFormat);
             data = loader.getDataSet();
         } else {
             throw new Exception(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));

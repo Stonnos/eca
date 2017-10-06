@@ -4,7 +4,7 @@ import eca.config.EcaServiceProperties;
 import eca.gui.ButtonUtils;
 import eca.gui.tables.EcaServicePropertiesTable;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;
-import eca.model.Entry;
+import eca.util.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;

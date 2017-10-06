@@ -1,4 +1,4 @@
-package eca.converters;
+package eca.data;
 
 /**
  * File extension for input data.
@@ -12,8 +12,5 @@ public class DataFileExtension {
     public static final String XLSX = ".xlsx";
     public static final String ARFF = ".arff";
     public static final String CSV = ".csv";
-
-    public static final String PNG = ".png";
-    public static final String TXT = ".txt";
 
 }

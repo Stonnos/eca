@@ -6,7 +6,7 @@
 package eca.gui.actions;
 
 import eca.converters.ModelConverter;
-import eca.model.ModelDescriptor;
+import eca.converters.model.ClassificationModel;
 
 import java.io.File;
 
@@ -15,19 +15,19 @@ import java.io.File;
  */
 public class ModelLoader implements CallbackAction {
 
-    private ModelDescriptor model;
+    private ClassificationModel model;
     private final File file;
 
     public ModelLoader(File file) {
         this.file = file;
     }
 
-    public ModelDescriptor model() {
+    public ClassificationModel model() {
         return model;
     }
 
     @Override
     public void apply() throws Exception {
-        model = (ModelDescriptor) ModelConverter.loadModel(file);
+        model = (ClassificationModel) ModelConverter.loadModel(file);
     }
 }

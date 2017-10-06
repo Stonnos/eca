@@ -18,7 +18,10 @@ import eca.neural.BackPropagation;
 import eca.neural.MultilayerPerceptron;
 import eca.neural.NeuralNetwork;
 import eca.neural.NeuralNetworkUtil;
-import eca.neural.functions.*;
+import eca.neural.functions.AbstractFunction;
+import eca.neural.functions.ActivationFunction;
+import eca.neural.functions.ActivationFunctionBuilder;
+import eca.neural.functions.ActivationFunctionType;
 import eca.text.NumericFormat;
 import weka.core.Instances;
 

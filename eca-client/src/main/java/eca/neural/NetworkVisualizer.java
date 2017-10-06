@@ -6,7 +6,6 @@
 package eca.neural;
 
 import eca.buffer.ImageCopier;
-import eca.converters.ImageSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -14,12 +13,18 @@ import eca.gui.dialogs.JFontChooser;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.text.NumericFormat;
+import eca.util.ImageSaver;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;

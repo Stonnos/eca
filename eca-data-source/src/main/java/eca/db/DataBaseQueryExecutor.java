@@ -5,11 +5,20 @@
  */
 package eca.db;
 
-import eca.text.DateFormat;
 import org.springframework.util.Assert;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Utils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 
 /**
@@ -55,6 +64,11 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
      * Datasource descriptor
      **/
     private ConnectionDescriptor connectionDescriptor;
+
+    /**
+     * Date format
+     */
+    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * Creates <tt>DataBaseQueryExecutor</tt> object.
@@ -105,6 +119,23 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
         Assert.notNull(connectionDescriptor, "Connection descriptor is not specified!");
         this.connectionDescriptor = connectionDescriptor;
+    }
+
+    /**
+     * Returns date format.
+     * @return date format
+     */
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    /**
+     * Sets date format.
+     * @param dateFormat date format
+     */
+    public void setDateFormat(String dateFormat) {
+        Assert.notNull(dateFormat, "Date format is not specified!");
+        this.dateFormat = dateFormat;
     }
 
     @Override
@@ -183,7 +214,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
             if (isNumeric(meta.getColumnType(i))) {
                 attr.add(new Attribute(meta.getColumnName(i)));
             } else if (isDate(meta.getColumnType(i))) {
-                attr.add(new Attribute(meta.getColumnName(i), DateFormat.DATE_FORMAT));
+                attr.add(new Attribute(meta.getColumnName(i), dateFormat));
             } else {
                 attr.add(new Attribute(meta.getColumnName(i),
                         createNominalAttribute(result, i)));

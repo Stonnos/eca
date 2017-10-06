@@ -10,39 +10,76 @@ import eca.client.RestClient;
 import eca.client.RestClientImpl;
 import eca.config.ApplicationProperties;
 import eca.config.EcaServiceProperties;
-import eca.converters.DataSaver;
 import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
-import eca.dataminer.*;
+import eca.data.DataLoader;
+import eca.data.DataSaver;
+import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.dataminer.AutomatedKNearestNeighbours;
+import eca.dataminer.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedStacking;
+import eca.dataminer.ClassifiersSetBuilder;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
-import eca.ensemble.*;
+import eca.ensemble.AbstractHeterogeneousClassifier;
+import eca.ensemble.AdaBoostClassifier;
+import eca.ensemble.CVIterativeBuilder;
+import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
+import eca.ensemble.IterativeBuilder;
+import eca.ensemble.ModifiedHeterogeneousClassifier;
+import eca.ensemble.RandomNetworks;
+import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.*;
+import eca.gui.actions.CallbackAction;
+import eca.gui.actions.DataBaseConnectionAction;
+import eca.gui.actions.DataGeneratorLoader;
+import eca.gui.actions.InstancesLoader;
+import eca.gui.actions.ModelLoader;
+import eca.gui.actions.URLLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.*;
+import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.ClassifierBuilderDialog;
+import eca.gui.dialogs.DataGeneratorDialog;
+import eca.gui.dialogs.DatabaseConnectionDialog;
+import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.EcaServiceOptionsDialog;
+import eca.gui.dialogs.EnsembleOptionsDialog;
+import eca.gui.dialogs.EvaluationMethodOptionsDialog;
+import eca.gui.dialogs.ExecutorDialog;
+import eca.gui.dialogs.KNNOptionDialog;
+import eca.gui.dialogs.LoadDialog;
+import eca.gui.dialogs.LogisticOptionsDialogBase;
+import eca.gui.dialogs.NetworkOptionsDialog;
+import eca.gui.dialogs.RandomForestsOptionDialog;
+import eca.gui.dialogs.RandomNetworkOptionsDialog;
+import eca.gui.dialogs.SpinnerDialog;
+import eca.gui.dialogs.StackingOptionsDialog;
+import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
-import eca.model.InputData;
-import eca.model.ModelDescriptor;
+import eca.converters.model.ClassificationModel;
 import eca.net.DataLoaderImpl;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
-import eca.trees.*;
+import eca.trees.C45;
+import eca.trees.CART;
+import eca.trees.CHAID;
+import eca.trees.DecisionTreeClassifier;
+import eca.trees.ID3;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -59,8 +96,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author Roman Batygin
@@ -316,6 +357,7 @@ public class JMainFrame extends JFrame {
             saveMenu.addActionListener(new ActionListener() {
 
                 SaveDataFileChooser fileChooser;
+                DataSaver dataSaver = new DataSaver();
 
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -327,7 +369,8 @@ public class JMainFrame extends JFrame {
                             fileChooser.setSelectedFile(new File(instanceTable.data().relationName()));
                             File file = fileChooser.getSelectedFile(DataInternalFrame.this);
                             if (file != null) {
-                                DataSaver.saveData(file, DataInternalFrame.this.getData());
+                                dataSaver.setDateFormat(DateFormat.DATE_FORMAT);
+                                dataSaver.saveData(file, DataInternalFrame.this.getData());
                             }
                         }
                     } catch (Exception e) {
@@ -498,17 +541,19 @@ public class JMainFrame extends JFrame {
     private class EcaServiceAction implements CallbackAction {
 
         RestClient restClient;
-        InputData inputData;
+        AbstractClassifier classifier;
+        Instances data;
         EvaluationResults classifierDescriptor;
 
-        EcaServiceAction(RestClient restClient, InputData inputData) {
+        EcaServiceAction(RestClient restClient, AbstractClassifier classifier, Instances data) {
             this.restClient = restClient;
-            this.inputData = inputData;
+            this.classifier = classifier;
+            this.data = data;
         }
 
         @Override
         public void apply() throws Exception {
-            classifierDescriptor = restClient.performRequest(inputData);
+            classifierDescriptor = restClient.performRequest(classifier, data);
         }
 
         EvaluationResults getClassifierDescriptor() {
@@ -561,8 +606,6 @@ public class JMainFrame extends JFrame {
     }
 
     private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
-        InputData inputData = new InputData((AbstractClassifier) frame.classifier(),
-                frame.data());
 
         RestClientImpl restClient = new RestClientImpl();
         restClient.setEvaluationMethod(testingSetFrame.getEvaluationMethod());
@@ -572,7 +615,8 @@ public class JMainFrame extends JFrame {
             restClient.setNumTests(testingSetFrame.numTests());
         }
 
-        EcaServiceAction ecaServiceAction = new EcaServiceAction(restClient, inputData);
+        EcaServiceAction ecaServiceAction = new EcaServiceAction(restClient, (AbstractClassifier) frame.classifier(),
+                frame.data());
 
         LoadDialog progress = new LoadDialog(JMainFrame.this,
                 ecaServiceAction, MODEL_BUILDING_MESSAGE);
@@ -721,6 +765,7 @@ public class JMainFrame extends JFrame {
         openFileMenu.addActionListener(new ActionListener() {
 
             OpenDataFileChooser fileChooser;
+            DataLoader dataLoader = new DataLoader();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -730,10 +775,10 @@ public class JMainFrame extends JFrame {
                     }
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
-                        InstancesLoader loader = new InstancesLoader(file);
+                        dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
+                        InstancesLoader loader = new InstancesLoader(dataLoader, file);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader,
-                                DATA_LOADING_MESSAGE);
+                                loader, DATA_LOADING_MESSAGE);
 
                         process(progress, new CallbackAction() {
                             @Override
@@ -741,7 +786,6 @@ public class JMainFrame extends JFrame {
                                 createDataFrame(loader.data());
                             }
                         });
-                        //---------------------------------------
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -798,6 +842,7 @@ public class JMainFrame extends JFrame {
         saveFileMenu.addActionListener(new ActionListener() {
 
             SaveDataFileChooser fileChooser;
+            DataSaver dataSaver = new DataSaver();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -809,7 +854,8 @@ public class JMainFrame extends JFrame {
                         fileChooser.setSelectedFile(new File(data().relationName()));
                         File file = fileChooser.getSelectedFile(JMainFrame.this);
                         if (file != null) {
-                            DataSaver.saveData(file, data());
+                            dataSaver.setDateFormat(DateFormat.DATE_FORMAT);
+                            dataSaver.saveData(file, data());
                         }
                     }
                 } catch (Exception e) {
@@ -833,6 +879,7 @@ public class JMainFrame extends JFrame {
                     try {
                         DataBaseQueryExecutor connection = new DataBaseQueryExecutor();
                         connection.setConnectionDescriptor(conn.getConnectionDescriptor());
+                        connection.setDateFormat(DateFormat.DATE_FORMAT);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 new DataBaseConnectionAction(connection),
                                 DB_CONNECTION_WAITING_MESSAGE);
@@ -869,7 +916,9 @@ public class JMainFrame extends JFrame {
 
                 if (path != null) {
                     try {
-                        URLLoader loader = new URLLoader(new DataLoaderImpl(new URL(path.trim())));
+                        DataLoaderImpl dataLoader = new DataLoaderImpl(new URL(path.trim()));
+                        dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
+                        URLLoader loader = new URLLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
 
@@ -913,11 +962,25 @@ public class JMainFrame extends JFrame {
                         process(progress, new CallbackAction() {
                             @Override
                             public void apply() throws Exception {
-                                ModelDescriptor model = loader.model();
-                                resultsHistory.createResultFrame(model.getDescription(),
-                                        model.getInputData().getClassifier(),
-                                        model.getInputData().getData(),
-                                        model.getEvaluation(), model.getDigits());
+                                ClassificationModel model = loader.model();
+                                String description;
+                                int digits;
+                                Map<String, String> properties = model.getAdditionalProperties();
+                                if (model.getAdditionalProperties() != null) {
+                                    String descriptionProp = properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
+                                    description = descriptionProp != null ? descriptionProp
+                                            : model.getClassifier().getClass().getSimpleName();
+                                    String digitsProp = properties.get(ClassificationModelDictionary.DIGITS_KEY);
+                                    digits = digitsProp != null ? Integer.valueOf(digitsProp) : maximumFractionDigits;
+                                } else {
+                                    description = model.getClassifier().getClass().getSimpleName();
+                                    digits = maximumFractionDigits;
+                                }
+
+                                resultsHistory.createResultFrame(description,
+                                        model.getClassifier(),
+                                        model.getData(),
+                                        model.getEvaluation(), digits);
                             }
                         });
 
