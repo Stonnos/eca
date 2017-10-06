@@ -10,7 +10,7 @@ import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
 import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.AbstractExperiment;
-import eca.dataminer.ExperimentHistory;
+import eca.converters.model.ExperimentHistory;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;

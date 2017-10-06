@@ -24,9 +24,24 @@ import java.util.Map;
 @AllArgsConstructor
 public class ClassificationModel implements java.io.Serializable {
 
+    /**
+     * Classifier model
+     */
     private AbstractClassifier classifier;
+
+    /**
+     * Training data
+     */
     private Instances data;
+
+    /**
+     * Evaluation object
+     */
     private Evaluation evaluation;
+
+    /**
+     * Additional properties
+     */
     private Map<String, String> additionalProperties;
 
 }
