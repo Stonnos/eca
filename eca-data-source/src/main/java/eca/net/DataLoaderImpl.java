@@ -17,10 +17,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 
-import static eca.data.DataFileExtension.ARFF;
-import static eca.data.DataFileExtension.CSV;
-import static eca.data.DataFileExtension.XLS;
-import static eca.data.DataFileExtension.XLSX;
+import static eca.data.DataFileExtension.*;
 
 
 /**

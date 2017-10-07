@@ -1,6 +1,7 @@
 package eca.core.evaluation;
 
 import eca.core.EvaluationMethod;
+import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -13,6 +14,9 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public class EvaluationService {
+
+    public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
+    public static final int MINIMUM_NUMBER_OF_TESTS = 1;
 
     /**
      * Evaluates classifier model using specified evaluation method.
@@ -42,6 +46,10 @@ public class EvaluationService {
             }
 
             case CROSS_VALIDATION: {
+                Assert.isTrue(numFolds >= MINIMUM_NUMBER_OF_FOLDS,
+                        String.format("Number of folds must be greater or equals to %d!", numFolds));
+                Assert.isTrue(numTests >= MINIMUM_NUMBER_OF_TESTS,
+                        String.format("Number of tests must be greater or equals to %d!", numTests));
                 evaluation.kCrossValidateModel(AbstractClassifier.makeCopy(model), data,
                         numFolds, numTests, random);
                 model.buildClassifier(data);
@@ -49,7 +57,7 @@ public class EvaluationService {
             }
 
             default:
-                throw new IllegalArgumentException("Incorrect evaluation method!");
+                throw new IllegalArgumentException("Invalid evaluation method!");
         }
 
         return evaluation;

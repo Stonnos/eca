@@ -5,11 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.db.ConnectionDescriptor;
-import eca.db.ConnectionDescriptorBuilder;
-import eca.db.ConnectionDescriptorFactory;
-import eca.db.DataBaseType;
-import eca.db.DataBaseTypeVisitor;
+import eca.db.*;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;

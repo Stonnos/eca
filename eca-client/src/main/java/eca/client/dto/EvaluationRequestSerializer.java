@@ -27,9 +27,7 @@ public class EvaluationRequestSerializer extends JsonSerializer<EvaluationReques
         byte[] dataBytes = SerializationUtils.serialize(evaluationRequest.getData());
         jsonGenerator.writeStringField("data", Base64.getEncoder().encodeToString(dataBytes));
         jsonGenerator.writeStringField("evaluationMethod", evaluationRequest.getEvaluationMethod().name());
-        jsonGenerator.writeObjectField("numFolds", evaluationRequest.getNumFolds());
-        jsonGenerator.writeObjectField("numTests", evaluationRequest.getNumTests());
-
+        jsonGenerator.writeObjectField("evaluationOptionsMap", evaluationRequest.getEvaluationOptionsMap());
         jsonGenerator.writeEndObject();
     }
 }

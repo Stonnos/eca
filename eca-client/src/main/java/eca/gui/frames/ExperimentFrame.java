@@ -6,11 +6,11 @@
 package eca.gui.frames;
 
 import eca.converters.ModelConverter;
+import eca.converters.model.ExperimentHistory;
 import eca.core.EvaluationMethod;
 import eca.core.EvaluationMethodVisitor;
 import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.AbstractExperiment;
-import eca.converters.model.ExperimentHistory;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
@@ -31,12 +31,7 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;

@@ -1,10 +1,6 @@
 package eca.ensemble.forests;
 
-import eca.trees.C45;
-import eca.trees.CART;
-import eca.trees.CHAID;
-import eca.trees.DecisionTreeClassifier;
-import eca.trees.ID3;
+import eca.trees.*;
 
 import java.io.Serializable;
 

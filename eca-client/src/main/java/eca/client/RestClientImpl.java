@@ -1,5 +1,6 @@
 package eca.client;
 
+import eca.client.dto.EvaluationOption;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.TechnicalStatusVisitor;
@@ -15,6 +16,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
+
+import java.util.HashMap;
 
 /**
  * Implements service for communication with eca - service api.
@@ -103,7 +106,6 @@ public class RestClientImpl implements RestClient {
 
     @Override
     public EvaluationResults performRequest(AbstractClassifier classifier, Instances data) {
-
         Assert.notNull(classifier, "Classifier must be specified!");
         Assert.notNull(data, "Instances must be specified!");
 
@@ -111,7 +113,6 @@ public class RestClientImpl implements RestClient {
                 classifier.getClass().getSimpleName(), data.relationName());
 
         EvaluationRequestDto evaluationRequestDto = createRequest(classifier, data);
-
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
@@ -126,7 +127,6 @@ public class RestClientImpl implements RestClient {
         }
 
         final EvaluationResponse classificationResultsDto = response.getBody();
-
         if (classificationResultsDto == null) {
             log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
             throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
@@ -160,8 +160,13 @@ public class RestClientImpl implements RestClient {
         evaluationRequestDto.setData(data);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {
-            evaluationRequestDto.setNumFolds(numFolds);
-            evaluationRequestDto.setNumTests(numTests);
+            evaluationRequestDto.setEvaluationOptionsMap(new HashMap<>());
+            if (numFolds != null) {
+                evaluationRequestDto.getEvaluationOptionsMap().put(EvaluationOption.NUM_FOLDS, String.valueOf(numFolds));
+            }
+            if (numTests != null) {
+                evaluationRequestDto.getEvaluationOptionsMap().put(EvaluationOption.NUM_TESTS, String.valueOf(numTests));
+            }
         }
         return evaluationRequestDto;
     }

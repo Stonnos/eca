@@ -6,6 +6,8 @@ import lombok.Data;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
+import java.util.Map;
+
 /**
  * Evaluation request model.
  *
@@ -21,7 +23,5 @@ public class EvaluationRequestDto {
 
     private EvaluationMethod evaluationMethod;
 
-    private Integer numFolds;
-
-    private Integer numTests;
+    private Map<EvaluationOption, String> evaluationOptionsMap;
 }

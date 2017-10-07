@@ -5,11 +5,7 @@
  */
 package eca.trees;
 
-import eca.core.Assert;
-import eca.core.InstancesHandler;
-import eca.core.ListOptionsHandler;
-import eca.core.PermutationsSearcher;
-import eca.core.RandomAttributesEnumeration;
+import eca.core.*;
 import eca.filter.MissingValuesFilter;
 import eca.generators.NumberGenerator;
 import eca.trees.rules.AbstractRule;
@@ -23,11 +19,7 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Abstract class for generating decision tree model. <p>
