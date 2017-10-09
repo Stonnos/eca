@@ -48,6 +48,10 @@ public class DataLoader {
             ConverterUtils.DataSource source
                     = new ConverterUtils.DataSource(file.getAbsolutePath());
             data = source.getDataSet();
+            if (data == null) {
+                throw new Exception(String.format("Can't load data from file '%s'. Data is null!",
+                        file.getAbsoluteFile()));
+            }
         } else if (file.getName().endsWith(DataFileExtension.XLS)
                 || file.getName().endsWith(DataFileExtension.XLSX)) {
             XLSLoader loader = new XLSLoader();
