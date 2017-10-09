@@ -66,6 +66,7 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
+            ++index;
 
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(getClassifier());
 
@@ -80,7 +81,6 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
 
             EvaluationResults evaluationResults = evaluateModel(model);
-            ++index;
             return evaluationResults;
         }
 

@@ -56,6 +56,7 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
+            ++index;
 
             KNearestNeighbours kNearestNeighbours = (KNearestNeighbours) AbstractClassifier.makeCopy(getClassifier());
 
@@ -69,8 +70,6 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
                     KNearestNeighbours.MAX_WEIGHT));
 
             EvaluationResults evaluationResults = evaluateModel(kNearestNeighbours);
-
-            ++index;
             return evaluationResults;
         }
 

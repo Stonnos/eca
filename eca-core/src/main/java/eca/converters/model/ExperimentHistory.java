@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import weka.core.Instances;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Experiment unit model.
@@ -26,7 +26,7 @@ public class ExperimentHistory implements java.io.Serializable {
     /**
      * Experiment history
      */
-    private ArrayList<EvaluationResults> experiment;
+    private List<EvaluationResults> experiment;
 
     /**
      * Training data

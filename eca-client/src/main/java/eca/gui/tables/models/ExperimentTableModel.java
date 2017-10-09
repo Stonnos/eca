@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -25,7 +26,7 @@ public class ExperimentTableModel extends AbstractTableModel {
     private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
 
     private final String[] titles = {"№", "Классификатор", "Точность, %", "Результаты"};
-    private ArrayList<EvaluationResults> experiment;
+    private List<EvaluationResults> experiment;
 
     private final DecimalFormat format = NumericFormat.getInstance();
 
@@ -38,7 +39,7 @@ public class ExperimentTableModel extends AbstractTableModel {
         return experiment.get(i).getClassifier();
     }
 
-    public ArrayList<EvaluationResults> getExperiment() {
+    public List<EvaluationResults> getExperiment() {
         return experiment;
     }
 

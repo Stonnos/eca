@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -67,7 +68,7 @@ public class ExperimentTable extends JDataTableBase {
         classificationResultsFrameBases.add(null);
     }
 
-    public void setExperiment(ArrayList<EvaluationResults> evaluationResults) {
+    public void setExperiment(List<EvaluationResults> evaluationResults) {
         for (EvaluationResults results : evaluationResults) {
             addExperiment(results);
         }

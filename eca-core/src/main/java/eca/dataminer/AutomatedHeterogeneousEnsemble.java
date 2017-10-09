@@ -55,9 +55,9 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
     }
 
     /**
-     *
+     * Automated heterogeneous classifier iterative builder.
      */
-    private class AutomatedHeterogeneousBuilder implements IterativeExperiment {
+    private class AutomatedHeterogeneousBuilder extends AbstractAutomatedExperiment {
 
         int i, s, a = -1, index, state, it;
         ClassifiersSet set = getClassifier().getClassifiersSet();
@@ -75,13 +75,8 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-
-            EvaluationResults object = null;
-
-            while (object == null) {
-                object = nextState();
-            }
-            return object;
+            index++;
+            return searchNext();
         }
 
         @Override
@@ -94,7 +89,8 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
             return index * 100 / numCombinations;
         }
 
-        EvaluationResults nextState() throws Exception {
+        @Override
+        public EvaluationResults nextState() throws Exception {
 
             switch (state) {
 
@@ -109,14 +105,12 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
 
                 case 1: {
                     if (permutationsSearch.nextPermutation()) {
-
                         currentSet.clear();
                         for (int k = 0; k < marks.length; k++) {
                             if (marks[k] == 1) {
                                 currentSet.addClassifier(set.getClassifier(k));
                             }
                         }
-
                         state = 2;
                     } else {
                         it++;
@@ -137,25 +131,20 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                     m_Model.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
                                     m_Model.setUseWeightedVotesMethod(VOTING_METHOD[a]);
                                     m_Model.setClassifiersSet(currentSet.clone());
-                                    index++;
                                     return evaluateModel(m_Model);
                                 }
                                 a = -1;
                             }
                             i = 0;
                         }
-
                         s = 0;
-
                         state = 1;
                     } else {
+                        state = 1;
                         AbstractHeterogeneousClassifier model
                                 = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
                         model.setClassifiersSet(currentSet.clone());
-                        index++;
-                        EvaluationResults evaluationResults = evaluateModel(model);
-                        state = 1;
-                        return evaluationResults;
+                        return evaluateModel(model);
                     }
 
                     break;
@@ -177,6 +166,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                 return 1;
             }
         }
+
     }
 
 }

@@ -39,9 +39,9 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
     }
 
     /**
-     *
+     * Automated stacking iterative builder.
      */
-    private class AutomatedStackingBuilder implements IterativeExperiment {
+    private class AutomatedStackingBuilder extends AbstractAutomatedExperiment {
 
         int index, state, it, metaClsIndex;
         ClassifiersSet set = getClassifier().getClassifiers();
@@ -59,13 +59,8 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-
-            EvaluationResults object = null;
-
-            while (object == null) {
-                object = nextState();
-            }
-            return object;
+            index++;
+            return searchNext();
         }
 
         @Override
@@ -78,7 +73,8 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
             return index * 100 / numCombinations;
         }
 
-        EvaluationResults nextState() throws Exception {
+        @Override
+        public EvaluationResults nextState() throws Exception {
 
             switch (state) {
 
@@ -106,31 +102,26 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 
                 case 2: {
                     if (permutationsSearch.nextPermutation()) {
-
                         currentSet.clear();
                         for (int k = 0; k < marks.length; k++) {
                             if (marks[k] == 1) {
                                 currentSet.addClassifier(set.getClassifier(k));
                             }
                         }
-
                         state = 3;
                     } else {
                         it++;
                         state = 1;
                     }
-
                     break;
                 }
 
                 case 3: {
+                    state = 2;
                     StackingClassifier model
                             = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
                     model.setClassifiers(currentSet.clone());
-                    EvaluationResults evaluationResults = evaluateModel(model);
-                    state = 2;
-                    index++;
-                    return evaluationResults;
+                    return evaluateModel(model);
                 }
 
             }
