@@ -17,21 +17,54 @@ import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
-import eca.dataminer.*;
+import eca.data.net.UrlDataLoader;
+import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.dataminer.AutomatedKNearestNeighbours;
+import eca.dataminer.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedStacking;
+import eca.dataminer.ExperimentUtil;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
-import eca.ensemble.*;
+import eca.ensemble.AbstractHeterogeneousClassifier;
+import eca.ensemble.AdaBoostClassifier;
+import eca.ensemble.CVIterativeBuilder;
+import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
+import eca.ensemble.IterativeBuilder;
+import eca.ensemble.ModifiedHeterogeneousClassifier;
+import eca.ensemble.RandomNetworks;
+import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.*;
+import eca.gui.actions.CallbackAction;
+import eca.gui.actions.DataBaseConnectionAction;
+import eca.gui.actions.DataGeneratorLoader;
+import eca.gui.actions.InstancesLoader;
+import eca.gui.actions.ModelLoader;
+import eca.gui.actions.URLLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.*;
+import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.ClassifierBuilderDialog;
+import eca.gui.dialogs.DataGeneratorDialog;
+import eca.gui.dialogs.DatabaseConnectionDialog;
+import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.EcaServiceOptionsDialog;
+import eca.gui.dialogs.EnsembleOptionsDialog;
+import eca.gui.dialogs.EvaluationMethodOptionsDialog;
+import eca.gui.dialogs.ExecutorDialog;
+import eca.gui.dialogs.KNNOptionDialog;
+import eca.gui.dialogs.LoadDialog;
+import eca.gui.dialogs.LogisticOptionsDialogBase;
+import eca.gui.dialogs.NetworkOptionsDialog;
+import eca.gui.dialogs.RandomForestsOptionDialog;
+import eca.gui.dialogs.RandomNetworkOptionsDialog;
+import eca.gui.dialogs.SpinnerDialog;
+import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
@@ -39,11 +72,14 @@ import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
-import eca.data.net.UrlDataLoader;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
-import eca.trees.*;
+import eca.trees.C45;
+import eca.trees.CART;
+import eca.trees.CHAID;
+import eca.trees.DecisionTreeClassifier;
+import eca.trees.ID3;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -60,8 +96,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * @author Roman Batygin
@@ -1546,7 +1586,7 @@ public class JMainFrame extends JFrame {
 
     private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,
                                           String title, Instances data) throws Exception {
-        classifier.setClassifiersSet(ClassifiersSetBuilder.createClassifiersSet(data, maximumFractionDigits));
+        classifier.setClassifiersSet(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedHeterogeneousEnsemble exp = new AutomatedHeterogeneousEnsemble(classifier, data);
         AutomatedHeterogeneousEnsembleFrame frame
                 = new AutomatedHeterogeneousEnsembleFrame(title, exp, this, maximumFractionDigits);
@@ -1555,7 +1595,7 @@ public class JMainFrame extends JFrame {
 
     private void createStackingExperiment(StackingClassifier classifier,
                                           String title, Instances data) throws Exception {
-        classifier.setClassifiers(ClassifiersSetBuilder.createClassifiersSet(data, maximumFractionDigits));
+        classifier.setClassifiers(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking exp = new AutomatedStacking(classifier, data);
         AutomatedStackingFrame frame
                 = new AutomatedStackingFrame(title, exp, this, maximumFractionDigits);
