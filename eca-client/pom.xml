@@ -33,7 +33,7 @@
 
         <dependency>
             <groupId>eca</groupId>
-            <artifactId>eca-data-source</artifactId>
+            <artifactId>eca-db</artifactId>
             <version>${project.version}</version>
         </dependency>
 

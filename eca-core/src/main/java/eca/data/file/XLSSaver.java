@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.data;
+package eca.data.file;
 
+import eca.data.FileExtension;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,7 +36,7 @@ public class XLSSaver {
      */
     public void setFile(File file) throws IOException {
         Assert.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.XLS) && !file.getName().endsWith(DataFileExtension.XLSX)) {
+        if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
             throw new IOException("Wrong file extension!");
         }
         file.createNewFile();
@@ -68,7 +69,7 @@ public class XLSSaver {
     public void write(Instances data) throws IOException {
         Assert.notNull(data, "Data is not specified!");
         try (FileOutputStream stream = new FileOutputStream(file)) {
-            Workbook book = file.getName().endsWith(DataFileExtension.XLS) ?
+            Workbook book = file.getName().endsWith(FileExtension.XLS) ?
                     new HSSFWorkbook() : new XSSFWorkbook();
             Font font = book.createFont();
             font.setBold(true);

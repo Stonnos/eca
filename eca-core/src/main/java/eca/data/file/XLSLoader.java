@@ -3,10 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.data;
+package eca.data.file;
 
-import org.apache.http.util.Asserts;
-import org.apache.poi.ss.usermodel.*;
+import eca.data.FileExtension;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -43,8 +49,8 @@ public class XLSLoader {
      * @throws Exception if a file object is null or has invalid extension
      */
     public void setFile(File file) throws Exception {
-        Asserts.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.XLS) && !file.getName().endsWith(DataFileExtension.XLSX)) {
+        Assert.notNull(file, "File is not specified!");
+        if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
             throw new Exception("Wrong file extension!");
         }
         this.file = file;
@@ -65,7 +71,7 @@ public class XLSLoader {
      * @param inputStream <tt>InputStream</tt> object
      */
     public void setInputStream(InputStream inputStream) {
-        Asserts.notNull(inputStream, "InputStream is not specified!");
+        Assert.notNull(inputStream, "InputStream is not specified!");
         this.inputStream = inputStream;
     }
 
@@ -200,7 +206,7 @@ public class XLSLoader {
     private void checkData(Sheet sheet) throws Exception {
 
         if (sheet.getRow(0).getLastCellNum() > sheet.getRow(0).getPhysicalNumberOfCells()) {
-            throw new Exception(DataDictionary.EMPTY_COLUMNS_ERROR);
+            throw new Exception(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
 
         for (int i = 0; i < getColNum(sheet); i++) {
@@ -208,7 +214,7 @@ public class XLSLoader {
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Row row = sheet.getRow(j);
                 if (row == null) {
-                    throw new Exception(DataDictionary.BAD_DATA_FORMAT);
+                    throw new Exception(FileDataDictionary.BAD_DATA_FORMAT);
                 }
                 Cell cell = sheet.getRow(j).getCell(i);
                 if (cell != null) {
@@ -216,12 +222,12 @@ public class XLSLoader {
                             && cell.getCellTypeEnum() != CellType.NUMERIC
                             && cell.getCellTypeEnum() != CellType.BLANK
                             && cell.getCellTypeEnum() != CellType.BOOLEAN) {
-                        throw new Exception(DataDictionary.BAD_CELL_VALUES);
+                        throw new Exception(FileDataDictionary.BAD_CELL_VALUES);
                     }
                     CellType t = cell.getCellTypeEnum();
                     if (cellType != null && !t.equals(CellType.BLANK) && !t.equals(cellType)) {
                         throw new Exception(String.format(
-                                DataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
+                                FileDataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
                         cellType = cell.getCellTypeEnum();
                     }

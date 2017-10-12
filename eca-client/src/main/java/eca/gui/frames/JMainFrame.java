@@ -15,8 +15,8 @@ import eca.core.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
-import eca.data.DataLoader;
-import eca.data.DataSaver;
+import eca.data.file.FileDataLoader;
+import eca.data.file.FileDataSaver;
 import eca.dataminer.*;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
@@ -39,7 +39,7 @@ import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
-import eca.net.DataLoaderImpl;
+import eca.data.net.UrlDataLoader;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
@@ -317,7 +317,7 @@ public class JMainFrame extends JFrame {
             saveMenu.addActionListener(new ActionListener() {
 
                 SaveDataFileChooser fileChooser;
-                DataSaver dataSaver = new DataSaver();
+                FileDataSaver dataSaver = new FileDataSaver();
 
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -725,7 +725,7 @@ public class JMainFrame extends JFrame {
         openFileMenu.addActionListener(new ActionListener() {
 
             OpenDataFileChooser fileChooser;
-            DataLoader dataLoader = new DataLoader();
+            FileDataLoader dataLoader = new FileDataLoader();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -736,7 +736,8 @@ public class JMainFrame extends JFrame {
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
                         dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
-                        InstancesLoader loader = new InstancesLoader(dataLoader, file);
+                        dataLoader.setFile(file);
+                        InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
 
@@ -802,7 +803,7 @@ public class JMainFrame extends JFrame {
         saveFileMenu.addActionListener(new ActionListener() {
 
             SaveDataFileChooser fileChooser;
-            DataSaver dataSaver = new DataSaver();
+            FileDataSaver dataSaver = new FileDataSaver();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -876,7 +877,7 @@ public class JMainFrame extends JFrame {
 
                 if (path != null) {
                     try {
-                        DataLoaderImpl dataLoader = new DataLoaderImpl(new URL(path.trim()));
+                        UrlDataLoader dataLoader = new UrlDataLoader(new URL(path.trim()));
                         dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
                         URLLoader loader = new URLLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,

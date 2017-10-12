@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>eca-data-source</artifactId>
+    <artifactId>eca-db</artifactId>
     <version>4.1</version>
     <packaging>jar</packaging>
 

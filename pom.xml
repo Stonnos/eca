@@ -12,7 +12,7 @@
     <modules>
         <module>eca-core</module>
         <module>eca-client</module>
-        <module>eca-data-source</module>
+        <module>eca-db</module>
     </modules>
 
     <properties>

@@ -1,5 +1,6 @@
-package eca.data;
+package eca.data.file;
 
+import eca.data.FileExtension;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
@@ -15,7 +16,7 @@ import java.io.IOException;
  *
  * @author Roman Batygin
  */
-public class DataSaver {
+public class FileDataSaver {
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -47,16 +48,16 @@ public class DataSaver {
         Assert.notNull(file, "File is not specified!");
         Assert.notNull(data, "Data is not specified!");
         String name = file.getName();
-        if (name.endsWith(DataFileExtension.XLS) || name.endsWith(DataFileExtension.XLSX)) {
+        if (name.endsWith(FileExtension.XLS) || name.endsWith(FileExtension.XLSX)) {
             XLSSaver xlsSaver = new XLSSaver();
             xlsSaver.setFile(file);
             xlsSaver.setDateFormat(dateFormat);
             xlsSaver.write(data);
         } else {
             AbstractFileSaver abstractFileSaver;
-            if (name.endsWith(DataFileExtension.CSV)) {
+            if (name.endsWith(FileExtension.CSV)) {
                 abstractFileSaver = new CSVSaver();
-            } else if (name.endsWith(DataFileExtension.ARFF)) {
+            } else if (name.endsWith(FileExtension.ARFF)) {
                 abstractFileSaver = new ArffSaver();
             } else {
                 throw new IOException(String.format("Can't save data %s to file '%s'",

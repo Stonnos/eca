@@ -1,4 +1,4 @@
-package eca.data;
+package eca.data.file;
 
 /**
  * Data module dictionary.
@@ -6,7 +6,7 @@ package eca.data;
  * @author Roman Batygin
  */
 
-public class DataDictionary {
+public class FileDataDictionary {
 
     public static final String EMPTY_COLUMNS_ERROR = "Данные должны быть без пустых столбцов!";
     public static final String BAD_DATA_FORMAT = "Данные не должны содержать пустые строки!";
