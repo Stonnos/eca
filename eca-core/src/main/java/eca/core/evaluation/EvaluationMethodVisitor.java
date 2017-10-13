@@ -1,4 +1,4 @@
-package eca.core;
+package eca.core.evaluation;
 
 /**
  * Interface for visitor pattern.

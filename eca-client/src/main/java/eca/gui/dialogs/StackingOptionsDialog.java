@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.core.evaluation.EvaluationMethod;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
@@ -98,8 +99,8 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(META_SET_TITLE));
         ButtonGroup group = new ButtonGroup();
-        useTrainingSet = new JRadioButton(EvaluationMethodOptionsDialog.initialMethodTitle);
-        useTestingSet = new JRadioButton(EvaluationMethodOptionsDialog.cvMethodTitle);
+        useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
+        useTestingSet = new JRadioButton(EvaluationMethod.CROSS_VALIDATION.getDescription());
         useTrainingSet.setSelected(true);
         group.add(useTrainingSet);
         group.add(useTestingSet);
@@ -109,7 +110,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         panel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        panel.add(new JLabel(EvaluationMethodOptionsDialog.blocksNumTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        panel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         panel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));

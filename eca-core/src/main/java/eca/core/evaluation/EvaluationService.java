@@ -1,6 +1,5 @@
 package eca.core.evaluation;
 
-import eca.core.EvaluationMethod;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;

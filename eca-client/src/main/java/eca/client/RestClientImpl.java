@@ -1,17 +1,19 @@
 package eca.client;
 
+import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationOption;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.EvaluationResponse;
+import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.exception.EcaServiceException;
 import eca.config.EcaServiceProperties;
-import eca.core.EvaluationMethod;
+import eca.config.RestTemplateConfig;
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import weka.classifiers.AbstractClassifier;
@@ -46,6 +48,8 @@ public class RestClientImpl implements RestClient {
      * Number of tests
      **/
     private Integer numTests;
+
+    private final RestTemplate restTemplate = RestTemplateConfig.restTemplate();
 
     /**
      * Return the evaluation method type.
@@ -112,38 +116,27 @@ public class RestClientImpl implements RestClient {
         log.info("Starting to send request into eca - service for model '{}', data '{}'.",
                 classifier.getClass().getSimpleName(), data.relationName());
 
-        EvaluationRequestDto evaluationRequestDto = createRequest(classifier, data);
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, data);
 
         ResponseEntity<EvaluationResponse> response = restTemplate.postForEntity(PROPERTIES.getEcaServiceUrl(),
                 evaluationRequestDto, EvaluationResponse.class);
 
-        if (!HttpStatus.OK.equals(response.getStatusCode())) {
-            String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
-                    response.getStatusCode().getReasonPhrase(), response.getStatusCode().value());
-            log.error(errorMessage);
-            throw new EcaServiceException(errorMessage);
-        }
+        validateResponse(response);
 
-        final EvaluationResponse classificationResultsDto = response.getBody();
-        if (classificationResultsDto == null) {
-            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
-            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
-        }
+        final EvaluationResponse evaluationResponse = response.getBody();
 
         log.info("Received response from eca - service with status [{}] for model '{}', data '{}'.",
-                classificationResultsDto.getStatus(), classifier.getClass().getSimpleName(), data.relationName());
+                evaluationResponse.getStatus(), classifier.getClass().getSimpleName(), data.relationName());
 
-        return classificationResultsDto.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
+        return evaluationResponse.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
             @Override
             public EvaluationResults caseSuccessStatus() {
-                return classificationResultsDto.getEvaluationResults();
+                return evaluationResponse.getEvaluationResults();
             }
 
             @Override
             public EvaluationResults caseErrorStatus() {
-                throw new EcaServiceException(classificationResultsDto.getErrorMessage());
+                throw new EcaServiceException(evaluationResponse.getErrorMessage());
             }
 
             @Override
@@ -154,7 +147,38 @@ public class RestClientImpl implements RestClient {
 
     }
 
-    private EvaluationRequestDto createRequest(AbstractClassifier classifier, Instances data) {
+    @Override
+    public void createExperimentRequest(ExperimentRequestDto experimentRequestDto) {
+        Assert.notNull(experimentRequestDto, "Experiment request is not specified!");
+
+        ResponseEntity<EcaResponse> response = restTemplate.postForEntity(PROPERTIES.getEcaServiceExperimentUrl(),
+                experimentRequestDto, EcaResponse.class);
+
+        validateResponse(response);
+
+        EcaResponse ecaResponse = response.getBody();
+
+        log.info("Received response from eca - service with status [{}] for experiment request {}.",
+                ecaResponse.getStatus(), experimentRequestDto.getExperimentType());
+
+    }
+
+    private void validateResponse(ResponseEntity response) {
+        if (!HttpStatus.OK.equals(response.getStatusCode())) {
+            String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
+                    response.getStatusCode().getReasonPhrase(), response.getStatusCode().value());
+            log.error(errorMessage);
+            throw new EcaServiceException(errorMessage);
+        }
+
+        Object responseBody = response.getBody();
+        if (responseBody == null) {
+            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+        }
+    }
+
+    private EvaluationRequestDto createEvaluationRequest(AbstractClassifier classifier, Instances data) {
         EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
         evaluationRequestDto.setClassifier(classifier);
         evaluationRequestDto.setData(data);

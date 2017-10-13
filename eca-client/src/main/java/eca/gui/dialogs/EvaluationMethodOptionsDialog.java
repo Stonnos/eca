@@ -6,8 +6,8 @@
 package eca.gui.dialogs;
 
 import eca.config.ApplicationProperties;
-import eca.core.EvaluationMethod;
-import eca.core.EvaluationMethodVisitor;
+import eca.core.evaluation.EvaluationMethod;
+import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 
@@ -27,11 +27,9 @@ public class EvaluationMethodOptionsDialog extends JDialog {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
 
-    public static final String methodTitle = "Метод оценки точности";
-    public static final String initialMethodTitle = "Использование обучающего множества";
-    public static final String cvMethodTitle = "V-блочная кросс-проверка";
-    public static final String blocksNumTitle = "Количество блоков:";
-    public static final String testsNumTitle = "Количество проверок:";
+    public static final String METHOD_TITLE = "Метод оценки точности";
+    public static final String BLOCKS_NUM_TITLE = "Количество блоков:";
+    public static final String TESTS_NUM_TITLE = "Количество проверок:";
     public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
     public static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
     public static final int MINIMUM_NUMBER_OF_TESTS = 1;
@@ -92,10 +90,10 @@ public class EvaluationMethodOptionsDialog extends JDialog {
     private void makeGUI() {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(PanelBorderUtils.createTitledBorder(methodTitle));
+        panel.setBorder(PanelBorderUtils.createTitledBorder(METHOD_TITLE));
         ButtonGroup group = new ButtonGroup();
-        useTrainingSetRadioButton = new JRadioButton(initialMethodTitle);
-        useTestingSetRadioButton = new JRadioButton(cvMethodTitle);
+        useTrainingSetRadioButton = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
+        useTestingSetRadioButton = new JRadioButton(EvaluationMethod.CROSS_VALIDATION.getDescription());
         group.add(useTrainingSetRadioButton);
         group.add(useTestingSetRadioButton);
         //---------------------------------
@@ -138,11 +136,11 @@ public class EvaluationMethodOptionsDialog extends JDialog {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         panel.add(useTestingSetRadioButton, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        panel.add(new JLabel(blocksNumTitle), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        panel.add(new JLabel(BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         panel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        panel.add(new JLabel(testsNumTitle), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        panel.add(new JLabel(TESTS_NUM_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         panel.add(testsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));

@@ -1,4 +1,4 @@
-package eca.core;
+package eca.core.evaluation;
 
 /**
  * Classifiers evaluation type.
@@ -10,7 +10,7 @@ public enum EvaluationMethod {
     /**
      * Use training data
      **/
-    TRAINING_DATA {
+    TRAINING_DATA(EvaluationMethodDictionary.INITIAL_METHOD_TITLE) {
         @Override
         public <T> T accept(EvaluationMethodVisitor<T> evaluationMethodVisitor) {
             return evaluationMethodVisitor.evaluateModel();
@@ -20,12 +20,26 @@ public enum EvaluationMethod {
     /**
      * Use k * V - folds cross - validation method
      **/
-    CROSS_VALIDATION {
+    CROSS_VALIDATION(EvaluationMethodDictionary.CV_METHOD_TITLE) {
         @Override
         public <T> T accept(EvaluationMethodVisitor<T> evaluationMethodVisitor) {
             return evaluationMethodVisitor.crossValidateModel();
         }
     };
+
+    private String description;
+
+    EvaluationMethod(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Returns evaluation method description.
+     * @return evaluation method description
+     */
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * Visitor pattern common method

@@ -11,7 +11,7 @@ import eca.client.RestClientImpl;
 import eca.config.ApplicationProperties;
 import eca.config.EcaServiceProperties;
 import eca.converters.model.ClassificationModel;
-import eca.core.EvaluationMethod;
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;

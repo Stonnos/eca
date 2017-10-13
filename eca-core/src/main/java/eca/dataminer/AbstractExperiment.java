@@ -6,7 +6,7 @@
 package eca.dataminer;
 
 import eca.core.Assert;
-import eca.core.EvaluationMethod;
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;

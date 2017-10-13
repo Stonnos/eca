@@ -36,8 +36,8 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
      * Available column types of nominal attribute
      **/
     private static final int[] NOMINAL_TYPES = {Types.CHAR, Types.VARCHAR,
-            Types.NCHAR, Types.NVARCHAR,
-            Types.BOOLEAN, Types.BIT};
+            Types.NCHAR, Types.NVARCHAR, Types.BOOLEAN, Types.BIT,
+            Types.LONGVARCHAR, Types.LONGNVARCHAR};
 
     /**
      * Available column types of date attribute

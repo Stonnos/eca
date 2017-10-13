@@ -11,11 +11,11 @@ import lombok.Data;
  */
 @Data
 @JsonDeserialize(using = EvaluationResponseDeserializer.class)
-public class EvaluationResponse {
+public class EvaluationResponse extends EcaResponse {
 
+    /**
+     * Evaluation results
+     */
     private EvaluationResults evaluationResults;
 
-    private TechnicalStatus status;
-
-    private String errorMessage;
 }

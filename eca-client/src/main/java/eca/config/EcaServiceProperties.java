@@ -18,6 +18,7 @@ public class EcaServiceProperties {
     public static final String PROPERTIES_FILE = "eca-service.properties";
     public static final String ECA_SERVICE_ENABLED = "eca.service.enabled";
     public static final String ECA_SERVICE_URL = "eca.service.url";
+    public static final String ECA_SERVICE_EXPERIMENT_URL = "eca.service.experiment-url";
 
     private static Properties PROPERTIES = new Properties();
 
@@ -112,6 +113,15 @@ public class EcaServiceProperties {
      */
     public String getEcaServiceUrl() {
         return PROPERTIES.getProperty(ECA_SERVICE_URL);
+    }
+
+    /**
+     * Returns eca - service experiment url.
+     *
+     * @return eca - service experiment url
+     */
+    public String getEcaServiceExperimentUrl() {
+        return PROPERTIES.getProperty(ECA_SERVICE_EXPERIMENT_URL);
     }
 
     private static File getPropertiesFile() {

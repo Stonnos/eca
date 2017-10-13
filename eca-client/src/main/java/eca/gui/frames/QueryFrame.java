@@ -97,11 +97,16 @@ public class QueryFrame extends JFrame {
     }
 
     private void closeConnection() {
-        try {
-            connection.close();
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    connection.close();
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                }
+            }
+        });
     }
 
     private void makeGUI() {
