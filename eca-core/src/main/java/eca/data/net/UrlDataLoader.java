@@ -6,7 +6,6 @@
 package eca.data.net;
 
 import eca.data.AbstractDataLoader;
-import eca.data.DataLoader;
 import eca.data.file.XLSLoader;
 import eca.util.Utils;
 import org.springframework.util.Assert;
@@ -19,7 +18,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 
-import static eca.data.FileExtension.*;
+import static eca.data.FileExtension.FILE_EXTENSIONS;
 
 
 /**
@@ -33,11 +32,6 @@ public class UrlDataLoader extends AbstractDataLoader {
      * Available protocols
      **/
     private static final String[] PROTOCOLS = {"http", "ftp"};
-
-    /**
-     * Available files extensions
-     **/
-    private static final String[] FILE_EXTENSIONS = {XLS, XLSX, CSV, ARFF};
 
     /**
      * Source url

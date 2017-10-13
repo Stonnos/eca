@@ -42,6 +42,21 @@ public enum EvaluationMethod {
     }
 
     /**
+     * Finds evaluation method type by description
+     *
+     * @param description description string.
+     * @return {@link EvaluationMethod} object
+     */
+    public static EvaluationMethod findByDescription(String description) {
+        for (EvaluationMethod evaluationMethod : values()) {
+            if (evaluationMethod.getDescription().equals(description)) {
+                return evaluationMethod;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Visitor pattern common method
      *
      * @param evaluationMethodVisitor visitor class

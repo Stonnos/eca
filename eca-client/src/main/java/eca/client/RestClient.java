@@ -1,5 +1,6 @@
 package eca.client;
 
+import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.core.evaluation.EvaluationResults;
 import weka.classifiers.AbstractClassifier;
@@ -25,6 +26,6 @@ public interface RestClient {
      * Sends experiment request to eca - service.
      * @param experimentRequestDto {@link ExperimentRequestDto} object
      */
-    void createExperimentRequest(ExperimentRequestDto experimentRequestDto);
+    EcaResponse createExperimentRequest(ExperimentRequestDto experimentRequestDto);
 
 }

@@ -2,6 +2,7 @@ package eca.gui;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+import java.util.Enumeration;
 
 /**
  * @author Roman Batygin
@@ -16,6 +17,16 @@ public class GuiUtils {
         for (JTextField field : fields) {
             if (field.getText().isEmpty()) {
                 return field;
+            }
+        }
+        return null;
+    }
+
+    public static String searchSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> enumeration = buttonGroup.getElements(); enumeration.hasMoreElements(); ) {
+            AbstractButton abstractButton = enumeration.nextElement();
+            if (abstractButton.isSelected()) {
+                return abstractButton.getText();
             }
         }
         return null;

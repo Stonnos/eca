@@ -27,7 +27,7 @@ import java.util.HashMap;
  * @author Roman Batygin
  */
 @Slf4j
-public class RestClientImpl implements RestClient {
+public class EvaluationClient implements RestClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
     private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE = "Empty response has been received!";
@@ -148,7 +148,7 @@ public class RestClientImpl implements RestClient {
     }
 
     @Override
-    public void createExperimentRequest(ExperimentRequestDto experimentRequestDto) {
+    public EcaResponse createExperimentRequest(ExperimentRequestDto experimentRequestDto) {
         Assert.notNull(experimentRequestDto, "Experiment request is not specified!");
 
         ResponseEntity<EcaResponse> response = restTemplate.postForEntity(PROPERTIES.getEcaServiceExperimentUrl(),
@@ -161,6 +161,7 @@ public class RestClientImpl implements RestClient {
         log.info("Received response from eca - service with status [{}] for experiment request {}.",
                 ecaResponse.getStatus(), experimentRequestDto.getExperimentType());
 
+        return ecaResponse;
     }
 
     private void validateResponse(ResponseEntity response) {

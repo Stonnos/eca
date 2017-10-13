@@ -6,13 +6,16 @@
 package eca.gui.frames;
 
 import eca.Reference;
+import eca.client.EvaluationClient;
 import eca.client.RestClient;
-import eca.client.RestClientImpl;
+import eca.client.dto.EcaResponse;
+import eca.client.dto.ExperimentRequestDto;
+import eca.client.dto.TechnicalStatusVisitor;
 import eca.config.ApplicationProperties;
 import eca.config.EcaServiceProperties;
 import eca.converters.model.ClassificationModel;
-import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
 import eca.data.file.FileDataLoader;
@@ -57,6 +60,7 @@ import eca.gui.dialogs.EcaServiceOptionsDialog;
 import eca.gui.dialogs.EnsembleOptionsDialog;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
 import eca.gui.dialogs.ExecutorDialog;
+import eca.gui.dialogs.ExperimentRequestDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
@@ -164,6 +168,7 @@ public class JMainFrame extends JFrame {
     private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
     private static final String KNN_OPTIMIZER_MENU_TEXT =
             "Автоматическое построение: алгоритм k - взвешенных ближайших соседей";
+    private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -510,7 +515,72 @@ public class JMainFrame extends JFrame {
     } //End of class DataInternalFrame
 
     /**
-     *
+     * Experiment request worker.
+     */
+    private class ExperimentRequestWorker extends SwingWorker<Void, Void> {
+
+        static final String SUCCESS_MESSAGE =
+                "Ваша заявка находится в обработке, пожалуйста ожидайте ответное письмо на email.";
+
+        RestClient restClient;
+        ExperimentRequestDto experimentRequestDto;
+        EcaResponse ecaResponse;
+        boolean success = true;
+        String errorMessage;
+
+        ExperimentRequestWorker(RestClient restClient, ExperimentRequestDto experimentRequestDto) {
+            this.restClient = restClient;
+            this.experimentRequestDto = experimentRequestDto;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            try {
+                ecaResponse = restClient.createExperimentRequest(experimentRequestDto);
+            } catch (Throwable e) {
+                LoggerUtils.error(log, e);
+                success = false;
+                errorMessage = e.getMessage();
+            }
+            setProgress(100);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            if (success) {
+                ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
+                    @Override
+                    public Void caseSuccessStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                SUCCESS_MESSAGE, null, JOptionPane.INFORMATION_MESSAGE);
+                        return null;
+                    }
+
+                    @Override
+                    public Void caseErrorStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this, ecaResponse.getErrorMessage(),
+                                null, JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+
+                    @Override
+                    public Void caseTimeoutStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this, "There was a timeout.",
+                                null, JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(JMainFrame.this, errorMessage,
+                        null, JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    /**
+     * Classifier model builder.
      */
     private class ModelBuilder implements CallbackAction {
 
@@ -607,7 +677,7 @@ public class JMainFrame extends JFrame {
 
     private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
 
-        RestClientImpl restClient = new RestClientImpl();
+        EvaluationClient restClient = new EvaluationClient();
         restClient.setEvaluationMethod(testingSetFrame.getEvaluationMethod());
 
         if (restClient.getEvaluationMethod() == EvaluationMethod.CROSS_VALIDATION) {
@@ -957,8 +1027,7 @@ public class JMainFrame extends JFrame {
                     if (file != null) {
                         ModelLoader loader = new ModelLoader(file);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader,
-                                MODEL_BUILDING_MESSAGE);
+                                loader, MODEL_BUILDING_MESSAGE);
 
                         process(progress, new CallbackAction() {
                             @Override
@@ -1453,7 +1522,46 @@ public class JMainFrame extends JFrame {
                 resultHistoryFrame.setVisible(true);
             }
         });
+
+        JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
+
+        experimentRequestMenu.addActionListener(new ActionListener() {
+
+            RestClient restClient;
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+
+                        if (restClient == null) {
+                            restClient = new EvaluationClient();
+                        }
+                        Instances data = data();
+                        ExperimentRequestDialog experimentRequestDialog =
+                                new ExperimentRequestDialog(JMainFrame.this);
+                        experimentRequestDialog.setVisible(true);
+                        if (experimentRequestDialog.isDialogResult()) {
+                            ExperimentRequestDto experimentRequestDto =
+                                    experimentRequestDialog.createExperimentRequestDto();
+                            experimentRequestDto.setData(data);
+
+                            ExperimentRequestWorker requestWorker =
+                                    new ExperimentRequestWorker(restClient, experimentRequestDto);
+                            requestWorker.execute();
+                        }
+
+                    } catch (Exception e) {
+                        LoggerUtils.error(log, e);
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+
         serviceMenu.add(historyMenu);
+        serviceMenu.add(experimentRequestMenu);
 
         attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
         attrStatisticsMenu.addActionListener(new ActionListener() {
@@ -1479,7 +1587,6 @@ public class JMainFrame extends JFrame {
 
             ConsoleFrame consoleFrame = new ConsoleFrame(JMainFrame.this,
                     ConsoleTextArea.getTextArea());
-            ;
 
             @Override
             public void actionPerformed(ActionEvent evt) {

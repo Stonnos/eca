@@ -2,11 +2,16 @@ package eca.data.file;
 
 import eca.data.AbstractDataLoader;
 import eca.data.FileExtension;
+import eca.data.net.UrlDataLoaderDictionary;
+import eca.util.Utils;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
 import java.io.File;
+import java.util.Arrays;
+
+import static eca.data.FileExtension.FILE_EXTENSIONS;
 
 /**
  * Class for loading input data from file.
@@ -25,8 +30,9 @@ public class FileDataLoader extends AbstractDataLoader {
      */
     public void setFile(File file) throws Exception {
         Assert.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
-            throw new Exception("Wrong file extension!");
+        if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
+            throw new Exception(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+                    Arrays.asList(FILE_EXTENSIONS)));
         }
         this.file = file;
     }

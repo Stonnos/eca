@@ -13,4 +13,6 @@ public class FileExtension {
     public static final String ARFF = ".arff";
     public static final String CSV = ".csv";
 
+    public static final String[] FILE_EXTENSIONS = {XLS, XLSX, CSV, ARFF};
+
 }
