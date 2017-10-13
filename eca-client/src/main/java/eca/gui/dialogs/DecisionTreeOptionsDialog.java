@@ -212,13 +212,13 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     }
 
     private JTextField findFirstEmptyField() {
-        if (isEmpty(minObjTextField)) {
+        if (GuiUtils.isEmpty(minObjTextField)) {
             return minObjTextField;
-        } else if (isEmpty(maxDepthTextField)) {
+        } else if (GuiUtils.isEmpty(maxDepthTextField)) {
             return maxDepthTextField;
-        } else if (randomTreeBox.isSelected() && isEmpty(numRandomAttrTextField)) {
+        } else if (randomTreeBox.isSelected() && GuiUtils.isEmpty(numRandomAttrTextField)) {
             return numRandomAttrTextField;
-        } else if (isEmpty(numRandomSplitsTextField)) {
+        } else if (GuiUtils.isEmpty(numRandomSplitsTextField)) {
             return numRandomSplitsTextField;
         } else {
             return null;

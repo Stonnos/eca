@@ -49,8 +49,4 @@ public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
     public final Instances data() {
         return data;
     }
-
-    protected final boolean isEmpty(JTextField field) {
-        return field.getText().isEmpty();
-    }
 }

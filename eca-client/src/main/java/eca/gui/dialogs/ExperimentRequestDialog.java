@@ -7,7 +7,10 @@ import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.LengthDocument;
+import eca.gui.validators.EmailValidator;
+import eca.gui.validators.FirstNameValidator;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.gui.validators.Validator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,22 +26,24 @@ public class ExperimentRequestDialog extends JDialog {
     private static final int TEXT_LENGTH = 15;
     private static final int FIELD_LENGTH = 255;
 
-    private static final String FIRST_NAME_REGEX = "^([a-zA-z]+)|([а-яА-я]+)$";
-    private static final String EMAIL_REGEX = "^$";
-
     private static final String TITLE = "Создание заявки на эксперимент";
     private static final String FIRST_NAME_TEXT = "Ваше имя:";
-    private static final String EMAIL_TEXT = "Ваш email:";
+    private static final String EMAIL_TEXT = "Ваш e-mail:";
     private static final String CLASSIFIER_TEXT = "Классификатор:";
     private static final String EVALUATION_METHOD_TITLE = "Метод оценки точности";
     private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
     private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
-    private static final String NOT_SAME_ALPHABETIC_ERROR = "Имя должно состоять из символов одного алфавита!";
+    private static final String NOT_SAME_ALPHABETIC_ERROR =
+            "Имя должно начинаться с большой буквы\nи состоять из символов одного алфавита!";
+    private static final String INVALID_EMAIL_FORMAT_ERROR = "Введен некорректный e-mail!";
 
     private JTextField firstNameTextField;
     private JTextField emailTextField;
     private JComboBox<String> experimentTypeBox;
     private ButtonGroup evaluationMethodsGroup;
+
+    private Validator firstNameValidator = new FirstNameValidator();
+    private Validator emailValidator = new EmailValidator();
 
     private boolean dialogResult;
 
@@ -132,7 +137,7 @@ public class ExperimentRequestDialog extends JDialog {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
 
         this.add(mainOptionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 0, 5), 0, 0));
         this.add(evaluationMethodPanel, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
 
@@ -158,9 +163,11 @@ public class ExperimentRequestDialog extends JDialog {
     }
 
     private void validateFields() throws Exception {
-        String firstName = firstNameTextField.getText();
-        if (!firstName.matches(FIRST_NAME_REGEX)) {
+        if (!firstNameValidator.validate(firstNameTextField.getText().trim())) {
             throw new Exception(NOT_SAME_ALPHABETIC_ERROR);
+        }
+        if (!emailValidator.validate(emailTextField.getText().trim())) {
+            throw new Exception(INVALID_EMAIL_FORMAT_ERROR);
         }
     }
 }

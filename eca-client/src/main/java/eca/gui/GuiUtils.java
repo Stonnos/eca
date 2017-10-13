@@ -1,8 +1,11 @@
 package eca.gui;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.util.Enumeration;
+import java.util.Optional;
 
 /**
  * @author Roman Batygin
@@ -14,12 +17,19 @@ public class GuiUtils {
     public static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
 
     public static JTextField searchFirstEmptyField(JTextField... fields) {
-        for (JTextField field : fields) {
-            if (field.getText().isEmpty()) {
-                return field;
+        if (fields != null) {
+            for (JTextField field : fields) {
+                if (isEmpty(field)) {
+                    return field;
+                }
             }
         }
         return null;
+    }
+
+    public static boolean isEmpty(JTextField jTextField) {
+        return !Optional.ofNullable(jTextField).map(JTextField::getText).isPresent()
+                || StringUtils.isEmpty(jTextField.getText().trim());
     }
 
     public static String searchSelectedButtonText(ButtonGroup buttonGroup) {

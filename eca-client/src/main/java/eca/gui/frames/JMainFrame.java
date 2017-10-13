@@ -21,54 +21,21 @@ import eca.core.evaluation.EvaluationService;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
 import eca.data.net.UrlDataLoader;
-import eca.dataminer.AutomatedHeterogeneousEnsemble;
-import eca.dataminer.AutomatedKNearestNeighbours;
-import eca.dataminer.AutomatedNeuralNetwork;
-import eca.dataminer.AutomatedStacking;
-import eca.dataminer.ExperimentUtil;
+import eca.dataminer.*;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
-import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.ensemble.AdaBoostClassifier;
-import eca.ensemble.CVIterativeBuilder;
-import eca.ensemble.HeterogeneousClassifier;
+import eca.ensemble.*;
 import eca.ensemble.Iterable;
-import eca.ensemble.IterativeBuilder;
-import eca.ensemble.ModifiedHeterogeneousClassifier;
-import eca.ensemble.RandomNetworks;
-import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.CallbackAction;
-import eca.gui.actions.DataBaseConnectionAction;
-import eca.gui.actions.DataGeneratorLoader;
-import eca.gui.actions.InstancesLoader;
-import eca.gui.actions.ModelLoader;
-import eca.gui.actions.URLLoader;
+import eca.gui.actions.*;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.BaseOptionsDialog;
-import eca.gui.dialogs.ClassifierBuilderDialog;
-import eca.gui.dialogs.DataGeneratorDialog;
-import eca.gui.dialogs.DatabaseConnectionDialog;
-import eca.gui.dialogs.DecisionTreeOptionsDialog;
-import eca.gui.dialogs.EcaServiceOptionsDialog;
-import eca.gui.dialogs.EnsembleOptionsDialog;
-import eca.gui.dialogs.EvaluationMethodOptionsDialog;
-import eca.gui.dialogs.ExecutorDialog;
-import eca.gui.dialogs.ExperimentRequestDialog;
-import eca.gui.dialogs.KNNOptionDialog;
-import eca.gui.dialogs.LoadDialog;
-import eca.gui.dialogs.LogisticOptionsDialogBase;
-import eca.gui.dialogs.NetworkOptionsDialog;
-import eca.gui.dialogs.RandomForestsOptionDialog;
-import eca.gui.dialogs.RandomNetworkOptionsDialog;
-import eca.gui.dialogs.SpinnerDialog;
-import eca.gui.dialogs.StackingOptionsDialog;
+import eca.gui.dialogs.*;
 import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
@@ -79,11 +46,7 @@ import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
-import eca.trees.C45;
-import eca.trees.CART;
-import eca.trees.CHAID;
-import eca.trees.DecisionTreeClassifier;
-import eca.trees.ID3;
+import eca.trees.*;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -100,12 +63,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * @author Roman Batygin
@@ -175,14 +134,6 @@ public class JMainFrame extends JFrame {
 
     private final JDesktopPane panels = new JDesktopPane();
 
-    private JMenu algorithmsMenu;
-
-    private JMenu dataMinerMenu;
-
-    private JMenuItem saveFileMenu;
-
-    private JMenuItem attrStatisticsMenu;
-
     private JMenu windowsMenu;
 
     private ResultsHistory resultsHistory = new ResultsHistory();
@@ -195,16 +146,15 @@ public class JMainFrame extends JFrame {
 
     private ClassificationResultHistoryFrame resultHistoryFrame;
 
+    private List<AbstractButton> disabledMenuElementList = new ArrayList<>();
+
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.makeGUI();
         resultHistoryFrame = new ClassificationResultHistoryFrame(this, resultsHistory);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.algorithmsMenu.setEnabled(false);
-        this.saveFileMenu.setEnabled(false);
-        this.attrStatisticsMenu.setEnabled(false);
-        this.dataMinerMenu.setEnabled(false);
+        this.setEnabledMenuComponents(false);
         this.createWindowListener();
         this.setLocationRelativeTo(null);
     }
@@ -773,10 +723,7 @@ public class JMainFrame extends JFrame {
             public void internalFrameClosed(InternalFrameEvent e) {
                 windowsMenu.remove(dataInternalFrame.getMenu());
                 if (panels.getComponentCount() == 0) {
-                    algorithmsMenu.setEnabled(false);
-                    saveFileMenu.setEnabled(false);
-                    dataMinerMenu.setEnabled(false);
-                    attrStatisticsMenu.setEnabled(false);
+                    setEnabledMenuComponents(false);
                 }
             }
 
@@ -805,19 +752,24 @@ public class JMainFrame extends JFrame {
         //--------------------------------------------
         panels.add(dataInternalFrame);
         dataInternalFrame.setVisible(true);
-        algorithmsMenu.setEnabled(true);
-        saveFileMenu.setEnabled(true);
-        dataMinerMenu.setEnabled(true);
-        attrStatisticsMenu.setEnabled(true);
+        setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
         isStarted = true;
+    }
+
+    private void setEnabledMenuComponents(boolean enabled) {
+        for (AbstractButton abstractButton : disabledMenuElementList) {
+            abstractButton.setEnabled(enabled);
+        }
     }
 
     private void makeMenu() {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
-        algorithmsMenu = new JMenu(CLASSIFIERS_MENU_TEXT);
-        dataMinerMenu = new JMenu(DATA_MINER_MENU_TEXT);
+        JMenu algorithmsMenu = new JMenu(CLASSIFIERS_MENU_TEXT);
+        disabledMenuElementList.add(algorithmsMenu);
+        JMenu dataMinerMenu = new JMenu(DATA_MINER_MENU_TEXT);
+        disabledMenuElementList.add(dataMinerMenu);
         JMenu optionsMenu = new JMenu(OPTIONS_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
         windowsMenu = new JMenu(WINDOWS_MENU_TEXT);
@@ -907,7 +859,8 @@ public class JMainFrame extends JFrame {
         optionsMenu.add(ecaServiceOptionsMenu);
 
         fileMenu.add(openFileMenu);
-        saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
+        JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
+        disabledMenuElementList.add(saveFileMenu);
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
         fileMenu.add(saveFileMenu);
         //-------------------------------------------------
@@ -1525,7 +1478,7 @@ public class JMainFrame extends JFrame {
         });
 
         JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
-
+        disabledMenuElementList.add(experimentRequestMenu);
         experimentRequestMenu.addActionListener(new ActionListener() {
 
             EcaServiceClient restClient;
@@ -1562,7 +1515,8 @@ public class JMainFrame extends JFrame {
         serviceMenu.add(historyMenu);
         serviceMenu.add(experimentRequestMenu);
 
-        attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
+        JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
+        disabledMenuElementList.add(attrStatisticsMenu);
         attrStatisticsMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {

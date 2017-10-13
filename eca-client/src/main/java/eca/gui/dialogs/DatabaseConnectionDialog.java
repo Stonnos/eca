@@ -179,11 +179,11 @@ public class DatabaseConnectionDialog extends JDialog {
     }
 
     private JTextField emptyField() {
-        if (hostField.getText().isEmpty()) {
+        if (GuiUtils.isEmpty(hostField)) {
             return hostField;
-        } else if (portField.isEnabled() && portField.getText().isEmpty()) {
+        } else if (portField.isEnabled() && GuiUtils.isEmpty(portField)) {
             return portField;
-        } else if (dataBaseField.getText().isEmpty()) {
+        } else if (GuiUtils.isEmpty(dataBaseField)) {
             return dataBaseField;
         } else {
             return null;
