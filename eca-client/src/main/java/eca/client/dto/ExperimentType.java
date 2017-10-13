@@ -1,7 +1,6 @@
 package eca.client.dto;
 
-import eca.dictionary.ClassifiersNamesDictionary;
-import eca.dictionary.EnsemblesNamesDictionary;
+import eca.client.dictionary.ExperimentTypeDictionary;
 
 /**
  * Experiment type.
@@ -13,32 +12,32 @@ public enum ExperimentType {
     /**
      * Optimal options automatic selection for neural networks.
      */
-    NEURAL_NETWORKS(ClassifiersNamesDictionary.NEURAL_NETWORK),
+    NEURAL_NETWORKS(ExperimentTypeDictionary.NEURAL_NETWORK_NAME),
 
     /**
      * Optimal options automatic selection for heterogeneous ensemble algorithm.
      */
-    HETEROGENEOUS_ENSEMBLE(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE),
+    HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.HEC_NAME),
 
     /**
      * Optimal options automatic selection for modified heterogeneous ensemble algorithm.
      */
-    MODIFIED_HETEROGENEOUS_ENSEMBLE(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE),
+    MODIFIED_HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.MHEC_NAME),
 
     /**
      * Optimal options automatic selection for AdaBoost algorithm.
      */
-    ADA_BOOST(EnsemblesNamesDictionary.BOOSTING),
+    ADA_BOOST(ExperimentTypeDictionary.ADA_BOOST_NAME),
 
     /**
      * Optimal options automatic selection for stacking algorithm.
      */
-    STACKING(EnsemblesNamesDictionary.STACKING),
+    STACKING(ExperimentTypeDictionary.STACKING_NAME),
 
     /**
      * Optimal options automatic selection for k - nearest neighbours algorithm.
      */
-    KNN(ClassifiersNamesDictionary.KNN);
+    KNN(ExperimentTypeDictionary.KNN_NAME);
 
     private String description;
 

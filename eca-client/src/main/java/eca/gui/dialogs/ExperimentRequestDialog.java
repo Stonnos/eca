@@ -20,10 +20,10 @@ import java.awt.event.ActionListener;
  */
 public class ExperimentRequestDialog extends JDialog {
 
-    private static final int TEXT_LENGTH = 20;
+    private static final int TEXT_LENGTH = 15;
     private static final int FIELD_LENGTH = 255;
 
-    private static final String FIRST_NAME_REGEX = "^[a-zA-z]$";
+    private static final String FIRST_NAME_REGEX = "^([a-zA-z]+)|([а-яА-я]+)$";
     private static final String EMAIL_REGEX = "^$";
 
     private static final String TITLE = "Создание заявки на эксперимент";
@@ -33,6 +33,7 @@ public class ExperimentRequestDialog extends JDialog {
     private static final String EVALUATION_METHOD_TITLE = "Метод оценки точности";
     private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
     private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
+    private static final String NOT_SAME_ALPHABETIC_ERROR = "Имя должно состоять из символов одного алфавита!";
 
     private JTextField firstNameTextField;
     private JTextField emailTextField;
@@ -131,15 +132,15 @@ public class ExperimentRequestDialog extends JDialog {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
 
         this.add(mainOptionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
         this.add(evaluationMethodPanel, new GridBagConstraints(0, 1, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
 
         this.add(okButton, new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-
+        this.getRootPane().setDefaultButton(okButton);
     }
 
     public ExperimentRequestDto createExperimentRequestDto() {
@@ -157,6 +158,9 @@ public class ExperimentRequestDialog extends JDialog {
     }
 
     private void validateFields() throws Exception {
-
+        String firstName = firstNameTextField.getText();
+        if (!firstName.matches(FIRST_NAME_REGEX)) {
+            throw new Exception(NOT_SAME_ALPHABETIC_ERROR);
+        }
     }
 }
