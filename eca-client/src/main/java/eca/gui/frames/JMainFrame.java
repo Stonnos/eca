@@ -6,8 +6,8 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.client.EvaluationClient;
-import eca.client.RestClient;
+import eca.client.EcaServiceClient;
+import eca.client.EcaServiceClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
@@ -521,14 +521,15 @@ public class JMainFrame extends JFrame {
 
         static final String SUCCESS_MESSAGE =
                 "Ваша заявка находится в обработке, пожалуйста ожидайте ответное письмо на email.";
+        static final String TIMEOUT_MESSAGE = "There was a timeout.";
 
-        RestClient restClient;
+        EcaServiceClient restClient;
         ExperimentRequestDto experimentRequestDto;
         EcaResponse ecaResponse;
         boolean success = true;
         String errorMessage;
 
-        ExperimentRequestWorker(RestClient restClient, ExperimentRequestDto experimentRequestDto) {
+        ExperimentRequestWorker(EcaServiceClient restClient, ExperimentRequestDto experimentRequestDto) {
             this.restClient = restClient;
             this.experimentRequestDto = experimentRequestDto;
         }
@@ -566,7 +567,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public Void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, "There was a timeout.",
+                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE,
                                 null, JOptionPane.ERROR_MESSAGE);
                         return null;
                     }
@@ -610,12 +611,12 @@ public class JMainFrame extends JFrame {
      */
     private class EcaServiceAction implements CallbackAction {
 
-        RestClient restClient;
+        EcaServiceClient restClient;
         AbstractClassifier classifier;
         Instances data;
         EvaluationResults classifierDescriptor;
 
-        EcaServiceAction(RestClient restClient, AbstractClassifier classifier, Instances data) {
+        EcaServiceAction(EcaServiceClient restClient, AbstractClassifier classifier, Instances data) {
             this.restClient = restClient;
             this.classifier = classifier;
             this.data = data;
@@ -677,7 +678,7 @@ public class JMainFrame extends JFrame {
 
     private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
 
-        EvaluationClient restClient = new EvaluationClient();
+        EcaServiceClientImpl restClient = new EcaServiceClientImpl();
         restClient.setEvaluationMethod(testingSetFrame.getEvaluationMethod());
 
         if (restClient.getEvaluationMethod() == EvaluationMethod.CROSS_VALIDATION) {
@@ -1527,15 +1528,14 @@ public class JMainFrame extends JFrame {
 
         experimentRequestMenu.addActionListener(new ActionListener() {
 
-            RestClient restClient;
+            EcaServiceClient restClient;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-
                         if (restClient == null) {
-                            restClient = new EvaluationClient();
+                            restClient = new EcaServiceClientImpl();
                         }
                         Instances data = data();
                         ExperimentRequestDialog experimentRequestDialog =
@@ -1545,7 +1545,6 @@ public class JMainFrame extends JFrame {
                             ExperimentRequestDto experimentRequestDto =
                                     experimentRequestDialog.createExperimentRequestDto();
                             experimentRequestDto.setData(data);
-
                             ExperimentRequestWorker requestWorker =
                                     new ExperimentRequestWorker(restClient, experimentRequestDto);
                             requestWorker.execute();

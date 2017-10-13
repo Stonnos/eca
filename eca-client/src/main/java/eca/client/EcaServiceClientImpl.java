@@ -20,6 +20,7 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Implements service for communication with eca - service api.
@@ -27,7 +28,7 @@ import java.util.HashMap;
  * @author Roman Batygin
  */
 @Slf4j
-public class EvaluationClient implements RestClient {
+public class EcaServiceClientImpl implements EcaServiceClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
     private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE = "Empty response has been received!";
@@ -173,7 +174,7 @@ public class EvaluationClient implements RestClient {
         }
 
         Object responseBody = response.getBody();
-        if (responseBody == null) {
+        if (Objects.isNull(responseBody)) {
             log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
             throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
         }

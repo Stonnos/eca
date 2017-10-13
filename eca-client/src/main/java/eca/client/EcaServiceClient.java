@@ -7,11 +7,11 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 /**
- * Implements service for communication with eca - service api.
+ * Implements client for communication with eca - service api.
  *
  * @author Roman Batygin
  */
-public interface RestClient {
+public interface EcaServiceClient {
 
     /**
      * Sends request to eca - service.
