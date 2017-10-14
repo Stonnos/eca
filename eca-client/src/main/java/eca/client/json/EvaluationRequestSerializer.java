@@ -1,8 +1,9 @@
-package eca.client.dto;
+package eca.client.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import eca.client.dto.EvaluationRequestDto;
 import org.springframework.util.SerializationUtils;
 
 import java.io.IOException;

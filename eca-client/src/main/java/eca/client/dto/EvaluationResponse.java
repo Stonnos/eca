@@ -1,6 +1,7 @@
 package eca.client.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eca.client.json.EvaluationResponseDeserializer;
 import eca.core.evaluation.EvaluationResults;
 import lombok.Data;
 

@@ -1,9 +1,11 @@
-package eca.client.dto;
+package eca.client.json;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import eca.client.dto.EvaluationResponse;
+import eca.client.dto.TechnicalStatus;
 import eca.core.evaluation.EvaluationResults;
 import org.springframework.util.SerializationUtils;
 

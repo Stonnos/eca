@@ -1,6 +1,7 @@
 package eca.client.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import eca.client.json.ExperimentRequestSerializer;
 import eca.core.evaluation.EvaluationMethod;
 import lombok.Data;
 import weka.core.Instances;
