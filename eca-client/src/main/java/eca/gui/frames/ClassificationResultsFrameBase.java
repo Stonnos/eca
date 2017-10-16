@@ -23,7 +23,12 @@ import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ClassifierInputOptionsService;
-import eca.gui.tables.*;
+import eca.gui.tables.ClassificationCostsMatrix;
+import eca.gui.tables.ClassifyInstanceTable;
+import eca.gui.tables.EnsembleTable;
+import eca.gui.tables.LogisticCoefficientsTable;
+import eca.gui.tables.MisClassificationMatrix;
+import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -34,8 +39,15 @@ import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
@@ -418,9 +430,9 @@ public class ClassificationResultsFrameBase extends JFrame {
         static final String INDIVIDUAL_CLASSIFIER_TEXT = "Базовый классификатор:";
 
         void save(File file) throws Exception {
-            try (FileOutputStream stream = new FileOutputStream(file)) {
-                Workbook book = file.getName().endsWith(FileExtension.XLS) ?
-                        new HSSFWorkbook() : new XSSFWorkbook();
+            try (FileOutputStream stream = new FileOutputStream(file);
+                 Workbook book = file.getName().endsWith(FileExtension.XLS) ?
+                         new HSSFWorkbook() : new XSSFWorkbook()) {
 
                 Font font = book.createFont();
                 font.setBold(true);

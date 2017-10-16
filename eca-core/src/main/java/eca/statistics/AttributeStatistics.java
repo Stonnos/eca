@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
  */
 public class AttributeStatistics {
 
-    public static final String NAN = "NaN";
+    private static final String NAN = "NaN";
     private Instances data;
     private DecimalFormat decimalFormat;
 
@@ -97,7 +97,7 @@ public class AttributeStatistics {
      * Gets the number of values of given attribute.
      *
      * @param attribute {@link Attribute} object
-     * @param attribute attribute value for comparing
+     * @param val attribute value for comparing
      * @return the number of values of given attribute.
      */
     public int getValuesNum(Attribute attribute, double val) {

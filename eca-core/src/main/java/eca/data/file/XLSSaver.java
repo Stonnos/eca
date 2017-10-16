@@ -7,7 +7,12 @@ package eca.data.file;
 
 import eca.data.FileExtension;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.Assert;
 import weka.core.Attribute;
@@ -68,9 +73,9 @@ public class XLSSaver {
      */
     public void write(Instances data) throws IOException {
         Assert.notNull(data, "Data is not specified!");
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            Workbook book = file.getName().endsWith(FileExtension.XLS) ?
-                    new HSSFWorkbook() : new XSSFWorkbook();
+        try (FileOutputStream stream = new FileOutputStream(file);
+             Workbook book = file.getName().endsWith(FileExtension.XLS) ?
+                     new HSSFWorkbook() : new XSSFWorkbook()) {
             Font font = book.createFont();
             font.setBold(true);
             font.setFontHeightInPoints((short) 12);

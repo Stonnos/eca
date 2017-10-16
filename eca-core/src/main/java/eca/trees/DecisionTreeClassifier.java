@@ -5,7 +5,11 @@
  */
 package eca.trees;
 
-import eca.core.*;
+import eca.core.Assert;
+import eca.core.InstancesHandler;
+import eca.core.ListOptionsHandler;
+import eca.core.PermutationsSearcher;
+import eca.core.RandomAttributesEnumeration;
 import eca.filter.MissingValuesFilter;
 import eca.generators.NumberGenerator;
 import eca.trees.rules.AbstractRule;
@@ -19,7 +23,11 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Abstract class for generating decision tree model. <p>
@@ -294,7 +302,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         while (!x.isLeaf()) {
             x = x.getChild(o);
         }
-        probabilities(x);
+        calculateProbabilities(x);
         return Arrays.copyOf(probabilities, probabilities.length);
     }
 
@@ -733,7 +741,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return split;
     }
 
-    protected final void probabilities(TreeNode x) {
+    protected final void calculateProbabilities(TreeNode x) {
         Arrays.fill(probabilities, 0);
         if (!x.objects().isEmpty()) {
             for (int i = 0; i < x.objects().numInstances(); i++) {
@@ -746,7 +754,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected final double classValue(TreeNode x) {
         double classValue = 0.0;
         double max = -Double.MAX_VALUE;
-        probabilities(x);
+        calculateProbabilities(x);
         for (int k = 0; k < probabilities.length; k++) {
             if (probabilities[k] > max) {
                 max = probabilities[k];

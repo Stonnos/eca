@@ -114,7 +114,7 @@ public class Sampler implements java.io.Serializable {
      *
      * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
-     * @return
+     * @return {@link Instances} object
      */
     public Instances instances(final Instances data, final int numAttr) {
 
@@ -233,12 +233,13 @@ public class Sampler implements java.io.Serializable {
 
     private ArrayList<Attribute> randomAttributes(Instances data, int numAttr) {
         ArrayList<Attribute> attr = new ArrayList<>(numAttr);
-        while (numAttr != 0) {
+        int k = numAttr;
+        while (k != 0) {
             int i = random.nextInt(data.numAttributes());
             Attribute a = data.attribute(i);
             if (i != data.classIndex() && !attr.contains(a)) {
                 attr.add((Attribute) a.copy());
-                numAttr--;
+                k--;
             }
         }
         attr.add((Attribute) data.classAttribute().copy());
@@ -273,11 +274,12 @@ public class Sampler implements java.io.Serializable {
     private Instances createRandom(Instances data, int size) {
         Instances sample = new Instances(data, size);
         HashSet<Integer> index = new HashSet<>();
-        while (size != 0) {
+        int k = size;
+        while (k != 0) {
             int i = random.nextInt(data.numInstances());
             if (index.add(i)) {
                 sample.add(data.instance(i));
-                size--;
+                k--;
             }
         }
         return sample;

@@ -131,9 +131,9 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = EnsembleDictionary.CLASSIFIER_SELECTION;
         options[k++] = getUseRandomClassifier() ? EnsembleDictionary.RANDOM_CLASSIFIER
                 : EnsembleDictionary.OPTIMAL_CLASSIFIER;
-        for (int i = k++, j = 0; i < options.length; i += 2, j++) {
-            options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
+        for (int j = 0; k < options.length; k += 2, j++) {
+            options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
+            options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
         }
         return options;
     }

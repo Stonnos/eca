@@ -234,9 +234,9 @@ public class StackingClassifier extends AbstractClassifier
         options[k++] = EnsembleDictionary.META_SAMPLING_METHOD;
         options[k++] = getUseCrossValidation() ? String.format(EnsembleDictionary.CROSS_VALIDATION, numFolds)
                 : EnsembleDictionary.TRAINING_SET_METHOD;
-        for (int i = k++, j = 0; i < options.length; i += 2, j++) {
-            options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[i + 1] = classifiers.getClassifier(j).getClass().getSimpleName();
+        for (int j = 0; k < options.length; k += 2, j++) {
+            options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
+            options[k + 1] = classifiers.getClassifier(j).getClass().getSimpleName();
         }
         return options;
     }

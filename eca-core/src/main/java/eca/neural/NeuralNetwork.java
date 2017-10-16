@@ -99,7 +99,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     }
 
     @Override
-    public List getListOptions() {
+    public List<String> getListOptions() {
         List<String> options = new ArrayList<>();
 
         options.add(NeuralNetworkDictionary.IN_LAYER_NEURONS_NUM);

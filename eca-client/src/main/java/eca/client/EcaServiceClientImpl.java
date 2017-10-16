@@ -168,7 +168,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     private void validateResponse(ResponseEntity response) {
         if (!HttpStatus.OK.equals(response.getStatusCode())) {
             String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
-                    response.getStatusCode().getReasonPhrase(), response.getStatusCode().value());
+                    response.getStatusCode().value(), response.getStatusCode().getReasonPhrase());
             log.error(errorMessage);
             throw new EcaServiceException(errorMessage);
         }

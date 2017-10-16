@@ -1,6 +1,7 @@
 package eca.ensemble.forests;
 
 import eca.ensemble.EnsembleDictionary;
+import eca.ensemble.IterativeBuilder;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.DecisionTreeDictionary;
 import weka.core.Instances;
@@ -78,7 +79,7 @@ public class ExtraTreesClassifier extends RandomForests {
     public void setNumRandomSplits(int numRandomSplits) {
         if (numRandomSplits < DecisionTreeClassifier.MIN_RANDOM_SPLITS) {
             throw new IllegalArgumentException(
-                    String.format("Число случайных расщеплений атрибута должно быть не менее %d!",
+                    String.format(ForestsDictionary.INVALID_NUM_RANDOM_SPLITS_ERROR_MESSAGE_FORMAT,
                             DecisionTreeClassifier.MIN_RANDOM_SPLITS));
         }
         this.numRandomSplits = numRandomSplits;
@@ -95,6 +96,11 @@ public class ExtraTreesClassifier extends RandomForests {
         return options;
     }
 
+    @Override
+    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
+        return new ExtraTreesBuilder(data);
+    }
+
     /**
      * Sets the value of use bootstrap samples.
      *
@@ -104,6 +110,9 @@ public class ExtraTreesClassifier extends RandomForests {
         this.useBootstrapSamples = useBootstrapSamples;
     }
 
+    /**
+     * Extra trees iterative builder.
+     */
     private class ExtraTreesBuilder extends ForestBuilder {
 
         ExtraTreesBuilder(Instances dataSet) throws Exception {
@@ -123,7 +132,7 @@ public class ExtraTreesClassifier extends RandomForests {
                 sample = sampler.initial(filteredData);
             }
 
-            DecisionTreeClassifier treeClassifier = createDecisionTree(sample);
+            DecisionTreeClassifier treeClassifier = createDecisionTree();
             treeClassifier.setUseRandomSplits(true);
             treeClassifier.setNumRandomSplits(getNumRandomSplits());
             treeClassifier.buildClassifier(sample);

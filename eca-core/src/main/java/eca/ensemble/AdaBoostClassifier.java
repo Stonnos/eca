@@ -10,6 +10,7 @@ import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -73,65 +74,17 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMaxError());
-        for (int i = k++, j = 0; i < options.length; i += 2, j++) {
-            options[i] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[i + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
+        for (int j = 0; k < options.length; k += 2, j++) {
+            options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
+            options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
         }
         return options;
-    }
-
-    private double weightedError(Classifier model) throws Exception {
-        double error = 0.0;
-        for (int i = 0; i < filteredData.numInstances(); i++) {
-            Instance obj = filteredData.instance(i);
-            if (obj.classValue() != model.classifyInstance(obj)) {
-                error += weights[i];
-            }
-        }
-        return error;
     }
 
     private void initializeWeights() {
         double w0 = 1.0 / filteredData.numInstances();
         for (int i = 0; i < weights.length; i++) {
             weights[i] = w0;
-        }
-    }
-
-    private void updateWeights(int t) throws Exception {
-        double sumWeights = 0.0;
-        WeightedVoting v = (WeightedVoting) votes;
-        for (int i = 0; i < weights.length; i++) {
-            Instance obj = filteredData.instance(i);
-            int sign = obj.classValue() == classifiers.get(t).classifyInstance(obj) ? 1 : -1;
-            weights[i] = weights[i] * Math.exp(-v.getWeight(t) * sign);
-            sumWeights += weights[i];
-        }
-        for (int i = 0; i < weights.length; i++) {
-            weights[i] = weights[i] / sumWeights;
-        }
-    }
-
-    private boolean nextIteration(int t) throws Exception {
-        Instances sample = filteredData.resampleWithWeights(random, weights);
-        Classifier model = null;
-        double minError = Double.MAX_VALUE;
-        for (int i = 0; i < getClassifiersSet().size(); i++) {
-            Classifier classifier = getClassifiersSet().getClassifierCopy(i);
-            classifier.buildClassifier(sample);
-            double error = weightedError(classifier);
-            if (error < minError) {
-                minError = error;
-                model = classifier;
-            }
-        }
-        if (minError > getMinError() && minError < getMaxError()) {
-            classifiers.add(model);
-            ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(minError));
-            updateWeights(t);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -164,6 +117,52 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 checkModel();
             }
             return ++index;
+        }
+
+        boolean nextIteration(int t) throws Exception {
+            Instances sample = filteredData.resampleWithWeights(random, weights);
+            Classifier model = null;
+            double minError = Double.MAX_VALUE;
+            for (int i = 0; i < getClassifiersSet().size(); i++) {
+                Classifier classifier = getClassifiersSet().getClassifierCopy(i);
+                classifier.buildClassifier(sample);
+                double error = weightedError(classifier);
+                if (error < minError) {
+                    minError = error;
+                    model = classifier;
+                }
+            }
+            if (minError > getMinError() && minError < getMaxError()) {
+                classifiers.add(model);
+                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(minError));
+                updateWeights(t);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        void updateWeights(int t) throws Exception {
+            double sumWeights = 0.0;
+            WeightedVoting v = (WeightedVoting) votes;
+            for (int i = 0; i < weights.length; i++) {
+                Instance obj = filteredData.instance(i);
+                int sign = obj.classValue() == classifiers.get(t).classifyInstance(obj) ? 1 : -1;
+                weights[i] = weights[i] * Math.exp(-v.getWeight(t) * sign);
+                sumWeights += weights[i];
+            }
+            Utils.normalize(weights, sumWeights);
+        }
+
+        double weightedError(Classifier model) throws Exception {
+            double error = 0.0;
+            for (int i = 0; i < filteredData.numInstances(); i++) {
+                Instance obj = filteredData.instance(i);
+                if (obj.classValue() != model.classifyInstance(obj)) {
+                    error += weights[i];
+                }
+            }
+            return error;
         }
 
     } //End of class AdaBoostBuilder

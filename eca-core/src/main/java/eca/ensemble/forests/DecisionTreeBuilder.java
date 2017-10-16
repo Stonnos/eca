@@ -1,15 +1,17 @@
 package eca.ensemble.forests;
 
-import eca.trees.*;
-
-import java.io.Serializable;
+import eca.trees.C45;
+import eca.trees.CART;
+import eca.trees.CHAID;
+import eca.trees.DecisionTreeClassifier;
+import eca.trees.ID3;
 
 /**
  * Class for creation decision tree models.
  *
  * @author Roman Batygin
  */
-public class DecisionTreeBuilder implements DecisionTreeTypeVisitor<DecisionTreeClassifier>, Serializable {
+public class DecisionTreeBuilder implements DecisionTreeTypeVisitor<DecisionTreeClassifier> {
 
     @Override
     public DecisionTreeClassifier handleCartTree() {

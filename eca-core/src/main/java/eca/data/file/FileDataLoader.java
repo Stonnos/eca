@@ -10,6 +10,7 @@ import weka.core.converters.ConverterUtils;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static eca.data.FileExtension.FILE_EXTENSIONS;
 
@@ -63,7 +64,7 @@ public class FileDataLoader extends AbstractDataLoader {
         } else {
             throw new Exception(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));
         }
-        if (data == null) {
+        if (Objects.isNull(data)) {
             throw new Exception(String.format("Can't load data from file '%s'. Data is null!",
                     file.getAbsoluteFile()));
         }

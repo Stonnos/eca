@@ -20,7 +20,7 @@ public class Statistics {
      * @return the value of Student critical value
      */
     public static double studentCriticalValue(int df, double p) {
-        return Math.sqrt(FCriticalValue(p, 1, df));
+        return Math.sqrt(fCriticalValue(p, 1, df));
     }
 
     /**
@@ -43,7 +43,7 @@ public class Statistics {
      * @param df2 - the number of freedom degrees less variance
      * @return the F - critical value
      */
-    public static double FCriticalValue(double p, int df1, int df2) {
+    public static double fCriticalValue(double p, int df1, int df2) {
         double maxF = 99999.0;
         double minF = .000001;
         if (p <= 0.0 || p >= 1.0) {

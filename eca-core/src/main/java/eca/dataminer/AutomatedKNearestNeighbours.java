@@ -23,7 +23,7 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
      */
     private static final DistanceType[] DISTANCE_TYPES = DistanceType.values();
 
-    private final DistanceBuilder distanceBuilder = new DistanceBuilder();
+    private static final DistanceBuilder DISTANCE_BUILDER = new DistanceBuilder();
 
     /**
      * Creates <tt>AutomatedKNearestNeighbours</tt> object
@@ -64,13 +64,11 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
             kNearestNeighbours.setNumNeighbours(neighbours);
 
             DistanceType distanceType = DISTANCE_TYPES[getRandom().nextInt(DISTANCE_TYPES.length)];
-            kNearestNeighbours.setDistance(distanceType.handle(distanceBuilder));
-
+            kNearestNeighbours.setDistance(distanceType.handle(DISTANCE_BUILDER));
             kNearestNeighbours.setWeight(NumberGenerator.random(KNearestNeighbours.MIN_WEIGHT,
                     KNearestNeighbours.MAX_WEIGHT));
 
-            EvaluationResults evaluationResults = evaluateModel(kNearestNeighbours);
-            return evaluationResults;
+            return evaluateModel(kNearestNeighbours);
         }
 
         @Override

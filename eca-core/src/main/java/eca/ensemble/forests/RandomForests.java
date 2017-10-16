@@ -38,6 +38,8 @@ import java.util.NoSuchElementException;
  */
 public class RandomForests extends IterativeEnsembleClassifier implements ListOptionsHandler {
 
+    private static final DecisionTreeBuilder DECISION_TREE_BUILDER = new DecisionTreeBuilder();
+
     /**
      * Number of random attributes at each split
      **/
@@ -57,8 +59,6 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * Decision tree type
      */
     private DecisionTreeType decisionTreeType = DecisionTreeType.CART;
-
-    private final DecisionTreeBuilder decisionTreeBuilder = new DecisionTreeBuilder();
 
     /**
      * Creates <tt>RandomForests</tt> object with K / 3 random attributes
@@ -182,6 +182,9 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
         votes = new MajorityVoting(new Aggregator(this));
     }
 
+    /**
+     * Random forests iterative builder.
+     */
     protected class ForestBuilder extends AbstractBuilder {
 
         Sampler sampler = new Sampler();
@@ -193,8 +196,8 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
             }
         }
 
-        DecisionTreeClassifier createDecisionTree(Instances sample) {
-            DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(decisionTreeBuilder);
+        DecisionTreeClassifier createDecisionTree() {
+            DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(DECISION_TREE_BUILDER);
             treeClassifier.setRandomTree(true);
             treeClassifier.setNumRandomAttr(getNumRandomAttr());
             treeClassifier.setMinObj(getMinObj());
@@ -208,7 +211,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
                 throw new NoSuchElementException();
             }
             Instances bootstrap = sampler.bootstrap(filteredData);
-            DecisionTreeClassifier treeClassifier = createDecisionTree(bootstrap);
+            DecisionTreeClassifier treeClassifier = createDecisionTree();
             treeClassifier.setUseBinarySplits(true);
             treeClassifier.buildClassifier(bootstrap);
             classifiers.add(treeClassifier);

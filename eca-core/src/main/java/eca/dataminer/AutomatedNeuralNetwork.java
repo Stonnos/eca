@@ -31,9 +31,9 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
     /**
      * Available activation functions
      **/
-    private static ActivationFunctionType[] ACTIVATION_FUNCTIONS_TYPES = ActivationFunctionType.values();
+    private static final ActivationFunctionType[] ACTIVATION_FUNCTIONS_TYPES = ActivationFunctionType.values();
 
-    private final ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
+    private static final ActivationFunctionBuilder ACTIVATION_FUNCTION_BUILDER = new ActivationFunctionBuilder();
 
     /**
      * Creates <tt>AutomatedNeuralNetwork</tt> object with given options
@@ -73,15 +73,13 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTIONS_TYPES[getRandom().nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
 
-            AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
+            AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);
             model.network().setActivationFunction(randomActivationFunction);
-
             model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
 
-            EvaluationResults evaluationResults = evaluateModel(model);
-            return evaluationResults;
+            return evaluateModel(model);
         }
 
         @Override

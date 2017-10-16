@@ -234,10 +234,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Sets the value of minimum error threshold.
      *
-     * @param min_error the value of minimum error threshold
+     * @param minError the value of minimum error threshold
      */
-    public void setMinError(double min_error) {
-        this.minError = min_error;
+    public void setMinError(double minError) {
+        this.minError = minError;
     }
 
     /**
@@ -252,10 +252,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Sets the maximum number of iterations for learning.
      *
-     * @param max_iterations_num the maximum number of iterations for learning
+     * @param maxIterationsNum the maximum number of iterations for learning
      */
-    public void setMaxIterationsNum(int max_iterations_num) {
-        this.maxIterationsNum = max_iterations_num;
+    public void setMaxIterationsNum(int maxIterationsNum) {
+        this.maxIterationsNum = maxIterationsNum;
     }
 
     /**

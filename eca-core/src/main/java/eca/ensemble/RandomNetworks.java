@@ -35,6 +35,8 @@ public class RandomNetworks extends ThresholdClassifier {
     private static final double MIN_COEFFICIENT_VALUE = 1.0;
     private static final double MAX_COEFFICIENT_VALUE = 5.0;
 
+    private static final ActivationFunctionBuilder ACTIVATION_FUNCTION_BUILDER = new ActivationFunctionBuilder();
+
     /**
      * Available activation functions list
      */
@@ -44,8 +46,6 @@ public class RandomNetworks extends ThresholdClassifier {
      * USe bootstrap sample at each iteration?
      */
     private boolean useBootstrapSamples = true;
-
-    private final ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
 
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
@@ -112,7 +112,7 @@ public class RandomNetworks extends ThresholdClassifier {
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
 
-            AbstractFunction randomActivationFunction = activationFunctionType.handle(activationFunctionBuilder);
+            AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
 
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);

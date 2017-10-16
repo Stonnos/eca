@@ -41,7 +41,7 @@ public class ID3 extends DecisionTreeClassifier {
 
         double info(TreeNode x) {
             double info = 0.0;
-            probabilities(x);
+            calculateProbabilities(x);
             for (double probability : probabilities) {
                 info += log(probability);
             }

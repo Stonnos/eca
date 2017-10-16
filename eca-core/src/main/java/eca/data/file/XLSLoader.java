@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Class for loading xls/xlsx files. <p>
@@ -109,50 +110,51 @@ public class XLSLoader {
      */
     public Instances getDataSet() throws Exception {
         Instances data;
-        Workbook book = WorkbookFactory.create(inputStream == null ?
-                new FileInputStream(file) : inputStream);
-        Sheet sheet = book.getSheetAt(0);
-        checkData(sheet);
-        data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
-                sheet.getLastRowNum());
+        try (Workbook book = WorkbookFactory.create(Objects.isNull(inputStream) ?
+                new FileInputStream(file) : inputStream)) {
+            Sheet sheet = book.getSheetAt(0);
+            checkData(sheet);
+            data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
+                    sheet.getLastRowNum());
 
-        for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-            DenseInstance o = new DenseInstance(data.numAttributes());
-            o.setDataset(data);
-            for (int j = 0; j < data.numAttributes(); j++) {
-                Cell cell = sheet.getRow(i).getCell(j);
-                if (cell == null) {
-                    o.setValue(j, Utils.missingValue());
-                } else {
-                    switch (cell.getCellTypeEnum()) {
-                        case NUMERIC: {
-                            if (data.attribute(j).isDate()) {
-                                o.setValue(j, cell.getDateCellValue().getTime());
-                            } else {
-                                o.setValue(j, cell.getNumericCellValue());
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                DenseInstance o = new DenseInstance(data.numAttributes());
+                o.setDataset(data);
+                for (int j = 0; j < data.numAttributes(); j++) {
+                    Cell cell = sheet.getRow(i).getCell(j);
+                    if (Objects.isNull(cell)) {
+                        o.setValue(j, Utils.missingValue());
+                    } else {
+                        switch (cell.getCellTypeEnum()) {
+                            case NUMERIC: {
+                                if (data.attribute(j).isDate()) {
+                                    o.setValue(j, cell.getDateCellValue().getTime());
+                                } else {
+                                    o.setValue(j, cell.getNumericCellValue());
+                                }
+                                break;
                             }
-                            break;
-                        }
 
-                        case STRING: {
-                            String val = cell.getStringCellValue().trim();
-                            if (val.isEmpty()) {
-                                o.setValue(j, Utils.missingValue());
-                            } else {
+                            case STRING: {
+                                String val = cell.getStringCellValue().trim();
+                                if (val.isEmpty()) {
+                                    o.setValue(j, Utils.missingValue());
+                                } else {
+                                    o.setValue(j, val);
+                                }
+                                break;
+                            }
+
+                            case BOOLEAN: {
+                                String val = String.valueOf(cell.getBooleanCellValue());
                                 o.setValue(j, val);
+                                break;
                             }
-                            break;
-                        }
-
-                        case BOOLEAN: {
-                            String val = String.valueOf(cell.getBooleanCellValue());
-                            o.setValue(j, val);
-                            break;
                         }
                     }
                 }
+                data.add(o);
             }
-            data.add(o);
         }
         return data;
     }

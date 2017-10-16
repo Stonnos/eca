@@ -15,7 +15,7 @@ public class PermutationsSearcher {
     /**
      * Is first permutation?
      **/
-    private boolean initial;
+    private boolean first;
 
     /**
      * Sets input array ordering by decrease.
@@ -24,7 +24,7 @@ public class PermutationsSearcher {
      */
     public void setValues(int[] values) {
         this.values = values;
-        this.initial = true;
+        this.first = true;
     }
 
     /**
@@ -33,8 +33,8 @@ public class PermutationsSearcher {
      * @return <tt>true</tt> if the next permutation is exist
      */
     public boolean nextPermutation() {
-        if (initial) {
-            initial = false;
+        if (first) {
+            first = false;
             return true;
         } else {
             return Permutation.nextPermutation(values);

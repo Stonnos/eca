@@ -44,7 +44,7 @@ public class CART extends DecisionTreeClassifier {
 
         double giniIndex(TreeNode x) {
             double giniIndex = 0.0;
-            probabilities(x);
+            calculateProbabilities(x);
             for (double probability : probabilities) {
                 giniIndex += probability * probability;
             }

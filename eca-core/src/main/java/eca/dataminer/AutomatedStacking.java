@@ -43,7 +43,10 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
      */
     private class AutomatedStackingBuilder extends AbstractAutomatedExperiment {
 
-        int index, state, it, metaClsIndex;
+        int index;
+        int state;
+        int it;
+        int metaClsIndex;
         ClassifiersSet set = getClassifier().getClassifiers();
         ClassifiersSet currentSet = new ClassifiersSet();
         int[] marks = new int[getClassifier().getClassifiers().size()];
@@ -75,16 +78,13 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
 
         @Override
         public EvaluationResults nextState() throws Exception {
-
             switch (state) {
-
                 case 0: {
                     Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClsIndex);
                     getClassifier().setMetaClassifier(metaClassifier);
                     state = 1;
                     break;
                 }
-
                 case 1: {
                     if (it == marks.length) {
                         metaClsIndex++;
@@ -99,7 +99,6 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     }
                     break;
                 }
-
                 case 2: {
                     if (permutationsSearch.nextPermutation()) {
                         currentSet.clear();
@@ -115,7 +114,6 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     }
                     break;
                 }
-
                 case 3: {
                     state = 2;
                     StackingClassifier model
@@ -123,9 +121,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     model.setClassifiers(currentSet.clone());
                     return evaluateModel(model);
                 }
-
             }
-
             return null;
         }
 
