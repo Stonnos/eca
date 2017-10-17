@@ -24,7 +24,6 @@ public class TextInfoFrame extends JFrame {
     private static final String SAVE_MENU_TEXT = "Сохранить";
     private static final Font DEFAULT_TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 12);
     private JTextArea textInfo = new JTextArea(15, 40);
-    ;
 
     public TextInfoFrame(String title, String str, JFrame parent) {
         this.setLayout(new GridBagLayout());

@@ -576,7 +576,7 @@ public class TreeVisualizer extends JPanel {
      */
     private class TreeOptions extends JDialog {
 
-        static final String TITLE = "Настройки";
+        static final String TITLE_TEXT = "Настройки";
         static final String TREE_OPTIONS_TITLE = "Параметры дерева";
         static final String NODE_WIDTH_TEXT = "Ширина узла:";
         static final String NODE_HEIGHT_TITLE = "Высота узла:";
@@ -617,7 +617,7 @@ public class TreeVisualizer extends JPanel {
         Color backgroundColor = TreeVisualizer.this.getBackground();
 
         public TreeOptions(JFrame parent) {
-            super(parent, TITLE);
+            super(parent, TITLE_TEXT);
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);

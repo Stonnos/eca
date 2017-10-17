@@ -21,10 +21,6 @@ public class CART extends DecisionTreeClassifier {
         return true;
     }
 
-    @Override
-    public void setUseBinarySplits(boolean flag) {
-    }
-
     private class CartSplitAlgorithm implements SplitAlgorithm {
 
         @Override

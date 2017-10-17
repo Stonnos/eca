@@ -17,7 +17,7 @@ import java.awt.event.MouseEvent;
 
 public class ClassificationResultHistoryFrame extends JFrame {
 
-    private static final String TITLE = "История классификаторов";
+    private static final String TITLE_TEXT = "История классификаторов";
 
     private JMainFrame.ResultsHistory historyModel;
 
@@ -33,7 +33,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
 
     private void makeGUI() {
         this.setResizable(false);
-        this.setTitle(TITLE);
+        this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         JPanel infoPanel = new JPanel();
         Dimension dim = new Dimension(430, 300);

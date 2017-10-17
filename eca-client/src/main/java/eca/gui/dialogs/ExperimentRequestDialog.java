@@ -26,7 +26,7 @@ public class ExperimentRequestDialog extends JDialog {
     private static final int TEXT_LENGTH = 15;
     private static final int FIELD_LENGTH = 255;
 
-    private static final String TITLE = "Создание заявки на эксперимент";
+    private static final String TITLE_TEXT = "Создание заявки на эксперимент";
     private static final String FIRST_NAME_TEXT = "Ваше имя:";
     private static final String EMAIL_TEXT = "Ваш e-mail:";
     private static final String CLASSIFIER_TEXT = "Классификатор:";
@@ -48,7 +48,7 @@ public class ExperimentRequestDialog extends JDialog {
     private boolean dialogResult;
 
     public ExperimentRequestDialog(JFrame parent) {
-        super(parent, TITLE, true);
+        super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();

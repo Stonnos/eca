@@ -21,7 +21,7 @@ public class CHAID extends DecisionTreeClassifier {
     /**
      * Contingency table
      **/
-    private double[][] contingency_table;
+    private double[][] contingencyTable;
 
     /**
      * Significance level for hi square test
@@ -60,7 +60,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
-        contingency_table = getUseBinarySplits() ? new double[data.numClasses() + 1][3]
+        contingencyTable = getUseBinarySplits() ? new double[data.numClasses() + 1][3]
                 : new double[data.numClasses() + 1][];
         super.buildClassifier(data);
     }
@@ -100,12 +100,12 @@ public class CHAID extends DecisionTreeClassifier {
 
         double hiSquaredTest() {
             double h = 0.0;
-            for (int i = 0; i < contingency_table.length - 1; i++) {
-                for (int j = 0; j < contingency_table[i].length - 1; j++) {
+            for (int i = 0; i < contingencyTable.length - 1; i++) {
+                for (int j = 0; j < contingencyTable[i].length - 1; j++) {
                     double theoryFreq = theoryFrequency(i, j);
                     if (theoryFreq != 0.0) {
-                        h += (contingency_table[i][j] - theoryFreq)
-                                * (contingency_table[i][j] - theoryFreq) / theoryFreq;
+                        h += (contingencyTable[i][j] - theoryFreq)
+                                * (contingencyTable[i][j] - theoryFreq) / theoryFreq;
                     }
                 }
             }
@@ -113,36 +113,36 @@ public class CHAID extends DecisionTreeClassifier {
         }
 
         void computeContingencyTable(TreeNode x) {
-            for (int i = 0; i < contingency_table.length; i++) {
+            for (int i = 0; i < contingencyTable.length; i++) {
                 if (getUseBinarySplits()) {
-                    for (int j = 0; j < contingency_table[i].length; j++) {
-                        contingency_table[i][j] = 0;
+                    for (int j = 0; j < contingencyTable[i].length; j++) {
+                        contingencyTable[i][j] = 0;
                     }
                 } else {
-                    contingency_table[i] = new double[x.getRule().attribute().isNumeric()
+                    contingencyTable[i] = new double[x.getRule().attribute().isNumeric()
                             ? 3 : x.getRule().attribute().numValues() + 1];
                 }
             }
 
-            for (int i = 0; i < contingency_table.length - 1; i++) {
-                for (int j = 0; j < contingency_table[i].length - 1; j++) {
-                    contingency_table[i][j] = frequency(x.getChild(j), i);
-                    contingency_table[i][getTableSize() - 1] += contingency_table[i][j];
-                    contingency_table[contingency_table.length - 1][j] += contingency_table[i][j];
+            for (int i = 0; i < contingencyTable.length - 1; i++) {
+                for (int j = 0; j < contingencyTable[i].length - 1; j++) {
+                    contingencyTable[i][j] = frequency(x.getChild(j), i);
+                    contingencyTable[i][getTableSize() - 1] += contingencyTable[i][j];
+                    contingencyTable[contingencyTable.length - 1][j] += contingencyTable[i][j];
                 }
-                contingency_table[contingency_table.length - 1][getTableSize() - 1]
-                        += contingency_table[i][getTableSize() - 1];
+                contingencyTable[contingencyTable.length - 1][getTableSize() - 1]
+                        += contingencyTable[i][getTableSize() - 1];
             }
         }
 
         int getTableSize() {
-            return contingency_table[0].length;
+            return contingencyTable[0].length;
         }
 
         double theoryFrequency(int i, int j) {
-            return (contingency_table[contingency_table.length - 1][j]
-                    * contingency_table[i][getTableSize() - 1])
-                    / contingency_table[contingency_table.length - 1][getTableSize() - 1];
+            return (contingencyTable[contingencyTable.length - 1][j]
+                    * contingencyTable[i][getTableSize() - 1])
+                    / contingencyTable[contingencyTable.length - 1][getTableSize() - 1];
         }
 
         int frequency(TreeNode x, double classValue) {

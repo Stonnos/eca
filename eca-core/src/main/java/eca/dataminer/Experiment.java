@@ -9,7 +9,7 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import weka.classifiers.Classifier;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Basic interface for automatic selection of optimal options
@@ -32,7 +32,7 @@ public interface Experiment<T extends Classifier> extends InstancesHandler {
      *
      * @return experiment history
      */
-    ArrayList<EvaluationResults> getHistory();
+    List<EvaluationResults> getHistory();
 
     /**
      * Clears experiment history.

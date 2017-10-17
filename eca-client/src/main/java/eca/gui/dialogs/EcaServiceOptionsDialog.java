@@ -20,7 +20,7 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
 
-    private static final String TITLE = "Настройки сервиса ECA";
+    private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
     private static final String INVALID_PROPERTY_ERROR_FORMAT = "Недопустимое значение свойства '%s'";
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
@@ -28,7 +28,7 @@ public class EcaServiceOptionsDialog extends JDialog {
     private final EcaServiceOptionsTableModel model = new EcaServiceOptionsTableModel();
 
     public EcaServiceOptionsDialog(Window parent) {
-        super(parent, TITLE);
+        super(parent, TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
 

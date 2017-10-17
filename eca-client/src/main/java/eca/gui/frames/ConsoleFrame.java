@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 @Slf4j
 public class ConsoleFrame extends JFrame {
 
-    private static final String TITLE = "Консоль";
+    private static final String CONSOLE_TITLE = "Консоль";
     public static final String OPTIONS_MENU_TEXT = "Настройки";
     public static final String SELECTED_FONT_MENU_TEXT = "Выбор шрифта";
     public static final String BACKGROUND_COLOR_MENU_TEXT = "Выбор цвета фона";
@@ -27,7 +27,7 @@ public class ConsoleFrame extends JFrame {
     public ConsoleFrame(JFrame parent, JTextArea textArea) {
         this.textArea = textArea;
         this.setLayout(new GridBagLayout());
-        this.setTitle(TITLE);
+        this.setTitle(CONSOLE_TITLE);
         this.createMenu();
         try {
             this.setIconImage(parent.getIconImage());

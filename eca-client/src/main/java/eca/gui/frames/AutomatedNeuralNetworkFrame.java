@@ -15,7 +15,7 @@ import javax.swing.*;
  */
 public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
 
-    private static final String TITLE = "Автоматическое построение нейронных сетей";
+    private static final String TITLE_TEXT = "Автоматическое построение нейронных сетей";
     private static final String OPTIONS_TITLE = "Настройки";
     private static final String NETWORKS_NUMBER_TITLE = "Количество сетей:";
     private static final int MIN_ITERATIONS = 10;
@@ -23,7 +23,7 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
 
     public AutomatedNeuralNetworkFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
-        this.setTitle(TITLE);
+        this.setTitle(TITLE_TEXT);
     }
 
     @Override

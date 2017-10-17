@@ -6,14 +6,15 @@
 package eca.dataminer;
 
 import eca.core.Assert;
-import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.Evaluation;
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -94,7 +95,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     @Override
-    public final int getNumIterations() {
+    public int getNumIterations() {
         return numIterations;
     }
 
@@ -103,7 +104,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     @Override
-    public final void setNumIterations(int numIterations) {
+    public void setNumIterations(int numIterations) {
         Assert.greaterThanZero(numIterations, ExperimentDictionary.INVALID_EXPERIMENTS_NUM_ERROR_TEXT);
         this.numIterations = numIterations;
     }
@@ -168,7 +169,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     @Override
-    public ArrayList<EvaluationResults> getHistory() {
+    public List<EvaluationResults> getHistory() {
         return experiment;
     }
 

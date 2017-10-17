@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 
 public class AttributesStatisticsFrame extends JFrame {
 
-    private static final String TITLE = "Статистика по атрибутам";
+    private static final String TITLE_TEXT = "Статистика по атрибутам";
     private static final String DATA_INFO_TITLE = "Информация о данных";
     private static final String STATISTICS_TITLE = "Статистика";
     private static final String SELECTED_ATTRIBUTE_TITLE = "Выбранный атрибут";
@@ -52,7 +52,7 @@ public class AttributesStatisticsFrame extends JFrame {
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
         this.statisticsTable = new JDataTableBase();
         this.statisticsTable.setAutoResizeOff(false);
-        this.setTitle(TITLE);
+        this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setIconImage(parent.getIconImage());

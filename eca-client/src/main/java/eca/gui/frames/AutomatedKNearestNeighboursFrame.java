@@ -11,7 +11,7 @@ import javax.swing.*;
 
 public class AutomatedKNearestNeighboursFrame extends ExperimentFrame {
 
-    private static final String TITLE = "Автоматическое построение KNN";
+    private static final String TITLE_TEXT = "Автоматическое построение KNN";
     private static final String OPTIONS_TITLE = "Настройки";
     private static final String EXPERIMENTS_NUMBER_TITLE = "Число экспериментов:";
     private static final int MIN_ITERATIONS = 10;
@@ -19,7 +19,7 @@ public class AutomatedKNearestNeighboursFrame extends ExperimentFrame {
 
     public AutomatedKNearestNeighboursFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         super(experiment, parent, digits);
-        this.setTitle(TITLE);
+        this.setTitle(TITLE_TEXT);
     }
 
     @Override

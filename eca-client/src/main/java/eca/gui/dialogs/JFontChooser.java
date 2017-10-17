@@ -30,7 +30,7 @@ public class JFontChooser extends JDialog {
     private static final String FONT_SIZE_TITLE = "Размер:";
     private static final String[] STYLES = {"Обычный", "Полужирный",
             "Курсив", "Полужирный курсив"};
-    private static final String TITLE = "Настройки";
+    private static final String TITLE_TEXT = "Настройки";
     private static final String SELECT_FONT_TITLE = "Выбор шрифта";
     private static final String FONT_EXAMPLE_TITLE = "Образец";
     private static final String FONT_EXAMPLE = "Аа Яя Aa Zz";
@@ -55,7 +55,7 @@ public class JFontChooser extends JDialog {
     }
 
     public JFontChooser(Window parent, Font font) {
-        super(parent, TITLE);
+        super(parent, TITLE_TEXT);
         this.setModal(true);
         this.setResizable(false);
         this.makeGUI(font);

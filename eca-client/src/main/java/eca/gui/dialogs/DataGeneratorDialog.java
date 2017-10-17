@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
 public class DataGeneratorDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 12;
-    private static final String TITLE = "Генерация выборки";
+    private static final String TITLE_TEXT = "Генерация выборки";
     private static final String GENERATOR_PARAMS_TEXT = "Параметры генератора";
     private static final String ATTR_NUMBER_TEXT = "Число атрибутов:";
     private static final String CLASSES_NUMBER_TEXT = "Число классов:";
@@ -36,7 +36,7 @@ public class DataGeneratorDialog extends JDialog {
     private boolean dialogResult;
 
     public DataGeneratorDialog(Frame parent) {
-        super(parent, TITLE, true);
+        super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();
