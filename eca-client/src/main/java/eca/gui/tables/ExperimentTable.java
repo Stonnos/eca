@@ -69,6 +69,7 @@ public class ExperimentTable extends JDataTableBase {
     }
 
     public void setExperiment(List<EvaluationResults> evaluationResults) {
+        clear();
         for (EvaluationResults results : evaluationResults) {
             addExperiment(results);
         }
