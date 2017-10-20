@@ -61,6 +61,14 @@ public class ExperimentRequestDialog extends JDialog {
         return dialogResult;
     }
 
+    public void showDialog(ExperimentRequestDto experimentRequestDto) {
+        if (experimentRequestDto != null) {
+            firstNameTextField.setText(experimentRequestDto.getFirstName());
+            emailTextField.setText(experimentRequestDto.getEmail());
+        }
+        setVisible(true);
+    }
+
     private void makeGUI() {
         JPanel mainOptionPanel = new JPanel(new GridBagLayout());
         mainOptionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));

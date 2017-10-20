@@ -1,16 +1,11 @@
 package eca.neural;
 
 import eca.generators.NumberGenerator;
-import eca.neural.functions.AbstractFunction;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
 import weka.core.Instances;
 import weka.core.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Neural network utility class.
@@ -134,20 +129,6 @@ public class NeuralNetworkUtil {
      */
     public static int getMaxNumNeuronsInHiddenLayer(Instances data) {
         return getMaxLinksNum(data) / (data.numAttributes() + data.numClasses() - 1);
-    }
-
-    public static List<AbstractFunction> getActivationFunctions() throws Exception {
-        Reflections reflections = new Reflections(AbstractFunction.class.getPackage().getName());
-
-        Set<Class<? extends AbstractFunction>> classSet = reflections.getSubTypesOf(AbstractFunction.class);
-        List<AbstractFunction> abstractFunctionList = new ArrayList<>();
-
-        for (Class<? extends AbstractFunction> clazz : classSet) {
-            AbstractFunction abstractFunction = clazz.getConstructor().newInstance();
-            abstractFunctionList.add(abstractFunction);
-        }
-
-        return abstractFunctionList;
     }
 
     /**

@@ -1482,6 +1482,7 @@ public class JMainFrame extends JFrame {
         experimentRequestMenu.addActionListener(new ActionListener() {
 
             EcaServiceClient restClient;
+            ExperimentRequestDto experimentRequestDto;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1493,10 +1494,9 @@ public class JMainFrame extends JFrame {
                         Instances data = data();
                         ExperimentRequestDialog experimentRequestDialog =
                                 new ExperimentRequestDialog(JMainFrame.this);
-                        experimentRequestDialog.setVisible(true);
+                        experimentRequestDialog.showDialog(experimentRequestDto);
                         if (experimentRequestDialog.isDialogResult()) {
-                            ExperimentRequestDto experimentRequestDto =
-                                    experimentRequestDialog.createExperimentRequestDto();
+                            experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
                             experimentRequestDto.setData(data);
                             ExperimentRequestWorker requestWorker =
                                     new ExperimentRequestWorker(restClient, experimentRequestDto);
