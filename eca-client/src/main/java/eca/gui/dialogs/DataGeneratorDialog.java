@@ -6,7 +6,6 @@ import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
-import eca.gui.text.LengthDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 
 import javax.swing.*;
@@ -26,6 +25,9 @@ public class DataGeneratorDialog extends JDialog {
     private static final String ATTR_NUMBER_TEXT = "Число атрибутов:";
     private static final String CLASSES_NUMBER_TEXT = "Число классов:";
     private static final String INSTANCES_NUMBER_TEXT = "Число объектов:";
+    private static final int NUM_ATTRS_FIELD_LENGTH = 4;
+    private static final int NUM_CLASSES_FIELD_LENGTH = 2;
+    private static final int NUM_INSTANCES_FIELD_LENGTH = 8;
 
     private JTextField numAttributesField;
     private JTextField numClassesField;
@@ -61,15 +63,15 @@ public class DataGeneratorDialog extends JDialog {
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(GENERATOR_PARAMS_TEXT));
 
         numAttributesField = new JTextField(TEXT_LENGTH);
-        numAttributesField.setDocument(new LengthDocument(4));
+        numAttributesField.setDocument(new IntegerDocument(NUM_ATTRS_FIELD_LENGTH));
         numAttributesField.setInputVerifier(new TextFieldInputVerifier());
 
         numClassesField = new JTextField(TEXT_LENGTH);
-        numClassesField.setDocument(new IntegerDocument(2));
+        numClassesField.setDocument(new IntegerDocument(NUM_CLASSES_FIELD_LENGTH));
         numClassesField.setInputVerifier(new TextFieldInputVerifier());
 
         numInstancesField = new JTextField(TEXT_LENGTH);
-        numInstancesField.setDocument(new LengthDocument(8));
+        numInstancesField.setDocument(new IntegerDocument(NUM_INSTANCES_FIELD_LENGTH));
         numInstancesField.setInputVerifier(new TextFieldInputVerifier());
 
         optionPanel.add(new JLabel(ATTR_NUMBER_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,

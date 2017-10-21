@@ -1,5 +1,7 @@
 package eca.gui.validators;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -22,6 +24,7 @@ public class TextFieldInputVerifier extends InputVerifier {
         }
 
         if (textField.getText().trim().isEmpty()) {
+            textField.setText(StringUtils.EMPTY);
             textField.setBorder(BorderFactory.createLineBorder(ERROR_COLOR, THICKNESS));
             return false;
         } else {
