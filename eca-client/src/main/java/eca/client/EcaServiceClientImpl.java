@@ -31,8 +31,9 @@ import java.util.Objects;
 public class EcaServiceClientImpl implements EcaServiceClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
-    private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE = "Empty response has been received!";
-    private static final String ERROR_MESSAGE_FORMAT = "These was an error [%d, %s]";
+    private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE =
+            "No or empty response has been received from eca - service!";
+    private static final String ERROR_MESSAGE_FORMAT = "Got HTTP error [%d, %s] from eca - service!";
     private static final String TIMEOUT_MESSAGE = "There was a timeout.";
 
     /**
@@ -166,6 +167,10 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     }
 
     private void validateResponse(ResponseEntity response) {
+        if (Objects.isNull(response)) {
+            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+        }
         if (!HttpStatus.OK.equals(response.getStatusCode())) {
             String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
                     response.getStatusCode().value(), response.getStatusCode().getReasonPhrase());

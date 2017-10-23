@@ -71,10 +71,10 @@ public class InstancesTableModel extends AbstractTableModel {
     }
 
     public void removeMissing() {
-        ListIterator<ArrayList<Object>> iter = values.listIterator();
-        while (iter.hasNext()) {
-            if (iter.next().contains(null)) {
-                iter.remove();
+        ListIterator<ArrayList<Object>> iterator = values.listIterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().contains(null)) {
+                iterator.remove();
             }
         }
         fireTableDataChanged();

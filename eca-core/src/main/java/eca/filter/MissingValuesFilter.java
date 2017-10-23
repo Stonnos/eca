@@ -15,6 +15,8 @@ import weka.filters.unsupervised.attribute.ReplaceMissingValues;
  */
 public class MissingValuesFilter implements Filter, java.io.Serializable {
 
+    private static final int MIN_NUM_CLASS_VALUES = 2;
+
     private ReplaceMissingValues missFilter = new ReplaceMissingValues();
 
     @Override
@@ -35,7 +37,7 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         if (data.classAttribute().isNumeric()) {
             throw new Exception(FilterDictionary.BAD_CLASS_TYPE_ERROR_TEXT);
         }
-        if (data.classAttribute().numValues() < 2) {
+        if (data.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
             throw new Exception(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
         }
         Instances train = new Instances(data);

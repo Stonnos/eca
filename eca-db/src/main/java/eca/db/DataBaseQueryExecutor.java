@@ -5,10 +5,21 @@
  */
 package eca.db;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
-import weka.core.*;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Utils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 
 /**
@@ -21,7 +32,9 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
     /**
      * Default relation name
      **/
-    private static final String defaultRelationName = "Relation";
+    private static final String DEFAULT_RELATION_NAME = "Relation";
+
+    private static final int RELATION_NAME_INDEX = 1;
 
     /**
      * Available column types of numeric attribute
@@ -113,6 +126,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
 
     /**
      * Returns date format.
+     *
      * @return date format
      */
     public String getDateFormat() {
@@ -121,6 +135,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
 
     /**
      * Sets date format.
+     *
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
@@ -132,27 +147,32 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
     public Instances executeQuery(String query) throws Exception {
         Instances data;
         try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
-             ResultSet result = statement.executeQuery(query)) {
+                ResultSet.CONCUR_READ_ONLY); ResultSet result = statement.executeQuery(query)) {
             checkColumnsTypes(result);
             ResultSetMetaData meta = result.getMetaData();
-            String tableName = meta.getTableName(1);
-            data = new Instances(tableName.isEmpty() ? defaultRelationName
+            String tableName = meta.getTableName(RELATION_NAME_INDEX);
+            data = new Instances(StringUtils.isEmpty(tableName) ? DEFAULT_RELATION_NAME
                     : tableName, createAttributes(result), result.getFetchSize());
             result.beforeFirst();
 
             while (result.next()) {
-                Instance obj = new DenseInstance(meta.getColumnCount());
+                Instance obj = new DenseInstance(data.numAttributes());
                 obj.setDataset(data);
                 for (int i = 1; i <= meta.getColumnCount(); i++) {
+                    Attribute attribute = data.attribute(i - 1);
                     if (result.getObject(i) == null) {
-                        obj.setValue(i - 1, Utils.missingValue());
+                        obj.setValue(attribute, Utils.missingValue());
                     } else if (isNumeric(meta.getColumnType(i))) {
-                        obj.setValue(i - 1, result.getDouble(i));
+                        obj.setValue(attribute, result.getDouble(i));
                     } else if (isDate(meta.getColumnType(i))) {
-                        obj.setValue(i - 1, result.getDate(i).getTime());
+                        obj.setValue(attribute, result.getDate(i).getTime());
                     } else {
-                        obj.setValue(i - 1, result.getObject(i).toString());
+                        String stringValue = result.getObject(i).toString().trim();
+                        if (!StringUtils.isEmpty(stringValue)) {
+                            obj.setValue(attribute, stringValue);
+                        } else {
+                            obj.setValue(attribute, Utils.missingValue());
+                        }
                     }
                 }
                 data.add(obj);
@@ -206,8 +226,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
             } else if (isDate(meta.getColumnType(i))) {
                 attr.add(new Attribute(meta.getColumnName(i), dateFormat));
             } else {
-                attr.add(new Attribute(meta.getColumnName(i),
-                        createNominalAttribute(result, i)));
+                attr.add(new Attribute(meta.getColumnName(i), createNominalAttribute(result, i)));
             }
         }
         return attr;
@@ -220,7 +239,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
             Object value = result.getObject(i);
             if (value != null) {
                 String trimValue = value.toString().trim();
-                if (!trimValue.isEmpty() && !values.contains(trimValue)) {
+                if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {
                     values.add(trimValue);
                 }
             }

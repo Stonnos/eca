@@ -6,6 +6,7 @@
 package eca.data.file;
 
 import eca.data.FileExtension;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -105,7 +106,7 @@ public class XLSLoader {
     /**
      * Reads data from xls/xlsx file.
      *
-     * @return <tt>Instances</tt> object
+     * @return {@link Instances} object
      * @throws Exception
      */
     public Instances getDataSet() throws Exception {
@@ -113,7 +114,7 @@ public class XLSLoader {
         try (Workbook book = WorkbookFactory.create(Objects.isNull(inputStream) ?
                 new FileInputStream(file) : inputStream)) {
             Sheet sheet = book.getSheetAt(0);
-            checkData(sheet);
+            validateData(sheet);
             data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
                     sheet.getLastRowNum());
 
@@ -136,11 +137,11 @@ public class XLSLoader {
                             }
 
                             case STRING: {
-                                String val = cell.getStringCellValue().trim();
-                                if (val.isEmpty()) {
+                                String stringValue = cell.getStringCellValue().trim();
+                                if (StringUtils.isEmpty(stringValue)) {
                                     o.setValue(j, Utils.missingValue());
                                 } else {
-                                    o.setValue(j, val);
+                                    o.setValue(j, stringValue);
                                 }
                                 break;
                             }
@@ -177,35 +178,34 @@ public class XLSLoader {
                 if (cell != null && !cell.getCellTypeEnum().equals(CellType.BLANK)) {
                     CellType cellType = cell.getCellTypeEnum();
                     if (cellType.equals(CellType.STRING)) {
-                        String val = cell.getStringCellValue().trim();
-                        if (!val.isEmpty() && !values.contains(val)) {
-                            values.add(val);
+                        String stringValue = cell.getStringCellValue().trim();
+                        if (!StringUtils.isEmpty(stringValue) && !values.contains(stringValue)) {
+                            values.add(stringValue);
                         }
                     } else if (cellType.equals(CellType.BOOLEAN)) {
-                        String val = String.valueOf(cell.getBooleanCellValue());
-                        if (!values.contains(val)) {
-                            values.add(val);
+                        String booleanValue = String.valueOf(cell.getBooleanCellValue());
+                        if (!values.contains(booleanValue)) {
+                            values.add(booleanValue);
                         }
-                    } else if (cellType.equals(CellType.NUMERIC)
-                            && DateUtil.isCellDateFormatted(cell)) {
+                    } else if (cellType.equals(CellType.NUMERIC) && DateUtil.isCellDateFormatted(cell)) {
                         isDate = true;
                     }
                 }
             }
-            Attribute a;
+            Attribute attribute;
             if (isDate) {
-                a = new Attribute(getColName(sheet, i), dateFormat);
+                attribute = new Attribute(getColName(sheet, i), dateFormat);
             } else if (values.isEmpty()) {
-                a = new Attribute(getColName(sheet, i));
+                attribute = new Attribute(getColName(sheet, i));
             } else {
-                a = new Attribute(getColName(sheet, i), values);
+                attribute = new Attribute(getColName(sheet, i), values);
             }
-            attr.add(a);
+            attr.add(attribute);
         }
         return attr;
     }
 
-    private void checkData(Sheet sheet) throws Exception {
+    private void validateData(Sheet sheet) throws Exception {
 
         if (sheet.getRow(0).getLastCellNum() > sheet.getRow(0).getPhysicalNumberOfCells()) {
             throw new Exception(FileDataDictionary.EMPTY_COLUMNS_ERROR);

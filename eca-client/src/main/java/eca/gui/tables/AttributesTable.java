@@ -12,7 +12,12 @@ import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.text.DateFormat;
 import lombok.extern.slf4j.Slf4j;
-import weka.core.*;
+import org.apache.commons.lang3.StringUtils;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.Utils;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -218,9 +223,12 @@ public class AttributesTable extends JDataTableBase {
     private Attribute makeNominalAttribute(Attribute a) throws Exception {
         ArrayList<String> values = new ArrayList<>();
         for (int j = 0; j < table.getRowCount(); j++) {
-            String x = (String) table.getValueAt(j, a.index() + 1);
-            if (x != null && !values.contains(x)) {
-                values.add(x);
+            String stringValue = (String) table.getValueAt(j, a.index() + 1);
+            if (stringValue != null) {
+                String trimValue = stringValue.trim();
+                if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {
+                    values.add(stringValue.trim());
+                }
             }
         }
 
@@ -237,8 +245,7 @@ public class AttributesTable extends JDataTableBase {
             obj.setDataset(dataSet);
             for (int j = 0; j < dataSet.numAttributes(); j++) {
                 Attribute a = dataSet.attribute(j);
-                String str = (String) table.getValueAt(i,
-                        data.attribute(a.name()).index() + 1);
+                String str = (String) table.getValueAt(i, data.attribute(a.name()).index() + 1);
                 if (str == null) {
                     obj.setValue(a, Utils.missingValue());
                 } else if (a.isDate()) {
