@@ -259,9 +259,9 @@ public class JMainFrame extends JFrame {
 
         JPanel upperPanel;
         JPanel lowerPanel;
-        JTextField relationName;
-        JTextField numInstances;
-        JTextField numAttributes;
+        JTextField relationNameTextField;
+        JTextField numInstancesTextField;
+        JTextField numAttributesTextField;
 
         JScrollPane dataScrollPane;
         JScrollPane attrScrollPane;
@@ -300,10 +300,10 @@ public class JMainFrame extends JFrame {
         }
 
         Instances getData() throws Exception {
-            return attributesTable.createData();
+            return attributesTable.createData(relationNameTextField.getText());
         }
 
-        void check() throws Exception {
+        void validateData() throws Exception {
             attributesTable.validateData();
         }
 
@@ -325,14 +325,13 @@ public class JMainFrame extends JFrame {
             nameMenu.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    String name = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
+                    String newRelationName = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
                             DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
                             null, data.relationName());
-                    if (name != null) {
-                        String trimName = name.trim();
+                    if (newRelationName != null) {
+                        String trimName = newRelationName.trim();
                         if (!trimName.isEmpty()) {
-                            instanceTable.data().setRelationName(trimName);
-                            relationName.setText(trimName);
+                            relationNameTextField.setText(trimName);
                             menu.setText(trimName);
                         }
                     }
@@ -385,30 +384,30 @@ public class JMainFrame extends JFrame {
         }
 
         void setRelationInfo() {
-            relationName.setText(data.relationName());
-            numInstances.setText(String.valueOf(data.numInstances()));
-            numAttributes.setText(String.valueOf(data.numAttributes()));
+            relationNameTextField.setText(data.relationName());
+            numInstancesTextField.setText(String.valueOf(data.numInstances()));
+            numAttributesTextField.setText(String.valueOf(data.numAttributes()));
         }
 
         void makeUpperPanel() {
             upperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             upperPanel.setBorder(PanelBorderUtils.createTitledBorder(UPPER_TITLE));
             //----------------------------------------------
-            relationName = new JTextField(30);
-            relationName.setEditable(false);
-            relationName.setBackground(Color.WHITE);
-            numInstances = new JTextField(6);
-            numInstances.setEditable(false);
-            numInstances.setBackground(Color.WHITE);
-            numAttributes = new JTextField(4);
-            numAttributes.setEditable(false);
-            numAttributes.setBackground(Color.WHITE);
+            relationNameTextField = new JTextField(30);
+            relationNameTextField.setEditable(false);
+            relationNameTextField.setBackground(Color.WHITE);
+            numInstancesTextField = new JTextField(6);
+            numInstancesTextField.setEditable(false);
+            numInstancesTextField.setBackground(Color.WHITE);
+            numAttributesTextField = new JTextField(4);
+            numAttributesTextField.setEditable(false);
+            numAttributesTextField.setBackground(Color.WHITE);
             upperPanel.add(new JLabel(DATA_NAME_TEXT));
-            upperPanel.add(relationName);
+            upperPanel.add(relationNameTextField);
             upperPanel.add(new JLabel(NUMBER_OF_INSTANCES_TEXT));
-            upperPanel.add(numInstances);
+            upperPanel.add(numInstancesTextField);
             upperPanel.add(new JLabel(NUMBER_OF_ATTRIBUTES_TEXT));
-            upperPanel.add(numAttributes);
+            upperPanel.add(numAttributesTextField);
             //----------------------------------------------
             this.add(upperPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -496,7 +495,7 @@ public class JMainFrame extends JFrame {
             }
             data.setClassIndex(data.numAttributes() - 1);
             classBox.setSelectedIndex(data.classIndex());
-            instanceTable = new InstancesTable(data, numInstances);
+            instanceTable = new InstancesTable(data, numInstancesTextField);
             dataScrollPane.setViewportView(instanceTable);
             attributesTable = new AttributesTable(instanceTable, classBox);
             attrScrollPane.setViewportView(attributesTable);
@@ -1632,7 +1631,7 @@ public class JMainFrame extends JFrame {
 
     private boolean dataValidated() {
         try {
-            selectedPanel().check();
+            selectedPanel().validateData();
         } catch (Exception e) {
             LoggerUtils.error(log, e);
             JOptionPane.showMessageDialog(JMainFrame.this,

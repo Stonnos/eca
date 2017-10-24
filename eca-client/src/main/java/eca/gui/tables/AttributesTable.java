@@ -57,10 +57,12 @@ public class AttributesTable extends JDataTableBase {
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
     private final InstancesTable instancesTable;
+    private final JComboBox<String> classBox;
 
     public AttributesTable(InstancesTable instancesTable, final JComboBox<String> classBox) {
         super(new AttributesTableModel(instancesTable.data()));
         this.instancesTable = instancesTable;
+        this.classBox = classBox;
         this.getColumnModel().getColumn(0).setPreferredWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMaxWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMinWidth(INDEX_COLUMN_PREFERRED_WIDTH);
@@ -94,7 +96,7 @@ public class AttributesTable extends JDataTableBase {
 
             }
         });
-        //-----------------------------------
+
         renameMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -109,8 +111,8 @@ public class AttributesTable extends JDataTableBase {
                         String trimName = attrNewName.trim();
                         if (!StringUtils.isEmpty(trimName)) {
                             try {
-                                instancesTable.data().renameAttribute(i, trimName);
-                                model().fireTableRowsUpdated(i, i);
+                                getAttributesTableModel().data().renameAttribute(i, trimName);
+                                getAttributesTableModel().fireTableRowsUpdated(i, i);
                                 instancesTable.getColumnModel().getColumn(i + 1).setHeaderValue(trimName);
                                 instancesTable.getRootPane().repaint();
                                 classBox.insertItemAt(trimName, i);
@@ -131,31 +133,29 @@ public class AttributesTable extends JDataTableBase {
         this.setAutoResizeOff(false);
     }
 
-    public Instances createData() throws Exception {
-        Instances data = data();
-        Instances dataSet = new Instances(data.relationName(),
-                createAttributesList(), instancesTable.getRowCount());
+    public Instances createData(String relationName) throws Exception {
+        Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
         DecimalFormat format = instancesTable.model().format();
         for (int i = 0; i < instancesTable.getRowCount(); i++) {
-            Instance obj = new DenseInstance(dataSet.numAttributes());
-            obj.setDataset(dataSet);
-            for (int j = 0; j < dataSet.numAttributes(); j++) {
-                Attribute a = dataSet.attribute(j);
-                String str = (String) instancesTable.getValueAt(i, data.attribute(a.name()).index() + 1);
-                if (str == null) {
-                    obj.setValue(a, Utils.missingValue());
-                } else if (a.isDate()) {
-                    obj.setValue(a, a.parseDate(str));
-                } else if (a.isNumeric()) {
-                    obj.setValue(a, format.parse(str).doubleValue());
+            Instance obj = new DenseInstance(newDataSet.numAttributes());
+            obj.setDataset(newDataSet);
+            for (int j = 0; j < newDataSet.numAttributes(); j++) {
+                Attribute attribute = newDataSet.attribute(j);
+                String valueAt = (String) instancesTable.getValueAt(i, getAttrIndex(attribute.name()));
+                if (valueAt == null) {
+                    obj.setValue(attribute, Utils.missingValue());
+                } else if (attribute.isDate()) {
+                    obj.setValue(attribute, attribute.parseDate(valueAt));
+                } else if (attribute.isNumeric()) {
+                    obj.setValue(attribute, format.parse(valueAt).doubleValue());
                 } else {
-                    obj.setValue(a, str);
+                    obj.setValue(attribute, valueAt);
                 }
             }
-            dataSet.add(obj);
+            newDataSet.add(obj);
         }
-        dataSet.setClass(dataSet.attribute(data.classAttribute().name()));
-        Instances filterInstances = constantAttributesFilter.filterInstances(dataSet);
+        newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
+        Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
         if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
             throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
         }
@@ -169,27 +169,28 @@ public class AttributesTable extends JDataTableBase {
         if (validateSelectedAttributesCount()) {
             throw new Exception(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
         }
-        if (isNumeric(data().classIndex())) {
-            throw new Exception(BAD_CLASS_TYPE_ERROR_MESSAGE);
-        }
-        if (!isSelected(data().classIndex())) {
+        if (!isSelected(classIndex())) {
             throw new Exception(CLASS_NOT_SELECTED_ERROR_MESSAGE);
         }
-        for (int j = 0; j < data().numAttributes(); j++) {
-            Attribute a = data().attribute(j);
-            if (isSelected(j)) {
+        if (isNumeric(classIndex())) {
+            throw new Exception(BAD_CLASS_TYPE_ERROR_MESSAGE);
+        }
+        for (int j = 1; j < instancesTable.getColumnCount(); j++) {
+            String attribute = instancesTable.getColumnName(j);
+            int attrIndex = j - 1;
+            if (isSelected(attrIndex)) {
                 for (int k = 0; k < instancesTable.getRowCount(); k++) {
-                    String str = (String) instancesTable.getValueAt(k, j + 1);
+                    String str = (String) instancesTable.getValueAt(k, j);
                     if (str != null) {
-                        if (isNumeric(j) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                            throw new Exception(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, a.name()));
+                        if (isNumeric(attrIndex) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                            throw new Exception(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
                         }
-                        if (isDate(j)) {
+                        if (isDate(attrIndex)) {
                             try {
                                 DateFormat.SIMPLE_DATE_FORMAT.parse(str);
                             } catch (Exception e) {
                                 throw new Exception(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                                        a.name(), DateFormat.DATE_FORMAT));
+                                        attribute, DateFormat.DATE_FORMAT));
                             }
                         }
                     }
@@ -199,31 +200,27 @@ public class AttributesTable extends JDataTableBase {
     }
 
     public void selectAllAttributes() {
-        model().selectAllAttributes();
+        getAttributesTableModel().selectAllAttributes();
     }
 
     public void resetValues() {
-        model().resetValues();
-    }
-
-    private AttributesTableModel model() {
-        return (AttributesTableModel) this.getModel();
-    }
-
-    public Instances data() {
-        return model().data();
+        getAttributesTableModel().resetValues();
     }
 
     public boolean isSelected(int i) {
-        return model().isAttributeSelected(i);
+        return getAttributesTableModel().isAttributeSelected(i);
+    }
+
+    private AttributesTableModel getAttributesTableModel() {
+        return (AttributesTableModel) this.getModel();
     }
 
     private boolean isNumeric(int i) {
-        return model().isNumeric(i);
+        return getAttributesTableModel().isNumeric(i);
     }
 
     private boolean isDate(int i) {
-        return model().isDate(i);
+        return getAttributesTableModel().isDate(i);
     }
 
     private boolean validateSelectedAttributesCount() {
@@ -236,27 +233,36 @@ public class AttributesTable extends JDataTableBase {
         return count < MIN_NUMBER_OF_SELECTED_ATTRIBUTES;
     }
 
+    private int getAttrIndex(String name) {
+        return instancesTable.getTableHeader().getColumnModel().getColumnIndex(name);
+    }
+
+    private int classIndex() {
+        return classBox.getSelectedIndex();
+    }
+
     private ArrayList<Attribute> createAttributesList() throws Exception {
-        ArrayList<Attribute> attr = new ArrayList<>(data().numAttributes());
-        for (int i = 0; i < data().numAttributes(); i++) {
-            Attribute a = data().attribute(i);
-            if (isSelected(i)) {
-                if (isNumeric(a.index())) {
-                    attr.add(new Attribute(a.name()));
-                } else if (isDate(a.index())) {
-                    attr.add(new Attribute(a.name(), DateFormat.DATE_FORMAT));
+        ArrayList<Attribute> attr = new ArrayList<>(instancesTable.getColumnCount() - 1);
+        for (int i = 1; i < instancesTable.getColumnCount(); i++) {
+            String attribute = instancesTable.getColumnName(i);
+            int attrIndex = i - 1;
+            if (isSelected(attrIndex)) {
+                if (isNumeric(attrIndex)) {
+                    attr.add(new Attribute(attribute));
+                } else if (isDate(attrIndex)) {
+                    attr.add(new Attribute(attribute, DateFormat.DATE_FORMAT));
                 } else {
-                    attr.add(createNominalAttribute(a));
+                    attr.add(createNominalAttribute(attribute));
                 }
             }
         }
         return attr;
     }
 
-    private Attribute createNominalAttribute(Attribute a) throws Exception {
+    private Attribute createNominalAttribute(String attribute) throws Exception {
         ArrayList<String> values = new ArrayList<>();
         for (int j = 0; j < instancesTable.getRowCount(); j++) {
-            String stringValue = (String) instancesTable.getValueAt(j, a.index() + 1);
+            String stringValue = (String) instancesTable.getValueAt(j, getAttrIndex(attribute));
             if (stringValue != null) {
                 String trimValue = stringValue.trim();
                 if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {
@@ -265,7 +271,7 @@ public class AttributesTable extends JDataTableBase {
             }
         }
 
-        return new Attribute(a.name(), values);
+        return new Attribute(attribute, values);
     }
 
     /**

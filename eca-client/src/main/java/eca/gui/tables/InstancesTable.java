@@ -34,6 +34,8 @@ public class InstancesTable extends JDataTableBase {
     private static final String OLD_VALUE_TEXT = "Старое значение:";
     private static final String NEW_VALUE_TEXT = "Новое значение:";
     private static final String REPLACE_VALUE_TEXT = "Замена значения";
+    private static final int ROWS = 2;
+    private static final int TEXT_FIELD_LENGTH = 10;
 
     public InstancesTable(final Instances data, final JTextField numInstances) {
         super(new InstancesTableModel(data));
@@ -41,7 +43,6 @@ public class InstancesTable extends JDataTableBase {
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
-        //----------------------------------------
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
         JMenuItem deleteAllMenu = new JMenuItem(DELETE_ATTRS_MENU_TEXT);
@@ -49,7 +50,6 @@ public class InstancesTable extends JDataTableBase {
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
-        //-----------------------------------
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override
@@ -71,7 +71,7 @@ public class InstancesTable extends JDataTableBase {
 
             }
         });
-        //-----------------------------------
+
         deleteMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -82,7 +82,7 @@ public class InstancesTable extends JDataTableBase {
                 numInstances.setText(String.valueOf(model().getRowCount()));
             }
         });
-        //-----------------------------------
+
         deleteAllMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -93,22 +93,22 @@ public class InstancesTable extends JDataTableBase {
                 numInstances.setText(String.valueOf(model().getRowCount()));
             }
         });
-        //-----------------------------------
+
         insertMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                String val = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
+                String newVal = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
                         INSTANCE_VALUE_TEXT,
                         ADD_INSTANCE_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
                         null, null);
-                if (val != null) {
-                    String obj = val.trim();
+                if (newVal != null) {
+                    String obj = newVal.trim();
                     model().add(obj.isEmpty() ? null : obj);
                     numInstances.setText(String.valueOf(model().getRowCount()));
                 }
             }
         });
-        //-----------------------------------
+
         clearMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -121,7 +121,7 @@ public class InstancesTable extends JDataTableBase {
                 }
             }
         });
-        //-----------------------------------
+
         missMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -129,7 +129,7 @@ public class InstancesTable extends JDataTableBase {
                 numInstances.setText(String.valueOf(model().getRowCount()));
             }
         });
-        //-----------------------------------
+
         reValueMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -137,12 +137,10 @@ public class InstancesTable extends JDataTableBase {
                 if (i > 0) {
                     int j = getSelectedRow();
                     String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
-                    String[] labels = {OLD_VALUE_TEXT,
-                            NEW_VALUE_TEXT};
+                    String[] labels = {OLD_VALUE_TEXT, NEW_VALUE_TEXT};
                     String[] values = {value, StringUtils.EMPTY};
-                    JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null,
-                            REPLACE_VALUE_TEXT, labels, values,
-                            2, 10);
+                    JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null, REPLACE_VALUE_TEXT,
+                            labels, values, ROWS, TEXT_FIELD_LENGTH);
                     frame.setVisible(true);
                     if (frame.dialogResult()) {
                         model().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
@@ -150,7 +148,6 @@ public class InstancesTable extends JDataTableBase {
                 }
             }
         });
-        //-----------------------------------
         popMenu.add(deleteMenu);
         popMenu.add(deleteAllMenu);
         popMenu.add(insertMenu);
@@ -160,11 +157,11 @@ public class InstancesTable extends JDataTableBase {
         this.getTableHeader().setComponentPopupMenu(popMenu);
     }
 
-    public final InstancesTableModel model() {
+    public InstancesTableModel model() {
         return (InstancesTableModel) this.getModel();
     }
 
-    public final Instances data() {
+    public Instances data() {
         return model().data();
     }
 

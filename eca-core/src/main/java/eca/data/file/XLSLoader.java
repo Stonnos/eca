@@ -156,6 +156,7 @@ public class XLSLoader {
                 }
                 data.add(o);
             }
+            data.setClassIndex(data.numAttributes() - 1);
         }
         return data;
     }

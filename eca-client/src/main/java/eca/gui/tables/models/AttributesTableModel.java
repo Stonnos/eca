@@ -30,7 +30,6 @@ public class AttributesTableModel extends AbstractTableModel {
         this.data = data;
         selectedAttr = new ArrayList<>(data.numAttributes());
         attrType = new ArrayList<>(data.numAttributes());
-        //------------------------------------
         for (int i = 0; i < data.numAttributes(); i++) {
             selectedAttr.add(true);
             attrType.add(AttributesTypesDictionary.getType(data.attribute(i)));
@@ -50,8 +49,7 @@ public class AttributesTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column == EDIT_INDEX ||
-                (column == LIST_INDEX && isAttributeSelected(row));
+        return column == EDIT_INDEX || (column == LIST_INDEX && isAttributeSelected(row));
     }
 
     @Override
@@ -106,11 +104,11 @@ public class AttributesTableModel extends AbstractTableModel {
     }
 
     public final boolean isNumeric(int i) {
-        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypesDictionary.NUMERIC);
+        return getValueAt(i, LIST_INDEX).equals(AttributesTypesDictionary.NUMERIC);
     }
 
     public final boolean isDate(int i) {
-        return ((String) getValueAt(i, LIST_INDEX)).equals(AttributesTypesDictionary.DATE);
+        return getValueAt(i, LIST_INDEX).equals(AttributesTypesDictionary.DATE);
     }
 
     public final void selectAllAttributes() {
