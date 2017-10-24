@@ -6,6 +6,7 @@
 package eca.gui.tables;
 
 import eca.dictionary.AttributesTypesDictionary;
+import eca.filter.ConstantAttributesFilter;
 import eca.gui.GuiUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
@@ -49,6 +50,10 @@ public class AttributesTable extends JDataTableBase {
             "Формат даты для атрибута '%s' должен быть следующим: %s";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
+    private static final String CONSTANT_ATTR_ERROR_MESSAGE =
+            "После удаления константных атрибутов не осталось ни одного входного атрибута!";
+
+    private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
     private final InstancesTable table;
 
@@ -101,7 +106,7 @@ public class AttributesTable extends JDataTableBase {
                             null, null);
                     if (name != null) {
                         String trimName = name.trim();
-                        if (!trimName.isEmpty()) {
+                        if (!StringUtils.isEmpty(trimName)) {
                             try {
                                 table.data().renameAttribute(i, trimName);
                                 model().fireTableRowsUpdated(i, i);
@@ -259,8 +264,11 @@ public class AttributesTable extends JDataTableBase {
             dataSet.add(obj);
         }
         dataSet.setClass(dataSet.attribute(data.classAttribute().name()));
-
-        return dataSet;
+        Instances filterInstances = constantAttributesFilter.filterInstances(dataSet);
+        if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
+            throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
+        }
+        return filterInstances;
     }
 
     /**
