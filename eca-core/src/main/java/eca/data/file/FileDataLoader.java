@@ -68,6 +68,7 @@ public class FileDataLoader extends AbstractDataLoader {
             throw new Exception(String.format("Can't load data from file '%s'. Data is null!",
                     file.getAbsoluteFile()));
         }
+        data.setClassIndex(data.numAttributes() - 1);
         return data;
     }
 }
