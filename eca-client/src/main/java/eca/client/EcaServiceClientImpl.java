@@ -1,11 +1,6 @@
 package eca.client;
 
-import eca.client.dto.EcaResponse;
-import eca.client.dto.EvaluationOption;
-import eca.client.dto.EvaluationRequestDto;
-import eca.client.dto.EvaluationResponse;
-import eca.client.dto.ExperimentRequestDto;
-import eca.client.dto.TechnicalStatusVisitor;
+import eca.client.dto.*;
 import eca.client.exception.EcaServiceException;
 import eca.config.EcaServiceProperties;
 import eca.config.RestTemplateConfig;
@@ -167,7 +162,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     }
 
     private void validateResponse(ResponseEntity response) {
-        if (Optional.ofNullable(response).map(ResponseEntity::getBody).isPresent()) {
+        if (!Optional.ofNullable(response).map(ResponseEntity::getBody).isPresent()) {
             log.error(EMPTY_RESPONSE_MESSAGE);
             throw new EcaServiceException(EMPTY_RESPONSE_MESSAGE);
         }
