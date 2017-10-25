@@ -21,7 +21,7 @@ public class DataInfoTableModel extends AbstractTableModel {
     private static final String MISSING_VALUES_TEXT = "Пропущенные значения";
     private Object[][] statistics;
 
-    private final String[] title = {"Статистика", "Значение"};
+    private static final String[] TITLES = {"Статистика", "Значение"};
 
     private Instances data;
 
@@ -32,7 +32,7 @@ public class DataInfoTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return title.length;
+        return TITLES.length;
     }
 
     @Override
@@ -52,11 +52,11 @@ public class DataInfoTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return title[column];
+        return TITLES[column];
     }
 
     private void init() {
-        statistics = new Object[STATISTICS_NUM][title.length];
+        statistics = new Object[STATISTICS_NUM][TITLES.length];
         int current = 0;
         statistics[current][0] = INSTANCES_NAME_TEXT;
         statistics[current++][1] = data.relationName();

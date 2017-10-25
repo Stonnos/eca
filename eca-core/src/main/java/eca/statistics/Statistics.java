@@ -7,8 +7,6 @@ package eca.statistics;
 
 /**
  * Statistics class.
- *
- * @author Roman Batygin
  */
 public class Statistics {
 
@@ -74,16 +72,16 @@ public class Statistics {
         if (p <= 0.0 || p >= 1.0) {
             return 0.0;
         }
-        double fVal = 1.0 / p;
+        double chiVal = 1.0 / p;
         while (Math.abs(maxF - minF) > .000001) {
-            if (weka.core.Statistics.chiSquaredProbability(fVal, df) < p) {
-                maxF = fVal;
+            if (weka.core.Statistics.chiSquaredProbability(chiVal, df) < p) {
+                maxF = chiVal;
             } else {
-                minF = fVal;
+                minF = chiVal;
             }
-            fVal = (maxF + minF) * 0.5;
+            chiVal = (maxF + minF) * 0.5;
         }
-        return fVal;
+        return chiVal;
     }
 
 }

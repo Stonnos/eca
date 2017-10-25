@@ -120,13 +120,13 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
                 } else {
                     try {
                         textField = numClassifiersTextField;
-                        classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
+                        classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
                         textField = classifierMinErrorTextField;
                         classifier.setMinError(estimateFormat
-                                .parse(classifierMinErrorTextField.getText()).doubleValue());
+                                .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
                         textField = classifierMaxErrorTextField;
                         classifier.setMaxError(estimateFormat
-                                .parse(classifierMaxErrorTextField.getText()).doubleValue());
+                                .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
                         classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
                         dialogResult = true;
                         setVisible(false);

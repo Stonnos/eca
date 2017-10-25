@@ -121,7 +121,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 JTextField text = emptyTextFieldSearch.findFirstEmptyField();
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
-                } else if (Integer.parseInt(numRandomAttrTextField.getText()) > data.numAttributes() - 1) {
+                } else if (Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
                     JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
                             String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
                             INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
@@ -183,7 +183,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 void setClassifierOptions() {
                     super.setClassifierOptions();
                     try {
-                        extraTreesClassifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsField.getText()));
+                        extraTreesClassifier.setNumRandomSplits(
+                                Integer.parseInt(numRandomSplitsField.getText().trim()));
                     } catch (Exception ex) {
                         numRandomSplitsField.requestFocusInWindow();
                         throw new RuntimeException(ex);
@@ -232,10 +233,10 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         }
 
         void setClassifierOptions() {
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
-            classifier.setMinObj(Integer.parseInt(minObjTextField.getText()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText()));
-            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText()));
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+            classifier.setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
+            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
+            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
             classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
         }

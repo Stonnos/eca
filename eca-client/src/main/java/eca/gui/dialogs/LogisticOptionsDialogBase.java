@@ -87,10 +87,10 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (numItsTextField.getText().isEmpty()) {
+                if (GuiUtils.isEmpty(numItsTextField)) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(LogisticOptionsDialogBase.this, numItsTextField);
                 } else {
-                    classifier.setMaxIts(Integer.parseInt(numItsTextField.getText()));
+                    classifier.setMaxIts(Integer.parseInt(numItsTextField.getText().trim()));
                     classifier.setUseConjugateGradientDescent(gradientRadioButton.isSelected());
                     dialogResult = true;
                     setVisible(false);

@@ -146,9 +146,7 @@ public class SimpleDataGenerator implements DataGenerator {
         instances.setClassIndex(instances.numAttributes() - 1);
 
         for (int i = 0; i < numInstances; i++) {
-
             Instance obj = new DenseInstance(instances.numAttributes());
-
             for (int j = 0; j < instances.numAttributes(); j++) {
                 Attribute attribute = instances.attribute(j);
                 double value;
@@ -169,13 +167,11 @@ public class SimpleDataGenerator implements DataGenerator {
         ArrayList<Attribute> attributes = new ArrayList<>(numAttributes);
         means = new double[numAttributes];
         variances = new double[numAttributes];
-
         for (int i = 0; i < numAttributes - 1; i++) {
             means[i] = NumberGenerator.random(MIN_MEAN_THRESHOLD, MAX_MEAN_THRESHOLD);
             variances[i] = NumberGenerator.random(MIN_VARIANCE_THRESHOLD, MAX_VARIANCE_THRESHOLD);
             attributes.add(generateAttribute(ATTRIBUTE_PREFIX + i, random.nextInt(ATTRIBUTE_TYPES.length)));
         }
-
         attributes.add(createNominalAttribute(CLASS_NAME, CLASS_PREFIX, numClasses));
         return attributes;
     }

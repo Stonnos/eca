@@ -24,7 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Class for loading xls/xlsx files. <p>
@@ -37,6 +39,9 @@ import java.util.Objects;
  * @author Roman Batygin
  */
 public class XLSLoader {
+
+    private static final Set<CellType> AVAILABLE_CELL_TYPES =
+            EnumSet.of(CellType.STRING, CellType.NUMERIC, CellType.BLANK, CellType.BOOLEAN);
 
     private InputStream inputStream;
 
@@ -115,7 +120,7 @@ public class XLSLoader {
                 new FileInputStream(file) : inputStream)) {
             Sheet sheet = book.getSheetAt(0);
             validateData(sheet);
-            data = new Instances(sheet.getSheetName(), makeAttributes(sheet),
+            data = new Instances(sheet.getSheetName(), createAttributes(sheet),
                     sheet.getLastRowNum());
 
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
@@ -169,7 +174,7 @@ public class XLSLoader {
         return sheet.getRow(0).getCell(i).getStringCellValue().trim();
     }
 
-    private ArrayList<Attribute> makeAttributes(Sheet sheet) throws Exception {
+    private ArrayList<Attribute> createAttributes(Sheet sheet) throws Exception {
         ArrayList<Attribute> attr = new ArrayList<>();
         for (int i = 0; i < getColNum(sheet); i++) {
             ArrayList<String> values = new ArrayList<>();
@@ -219,12 +224,9 @@ public class XLSLoader {
                 if (row == null) {
                     throw new Exception(FileDataDictionary.BAD_DATA_FORMAT);
                 }
-                Cell cell = sheet.getRow(j).getCell(i);
+                Cell cell = row.getCell(i);
                 if (cell != null) {
-                    if (cell.getCellTypeEnum() != CellType.STRING
-                            && cell.getCellTypeEnum() != CellType.NUMERIC
-                            && cell.getCellTypeEnum() != CellType.BLANK
-                            && cell.getCellTypeEnum() != CellType.BOOLEAN) {
+                    if (!AVAILABLE_CELL_TYPES.contains(cell.getCellTypeEnum())) {
                         throw new Exception(FileDataDictionary.BAD_CELL_VALUES);
                     }
                     CellType t = cell.getCellTypeEnum();
@@ -234,7 +236,6 @@ public class XLSLoader {
                     } else {
                         cellType = cell.getCellTypeEnum();
                     }
-
                 }
             }
         }

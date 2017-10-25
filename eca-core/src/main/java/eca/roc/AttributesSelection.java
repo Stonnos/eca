@@ -63,7 +63,7 @@ public class AttributesSelection {
     public void calculate() throws Exception {
         for (int i = 0; i < data.numAttributes(); i++) {
             if (i != data.classIndex()) {
-                Instances set = createInstance(i);
+                Instances set = createInstances(i);
                 Logistic model = new Logistic();
                 model.buildClassifier(set);
                 Evaluation evaluation = new Evaluation(set);
@@ -105,7 +105,7 @@ public class AttributesSelection {
         return avgAUC[attrIndex] > THRESHOLD_VALUE;
     }
 
-    private Instances createInstance(int attrIndex) {
+    private Instances createInstances(int attrIndex) {
         ArrayList<Attribute> attr = new ArrayList<>(2);
         attr.add(data.attribute(attrIndex).copy(data.attribute(attrIndex).name()));
         attr.add(data.classAttribute().copy(data.classAttribute().name()));

@@ -594,29 +594,22 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         BinaryRule rule = new BinaryRule(a, values);
         x.rule = rule;
         for (int i = 1; i <= a.numValues() / 2; i++) {
-
             for (int j = 0; j < values.length; j++) {
                 values[j] = j < i ? 1 : 0;
             }
-
             int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
-
             if (currentOptValues != null) {
                 optValues = currentOptValues;
             }
         }
-
-        rule.setValues(optValues);
+        rule.setCodes(optValues);
     }
 
     protected void processRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
         TreeNode x = split.getNode();
-
         if (a.isNumeric()) {
-
             double minAttrValue = x.objects().kthSmallestValue(a, 1);
             double maxAttrValue = x.objects().kthSmallestValue(a, x.objects().size());
-
             NumericRule rule = new NumericRule(a);
             double optThreshold = 0.0;
             x.rule = rule;
@@ -630,20 +623,15 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                 }
             }
             rule.setMeanValue(optThreshold);
-
         } else {
             if (k < Math.pow(2, a.numValues() - 1) - 1) {
-
                 int[] values = new int[a.numValues()];
                 int[] optValues = null;
                 BinaryRule rule = new BinaryRule(a, values);
                 x.rule = rule;
-
                 for (int i = 0; i < k; i++) {
-
                     Arrays.fill(values, 0);
                     int subSetSize = random.nextInt(a.numValues() - 1) + 1;
-
                     while (subSetSize != 0) {
                         int randomIndex = random.nextInt(values.length);
                         if (values[randomIndex] == 0) {
@@ -651,16 +639,12 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                             subSetSize--;
                         }
                     }
-
                     int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
-
                     if (currentOptValues != null) {
                         optValues = currentOptValues;
                     }
-
                 }
-
-                rule.setValues(optValues);
+                rule.setCodes(optValues);
             } else {
                 processBinarySplit(a, splitAlgorithm, split);
             }
@@ -717,14 +701,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     protected SplitDescriptor createOptSplit(TreeNode x) {
         SplitDescriptor split = new SplitDescriptor(x, splitAlgorithm.getMaxMeasure());
-
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
-
             if (isUseRandomSplits()) {
                 processRandomSplit(a, splitAlgorithm, split, numRandomSplits);
             } else {
-
                 if (a.isNumeric()) {
                     processNumericSplit(a, splitAlgorithm, split);
                 } else {
@@ -734,7 +715,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                         processNominalSplit(a, splitAlgorithm, split);
                     }
                 }
-
             }
         }
 

@@ -18,17 +18,17 @@ public class BinaryRule extends NominalRule {
     /**
      * Array of binary codes for nominal attribute values
      **/
-    private int[] values;
+    private int[] codes;
 
     /**
      * Creates <tt>BinaryRule</tt> object.
      *
      * @param attribute split attribute
-     * @param values    the array of binary codes for nominal attribute values
+     * @param codes    the array of binary codes for nominal attribute values
      */
-    public BinaryRule(Attribute attribute, int[] values) {
+    public BinaryRule(Attribute attribute, int[] codes) {
         super(attribute);
-        this.setValues(values);
+        this.setCodes(codes);
     }
 
     /**
@@ -36,22 +36,22 @@ public class BinaryRule extends NominalRule {
      *
      * @return the array of binary codes for nominal attribute values
      */
-    public final int[] values() {
-        return values;
+    public final int[] getCodes() {
+        return codes;
     }
 
     /**
      * Sets the array of binary codes for nominal attribute values.
      *
-     * @param values the array of binary codes for nominal attribute values
+     * @param codes the array of binary codes for nominal attribute values
      */
-    public final void setValues(int[] values) {
-        this.values = values;
+    public final void setCodes(int[] codes) {
+        this.codes = codes;
     }
 
     @Override
     public int getChild(Instance obj) {
-        return values[(int) obj.value(attribute())];
+        return codes[(int) obj.value(attribute())];
     }
 
     @Override
@@ -61,8 +61,8 @@ public class BinaryRule extends NominalRule {
         }
         StringBuilder r = new StringBuilder(attribute().name() + " = ");
         boolean found = false;
-        for (int j = 0; j < values.length; j++) {
-            if ((i == 0 && values[j] == 0) || (i == 1 && values[j] == 1)) {
+        for (int j = 0; j < codes.length; j++) {
+            if ((i == 0 && codes[j] == 0) || (i == 1 && codes[j] == 1)) {
                 if (found) {
                     r.append(",");
                 }

@@ -407,13 +407,13 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         JTextField textField = classifierMinErrorTextField;
         try {
             textField = numClassifiersTextField;
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText()));
+            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
             textField = classifierMinErrorTextField;
             classifier.setMinError(estimateFormat
-                    .parse(classifierMinErrorTextField.getText()).doubleValue());
+                    .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
             textField = classifierMaxErrorTextField;
             classifier.setMaxError(estimateFormat
-                    .parse(classifierMaxErrorTextField.getText()).doubleValue());
+                    .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
@@ -421,14 +421,12 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             textField.requestFocusInWindow();
             return false;
         }
-        //-----------------------------
         if (baseClassifiersListModel.isEmpty()) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
                     INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        //----------------------------------
         return true;
     }
 

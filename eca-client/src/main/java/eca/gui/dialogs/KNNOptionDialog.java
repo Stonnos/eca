@@ -103,9 +103,9 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
                 } else {
                     JTextField focus = weightTextField;
                     try {
-                        classifier.setWeight(estimateFormat.parse(weightTextField.getText()).doubleValue());
+                        classifier.setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
                         focus = numNeighboursTextField;
-                        classifier.setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText()));
+                        classifier.setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
 
                         DistanceType distanceType =
                                 DistanceType.findByDescription(metricBox.getSelectedItem().toString());

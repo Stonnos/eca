@@ -20,7 +20,7 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Implements service for communication with eca - service api.
@@ -31,7 +31,7 @@ import java.util.Objects;
 public class EcaServiceClientImpl implements EcaServiceClient {
 
     private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
-    private static final String EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE =
+    private static final String EMPTY_RESPONSE_MESSAGE =
             "No or empty response has been received from eca - service!";
     private static final String ERROR_MESSAGE_FORMAT = "Got HTTP error [%d, %s] from eca - service!";
     private static final String TIMEOUT_MESSAGE = "There was a timeout.";
@@ -167,21 +167,15 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     }
 
     private void validateResponse(ResponseEntity response) {
-        if (Objects.isNull(response)) {
-            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
-            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
+        if (Optional.ofNullable(response).map(ResponseEntity::getBody).isPresent()) {
+            log.error(EMPTY_RESPONSE_MESSAGE);
+            throw new EcaServiceException(EMPTY_RESPONSE_MESSAGE);
         }
         if (!HttpStatus.OK.equals(response.getStatusCode())) {
             String errorMessage = String.format(ERROR_MESSAGE_FORMAT,
                     response.getStatusCode().value(), response.getStatusCode().getReasonPhrase());
             log.error(errorMessage);
             throw new EcaServiceException(errorMessage);
-        }
-
-        Object responseBody = response.getBody();
-        if (Objects.isNull(responseBody)) {
-            log.error(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
-            throw new EcaServiceException(EMPTY_RESPONSE_HAS_BEEN_RECEIVED_MESSAGE);
         }
     }
 

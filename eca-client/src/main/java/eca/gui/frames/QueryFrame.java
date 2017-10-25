@@ -142,7 +142,7 @@ public class QueryFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 progress.setIndeterminate(true);
-                worker = new SwingWorkerConstruction(queryArea.getText());
+                worker = new SwingWorkerConstruction(queryArea.getText().trim());
                 interrupt.setEnabled(true);
                 worker.execute();
             }

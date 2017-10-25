@@ -5,7 +5,11 @@
  */
 package eca.gui.dialogs;
 
-import eca.db.*;
+import eca.db.ConnectionDescriptor;
+import eca.db.ConnectionDescriptorBuilder;
+import eca.db.ConnectionDescriptorFactory;
+import eca.db.DataBaseType;
+import eca.db.DataBaseTypeVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
@@ -197,12 +201,12 @@ public class DatabaseConnectionDialog extends JDialog {
     public ConnectionDescriptor getConnectionDescriptor() {
         ConnectionDescriptor connectionDescriptor = DataBaseType.findByDescription(dataBases
                 .getSelectedItem().toString()).handle(connectionDescriptorBuilder);
-        connectionDescriptor.setHost(hostField.getText());
+        connectionDescriptor.setHost(hostField.getText().trim());
         if (!connectionDescriptor.getDataBaseType().isEmbedded()) {
-            connectionDescriptor.setPort(Integer.valueOf(portField.getText()));
+            connectionDescriptor.setPort(Integer.valueOf(portField.getText().trim()));
         }
-        connectionDescriptor.setDataBaseName(dataBaseField.getText());
-        connectionDescriptor.setLogin(userField.getText());
+        connectionDescriptor.setDataBaseName(dataBaseField.getText().trim());
+        connectionDescriptor.setLogin(userField.getText().trim());
         connectionDescriptor.setPassword(String.valueOf(passwordField.getPassword()));
         return connectionDescriptor;
     }

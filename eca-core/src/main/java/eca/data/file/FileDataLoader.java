@@ -50,13 +50,10 @@ public class FileDataLoader extends AbstractDataLoader {
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        if (file.getName().endsWith(FileExtension.CSV)
-                || file.getName().endsWith(FileExtension.ARFF)) {
-            ConverterUtils.DataSource source
-                    = new ConverterUtils.DataSource(file.getAbsolutePath());
+        if (file.getName().endsWith(FileExtension.CSV) || file.getName().endsWith(FileExtension.ARFF)) {
+            ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
             data = source.getDataSet();
-        } else if (file.getName().endsWith(FileExtension.XLS)
-                || file.getName().endsWith(FileExtension.XLSX)) {
+        } else if (file.getName().endsWith(FileExtension.XLS) || file.getName().endsWith(FileExtension.XLSX)) {
             XLSLoader loader = new XLSLoader();
             loader.setFile(file);
             loader.setDateFormat(getDateFormat());
@@ -65,8 +62,7 @@ public class FileDataLoader extends AbstractDataLoader {
             throw new Exception(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));
         }
         if (Objects.isNull(data)) {
-            throw new Exception(String.format("Can't load data from file '%s'. Data is null!",
-                    file.getAbsoluteFile()));
+            throw new Exception(String.format("Can't load data from file '%s'. Data is null!", file.getAbsoluteFile()));
         }
         data.setClassIndex(data.numAttributes() - 1);
         return data;

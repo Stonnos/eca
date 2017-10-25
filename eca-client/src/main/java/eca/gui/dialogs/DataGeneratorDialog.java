@@ -52,9 +52,9 @@ public class DataGeneratorDialog extends JDialog {
     }
 
     public DataGenerator getDataGenerator() {
-        simpleDataGenerator.setNumAttributes(Integer.valueOf(numAttributesField.getText()));
-        simpleDataGenerator.setNumClasses(Integer.valueOf(numClassesField.getText()));
-        simpleDataGenerator.setNumInstances(Integer.valueOf(numInstancesField.getText()));
+        simpleDataGenerator.setNumAttributes(Integer.valueOf(numAttributesField.getText().trim()));
+        simpleDataGenerator.setNumClasses(Integer.valueOf(numClassesField.getText().trim()));
+        simpleDataGenerator.setNumInstances(Integer.valueOf(numInstancesField.getText().trim()));
         return simpleDataGenerator;
     }
 

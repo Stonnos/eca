@@ -124,20 +124,17 @@ public class ExtraTreesClassifier extends RandomForests {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-
             Instances sample;
             if (isUseBootstrapSamples()) {
                 sample = sampler.bootstrap(filteredData);
             } else {
                 sample = sampler.initial(filteredData);
             }
-
             DecisionTreeClassifier treeClassifier = createDecisionTree();
             treeClassifier.setUseRandomSplits(true);
             treeClassifier.setNumRandomSplits(getNumRandomSplits());
             treeClassifier.buildClassifier(sample);
             classifiers.add(treeClassifier);
-
             return ++index;
         }
     }

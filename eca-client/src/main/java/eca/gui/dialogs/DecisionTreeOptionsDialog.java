@@ -143,7 +143,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                 if (text != null) {
                     GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
                 } else if (randomTreeBox.isSelected()
-                        && Integer.parseInt(numRandomAttrTextField.getText()) > data.numAttributes() - 1) {
+                        && Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
 
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
                             String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
@@ -240,18 +240,18 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         }
 
         void setClassifierOptions() {
-            classifier.setMinObj(Integer.parseInt(minObjTextField.getText()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText()));
+            classifier.setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
+            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
             if (randomTreeBox.isSelected()) {
                 classifier.setRandomTree(true);
-                classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText()));
+                classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             }
             classifier.setUseBinarySplits(binaryTreeBox.isSelected());
             classifier.setUseRandomSplits(randomSplitsBox.isSelected());
 
             if (classifier.isUseRandomSplits()) {
                 try {
-                    classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText()));
+                    classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText().trim()));
                 } catch (Exception e) {
                     numRandomSplitsTextField.requestFocusInWindow();
                     throw new RuntimeException(e);

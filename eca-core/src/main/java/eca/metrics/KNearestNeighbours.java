@@ -78,7 +78,7 @@ public class KNearestNeighbours extends AbstractClassifier
 
     private MinMaxNormalizer normalizer;
     private InstanceDistance[] distances;
-    private final NominalToBinary ntbFilter = new NominalToBinary();
+    private final NominalToBinary nominalToBinary = new NominalToBinary();
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
@@ -188,12 +188,12 @@ public class KNearestNeighbours extends AbstractClassifier
     @Override
     public void buildClassifier(Instances data) throws Exception {
         if (numNeighbours > data.numInstances()) {
-            numNeighbours = data.numInstances();
+            setNumNeighbours(data.numInstances());
         }
         this.data = data;
         Instances set = filter.filterInstances(data);
-        ntbFilter.setInputFormat(set);
-        set = Filter.useFilter(set, ntbFilter);
+        nominalToBinary.setInputFormat(set);
+        set = Filter.useFilter(set, nominalToBinary);
         normalizer = new MinMaxNormalizer(set);
         normalizedData = normalizer.normalizeInstances();
         distances = new InstanceDistance[normalizedData().numInstances()];
@@ -234,20 +234,20 @@ public class KNearestNeighbours extends AbstractClassifier
     }
 
     private double[] getWeights(Instance obj) {
-        Instance o = filter.filterInstance(obj);
-        ntbFilter.input(o);
-        o = ntbFilter.output();
-        o = normalizer.normalizeInstance(o);
+        Instance instance = filter.filterInstance(obj);
+        nominalToBinary.input(instance);
+        instance = nominalToBinary.output();
+        instance = normalizer.normalizeInstance(instance);
 
         for (int i = 0; i < distances.length; i++) {
             InstanceDistance ins = distances[i];
             ins.setId(i);
-            ins.setDistance(metric.distance(o, normalizedData.instance(i)));
+            ins.setDistance(metric.distance(instance, normalizedData.instance(i)));
         }
 
         Arrays.parallelSort(distances);
 
-        double[] weights = new double[o.numClasses()];
+        double[] weights = new double[instance.numClasses()];
         for (int i = 0; i < numNeighbours; i++) {
             int classIndex = (int) normalizedData.instance(distances[i].getId()).classValue();
             weights[classIndex] += Math.pow(weight, i);

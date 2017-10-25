@@ -31,12 +31,13 @@ public class RandomAttributesEnumeration implements Enumeration<Attribute> {
     public RandomAttributesEnumeration(Instances data, int count) {
         ArrayList<Attribute> attributes = new ArrayList<>(count);
         Random random = new Random();
-        while (count != 0) {
+        int k = count;
+        while (k != 0) {
             int i = random.nextInt(data.numAttributes());
             Attribute a = data.attribute(i);
             if (i != data.classIndex() && !attributes.contains(a)) {
                 attributes.add(a);
-                count--;
+                k--;
             }
         }
         iterator = attributes.iterator();

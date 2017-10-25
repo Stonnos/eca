@@ -15,7 +15,7 @@ public class Assert {
      */
     public static void notNegative(double val) {
         if (val < 0) {
-            throw new IllegalArgumentException(String.format("Negative value: %d", val));
+            throw new IllegalArgumentException(String.format("Negative value: %s", Double.toString(val)));
         }
     }
 

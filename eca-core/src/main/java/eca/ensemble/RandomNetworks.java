@@ -108,12 +108,9 @@ public class RandomNetworks extends ThresholdClassifier {
             NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
             MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
             multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
-
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
-
             AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
-
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);
             multilayerPerceptron.setActivationFunction(randomActivationFunction);
@@ -124,20 +121,16 @@ public class RandomNetworks extends ThresholdClassifier {
             } else {
                 sample = sampler.initial(filteredData);
             }
-
             neuralNetwork.buildClassifier(sample);
 
             double error = Evaluation.error(neuralNetwork, sample);
-
             if (error > getMinError() && error < getMaxError()) {
                 classifiers.add(neuralNetwork);
                 ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
             }
-
             if (index == getIterationsNum() - 1) {
                 checkModel();
             }
-
             return ++index;
         }
 

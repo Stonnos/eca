@@ -73,9 +73,7 @@ public class XLSSaver {
      */
     public void write(Instances data) throws IOException {
         Assert.notNull(data, "Data is not specified!");
-        try (FileOutputStream stream = new FileOutputStream(file);
-             Workbook book = file.getName().endsWith(FileExtension.XLS) ?
-                     new HSSFWorkbook() : new XSSFWorkbook()) {
+        try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
             Font font = book.createFont();
             font.setBold(true);
             font.setFontHeightInPoints((short) 12);
@@ -113,6 +111,10 @@ public class XLSSaver {
 
             book.write(stream);
         }
+    }
+
+    private Workbook createWorkbook(File file) {
+        return file.getName().endsWith(FileExtension.XLS) ? new HSSFWorkbook() : new XSSFWorkbook();
     }
 
 }

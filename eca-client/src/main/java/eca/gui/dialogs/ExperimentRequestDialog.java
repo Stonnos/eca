@@ -158,8 +158,8 @@ public class ExperimentRequestDialog extends JDialog {
 
     public ExperimentRequestDto createExperimentRequestDto() {
         ExperimentRequestDto experimentRequestDto = new ExperimentRequestDto();
-        experimentRequestDto.setFirstName(firstNameTextField.getText());
-        experimentRequestDto.setEmail(emailTextField.getText());
+        experimentRequestDto.setFirstName(firstNameTextField.getText().trim());
+        experimentRequestDto.setEmail(emailTextField.getText().trim());
         String selectedText = GuiUtils.searchSelectedButtonText(evaluationMethodsGroup);
         EvaluationMethod evaluationMethod = EvaluationMethod.findByDescription(selectedText);
         experimentRequestDto.setEvaluationMethod(evaluationMethod);

@@ -45,7 +45,7 @@ public class EcaServiceOptionsDialog extends JDialog {
                 try {
                     for (Iterator<Entry> iterator = model.getOptions(); iterator.hasNext(); ) {
                         Entry entry = iterator.next();
-                        if (StringUtils.isBlank(entry.getValue())) {
+                        if (StringUtils.isEmpty(entry.getValue())) {
                             throw new Exception(String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
                         }
 

@@ -19,7 +19,12 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -31,6 +36,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 /**
+ * Neural network visualization panel.
  * @author Roman Batygin
  */
 public class NetworkVisualizer extends JPanel {
@@ -72,8 +78,7 @@ public class NetworkVisualizer extends JPanel {
     public NetworkVisualizer(NeuralNetwork net, JFrame frame, int digits) {
         this.net = net;
         this.frame = frame;
-        decimalFormat.setMaximumFractionDigits(digits);
-        //----------------------------------------------
+        this.decimalFormat.setMaximumFractionDigits(digits);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -82,8 +87,7 @@ public class NetworkVisualizer extends JPanel {
                 }
             }
         });
-        //----------------------------------------------
-        nodes = new ArrayList<>();
+        this.nodes = new ArrayList<>();
         this.setDimension();
         this.createNodes();
         this.createPopupMenu();
@@ -174,12 +178,12 @@ public class NetworkVisualizer extends JPanel {
         for (Neuron n : net.network().inLayerNeurons) {
             drawInArrow(g2d, nodes.get(n.index()), attr.nextElement().name());
         }
-        //-------------------------------------
+
         Enumeration<Object> values = net.getData().classAttribute().enumerateValues();
         for (Neuron n : net.network().outLayerNeurons) {
             drawOutArrow(g2d, nodes.get(n.index()), values.nextElement().toString());
         }
-        //-------------------------------------
+
         for (NeuronNode n : nodes) {
             for (Iterator<NeuralLink> i = n.neuron().outLinks(); i.hasNext(); ) {
                 drawLink(g2d, i.next());
@@ -325,15 +329,15 @@ public class NetworkVisualizer extends JPanel {
     }
 
     /**
-     *
+     * Neural network model text representation frame.
      */
     private class NetworkInfo extends JFrame {
 
-        static final String TITLE = "Модель нейронной сети";
+        static final String INFO_TITLE = "Модель нейронной сети";
 
         NetworkInfo() {
             this.setLayout(new GridBagLayout());
-            this.setTitle(TITLE);
+            this.setTitle(INFO_TITLE);
             JTextArea textInfo = new JTextArea(20, 50);
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
@@ -367,7 +371,7 @@ public class NetworkVisualizer extends JPanel {
     }
 
     /**
-     *
+     * Neuron info frame.
      */
     private class NeuronInfo extends JFrame {
 
@@ -413,7 +417,7 @@ public class NetworkVisualizer extends JPanel {
     }
 
     /**
-     *
+     * Neuron node model.
      */
     private class NeuronNode {
 
@@ -622,7 +626,7 @@ public class NetworkVisualizer extends JPanel {
                     neuronDiam, neuronDiam);
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
-        //-----------------------------------------------------
+
         for (Neuron[] layer : net.network().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
@@ -632,7 +636,7 @@ public class NetworkVisualizer extends JPanel {
                 h += neuronDiam + STEP_BETWEEN_NODES;
             }
         }
-        //-----------------------------------------------------
+
         w += neuronDiam + STEP_BETWEEN_LEVELS;
         h = startY(net.network().outLayerNeurons.length);
         for (Neuron n : net.network().outLayerNeurons) {
@@ -649,7 +653,7 @@ public class NetworkVisualizer extends JPanel {
                     neuronDiam, neuronDiam)));
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
-        //-----------------------------------------------------
+
         for (Neuron[] layer : net.network().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
@@ -659,7 +663,7 @@ public class NetworkVisualizer extends JPanel {
                 h += neuronDiam + STEP_BETWEEN_NODES;
             }
         }
-        //-----------------------------------------------------
+
         w += neuronDiam + STEP_BETWEEN_LEVELS;
         h = startY(net.network().outLayerNeurons.length);
         for (Neuron n : net.network().outLayerNeurons) {
@@ -680,10 +684,7 @@ public class NetworkVisualizer extends JPanel {
         NeuronNode u = nodes.get(link.source().index());
         NeuronNode v = nodes.get(link.target().index());
         g.setColor(linkColor);
-        g.draw(new Line2D.Double(u.x2(),
-                u.centerY(),
-                v.x1(),
-                v.centerY()));
+        g.draw(new Line2D.Double(u.x2(), u.centerY(), v.x1(), v.centerY()));
     }
 
     private void drawInArrow(Graphics2D g, NeuronNode u, String name) {
@@ -699,7 +700,6 @@ public class NetworkVisualizer extends JPanel {
                 u.centerY() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
-        //----------------------------------------
         g.setColor(attrColor);
         g.setFont(attrFont);
         g.drawString(name, (float) ((arrow.getX1() + arrow.getX2()) / 3.0), (float) u.y1());
@@ -718,18 +718,17 @@ public class NetworkVisualizer extends JPanel {
                 arrow.getY2() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
-        //-----------------------------
         g.setColor(classColor);
         g.setFont(attrFont);
         g.drawString(value, (float) ((arrow.getX1() + arrow.getX2()) / 2.0), (float) (arrow.getY1() - 5.0));
     }
 
     /**
-     *
+     * Neural network image options dialog.
      */
     private class NeuronOptions extends JDialog {
 
-        static final String TITLE = "Настройки";
+        static final String TITLE_TEXT = "Настройки";
         static final String OPTIONS_TITLE = "Параметры сети";
         static final String NEURON_DIAM_TEXT = "Диаметр нейрона:";
         static final String SELECT_BUTTON_TEXT = "Выбрать...";
@@ -766,8 +765,8 @@ public class NetworkVisualizer extends JPanel {
         Color selectedTextColor = textColor;
         Color selectedBackgroundColor = NetworkVisualizer.this.getBackground();
 
-        public NeuronOptions(Window parent) {
-            super(parent, TITLE);
+        NeuronOptions(Window parent) {
+            super(parent, TITLE_TEXT);
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);
@@ -806,10 +805,10 @@ public class NetworkVisualizer extends JPanel {
             inColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                    Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                             SELECT_IN_LAYER_COLOR_TEXT, selectedInLayerColor);
-                    if (obj != null) {
-                        selectedInLayerColor = obj;
+                    if (newInLayerColor != null) {
+                        selectedInLayerColor = newInLayerColor;
                     }
                 }
             });
@@ -818,10 +817,10 @@ public class NetworkVisualizer extends JPanel {
             outColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                    Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                             SELECT_OUT_LAYER_COLOR_TEXT, selectedOutLayerColor);
-                    if (obj != null) {
-                        selectedOutLayerColor = obj;
+                    if (newOutLayerColor != null) {
+                        selectedOutLayerColor = newOutLayerColor;
                     }
                 }
             });
@@ -830,10 +829,10 @@ public class NetworkVisualizer extends JPanel {
             linkColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                    Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
                             SELECT_LINK_COLOR_TEXT, selectedLinkColor);
-                    if (obj != null) {
-                        selectedLinkColor = obj;
+                    if (newLinkColor != null) {
+                        selectedLinkColor = newLinkColor;
                     }
                 }
             });
@@ -842,10 +841,10 @@ public class NetworkVisualizer extends JPanel {
             hidColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this,
+                    Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                             SELECT_HIDDEN_LAYER_COLOR_TEXT, selectedHiddenLayerColor);
-                    if (obj != null) {
-                        selectedHiddenLayerColor = obj;
+                    if (newHiddenLayerColor != null) {
+                        selectedHiddenLayerColor = newHiddenLayerColor;
                     }
                 }
             });
@@ -854,10 +853,10 @@ public class NetworkVisualizer extends JPanel {
             attrColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
+                    Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
                             selectedAttrColor);
-                    if (obj != null) {
-                        selectedAttrColor = obj;
+                    if (newAttrColor != null) {
+                        selectedAttrColor = newAttrColor;
                     }
                 }
             });
@@ -866,10 +865,10 @@ public class NetworkVisualizer extends JPanel {
             classColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
+                    Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
                             selectedClassColor);
-                    if (obj != null) {
-                        selectedClassColor = obj;
+                    if (newClassColor != null) {
+                        selectedClassColor = newClassColor;
                     }
                 }
             });
@@ -878,10 +877,10 @@ public class NetworkVisualizer extends JPanel {
             textColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
+                    Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
                             selectedTextColor);
-                    if (obj != null) {
-                        selectedTextColor = obj;
+                    if (newTextColor != null) {
+                        selectedTextColor = newTextColor;
                     }
                 }
             });
@@ -890,10 +889,10 @@ public class NetworkVisualizer extends JPanel {
             backgroundColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
+                    Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
                             selectedBackgroundColor);
-                    if (obj != null) {
-                        selectedBackgroundColor = obj;
+                    if (newBackgroundColor != null) {
+                        selectedBackgroundColor = newBackgroundColor;
                     }
                 }
             });
@@ -949,51 +948,51 @@ public class NetworkVisualizer extends JPanel {
             this.setLocationRelativeTo(parent);
         }
 
-        public double getNodeDiameter() {
+        double getNodeDiameter() {
             return ((SpinnerNumberModel) diamSpinner.getModel()).getNumber().doubleValue();
         }
 
-        public Font getNodeFont() {
+        Font getNodeFont() {
             return selectedNodeFont;
         }
 
-        public Font getAttributeFont() {
+        Font getAttributeFont() {
             return selectedAttrFont;
         }
 
-        public Color getInNeuronColor() {
+        Color getInNeuronColor() {
             return selectedInLayerColor;
         }
 
-        public Color getTextColor() {
+        Color getTextColor() {
             return selectedTextColor;
         }
 
-        public Color getLinkColor() {
+        Color getLinkColor() {
             return selectedLinkColor;
         }
 
-        public Color getOutNeuronColor() {
+        Color getOutNeuronColor() {
             return selectedOutLayerColor;
         }
 
-        public Color getHidNeuronColor() {
+        Color getHidNeuronColor() {
             return selectedHiddenLayerColor;
         }
 
-        public Color getClassColor() {
+        Color getClassColor() {
             return selectedClassColor;
         }
 
-        public Color getAttributeColor() {
+        Color getAttributeColor() {
             return selectedAttrColor;
         }
 
-        public Color getBackgroundColor() {
+        Color getBackgroundColor() {
             return selectedBackgroundColor;
         }
 
-        public boolean dialogResult() {
+        boolean dialogResult() {
             return dialogResult;
         }
     }

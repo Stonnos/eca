@@ -32,6 +32,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 /**
+ * Decision tree visualization panel.
  * @author Roman Batygin
  */
 public class TreeVisualizer extends JPanel {
@@ -363,7 +364,7 @@ public class TreeVisualizer extends JPanel {
     }
 
     /**
-     *
+     * Tree node descriptor.
      */
     private class NodeDescriptor {
 
@@ -572,7 +573,7 @@ public class TreeVisualizer extends JPanel {
     }
 
     /**
-     *
+     * Decision tree options dialog.
      */
     private class TreeOptions extends JDialog {
 
@@ -616,7 +617,7 @@ public class TreeVisualizer extends JPanel {
         Color borderC = borderColor;
         Color backgroundColor = TreeVisualizer.this.getBackground();
 
-        public TreeOptions(JFrame parent) {
+        TreeOptions(JFrame parent) {
             super(parent, TITLE_TEXT);
             this.setLayout(new GridBagLayout());
             this.setModal(true);
@@ -638,10 +639,10 @@ public class TreeVisualizer extends JPanel {
             nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontchooser = new JFontChooser(TreeOptions.this, nFont);
-                    nodeFontchooser.setVisible(true);
-                    if (nodeFontchooser.dialogResult()) {
-                        nFont = nodeFontchooser.getSelectedFont();
+                    JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, nFont);
+                    nodeFontChooser.setVisible(true);
+                    if (nodeFontChooser.dialogResult()) {
+                        nFont = nodeFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -650,10 +651,10 @@ public class TreeVisualizer extends JPanel {
             ruleButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontchooser = new JFontChooser(TreeOptions.this, rFont);
-                    ruleFontchooser.setVisible(true);
-                    if (ruleFontchooser.dialogResult()) {
-                        rFont = ruleFontchooser.getSelectedFont();
+                    JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, rFont);
+                    ruleFontChooser.setVisible(true);
+                    if (ruleFontChooser.dialogResult()) {
+                        rFont = ruleFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -662,10 +663,10 @@ public class TreeVisualizer extends JPanel {
             ruleColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
+                    Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
                             ruleC);
-                    if (obj != null) {
-                        ruleC = obj;
+                    if (newRuleColor != null) {
+                        ruleC = newRuleColor;
                     }
                 }
             });
@@ -674,10 +675,10 @@ public class TreeVisualizer extends JPanel {
             textColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
+                    Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
                             textC);
-                    if (obj != null) {
-                        textC = obj;
+                    if (newTextColor != null) {
+                        textC = newTextColor;
                     }
                 }
             });
@@ -686,10 +687,10 @@ public class TreeVisualizer extends JPanel {
             linkColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
+                    Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
                             linkC);
-                    if (obj != null) {
-                        linkC = obj;
+                    if (newLinkColor != null) {
+                        linkC = newLinkColor;
                     }
                 }
             });
@@ -698,10 +699,10 @@ public class TreeVisualizer extends JPanel {
             nodeColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
+                    Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
                             nodeC);
-                    if (obj != null) {
-                        nodeC = obj;
+                    if (newLeafColor != null) {
+                        nodeC = newLeafColor;
                     }
                 }
             });
@@ -722,10 +723,10 @@ public class TreeVisualizer extends JPanel {
             classColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
+                    Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
                             classC);
-                    if (obj != null) {
-                        classC = obj;
+                    if (newClassColor != null) {
+                        classC = newClassColor;
                     }
                 }
             });
@@ -734,10 +735,10 @@ public class TreeVisualizer extends JPanel {
             borderColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
+                    Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
                             borderC);
-                    if (obj != null) {
-                        borderC = obj;
+                    if (newBorderColor != null) {
+                        borderC = newBorderColor;
                     }
                 }
             });
@@ -746,10 +747,10 @@ public class TreeVisualizer extends JPanel {
             backgroundColorButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
+                    Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
                             backgroundColor);
-                    if (obj != null) {
-                        backgroundColor = obj;
+                    if (newBackgroundColor != null) {
+                        backgroundColor = newBackgroundColor;
                     }
                 }
             });
@@ -805,59 +806,59 @@ public class TreeVisualizer extends JPanel {
             this.setLocationRelativeTo(parent);
         }
 
-        public int getStroke() {
+        int getStroke() {
             return ((SpinnerNumberModel) strokeSpinner.getModel()).getNumber().intValue();
         }
 
-        public double getNodeWidth() {
+        double getNodeWidth() {
             return ((SpinnerNumberModel) widthSpinner.getModel()).getNumber().doubleValue();
         }
 
-        public double getNodeHeight() {
+        double getNodeHeight() {
             return ((SpinnerNumberModel) heightSpinner.getModel()).getNumber().doubleValue();
         }
 
-        public Font getNodeFont() {
+        Font getNodeFont() {
             return nFont;
         }
 
-        public Font getRuleFont() {
+        Font getRuleFont() {
             return rFont;
         }
 
-        public Color getRuleColor() {
+        Color getRuleColor() {
             return ruleC;
         }
 
-        public Color getTextColor() {
+        Color getTextColor() {
             return textC;
         }
 
-        public Color getLinkColor() {
+        Color getLinkColor() {
             return linkC;
         }
 
-        public Color getNodeColor() {
+        Color getNodeColor() {
             return nodeC;
         }
 
-        public Color getLeafColor() {
+        Color getLeafColor() {
             return leafC;
         }
 
-        public Color getClassColor() {
+        Color getClassColor() {
             return classC;
         }
 
-        public Color getBorderColor() {
+        Color getBorderColor() {
             return borderC;
         }
 
-        public Color getBackgroundColor() {
+        Color getBackgroundColor() {
             return backgroundColor;
         }
 
-        public boolean dialogResult() {
+        boolean dialogResult() {
             return dialogResult;
         }
     }

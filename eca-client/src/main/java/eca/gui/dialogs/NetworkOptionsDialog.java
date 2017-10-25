@@ -231,20 +231,20 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 } else {
                     text = hidLayersTextField;
                     try {
-                        network().setHiddenLayer(hidLayersTextField.getText());
+                        network().setHiddenLayer(hidLayersTextField.getText().trim());
                         network().setActivationFunction(getSelectedActivationFunction());
-                        network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText()));
+                        network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
                         text = afCoefficientTextField;
                         getActivationFunction().setCoefficient(doubleFormat.
-                                parse(afCoefficientTextField.getText()).doubleValue());
+                                parse(afCoefficientTextField.getText().trim()).doubleValue());
                         text = estimateTextField;
                         network().setMinError(estimateFormat.
-                                parse(estimateTextField.getText()).doubleValue());
+                                parse(estimateTextField.getText().trim()).doubleValue());
                         text = learnSpeedTextField;
                         learningAlgorithm().setLearningRate(estimateFormat.
-                                parse(learnSpeedTextField.getText()).doubleValue());
+                                parse(learnSpeedTextField.getText().trim()).doubleValue());
                         learningAlgorithm().setMomentum(estimateFormat.
-                                parse(momentumTextField.getText()).doubleValue());
+                                parse(momentumTextField.getText().trim()).doubleValue());
                         dialogResult = true;
                         setVisible(false);
                     } catch (Exception e) {

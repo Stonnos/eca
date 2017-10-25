@@ -85,6 +85,7 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -171,10 +172,12 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
+    private static final int MAXIMUM_FRACTION_DIGITS = 4;
+
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
 
-    private final JDesktopPane panels = new JDesktopPane();
+    private final JDesktopPane dataPanels = new JDesktopPane();
 
     private JMenu windowsMenu;
 
@@ -184,7 +187,8 @@ public class JMainFrame extends JFrame {
 
     private boolean isStarted;
 
-    private final EvaluationMethodOptionsDialog testingSetFrame = new EvaluationMethodOptionsDialog(this);
+    private final EvaluationMethodOptionsDialog evaluationMethodOptionsDialog =
+            new EvaluationMethodOptionsDialog(this);
 
     private ClassificationResultHistoryFrame resultHistoryFrame;
 
@@ -204,10 +208,18 @@ public class JMainFrame extends JFrame {
     private void init() {
         try {
             this.setTitle(APPLICATION_PROPERTIES.getTitle());
-            this.maximumFractionDigits = APPLICATION_PROPERTIES.getDefaultFractionDigits();
-            this.setIconImage(ImageIO.read(getClass().getClassLoader()
-                    .getResource(APPLICATION_PROPERTIES.getIconUrl())));
-            ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
+            if (APPLICATION_PROPERTIES.getDefaultFractionDigits() != null) {
+                this.maximumFractionDigits = APPLICATION_PROPERTIES.getDefaultFractionDigits();
+            } else {
+                this.maximumFractionDigits = MAXIMUM_FRACTION_DIGITS;
+            }
+            URL iconUrl = getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl());
+            if (iconUrl != null) {
+                this.setIconImage(ImageIO.read(iconUrl));
+            }
+            if (APPLICATION_PROPERTIES.getTooltipDismissTime() != null) {
+                ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
+            }
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -215,15 +227,14 @@ public class JMainFrame extends JFrame {
 
     private void closeWindow() {
         if (isStarted) {
-            int result = JOptionPane.showConfirmDialog(JMainFrame.this,
-                    ON_EXIT_TEXT, null,
+            int exitResult = JOptionPane.showConfirmDialog(JMainFrame.this, ON_EXIT_TEXT, null,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-            if (result == JOptionPane.YES_OPTION) {
-                JMainFrame.this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            if (exitResult == JOptionPane.YES_OPTION) {
+                JMainFrame.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
                 System.exit(0);
             }
         } else {
-            JMainFrame.this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JMainFrame.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             System.exit(0);
         }
     }
@@ -238,7 +249,8 @@ public class JMainFrame extends JFrame {
     }
 
     /**
-     *
+     * Implements data internal frame. This class provides the mains
+     * operations with training data sets.
      */
     private class DataInternalFrame extends JInternalFrame {
 
@@ -248,13 +260,18 @@ public class JMainFrame extends JFrame {
         static final String CLASS_TITLE = "Выбранный класс";
         static final String DATA_CHANGE_NAME_MENU_TEXT = "Изменение названия данных";
         static final String CHOOSE_COLOR_MENU_TEXT = "Выбор цвета фона";
-        static final String SAVE_DATA_MENU_TEXT = "Сохранить...";
         static final String DATA_NAME_TEXT = "Название:";
         static final String NEW_DATA_NAME_TEXT = "Новое название данных";
         static final String NUMBER_OF_INSTANCES_TEXT = "Число объектов: ";
         static final String NUMBER_OF_ATTRIBUTES_TEXT = "Число атрибутов: ";
         static final String CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT = "Выбрать все";
         static final String RESET_ALL_ATTRIBUTES_BUTTON_TEXT = "Сброс";
+        static final int RELATION_NAME_FIELD_LENGTH = 30;
+        static final int NUM_INSTANCES_FIELD_LENGTH = 6;
+        static final int NUM_ATTRIBUTES_FIELD_LENGTH = 4;
+        static final int ATTRS_PANEL_HEIGHT = 400;
+        static final int CLASS_BOX_HEIGHT = 50;
+        static final double ATTRS_PANEL_WIDTH_COEFFICIENT = 0.35;
 
         final Instances data;
 
@@ -321,8 +338,6 @@ public class JMainFrame extends JFrame {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem(DATA_CHANGE_NAME_MENU_TEXT);
             JMenuItem colorMenu = new JMenuItem(CHOOSE_COLOR_MENU_TEXT);
-            JMenuItem saveMenu = new JMenuItem(SAVE_DATA_MENU_TEXT);
-            //-----------------------------------
             nameMenu.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -331,56 +346,27 @@ public class JMainFrame extends JFrame {
                             null, data.relationName());
                     if (newRelationName != null) {
                         String trimName = newRelationName.trim();
-                        if (!trimName.isEmpty()) {
+                        if (!StringUtils.isEmpty(trimName)) {
                             relationNameTextField.setText(trimName);
                             menu.setText(trimName);
                         }
                     }
                 }
             });
-            //-----------------------------------
+
             colorMenu.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    Color color = JColorChooser.showDialog(DataInternalFrame.this, colorMenu.getText(),
-                            getBackground());
-                    if (color != null) {
-                        setFrameColor(color);
+                    Color newBackgroundColor = JColorChooser.showDialog(DataInternalFrame.this,
+                            colorMenu.getText(), getBackground());
+                    if (newBackgroundColor != null) {
+                        setFrameColor(newBackgroundColor);
                     }
                 }
             });
-            //-----------------------------------
-            saveMenu.addActionListener(new ActionListener() {
 
-                SaveDataFileChooser fileChooser;
-                FileDataSaver dataSaver = new FileDataSaver();
-
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    try {
-                        if (dataValidated()) {
-                            if (fileChooser == null) {
-                                fileChooser = new SaveDataFileChooser();
-                            }
-                            fileChooser.setSelectedFile(new File(instanceTable.data().relationName()));
-                            File file = fileChooser.getSelectedFile(DataInternalFrame.this);
-                            if (file != null) {
-                                dataSaver.setDateFormat(DateFormat.DATE_FORMAT);
-                                dataSaver.saveData(file, DataInternalFrame.this.getData());
-                            }
-                        }
-                    } catch (Exception e) {
-                        LoggerUtils.error(log, e);
-                        JOptionPane.showMessageDialog(DataInternalFrame.this, e.getMessage(),
-                                null, JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            });
-            //-----------------------------------
             popMenu.add(nameMenu);
             popMenu.add(colorMenu);
-            popMenu.addSeparator();
-            popMenu.add(saveMenu);
             this.setComponentPopupMenu(popMenu);
         }
 
@@ -393,14 +379,13 @@ public class JMainFrame extends JFrame {
         void makeUpperPanel() {
             upperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             upperPanel.setBorder(PanelBorderUtils.createTitledBorder(UPPER_TITLE));
-            //----------------------------------------------
-            relationNameTextField = new JTextField(30);
+            relationNameTextField = new JTextField(RELATION_NAME_FIELD_LENGTH);
             relationNameTextField.setEditable(false);
             relationNameTextField.setBackground(Color.WHITE);
-            numInstancesTextField = new JTextField(6);
+            numInstancesTextField = new JTextField(NUM_INSTANCES_FIELD_LENGTH);
             numInstancesTextField.setEditable(false);
             numInstancesTextField.setBackground(Color.WHITE);
-            numAttributesTextField = new JTextField(4);
+            numAttributesTextField = new JTextField(NUM_ATTRIBUTES_FIELD_LENGTH);
             numAttributesTextField.setEditable(false);
             numAttributesTextField.setBackground(Color.WHITE);
             upperPanel.add(new JLabel(DATA_NAME_TEXT));
@@ -409,30 +394,24 @@ public class JMainFrame extends JFrame {
             upperPanel.add(numInstancesTextField);
             upperPanel.add(new JLabel(NUMBER_OF_ATTRIBUTES_TEXT));
             upperPanel.add(numAttributesTextField);
-            //----------------------------------------------
             this.add(upperPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(5, 0, 5, 0), 0, 0));
-            //----------------------------------------------
         }
 
         void makeLowerPanel() {
             lowerPanel = new JPanel(new GridBagLayout());
-            //--------------------------------------------
             dataScrollPane = new JScrollPane();
             dataScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
-            //-------------------------------------------
             this.makeAttrPanel();
-            //------------------------------------------
             lowerPanel.add(dataScrollPane, new GridBagConstraints(0, 0, 1, 2, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 2, 5), 0, 0));
             lowerPanel.add(attrPanel, new GridBagConstraints(1, 0, 1, 1, 0, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 2, 0), 0, 0));
-            //---------------------------------------------
             this.add(lowerPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         }
@@ -442,40 +421,38 @@ public class JMainFrame extends JFrame {
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
             selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
             resetButton = new JButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
-            //-------------------------------------------
+
             selectButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     attributesTable.selectAllAttributes();
                 }
             });
-            //-------------------------------------------
+
             resetButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     attributesTable.resetValues();
                 }
             });
-            //-------------------------------------------
+
             attrScrollPane = new JScrollPane();
             attrScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             attrScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            double width = 0.35 * WIDTH_COEFFICIENT * Toolkit.getDefaultToolkit().getScreenSize().width;
-            attrScrollPane.setPreferredSize(new Dimension((int) width,
-                    400));
-            //-------------------------------------------
+            double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT *
+                    Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            attrScrollPane.setPreferredSize(new Dimension((int) width, ATTRS_PANEL_HEIGHT));
             classBox = new JComboBox<>();
             classBox.setBorder(PanelBorderUtils.createTitledBorder(CLASS_TITLE));
-            Dimension dim = new Dimension((int) width, 50);
-            classBox.setPreferredSize(dim);
-            classBox.setMinimumSize(dim);
+            Dimension classBoxDim = new Dimension((int) width, CLASS_BOX_HEIGHT);
+            classBox.setPreferredSize(classBoxDim);
+            classBox.setMinimumSize(classBoxDim);
             classBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     data.setClassIndex(classBox.getSelectedIndex());
                 }
             });
-            //------------------------------------------
             attrPanel.add(selectButton, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                     new Insets(0, 0, 5, 2), 0, 0));
@@ -529,7 +506,7 @@ public class JMainFrame extends JFrame {
         protected Void doInBackground() {
             try {
                 ecaResponse = restClient.createExperimentRequest(experimentRequestDto);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 success = false;
                 errorMessage = e.getMessage();
@@ -587,8 +564,10 @@ public class JMainFrame extends JFrame {
 
         @Override
         public void apply() throws Exception {
-            evaluation = EvaluationService.evaluateModel(model, data, testingSetFrame.getEvaluationMethod(),
-                    testingSetFrame.numFolds(), testingSetFrame.numTests(), new Random());
+            evaluation =
+                    EvaluationService.evaluateModel(model, data, evaluationMethodOptionsDialog.getEvaluationMethod(),
+                            evaluationMethodOptionsDialog.numFolds(), evaluationMethodOptionsDialog.numTests(),
+                            new Random());
         }
 
         Evaluation evaluation() {
@@ -687,11 +666,11 @@ public class JMainFrame extends JFrame {
     private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
 
         EcaServiceClientImpl restClient = new EcaServiceClientImpl();
-        restClient.setEvaluationMethod(testingSetFrame.getEvaluationMethod());
+        restClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
 
         if (restClient.getEvaluationMethod() == EvaluationMethod.CROSS_VALIDATION) {
-            restClient.setNumFolds(testingSetFrame.numFolds());
-            restClient.setNumTests(testingSetFrame.numTests());
+            restClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
+            restClient.setNumTests(evaluationMethodOptionsDialog.numTests());
         }
 
         EcaServiceAction ecaServiceAction = new EcaServiceAction(restClient, (AbstractClassifier) frame.classifier(),
@@ -757,19 +736,19 @@ public class JMainFrame extends JFrame {
     }
 
     private DataInternalFrame selectedPanel() {
-        return (DataInternalFrame) panels.getSelectedFrame();
+        return (DataInternalFrame) dataPanels.getSelectedFrame();
     }
 
     private void makeGUI() {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize((int) (WIDTH_COEFFICIENT * dim.width), (int) (HEIGHT_COEFFICIENT * dim.height));
+        this.setSize((int) (WIDTH_COEFFICIENT * dim.getWidth()), (int) (HEIGHT_COEFFICIENT * dim.getHeight()));
         this.makeMenu();
-        panels.setBackground(Color.GRAY);
-        this.add(panels);
+        dataPanels.setBackground(Color.GRAY);
+        this.add(dataPanels);
     }
 
     public void createDataFrame(Instances data) throws Exception {
-        if (panels.getComponentCount() >= APPLICATION_PROPERTIES.getMaximumListSizeOfData()) {
+        if (dataPanels.getComponentCount() >= APPLICATION_PROPERTIES.getMaximumListSizeOfData()) {
             throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
                     APPLICATION_PROPERTIES.getMaximumListSizeOfData()));
         }
@@ -781,7 +760,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
                 windowsMenu.remove(dataInternalFrame.getMenu());
-                if (panels.getComponentCount() == 0) {
+                if (dataPanels.getComponentCount() == 0) {
                     setEnabledMenuComponents(false);
                 }
             }
@@ -809,7 +788,7 @@ public class JMainFrame extends JFrame {
             }
         });
         //--------------------------------------------
-        panels.add(dataInternalFrame);
+        dataPanels.add(dataInternalFrame);
         dataInternalFrame.setVisible(true);
         setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
@@ -882,7 +861,7 @@ public class JMainFrame extends JFrame {
         sampleMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                testingSetFrame.showDialog();
+                evaluationMethodOptionsDialog.showDialog();
             }
         });
         optionsMenu.add(sampleMenu);
@@ -1000,13 +979,13 @@ public class JMainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                String path = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                String dataUrl = (String) JOptionPane.showInputDialog(JMainFrame.this,
                         URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                         null, DEFAULT_URL_FOR_DATA_LOADING);
 
-                if (path != null) {
+                if (dataUrl != null) {
                     try {
-                        UrlDataLoader dataLoader = new UrlDataLoader(new URL(path.trim()));
+                        UrlDataLoader dataLoader = new UrlDataLoader(new URL(dataUrl.trim()));
                         dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
                         URLLoader loader = new URLLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
@@ -1771,7 +1750,8 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    private void createEnsembleOptionDialog(final String title, final AbstractHeterogeneousClassifier ens,
+    private void createEnsembleOptionDialog(final String title,
+                                            final AbstractHeterogeneousClassifier heterogeneousClassifier,
                                             final boolean sample) {
         try {
             final DataBuilder dataBuilder = new DataBuilder();
@@ -1779,7 +1759,7 @@ public class JMainFrame extends JFrame {
                 @Override
                 public void apply() throws Exception {
                     EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
-                            title, ens, dataBuilder.getData(), maximumFractionDigits);
+                            title, heterogeneousClassifier, dataBuilder.getData(), maximumFractionDigits);
                     frame.setSampleEnabled(sample);
                     frame.showDialog();
                     executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
@@ -1794,13 +1774,14 @@ public class JMainFrame extends JFrame {
 
     private IterativeBuilder createIterativeClassifier(final Iterable model, final Instances data)
             throws Exception {
-        switch (testingSetFrame.getEvaluationMethod()) {
+        switch (evaluationMethodOptionsDialog.getEvaluationMethod()) {
             case TRAINING_DATA: {
                 return model.getIterativeBuilder(data);
             }
 
             case CROSS_VALIDATION: {
-                return new CVIterativeBuilder(model, data, testingSetFrame.numFolds(), testingSetFrame.numTests());
+                return new CVIterativeBuilder(model, data, evaluationMethodOptionsDialog.numFolds(),
+                        evaluationMethodOptionsDialog.numTests());
             }
         }
         return null;

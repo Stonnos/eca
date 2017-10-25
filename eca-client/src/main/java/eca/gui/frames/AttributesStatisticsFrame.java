@@ -124,13 +124,13 @@ public class AttributesStatisticsFrame extends JFrame {
 
         this.add(dataInfoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0.4,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new Insets(10, 0, 0, 0), 0, 0));
         this.add(content, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new Insets(10, 0, 0, 0), 0, 0));
         this.add(scrollPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.6,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0), 0, 0));
+                new Insets(10, 0, 0, 0), 0, 0));
         this.add(okButton, new GridBagConstraints(0, 3, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));

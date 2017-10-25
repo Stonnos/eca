@@ -15,6 +15,8 @@ import weka.core.Instance;
  */
 public class NominalRule extends AbstractRule {
 
+    private static final String NOMINAL_RULE_FORMAT = "%s = %d";
+
     /**
      * Creates <tt>NominalRule</tt> object.
      *
@@ -32,7 +34,10 @@ public class NominalRule extends AbstractRule {
 
     @Override
     public String rule(int i) {
-        return attribute().isInRange(i) ? attribute().name() + " = " + i : null;
+        if (attribute().isInRange(i)) {
+            return String.format(NOMINAL_RULE_FORMAT, attribute().name(), i);
+        }
+        return null;
     }
 
 }

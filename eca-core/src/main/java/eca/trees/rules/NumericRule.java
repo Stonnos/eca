@@ -17,6 +17,9 @@ import java.text.DecimalFormat;
  */
 public class NumericRule extends AbstractRule {
 
+    private static final String NUMERIC_RULE_FORMAT_LE = "%s <= %s";
+    private static final String NUMERIC_RULE_FORMAT_GREATER = "%s > %s";
+
     /**
      * Threshold value
      **/
@@ -46,7 +49,10 @@ public class NumericRule extends AbstractRule {
 
     @Override
     public int getChild(Instance obj) {
-        return obj != null ? (obj.value(attribute()) <= meanValue ? 0 : 1) : -1;
+        if (obj != null) {
+            return obj.value(attribute()) <= meanValue ? 0 : 1;
+        }
+        return -1;
     }
 
     /**
@@ -69,8 +75,8 @@ public class NumericRule extends AbstractRule {
 
     @Override
     public String rule(int i) {
-        return i == 0 ? attribute().name() + " <= " + meanValue
-                : attribute().name() + " > " + meanValue;
+        return i == 0 ? String.format(NUMERIC_RULE_FORMAT_LE, attribute().name(), Double.toString(meanValue))
+                : String.format(NUMERIC_RULE_FORMAT_GREATER, attribute().name(), Double.toString(meanValue));
     }
 
     /**
@@ -82,8 +88,8 @@ public class NumericRule extends AbstractRule {
      */
     public String rule(int i, DecimalFormat fmt) {
         String result = attribute().isDate() ? attribute().formatDate(meanValue) : fmt.format(meanValue);
-        return i == 0 ? attribute().name() + " <= " + result
-                : attribute().name() + " > " + result;
+        return i == 0 ? String.format(NUMERIC_RULE_FORMAT_LE, attribute().name(), result)
+                : String.format(NUMERIC_RULE_FORMAT_GREATER, attribute().name(), result);
     }
 
 }
