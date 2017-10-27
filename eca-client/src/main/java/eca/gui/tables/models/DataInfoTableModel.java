@@ -30,6 +30,10 @@ public class DataInfoTableModel extends AbstractTableModel {
         this.init();
     }
 
+    public Instances getData() {
+        return data;
+    }
+
     @Override
     public int getColumnCount() {
         return TITLES.length;

@@ -57,7 +57,6 @@ public class ROCCurvePanel extends JPanel {
         this.createPlots();
         this.createFrames();
         this.setLayout(new GridBagLayout());
-        //---------------------------------
         plotBox = new JComboBox<>();
         plotBox.setPreferredSize(PLOT_BOX_DIM);
         plotBox.setMaximumSize(PLOT_BOX_DIM);
@@ -74,7 +73,7 @@ public class ROCCurvePanel extends JPanel {
                 chartPanel.setChart(plots[plotBox.getSelectedIndex()]);
             }
         });
-        //---------------------------------
+
         JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
         dataMenu.addActionListener(new ActionListener() {
             @Override
@@ -89,7 +88,7 @@ public class ROCCurvePanel extends JPanel {
                 }
             }
         });
-        //-----------------------------------------
+
         chartPanel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
 
             @Override
@@ -108,7 +107,6 @@ public class ROCCurvePanel extends JPanel {
             }
         });
         chartPanel.getPopupMenu().add(dataMenu);
-        //--------------------------------
         parentFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -119,7 +117,6 @@ public class ROCCurvePanel extends JPanel {
                 }
             }
         });
-        //---------------------------------
         this.add(chartPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         this.add(plotBox, new GridBagConstraints(0, 1, 1, 1, 0, 0,
@@ -144,15 +141,11 @@ public class ROCCurvePanel extends JPanel {
             }
             plot.addSeries(points);
             allPlots.addSeries(points);
-            plots[i] = ChartFactory
-                    .createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
-                            plot,
-                            PlotOrientation.VERTICAL,
-                            true, true, false);
+            plots[i] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
+                    plot, PlotOrientation.VERTICAL, true, true, false);
         }
         plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                         allPlots, PlotOrientation.VERTICAL, true, true, false);
-
         chartPanel = new ChartPanel(plots[plots.length - 1]);
     }
 
@@ -162,7 +155,7 @@ public class ROCCurvePanel extends JPanel {
     }
 
     /**
-     *
+     * Roc - curve data frame.
      */
     private class DataFrame extends JFrame {
 

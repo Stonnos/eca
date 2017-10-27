@@ -1,5 +1,6 @@
 package eca.statistics;
 
+import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -24,8 +25,29 @@ public class AttributeStatistics {
      * @param decimalFormat {@link DecimalFormat} object
      */
     public AttributeStatistics(Instances data, DecimalFormat decimalFormat) {
+        Assert.notNull(data, "Data is not specified!");
+        Assert.notNull(decimalFormat, "Decimal format is not specified!");
         this.data = data;
         this.decimalFormat = decimalFormat;
+    }
+
+    /**
+     * Returns sample object.
+     *
+     * @return {@link Instances} object
+     */
+    public Instances getData() {
+        return data;
+    }
+
+    /**
+     * Sets the sample object.
+     *
+     * @param data {@link Instances} object
+     */
+    public void setData(Instances data) {
+        Assert.notNull(data, "Data is not specified!");
+        this.data = data;
     }
 
     /**

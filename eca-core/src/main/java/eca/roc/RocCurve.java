@@ -45,7 +45,7 @@ public class RocCurve implements InstancesHandler {
      */
     @Override
     public Instances getData() {
-        return evaluation().getHeader();
+        return evaluation().getData();
     }
 
     /**
