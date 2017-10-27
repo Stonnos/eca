@@ -29,7 +29,7 @@ public class FrequencyIntervalsTable {
                 new IntervalData(MIN_INTERVALS_NUM, 9)));
         intervalsList.add(new Intervals(new IntervalData(100, 500),
                 new IntervalData(8, 12)));
-        intervalsList.add(new Intervals(new IntervalData(500, 100),
+        intervalsList.add(new Intervals(new IntervalData(500, 1000),
                 new IntervalData(10, 16)));
         intervalsList.add(new Intervals(new IntervalData(1000, MAX_SAMPLE_SIZE),
                 new IntervalData(12, MAX_INTERVALS_NUM)));

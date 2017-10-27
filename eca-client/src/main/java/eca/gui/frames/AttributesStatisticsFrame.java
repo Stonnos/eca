@@ -208,7 +208,7 @@ public class AttributesStatisticsFrame extends JFrame {
             categoryDataSet.addValue(frequencyData.getNumValues(), attribute.value((int) frequencyData.getLowerBound()),
                     attribute.value((int) frequencyData.getLowerBound()));
         }
-        CategoryAxis domainAxis = new CategoryAxis(X_LABEL_FORMAT);
+        CategoryAxis domainAxis = new CategoryAxis(String.format(X_LABEL_FORMAT, attribute.name()));
         NumberAxis rangeAxis = new NumberAxis(FREQUENCY_Y_LABEL);
         BarRenderer barRenderer = new BarRenderer();
         return new JFreeChart(FREQUENCY_DIAGRAM_TITLE,
