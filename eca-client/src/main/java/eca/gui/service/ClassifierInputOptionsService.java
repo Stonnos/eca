@@ -94,9 +94,9 @@ public class ClassifierInputOptionsService {
             attrInfo.append(a.isDate() ? AttributesTypesDictionary.DATE
                     : AttributesTypesDictionary.NUMERIC).append(SEPARATOR);
             attrInfo.append(MIN_VALUE_TEXT).append(StringUtils.SPACE).append(StringUtils.SPACE)
-                    .append(attributeStatistics.getMin(a)).append(SEPARATOR);
+                    .append(attributeStatistics.getMinAsString(a)).append(SEPARATOR);
             attrInfo.append(MAX_VALUE_TEXT).append(StringUtils.SPACE).append(StringUtils.SPACE)
-                    .append(attributeStatistics.getMax(a)).append(SEPARATOR);
+                    .append(attributeStatistics.getMaxAsString(a)).append(SEPARATOR);
             attrInfo.append(MEAN_VALUE_TEXT).append(StringUtils.SPACE).append(StringUtils.SPACE)
                     .append(attributeStatistics.meanOrMode(a)).append(SEPARATOR);
             attrInfo.append(VARIANCE_VALUE_TEXT).append(StringUtils.SPACE).append(StringUtils.SPACE)
@@ -182,10 +182,10 @@ public class ClassifierInputOptionsService {
                     : AttributesTypesDictionary.NUMERIC).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr'>").append(MIN_VALUE_TEXT)
-                    .append("</td>").append("<td>").append(attributeStatistics.getMin(a)).append("</td>");
+                    .append("</td>").append("<td>").append(attributeStatistics.getMinAsString(a)).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr'>").append(MAX_VALUE_TEXT).append("</td>")
-                    .append("<td>").append(attributeStatistics.getMax(a)).append("</td>");
+                    .append("<td>").append(attributeStatistics.getMaxAsString(a)).append("</td>");
             info.append("</tr><tr>");
             info.append("<td class = 'attr'>").append(MEAN_VALUE_TEXT).append("</td>")
                     .append("<td>").append(attributeStatistics.meanOrMode(a)).append("</td>");

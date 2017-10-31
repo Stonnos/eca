@@ -13,12 +13,12 @@ import weka.core.Instances;
 public class FrequencyUtils {
 
     /**
-     * Calculates freq
+     * Calculates frequency for given interval.
      *
-     * @param data
-     * @param attribute
-     * @param frequencyData
-     * @return
+     * @param data {@link Instances} object
+     * @param attribute {@link Attribute} object
+     * @param frequencyData {@link FrequencyData} object
+     * @return the frequency value
      */
     public static int calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
@@ -30,6 +30,14 @@ public class FrequencyUtils {
         return frequency;
     }
 
+    /**
+     * Calculates first frequency for given interval.
+     *
+     * @param data          {@link Instances} object
+     * @param attribute     {@link Attribute} object
+     * @param frequencyData {@link FrequencyData} object
+     * @return the frequency value
+     */
     public static int calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
         for (int i = 0; i < data.numInstances(); i++) {
@@ -38,5 +46,15 @@ public class FrequencyUtils {
             }
         }
         return frequency;
+    }
+
+    /**
+     * Calculates the recommended intervals number by Stigess formula.
+     *
+     * @param n sample size
+     * @return the value of recommended intervals number
+     */
+    public static int stigessFormula(int n) {
+        return 1 + (int) weka.core.Utils.log2(n);
     }
 }

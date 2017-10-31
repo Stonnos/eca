@@ -50,7 +50,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final int DEFAULT_HEIGHT = 450;
     private static final Dimension FREQUENCY_DIAGRAM_DIMENSION = new Dimension(400, DEFAULT_HEIGHT);
     private static final Dimension ATTR_BOX_DIMENSION = new Dimension(200, 25);
-    private static final String FREQUENCY_DIAGRAM_TITLE = "Диаграмма частот";
+    private static final String FREQUENCY_DIAGRAM_TITLE = "Гистограмма частот";
     private static final String FREQUENCY_Y_LABEL = "Частота";
     private static final String X_LABEL_FORMAT = "Значения атрибута '%s'";
     private static final Color FREQUENCY_DIAGRAM_BORDER_COLOR = Color.GRAY;
@@ -221,6 +221,7 @@ public class AttributesStatisticsFrame extends JFrame {
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNumericAttribute(attribute);
         for (FrequencyData frequencyData : frequencyDataList) {
             series.add(frequencyData.getLowerBound(), frequencyData.getNumValues());
+            System.out.println(frequencyData.getLowerBound() + "; " + frequencyData.getUpperBound());
         }
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(series);

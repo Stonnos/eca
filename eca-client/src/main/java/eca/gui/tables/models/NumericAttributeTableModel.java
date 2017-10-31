@@ -24,10 +24,10 @@ public class NumericAttributeTableModel extends AttributeTableModel {
         statistica = new Object[STATISTICS_COUNT][getColumnCount()];
         int current = 0;
         statistica[current][0] = MIN_VALUE_TEXT;
-        statistica[current++][1] = attributeStatistics.getMin(attribute);
+        statistica[current++][1] = attributeStatistics.getMinAsString(attribute);
 
         statistica[current][0] = MAX_VALUE_TEXT;
-        statistica[current++][1] = attributeStatistics.getMax(attribute);
+        statistica[current++][1] = attributeStatistics.getMaxAsString(attribute);
 
         statistica[current][0] = MEAN_VALUE_TEXT;
         statistica[current++][1] = attributeStatistics.meanOrMode(attribute);

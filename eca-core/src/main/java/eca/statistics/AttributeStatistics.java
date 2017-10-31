@@ -54,16 +54,43 @@ public class AttributeStatistics {
      * Gets the maximum value of given attribute.
      *
      * @param a {@link Attribute} object
-     * @return the string representation of attribute maximum value
+     * @return attribute maximum value
      */
-    public String getMax(Attribute a) {
+    public double getMax(Attribute a) {
         double maxVal = -Double.MAX_VALUE;
         for (Instance obj : data) {
             if (!obj.isMissing(a) && obj.value(a) > maxVal) {
                 maxVal = obj.value(a);
             }
         }
+        return maxVal;
+    }
+
+    /**
+     * Gets the maximum value of given attribute.
+     *
+     * @param a {@link Attribute} object
+     * @return the string representation of attribute maximum value
+     */
+    public String getMaxAsString(Attribute a) {
+        double maxVal = getMax(a);
         return maxVal != -Double.MAX_VALUE ? decimalFormat.format(maxVal) : NAN;
+    }
+
+    /**
+     * Gets the minimum value of given attribute.
+     *
+     * @param a {@link Attribute} object
+     * @return attribute minimum value
+     */
+    public double getMin(Attribute a) {
+        double minVal = Double.MAX_VALUE;
+        for (Instance obj : data) {
+            if (!obj.isMissing(a) && obj.value(a) < minVal) {
+                minVal = obj.value(a);
+            }
+        }
+        return minVal;
     }
 
     /**
@@ -72,13 +99,8 @@ public class AttributeStatistics {
      * @param a {@link Attribute} object
      * @return the string representation of attribute minimum value
      */
-    public String getMin(Attribute a) {
-        double minVal = Double.MAX_VALUE;
-        for (Instance obj : data) {
-            if (!obj.isMissing(a) && obj.value(a) < minVal) {
-                minVal = obj.value(a);
-            }
-        }
+    public String getMinAsString(Attribute a) {
+        double minVal = getMin(a);
         return minVal != Double.MAX_VALUE ? decimalFormat.format(minVal) : NAN;
     }
 
