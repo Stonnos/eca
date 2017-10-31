@@ -1,12 +1,14 @@
 package eca.statistics.diagram;
 
 import eca.statistics.AttributeStatistics;
+import eca.util.FrequencyUtils;
 import eca.util.IntervalUtils;
 import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,20 +70,25 @@ public class FrequencyDiagramBuilder {
         Assert.notNull(attribute, "Attribute is not specified!");
         Assert.isTrue(attribute.isNumeric(), "Attribute must be numeric!");
         int intervalsNum = calculateRecommendedIntervals();
-        List<FrequencyData> frequencyModelList = new ArrayList<>(intervalsNum);
-        double minAttrValue = getData().kthSmallestValue(attribute, 1);
-        double maxAttrValue = getData().kthSmallestValue(attribute, getData().numInstances());
-        double delta = (maxAttrValue - minAttrValue) / intervalsNum;
-        double x = minAttrValue;
-        for (int i = 0; i < intervalsNum; i++) {
-            FrequencyData frequencyData = new FrequencyData();
-            frequencyData.setLowerBound(x);
-            x += delta;
-            frequencyData.setUpperBound(x);
-            frequencyData.setNumValues(calculateFrequency(getData(), attribute, frequencyData));
-            frequencyModelList.add(frequencyData);
+        if (intervalsNum > 0) {
+            List<FrequencyData> frequencyModelList = new ArrayList<>(intervalsNum);
+            double minAttrValue = getData().kthSmallestValue(attribute, 1);
+            double maxAttrValue = getData().kthSmallestValue(attribute, getData().numInstances());
+            double delta = (maxAttrValue - minAttrValue) / intervalsNum;
+            FrequencyData first = createFirstFrequency(minAttrValue, minAttrValue + delta, attribute);
+            frequencyModelList.add(first);
+            for (int i = 1; i < intervalsNum; i++) {
+                FrequencyData frequencyData = new FrequencyData();
+                frequencyData.setLowerBound(first.getUpperBound());
+                frequencyData.setUpperBound(first.getUpperBound() + delta);
+                frequencyData.setNumValues(FrequencyUtils.calculateFrequency(getData(), attribute, frequencyData));
+                frequencyModelList.add(frequencyData);
+                first = frequencyData;
+            }
+            return frequencyModelList;
+        } else {
+            return Collections.emptyList();
         }
-        return frequencyModelList;
     }
 
     /**
@@ -104,6 +111,14 @@ public class FrequencyDiagramBuilder {
         return frequencyModelList;
     }
 
+    private FrequencyData createFirstFrequency(double lowerBound, double upperBound, Attribute attribute) {
+        FrequencyData frequencyData = new FrequencyData();
+        frequencyData.setLowerBound(lowerBound);
+        frequencyData.setUpperBound(upperBound);
+        frequencyData.setNumValues(FrequencyUtils.calculateFirstFrequency(getData(), attribute, frequencyData));
+        return frequencyData;
+    }
+
     private int calculateRecommendedIntervals() {
         int intervalsNum = 0;
         if (getData().numInstances() <= FrequencyIntervalsTable.MIN_SAMPLE_SIZE) {
@@ -121,16 +136,6 @@ public class FrequencyDiagramBuilder {
             }
         }
         return intervalsNum;
-    }
-
-    private int calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
-        int frequency = 0;
-        for (int i = 0; i < data.numInstances(); i++) {
-            if (IntervalUtils.containsValueIncludeRightBound(frequencyData, data.instance(i).value(attribute))) {
-                frequency++;
-            }
-        }
-        return frequency;
     }
 
 }
