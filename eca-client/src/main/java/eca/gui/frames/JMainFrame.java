@@ -70,6 +70,7 @@ import eca.gui.dialogs.RandomNetworkOptionsDialog;
 import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dictionary.ClassificationModelDictionary;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
@@ -172,8 +173,6 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
-    private static final int MAXIMUM_FRACTION_DIGITS = 4;
-
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
 
@@ -211,7 +210,7 @@ public class JMainFrame extends JFrame {
             if (APPLICATION_PROPERTIES.getDefaultFractionDigits() != null) {
                 this.maximumFractionDigits = APPLICATION_PROPERTIES.getDefaultFractionDigits();
             } else {
-                this.maximumFractionDigits = MAXIMUM_FRACTION_DIGITS;
+                this.maximumFractionDigits = CommonDictionary.MAXIMUM_FRACTION_DIGITS;
             }
             URL iconUrl = getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl());
             if (iconUrl != null) {
@@ -273,8 +272,6 @@ public class JMainFrame extends JFrame {
         static final int CLASS_BOX_HEIGHT = 50;
         static final double ATTRS_PANEL_WIDTH_COEFFICIENT = 0.35;
 
-        final Instances data;
-
         JPanel upperPanel;
         JPanel lowerPanel;
         JTextField relationNameTextField;
@@ -293,16 +290,15 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        DataInternalFrame(Instances data, JMenuItem menu) throws Exception {
+        DataInternalFrame(Instances data, JMenuItem menu, int digits) throws Exception {
             this.setLayout(new GridBagLayout());
             this.makeUpperPanel();
             this.makeLowerPanel();
             this.setFrameColor(FRAME_COLOR);
-            this.data = data;
             this.setMenu(menu);
             this.createPopMenu();
-            this.setRelationInfo();
-            this.convertDataToTables();
+            this.setRelationInfo(data);
+            this.convertDataToTables(data, digits);
             this.setClosable(true);
             this.setResizable(true);
             this.setMaximizable(true);
@@ -343,7 +339,7 @@ public class JMainFrame extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     String newRelationName = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
                             DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
-                            null, data.relationName());
+                            null, relationNameTextField.getText());
                     if (newRelationName != null) {
                         String trimName = newRelationName.trim();
                         if (!StringUtils.isEmpty(trimName)) {
@@ -370,7 +366,7 @@ public class JMainFrame extends JFrame {
             this.setComponentPopupMenu(popMenu);
         }
 
-        void setRelationInfo() {
+        void setRelationInfo(Instances data) {
             relationNameTextField.setText(data.relationName());
             numInstancesTextField.setText(String.valueOf(data.numInstances()));
             numAttributesTextField.setText(String.valueOf(data.numAttributes()));
@@ -447,12 +443,6 @@ public class JMainFrame extends JFrame {
             Dimension classBoxDim = new Dimension((int) width, CLASS_BOX_HEIGHT);
             classBox.setPreferredSize(classBoxDim);
             classBox.setMinimumSize(classBoxDim);
-            classBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    data.setClassIndex(classBox.getSelectedIndex());
-                }
-            });
             attrPanel.add(selectButton, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                     new Insets(0, 0, 5, 2), 0, 0));
@@ -467,13 +457,13 @@ public class JMainFrame extends JFrame {
                     new Insets(0, 0, 2, 0), 0, 0));
         }
 
-        void convertDataToTables() {
+        void convertDataToTables(Instances data, int digits) {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
             }
             data.setClassIndex(data.numAttributes() - 1);
             classBox.setSelectedIndex(data.classIndex());
-            instanceTable = new InstancesTable(data, numInstancesTextField);
+            instanceTable = new InstancesTable(data, numInstancesTextField, digits);
             dataScrollPane.setViewportView(instanceTable);
             attributesTable = new AttributesTable(instanceTable, classBox);
             attrScrollPane.setViewportView(attributesTable);
@@ -747,13 +737,13 @@ public class JMainFrame extends JFrame {
         this.add(dataPanels);
     }
 
-    public void createDataFrame(Instances data) throws Exception {
+    private void createDataFrame(Instances data, int digits) throws Exception {
         if (dataPanels.getComponentCount() >= APPLICATION_PROPERTIES.getMaximumListSizeOfData()) {
             throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
                     APPLICATION_PROPERTIES.getMaximumListSizeOfData()));
         }
         final DataInternalFrame dataInternalFrame =
-                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
+                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()), digits);
 
         dataInternalFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
@@ -793,6 +783,10 @@ public class JMainFrame extends JFrame {
         setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
         isStarted = true;
+    }
+
+    public void createDataFrame(Instances data) throws Exception {
+        createDataFrame(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
     }
 
     private void setEnabledMenuComponents(boolean enabled) {
@@ -1079,7 +1073,7 @@ public class JMainFrame extends JFrame {
                         process(progress, new CallbackAction() {
                             @Override
                             public void apply() throws Exception {
-                                createDataFrame(loader.getResult());
+                                createDataFrame(loader.getResult(), maximumFractionDigits);
                             }
                         });
 

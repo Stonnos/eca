@@ -16,7 +16,7 @@ public class IntervalUtils {
      * @param val          value
      * @return <tt>true</tt> if the value is belong to interval (a, b]
      */
-    public static boolean containsValueIncludeRightBound(IntervalData intervalData, double val) {
+    public static boolean containsIncludeRightBound(IntervalData intervalData, double val) {
         return val > intervalData.getLowerBound() && val <= intervalData.getUpperBound();
     }
 
@@ -27,7 +27,7 @@ public class IntervalUtils {
      * @param val          value
      * @return <tt>true</tt> if the value is belong to interval [a, b]
      */
-    public static boolean containsValue(IntervalData intervalData, double val) {
+    public static boolean contains(IntervalData intervalData, double val) {
         return val >= intervalData.getLowerBound() && val <= intervalData.getUpperBound();
     }
 }

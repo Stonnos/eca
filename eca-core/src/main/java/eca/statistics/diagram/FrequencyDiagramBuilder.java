@@ -25,6 +25,7 @@ public class FrequencyDiagramBuilder {
      * @param attributeStatistics {@link AttributeStatistics} object
      */
     public FrequencyDiagramBuilder(AttributeStatistics attributeStatistics) {
+        Assert.notNull(attributeStatistics, "Attribute statistics is not specified!");
         this.attributeStatistics = attributeStatistics;
     }
 

@@ -23,7 +23,7 @@ public class FrequencyUtils {
     public static int calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
         for (int i = 0; i < data.numInstances(); i++) {
-            if (IntervalUtils.containsValueIncludeRightBound(frequencyData, data.instance(i).value(attribute))) {
+            if (IntervalUtils.containsIncludeRightBound(frequencyData, data.instance(i).value(attribute))) {
                 frequency++;
             }
         }
@@ -41,7 +41,7 @@ public class FrequencyUtils {
     public static int calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
         for (int i = 0; i < data.numInstances(); i++) {
-            if (IntervalUtils.containsValue(frequencyData, data.instance(i).value(attribute))) {
+            if (IntervalUtils.contains(frequencyData, data.instance(i).value(attribute))) {
                 frequency++;
             }
         }

@@ -5,6 +5,7 @@
  */
 package eca.gui.tables.models;
 
+import eca.gui.dictionary.CommonDictionary;
 import weka.core.Instances;
 
 /**
@@ -13,7 +14,7 @@ import weka.core.Instances;
 public class ResultInstancesTableModel extends InstancesTableModel {
 
     public ResultInstancesTableModel(Instances data) {
-        super(data);
+        super(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
     }
 
     @Override

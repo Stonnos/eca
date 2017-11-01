@@ -20,16 +20,15 @@ import java.util.ListIterator;
  */
 public class InstancesTableModel extends AbstractTableModel {
 
-    private static final int MAX_FRACTION_DIGITS = 13;
     private static final String NUMBER = "№";
 
     private final Instances data;
     private final ArrayList<ArrayList<Object>> values;
     private final DecimalFormat format = NumericFormat.getInstance();
 
-    public InstancesTableModel(Instances data) {
+    public InstancesTableModel(Instances data, int digits) {
         this.data = data;
-        this.format.setMaximumFractionDigits(MAX_FRACTION_DIGITS);
+        this.format.setMaximumFractionDigits(digits);
         this.values = InstancesConverter.toArray(data, format, DateFormat.SIMPLE_DATE_FORMAT);
     }
 
@@ -48,8 +47,7 @@ public class InstancesTableModel extends AbstractTableModel {
 
     public void replace(int j, Object oldVal, Object newVal) {
         for (int i = 0; i < values.size(); i++) {
-            if ((oldVal.toString().isEmpty() && get(i, j) == null) ||
-                    (get(i, j) != null && get(i, j).equals(oldVal))) {
+            if ((oldVal.toString().isEmpty() && get(i, j) == null) || (get(i, j) != null && get(i, j).equals(oldVal))) {
                 set(i, j, newVal.toString().isEmpty() ? null : newVal);
             }
         }

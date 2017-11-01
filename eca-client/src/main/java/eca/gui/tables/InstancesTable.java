@@ -37,8 +37,8 @@ public class InstancesTable extends JDataTableBase {
     private static final int ROWS = 2;
     private static final int TEXT_FIELD_LENGTH = 10;
 
-    public InstancesTable(final Instances data, final JTextField numInstances) {
-        super(new InstancesTableModel(data));
+    public InstancesTable(final Instances data, final JTextField numInstances, int digits) {
+        super(new InstancesTableModel(data, digits));
         MissingCellRenderer renderer = new MissingCellRenderer();
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
