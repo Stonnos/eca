@@ -54,7 +54,7 @@ public class RandomNetworks extends ThresholdClassifier {
 
     @Override
     public String[] getOptions() {
-        return new String[]{
+        return new String[] {
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, COMMON_DECIMAL_FORMAT.format(getMinError()),
                 EnsembleDictionary.NETWORK_MAX_ERROR, COMMON_DECIMAL_FORMAT.format(getMaxError()),

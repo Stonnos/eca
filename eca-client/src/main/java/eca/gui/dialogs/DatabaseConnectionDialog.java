@@ -32,7 +32,7 @@ public class DatabaseConnectionDialog extends JDialog {
 
     private static final int FIELD_LENGTH = 255;
     private static final int TEXT_LENGTH = 20;
-    private static final String TITLE = "Подключение к базе данных";
+    private static final String TITLE_TEXT = "Подключение к базе данных";
     private static final String CONNECTION_PARAMS_TITLE = "Параметры подключения";
     private static final String DB_TYPE_TEXT = "База данных:";
     private static final String HOST_TEXT = "Хост:";
@@ -55,7 +55,7 @@ public class DatabaseConnectionDialog extends JDialog {
     private final ConnectionDescriptorBuilder connectionDescriptorBuilder = new ConnectionDescriptorBuilder();
 
     public DatabaseConnectionDialog(Frame parent) {
-        super(parent, TITLE, true);
+        super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI();

@@ -6,33 +6,47 @@ package eca.db;
  */
 public class ConnectionDescriptorBuilder implements DataBaseTypeVisitor<ConnectionDescriptor> {
 
+    private static final DataBaseProperties DATA_BASE_PROPERTIES = DataBaseProperties.getInstance();
+
     @Override
     public ConnectionDescriptor caseMySql() {
-        return new MySQLConnectionDescriptor();
+        MySQLConnectionDescriptor mySQLConnectionDescriptor = new MySQLConnectionDescriptor();
+        mySQLConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getMysqlDriverProperty());
+        return mySQLConnectionDescriptor;
     }
 
     @Override
     public ConnectionDescriptor casePostgreSQL() {
-        return new PostgreSQLConnectionDescriptor();
+        PostgreSQLConnectionDescriptor postgreSQLConnectionDescriptor = new PostgreSQLConnectionDescriptor();
+        postgreSQLConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getPostgresDriverProperty());
+        return postgreSQLConnectionDescriptor;
     }
 
     @Override
     public ConnectionDescriptor caseOracle() {
-        return new OracleConnectionDescriptor();
+        OracleConnectionDescriptor oracleConnectionDescriptor = new OracleConnectionDescriptor();
+        oracleConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getOracleDriverProperty());
+        return oracleConnectionDescriptor;
     }
 
     @Override
     public ConnectionDescriptor caseMSAccess() {
-        return new MSAccessConnectionDescriptor();
+        MSAccessConnectionDescriptor msAccessConnectionDescriptor = new MSAccessConnectionDescriptor();
+        msAccessConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getMsAccessDriverProperty());
+        return msAccessConnectionDescriptor;
     }
 
     @Override
     public ConnectionDescriptor caseMSSQL() {
-        return new MSSQLConnectionDescriptor();
+        MSSQLConnectionDescriptor mssqlConnectionDescriptor = new MSSQLConnectionDescriptor();
+        mssqlConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getMssqlDriverProperty());
+        return mssqlConnectionDescriptor;
     }
 
     @Override
     public ConnectionDescriptor caseSQLite() {
-        return new SQLiteConnectionDescriptor();
+        SQLiteConnectionDescriptor sqLiteConnectionDescriptor = new SQLiteConnectionDescriptor();
+        sqLiteConnectionDescriptor.setDriver(DATA_BASE_PROPERTIES.getSqliteDriverProperty());
+        return sqLiteConnectionDescriptor;
     }
 }

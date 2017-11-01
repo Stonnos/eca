@@ -74,25 +74,12 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * Creates <tt>DataBaseQueryExecutor</tt> object.
-     *
-     * @throws Exception
-     */
-    public DataBaseQueryExecutor() throws Exception {
-        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-        DriverManager.registerDriver(new org.postgresql.Driver());
-        DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
-        DriverManager.registerDriver(new net.ucanaccess.jdbc.UcanaccessDriver());
-        DriverManager.registerDriver(new org.sqlite.JDBC());
-    }
-
-    /**
      * Opens connection with database.
      *
      * @throws SQLException
      */
-    public void open() throws SQLException {
+    public void open() throws SQLException, ClassNotFoundException {
+        Class.forName(connectionDescriptor.getDriver());
         connection = DriverManager.getConnection(connectionDescriptor.getUrl(),
                 connectionDescriptor.getLogin(), connectionDescriptor.getPassword());
     }
@@ -121,6 +108,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
      */
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
         Assert.notNull(connectionDescriptor, "Connection descriptor is not specified!");
+        Assert.notNull(connectionDescriptor.getDriver(), "Driver is not specified!");
         this.connectionDescriptor = connectionDescriptor;
     }
 

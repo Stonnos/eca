@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         implements Iterable, EnsembleClassifier, InstancesHandler {
 
-    public static final int MINIMUM_ITERATIONS_NUMBER = 1;
+    private static final int MINIMUM_ITERATIONS_NUMBER = 1;
 
     /**
      * Initial training set
@@ -130,7 +130,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     }
 
     /**
-     *
+     * Abstract class for ensemble iterative building.
      */
     protected abstract class AbstractBuilder extends IterativeBuilder {
 

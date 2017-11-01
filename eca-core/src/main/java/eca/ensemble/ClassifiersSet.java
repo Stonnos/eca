@@ -22,7 +22,7 @@ import java.util.Random;
 public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable, Cloneable {
 
     private ArrayList<Classifier> classifiers = new ArrayList<>();
-    private Random r = new Random();
+    private Random random = new Random();
 
     /**
      * Adds classifier to collection.
@@ -31,7 +31,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      * @return <tt>true</tt> if this collection changed as a result of the call
      */
     public boolean addClassifier(Classifier model) {
-        return model == null ? false : classifiers.add(model);
+        return model != null && classifiers.add(model);
     }
 
     /**
@@ -138,7 +138,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      * @throws Exception
      */
     public Classifier randomClassifier() throws Exception {
-        return isEmpty() ? null : AbstractClassifier.makeCopy(classifiers.get(r.nextInt(size())));
+        return isEmpty() ? null : AbstractClassifier.makeCopy(classifiers.get(random.nextInt(size())));
     }
 
     /**

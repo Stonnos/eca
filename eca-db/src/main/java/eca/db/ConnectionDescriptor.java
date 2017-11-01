@@ -5,6 +5,7 @@
  */
 package eca.db;
 
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -12,22 +13,23 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Roman Batygin
  */
+@Data
 public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     private DataBaseType dataBaseType;
-
     private String host = StringUtils.EMPTY;
     private int port;
     private String dataBaseName = StringUtils.EMPTY;
     private String login = StringUtils.EMPTY;
     private String password = StringUtils.EMPTY;
+    private String driver;
 
     protected ConnectionDescriptor(DataBaseType dataBaseType) {
         this.dataBaseType = dataBaseType;
     }
 
     /**
-     * Creates <tt>ConnectionDescriptor</tt> object with given options.
+     * Creates <code>ConnectionDescriptor</code> object with given options.
      *
      * @param host         datasource host
      * @param port         datasource port number
@@ -44,104 +46,6 @@ public abstract class ConnectionDescriptor implements java.io.Serializable {
         this.dataBaseName = dataBaseName;
         this.login = login;
         this.password = password;
-    }
-
-    /**
-     * Returns data base type.
-     * @return data base type
-     */
-    public DataBaseType getDataBaseType() {
-        return dataBaseType;
-    }
-
-    /**
-     * Returns datasource host.
-     *
-     * @return datasource host
-     */
-    public String getHost() {
-        return host;
-    }
-
-    /**
-     * Sets datasource host.
-     *
-     * @param host datasource host
-     */
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    /**
-     * Returns datasource port number.
-     *
-     * @return datasource port number
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Sets datasource port number.
-     *
-     * @param port datasource port number
-     */
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    /**
-     * Returns user login.
-     *
-     * @return user login
-     */
-    public String getLogin() {
-        return login;
-    }
-
-    /**
-     * Sets  user login.
-     *
-     * @param login user login
-     */
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    /**
-     * Returns user password.
-     *
-     * @return user password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Sets user password.
-     *
-     * @param password user password
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * Returns database name.
-     *
-     * @return database name
-     */
-    public String getDataBaseName() {
-        return dataBaseName;
-    }
-
-    /**
-     * Sets database name.
-     *
-     * @param dataBaseName database name
-     */
-    public void setDataBaseName(String dataBaseName) {
-        this.dataBaseName = dataBaseName;
     }
 
     /**
