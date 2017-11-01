@@ -13,5 +13,6 @@ public class FrequencyDiagramTable extends JDataTableBase {
 
     public FrequencyDiagramTable(List<FrequencyData> frequencyDataList, int digits) {
         super(new FrequencyDiagramTableModel(frequencyDataList, digits));
+        this.setAutoResizeOff(false);
     }
 }
