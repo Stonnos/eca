@@ -32,6 +32,15 @@ public class AttributeStatistics {
     }
 
     /**
+     * Returns decimal format object.
+     *
+     * @return {@link DecimalFormat} object
+     */
+    public DecimalFormat getDecimalFormat() {
+        return decimalFormat;
+    }
+
+    /**
      * Returns sample object.
      *
      * @return {@link Instances} object

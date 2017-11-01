@@ -1,6 +1,6 @@
 package eca.statistics.diagram;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +11,15 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class FrequencyData extends IntervalData {
 
-    private int numValues;
+    private boolean numeric;
+
+    private int frequency;
+
+    @Builder
+    public FrequencyData(double lowerBound, double upperBound, boolean numeric) {
+        super(lowerBound, upperBound);
+        this.numeric = numeric;
+    }
 }

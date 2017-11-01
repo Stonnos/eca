@@ -18,16 +18,15 @@ public class FrequencyUtils {
      * @param data {@link Instances} object
      * @param attribute {@link Attribute} object
      * @param frequencyData {@link FrequencyData} object
-     * @return the frequency value
      */
-    public static int calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
+    public static void calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
         for (int i = 0; i < data.numInstances(); i++) {
             if (IntervalUtils.containsIncludeRightBound(frequencyData, data.instance(i).value(attribute))) {
                 frequency++;
             }
         }
-        return frequency;
+        frequencyData.setFrequency(frequency);
     }
 
     /**
@@ -36,16 +35,15 @@ public class FrequencyUtils {
      * @param data          {@link Instances} object
      * @param attribute     {@link Attribute} object
      * @param frequencyData {@link FrequencyData} object
-     * @return the frequency value
      */
-    public static int calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
+    public static void calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
         int frequency = 0;
         for (int i = 0; i < data.numInstances(); i++) {
             if (IntervalUtils.contains(frequencyData, data.instance(i).value(attribute))) {
                 frequency++;
             }
         }
-        return frequency;
+        frequencyData.setFrequency(frequency);
     }
 
     /**

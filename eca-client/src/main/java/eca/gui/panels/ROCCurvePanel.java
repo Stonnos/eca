@@ -47,7 +47,7 @@ public class ROCCurvePanel extends JPanel {
     private final RocCurve rocCurve;
     private ChartPanel chartPanel;
     private JFreeChart[] plots;
-    private JFrame[] frames;
+    private JFrame[] dataFrames;
     private JComboBox<String> plotBox;
     private final JFrame parentFrame;
 
@@ -80,11 +80,11 @@ public class ROCCurvePanel extends JPanel {
             public void actionPerformed(ActionEvent evt) {
                 int i = plotBox.getSelectedIndex();
                 if (i < plots.length - 1) {
-                    if (frames[i] == null) {
-                        frames[i] = new DataFrame(rocCurve.getROCCurve(i), digits,
+                    if (dataFrames[i] == null) {
+                        dataFrames[i] = new DataFrame(rocCurve.getROCCurve(i), digits,
                                 rocCurve.getData().classAttribute().value(i));
                     }
-                    frames[i].setVisible(true);
+                    dataFrames[i].setVisible(true);
                 }
             }
         });
@@ -110,7 +110,7 @@ public class ROCCurvePanel extends JPanel {
         parentFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
-                for (JFrame frame : frames) {
+                for (JFrame frame : dataFrames) {
                     if (frame != null) {
                         frame.dispose();
                     }
@@ -124,7 +124,7 @@ public class ROCCurvePanel extends JPanel {
     }
 
     private void createFrames() {
-        frames = new DataFrame[rocCurve.getData().numClasses()];
+        dataFrames = new DataFrame[rocCurve.getData().numClasses()];
     }
 
     private void createPlots() {

@@ -3,6 +3,7 @@ package eca.gui.frames;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.tables.FrequencyDiagramTable;
 import eca.gui.tables.JDataTableBase;
 import eca.gui.tables.models.AttributeTableModel;
 import eca.gui.tables.models.DataInfoTableModel;
@@ -12,6 +13,8 @@ import eca.statistics.AttributeStatistics;
 import eca.statistics.diagram.FrequencyData;
 import eca.statistics.diagram.FrequencyDiagramBuilder;
 import eca.text.NumericFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -31,6 +34,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -53,9 +58,13 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final String FREQUENCY_DIAGRAM_TITLE = "Гистограмма частот";
     private static final String FREQUENCY_Y_LABEL = "Частота";
     private static final String X_LABEL_FORMAT = "Значения атрибута '%s'";
+    private static final String SHOW_DATA_MENU_TEXT = "Показать данные";
+    private static final String FREQUENCY_DIAGRAM_DATA_TITLE = "Данные гистограммы";
     private static final Color FREQUENCY_DIAGRAM_BORDER_COLOR = Color.GRAY;
     private static final BasicStroke FREQUENCY_DIAGRAM_STROKE =
             new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
+
+    private JFrame parentFrame;
 
     private JDataTableBase statisticsTable;
 
@@ -67,15 +76,19 @@ public class AttributesStatisticsFrame extends JFrame {
 
     private ChartPanel attributeChartPanel;
 
-    private JFreeChart[] attributePlots;
+    private FrequencyDiagramModel[] frequencyDiagramModels;
+
+    private JFrame[] dataFrames;
 
     private FrequencyDiagramBuilder frequencyDiagramBuilder;
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
         DecimalFormat decimalFormat = NumericFormat.getInstance();
         decimalFormat.setMaximumFractionDigits(digits);
+        this.parentFrame = parent;
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
-        this.attributePlots = new JFreeChart[data.numAttributes()];
+        this.frequencyDiagramModels = new FrequencyDiagramModel[data.numAttributes()];
+        this.dataFrames = new DataFrame[data.numInstances()];
         this.statisticsTable = new JDataTableBase();
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
         this.statisticsTable.setAutoResizeOff(false);
@@ -150,6 +163,17 @@ public class AttributesStatisticsFrame extends JFrame {
         attributesBox.setSelectedIndex(0);
         showFrequencyDiagramPlot(0);
 
+        parentFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                for (JFrame frame : dataFrames) {
+                    if (frame != null) {
+                        frame.dispose();
+                    }
+                }
+            }
+        });
+
         JPanel leftCPanel = new JPanel(new GridBagLayout());
         leftCPanel.add(dataInfoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0.4,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -175,53 +199,68 @@ public class AttributesStatisticsFrame extends JFrame {
     }
 
     private void showFrequencyDiagramPlot(int attrIndex) {
-        if (attributePlots[attrIndex] == null) {
+        if (frequencyDiagramModels[attrIndex] == null) {
             Instances data = frequencyDiagramBuilder.getData();
             Attribute attribute = data.attribute(attrIndex);
-            JFreeChart chart;
+            FrequencyDiagramModel frequencyDiagramModel;
             if (attribute.isNumeric()) {
-                chart = createChartForNumericAttribute(attribute);
+                frequencyDiagramModel = createFrequencyModelForNumericAttribute(attribute);
             } else {
-                chart = createChartForNominalAttribute(attribute);
+                frequencyDiagramModel = createFrequencyModelForNominalAttribute(attribute);
             }
-            chart.setBorderVisible(true);
-            chart.setBorderPaint(FREQUENCY_DIAGRAM_BORDER_COLOR);
-            chart.setBorderStroke(FREQUENCY_DIAGRAM_STROKE);
-            attributePlots[attrIndex] = chart;
+            frequencyDiagramModel.getChart().setBorderVisible(true);
+            frequencyDiagramModel.getChart().setBorderPaint(FREQUENCY_DIAGRAM_BORDER_COLOR);
+            frequencyDiagramModel.getChart().setBorderStroke(FREQUENCY_DIAGRAM_STROKE);
+            frequencyDiagramModels[attrIndex] = frequencyDiagramModel;
         }
 
         if (attributeChartPanel == null) {
-            attributeChartPanel = new ChartPanel(attributePlots[attrIndex]);
+            attributeChartPanel = new ChartPanel(frequencyDiagramModels[attrIndex].getChart());
             attributeChartPanel.setPreferredSize(FREQUENCY_DIAGRAM_DIMENSION);
             attributeChartPanel.setMinimumSize(FREQUENCY_DIAGRAM_DIMENSION);
+
+            JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
+            dataMenu.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    int selectedIndex = attributesBox.getSelectedIndex();
+                    if (dataFrames[selectedIndex] == null) {
+                        dataFrames[selectedIndex] = new DataFrame(frequencyDiagramModels[selectedIndex]
+                                .getFrequencyDataList(), frequencyDiagramBuilder.getAttributeStatistics()
+                                .getDecimalFormat().getMaximumFractionDigits());
+                    }
+                    dataFrames[selectedIndex].setVisible(true);
+                }
+            });
+
+            attributeChartPanel.getPopupMenu().add(dataMenu);
         } else {
-            attributeChartPanel.setChart(attributePlots[attrIndex]);
+            attributeChartPanel.setChart(frequencyDiagramModels[attrIndex].getChart());
         }
 
     }
 
-    private JFreeChart createChartForNominalAttribute(Attribute attribute) {
+    private FrequencyDiagramModel createFrequencyModelForNominalAttribute(Attribute attribute) {
         DefaultCategoryDataset categoryDataSet = new DefaultCategoryDataset();
         List<FrequencyData> frequencyDataList =
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNominalAttribute(attribute);
         for (FrequencyData frequencyData : frequencyDataList) {
-            categoryDataSet.addValue(frequencyData.getNumValues(), attribute.value((int) frequencyData.getLowerBound()),
+            categoryDataSet.addValue(frequencyData.getFrequency(), attribute.value((int) frequencyData.getLowerBound()),
                     attribute.value((int) frequencyData.getLowerBound()));
         }
         CategoryAxis domainAxis = new CategoryAxis(String.format(X_LABEL_FORMAT, attribute.name()));
         NumberAxis rangeAxis = new NumberAxis(FREQUENCY_Y_LABEL);
         BarRenderer barRenderer = new BarRenderer();
-        return new JFreeChart(FREQUENCY_DIAGRAM_TITLE,
-                new CategoryPlot(categoryDataSet, domainAxis, rangeAxis, barRenderer));
+        return new FrequencyDiagramModel(new JFreeChart(FREQUENCY_DIAGRAM_TITLE,
+                new CategoryPlot(categoryDataSet, domainAxis, rangeAxis, barRenderer)), frequencyDataList);
     }
 
-    private JFreeChart createChartForNumericAttribute(Attribute attribute) {
+    private FrequencyDiagramModel createFrequencyModelForNumericAttribute(Attribute attribute) {
         XYSeries series = new XYSeries(FREQUENCY_DIAGRAM_TITLE);
         List<FrequencyData> frequencyDataList =
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNumericAttribute(attribute);
         for (FrequencyData frequencyData : frequencyDataList) {
-            series.add(frequencyData.getLowerBound(), frequencyData.getNumValues());
-            System.out.println(frequencyData.getLowerBound() + "; " + frequencyData.getUpperBound());
+            series.add(frequencyData.getLowerBound(), frequencyData.getFrequency());
         }
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(series);
@@ -234,7 +273,47 @@ public class AttributesStatisticsFrame extends JFrame {
         XYPlot xyPlot = (XYPlot) chart.getPlot();
         xyPlot.getRenderer().setBaseSeriesVisibleInLegend(false);
 
-        return chart;
+        return new FrequencyDiagramModel(chart, frequencyDataList);
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class FrequencyDiagramModel {
+
+        JFreeChart chart;
+
+        List<FrequencyData> frequencyDataList;
+    }
+
+    /**
+     * Frequency diagram data frame.
+     */
+    private class DataFrame extends JFrame {
+
+        DataFrame(List<FrequencyData> frequencyDataList, int digits) {
+            this.setTitle(FREQUENCY_DIAGRAM_DATA_TITLE);
+            this.setLayout(new GridBagLayout());
+            this.setIconImage(parentFrame.getIconImage());
+            FrequencyDiagramTable table = new FrequencyDiagramTable(frequencyDataList, digits);
+            JScrollPane scrollPanel = new JScrollPane(table);
+            JButton okButton = ButtonUtils.createOkButton();
+
+            okButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    setVisible(false);
+                }
+            });
+            this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(0, 0, 0, 0), 0, 0));
+            this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                    new Insets(4, 0, 4, 0), 0, 0));
+            this.pack();
+            this.setLocationRelativeTo(parentFrame);
+            this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        }
     }
 
 }
