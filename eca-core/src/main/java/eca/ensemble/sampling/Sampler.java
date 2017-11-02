@@ -62,7 +62,7 @@ public class Sampler implements java.io.Serializable {
     /**
      * Returns <tt>Random</tt> object.
      *
-     * @return <tt>Random</tt> object
+     * @return {@link Random} object
      */
     public Random getRandom() {
         return random;
@@ -71,7 +71,7 @@ public class Sampler implements java.io.Serializable {
     /**
      * Sets <tt>Random</tt> object.
      *
-     * @param random <tt>Random</tt> object
+     * @param random {@link Random} object
      */
     public void setRandom(Random random) {
         this.random = random;

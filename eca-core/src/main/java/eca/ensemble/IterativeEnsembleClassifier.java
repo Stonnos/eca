@@ -15,6 +15,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for generating iterative ensemble classification model. <p>
@@ -113,10 +114,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     }
 
     @Override
-    public ArrayList<Classifier> getStructure() throws Exception {
+    public List<Classifier> getStructure() throws Exception {
         ArrayList<Classifier> copies = new ArrayList<>(classifiers.size());
-        for (Classifier c : classifiers) {
-            copies.add(AbstractClassifier.makeCopy(c));
+        for (Classifier classifier : classifiers) {
+            copies.add(AbstractClassifier.makeCopy(classifier));
         }
         return copies;
     }

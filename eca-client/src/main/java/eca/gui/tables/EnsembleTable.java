@@ -23,7 +23,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -31,13 +31,13 @@ import java.util.ArrayList;
 @Slf4j
 public class EnsembleTable extends JDataTableBase {
 
-    private final JFrame parent;
+    private final JFrame parentFrame;
     private final int digits;
     private ClassificationResultsFrameBase[] classificationResultsFrameBases;
 
-    public EnsembleTable(ArrayList<Classifier> classifierArrayList, JFrame parent, int digits) throws Exception {
+    public EnsembleTable(List<Classifier> classifierArrayList, JFrame parent, int digits) throws Exception {
         super(new EnsembleTableModel(classifierArrayList));
-        this.parent = parent;
+        this.parentFrame = parent;
         this.digits = digits;
         this.classificationResultsFrameBases = new ClassificationResultsFrameBase[classifierArrayList.size()];
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
@@ -105,7 +105,7 @@ public class EnsembleTable extends JDataTableBase {
                     Instances data = ((InstancesHandler) classifier).getData();
                     Evaluation e = new Evaluation(data);
                     e.evaluateModel(classifier, data);
-                    ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parent,
+                    ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parentFrame,
                             classifier.getClass().getSimpleName(), classifier, data, e, digits);
                     ClassificationResultsFrameBase.createResults(result, digits);
                     StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);

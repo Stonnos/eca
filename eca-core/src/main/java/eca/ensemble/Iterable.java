@@ -18,7 +18,7 @@ public interface Iterable {
      * Returns <tt>IterativeBuilder</tt> object.
      *
      * @param data <tt>Instances</tt> object
-     * @return <tt>IterativeBuilder</t> object
+     * @return {@link IterativeBuilder} object
      * @throws Exception
      */
     IterativeBuilder getIterativeBuilder(Instances data) throws Exception;

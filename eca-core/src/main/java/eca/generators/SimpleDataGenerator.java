@@ -124,7 +124,7 @@ public class SimpleDataGenerator implements DataGenerator {
     /**
      * Returns <tt>Random</tt> object.
      *
-     * @return <tt>Random</tt> object
+     * @return {@link Random} object
      */
     public Random getRandom() {
         return random;
@@ -133,7 +133,7 @@ public class SimpleDataGenerator implements DataGenerator {
     /**
      * Sets <tt>Random</tt> object.
      *
-     * @param random <tt>Random</tt> object
+     * @param random {@link Random} object
      */
     public void setRandom(Random random) {
         this.random = random;

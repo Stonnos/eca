@@ -9,7 +9,7 @@ import weka.classifiers.Classifier;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -17,11 +17,11 @@ import java.util.ArrayList;
 public class EnsembleTableModel extends AbstractTableModel {
 
     private final String[] titles = {"№", "Классификатор", "Результаты"};
-    private final ArrayList<Classifier> classifierArrayList;
+    private final List<Classifier> classifierArrayList;
 
     public static final String RESULT_TITLE = "Посмотреть";
 
-    public EnsembleTableModel(ArrayList<Classifier> classifierArrayList) throws Exception {
+    public EnsembleTableModel(List<Classifier> classifierArrayList) throws Exception {
         this.classifierArrayList = classifierArrayList;
     }
 

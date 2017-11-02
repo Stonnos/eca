@@ -30,7 +30,7 @@ public abstract class AbstractHeterogeneousClassifier extends ThresholdClassifie
      *
      * @return classifiers collection
      */
-    public final ClassifiersSet getClassifiersSet() {
+    public ClassifiersSet getClassifiersSet() {
         return set;
     }
 
