@@ -16,7 +16,6 @@ import eca.filter.MissingValuesFilter;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import eca.text.NumericFormat;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
@@ -120,6 +119,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(activationFunction.getActivationFunctionType().getDescription());
 
         if (activationFunction instanceof AbstractFunction) {
+            options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF_FORMULA);
             fillActivationFunctionOptions(activationFunction, options);
         }
 
@@ -128,6 +128,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         options.add(outActivationFunction.getActivationFunctionType().getDescription());
 
         if (outActivationFunction instanceof AbstractFunction) {
+            options.add(NeuralNetworkDictionary.OUT_LAYER_AF_FORMULA);
             fillActivationFunctionOptions(outActivationFunction, options);
         }
 
@@ -199,8 +200,6 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     private void fillActivationFunctionOptions(ActivationFunction activationFunction, List<String> options) {
         AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
-        options.add(StringUtils.EMPTY);
-
         if (abstractFunction.getCoefficient() != 1.0) {
             options.add(String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
                     getDecimalFormat().format(abstractFunction.getCoefficient())));
