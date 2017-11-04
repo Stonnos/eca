@@ -163,7 +163,7 @@ public class AttributesStatisticsFrame extends JFrame {
         attributesBox.setSelectedIndex(0);
         showFrequencyDiagramPlot(0);
 
-        parentFrame.addWindowListener(new WindowAdapter() {
+        this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
                 for (JFrame frame : dataFrames) {
