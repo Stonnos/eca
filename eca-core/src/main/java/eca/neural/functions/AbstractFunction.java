@@ -13,7 +13,7 @@ import eca.neural.NeuralNetworkDictionary;
  *
  * @author Roman Batygin
  */
-public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable, Cloneable {
+public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable {
 
     /**
      * Activation function type
@@ -54,12 +54,8 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
     }
 
     @Override
-    public AbstractFunction clone() throws CloneNotSupportedException {
-        return (AbstractFunction) super.clone();
-    }
-
-    @Override
     public ActivationFunctionType getActivationFunctionType() {
         return activationFunctionType;
     }
+
 }

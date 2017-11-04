@@ -1,5 +1,6 @@
 package eca.ensemble;
 
+import eca.core.DecimalFormatHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.WeightedVoting;
@@ -10,8 +11,10 @@ import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
+import eca.text.NumericFormat;
 import weka.core.Instances;
 
+import java.text.DecimalFormat;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
@@ -30,7 +33,7 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
-public class RandomNetworks extends ThresholdClassifier {
+public class RandomNetworks extends ThresholdClassifier implements DecimalFormatHandler {
 
     private static final double MIN_COEFFICIENT_VALUE = 1.0;
     private static final double MAX_COEFFICIENT_VALUE = 5.0;
@@ -47,9 +50,19 @@ public class RandomNetworks extends ThresholdClassifier {
      */
     private boolean useBootstrapSamples = true;
 
+    /**
+     * Decimal format.
+     */
+    private DecimalFormat decimalFormat = NumericFormat.getInstance();
+
     @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
         return new NetworkBuilder(data);
+    }
+
+    @Override
+    public DecimalFormat getDecimalFormat() {
+        return decimalFormat;
     }
 
     @Override
@@ -106,6 +119,7 @@ public class RandomNetworks extends ThresholdClassifier {
             }
 
             NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
+            neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
             MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
             multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
             ActivationFunctionType activationFunctionType =
