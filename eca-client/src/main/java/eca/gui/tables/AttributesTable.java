@@ -59,6 +59,9 @@ public class AttributesTable extends JDataTableBase {
     private final InstancesTable instancesTable;
     private final JComboBox<String> classBox;
 
+    private int lastModificationCount;
+    private Instances lastCreatedInstances;
+
     public AttributesTable(InstancesTable instancesTable, final JComboBox<String> classBox) {
         super(new AttributesTableModel(instancesTable.data()));
         this.instancesTable = instancesTable;
@@ -134,32 +137,37 @@ public class AttributesTable extends JDataTableBase {
     }
 
     public Instances createData(String relationName) throws Exception {
-        Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
-        DecimalFormat format = instancesTable.model().format();
-        for (int i = 0; i < instancesTable.getRowCount(); i++) {
-            Instance obj = new DenseInstance(newDataSet.numAttributes());
-            obj.setDataset(newDataSet);
-            for (int j = 0; j < newDataSet.numAttributes(); j++) {
-                Attribute attribute = newDataSet.attribute(j);
-                String valueAt = (String) instancesTable.getValueAt(i, getAttrIndex(attribute.name()));
-                if (valueAt == null) {
-                    obj.setValue(attribute, Utils.missingValue());
-                } else if (attribute.isDate()) {
-                    obj.setValue(attribute, attribute.parseDate(valueAt));
-                } else if (attribute.isNumeric()) {
-                    obj.setValue(attribute, format.parse(valueAt).doubleValue());
-                } else {
-                    obj.setValue(attribute, valueAt);
+        if (lastCreatedInstances == null || lastModificationCount != instancesTable.model().getModificationCount()) {
+            log.info("Create new!!");
+            Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
+            DecimalFormat format = instancesTable.model().format();
+            for (int i = 0; i < instancesTable.getRowCount(); i++) {
+                Instance obj = new DenseInstance(newDataSet.numAttributes());
+                obj.setDataset(newDataSet);
+                for (int j = 0; j < newDataSet.numAttributes(); j++) {
+                    Attribute attribute = newDataSet.attribute(j);
+                    String valueAt = (String) instancesTable.getValueAt(i, getAttrIndex(attribute.name()));
+                    if (valueAt == null) {
+                        obj.setValue(attribute, Utils.missingValue());
+                    } else if (attribute.isDate()) {
+                        obj.setValue(attribute, attribute.parseDate(valueAt));
+                    } else if (attribute.isNumeric()) {
+                        obj.setValue(attribute, format.parse(valueAt).doubleValue());
+                    } else {
+                        obj.setValue(attribute, valueAt);
+                    }
                 }
+                newDataSet.add(obj);
             }
-            newDataSet.add(obj);
+            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
+            Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
+            if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
+                throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
+            }
+            lastModificationCount = instancesTable.model().getModificationCount();
+            lastCreatedInstances = filterInstances;
         }
-        newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-        Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
-        if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
-            throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
-        }
-        return filterInstances;
+        return lastCreatedInstances;
     }
 
     public void validateData() throws Exception {

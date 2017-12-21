@@ -14,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * @author Roman Batygin
@@ -26,10 +27,16 @@ public class InstancesTableModel extends AbstractTableModel {
     private final ArrayList<ArrayList<Object>> values;
     private final DecimalFormat format = NumericFormat.getInstance();
 
+    private int modificationCount;
+
     public InstancesTableModel(Instances data, int digits) {
         this.data = data;
         this.format.setMaximumFractionDigits(digits);
         this.values = InstancesConverter.toArray(data, format, DateFormat.SIMPLE_DATE_FORMAT);
+    }
+
+    public int getModificationCount() {
+        return modificationCount;
     }
 
     public DecimalFormat format() {
@@ -42,13 +49,15 @@ public class InstancesTableModel extends AbstractTableModel {
 
     public void remove(int i) {
         values.remove(i);
+        modificationCount++;
         fireTableRowsDeleted(i, i);
     }
 
     public void replace(int j, Object oldVal, Object newVal) {
         for (int i = 0; i < values.size(); i++) {
-            if ((oldVal.toString().isEmpty() && get(i, j) == null) || (get(i, j) != null && get(i, j).equals(oldVal))) {
-                set(i, j, newVal.toString().isEmpty() ? null : newVal);
+            if ((oldVal.toString().isEmpty() && getValue(i, j) == null) ||
+                    (getValue(i, j) != null && getValue(i, j).equals(oldVal))) {
+                setValue(i, j, newVal.toString().isEmpty() ? null : newVal);
             }
         }
         this.fireTableDataChanged();
@@ -59,6 +68,7 @@ public class InstancesTableModel extends AbstractTableModel {
             row.clear();
         }
         values.clear();
+        modificationCount++;
         fireTableDataChanged();
     }
 
@@ -73,6 +83,7 @@ public class InstancesTableModel extends AbstractTableModel {
         while (iterator.hasNext()) {
             if (iterator.next().contains(null)) {
                 iterator.remove();
+                modificationCount++;
             }
         }
         fireTableDataChanged();
@@ -84,6 +95,7 @@ public class InstancesTableModel extends AbstractTableModel {
         for (int i = 0; i < getColumnCount(); i++) {
             row.add(val);
         }
+        modificationCount++;
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
@@ -99,13 +111,13 @@ public class InstancesTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? row + 1 : get(row, column - 1);
+        return column == 0 ? row + 1 : getValue(row, column - 1);
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         String value = aValue.toString().trim();
-        set(rowIndex, columnIndex - 1, value.isEmpty() ? null : value);
+        setValue(rowIndex, columnIndex - 1, value.isEmpty() ? null : value);
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
@@ -119,12 +131,16 @@ public class InstancesTableModel extends AbstractTableModel {
         return column == 0 ? NUMBER : data.attribute(column - 1).name();
     }
 
-    private Object get(int i, int j) {
+    private Object getValue(int i, int j) {
         return values.get(i).get(j);
     }
 
-    private void set(int i, int j, Object val) {
-        values.get(i).set(j, val);
+    private void setValue(int i, int j, Object val) {
+        Object oldVal = getValue(i, j);
+        if (!Objects.equals(oldVal, val)) {
+            values.get(i).set(j, val);
+            modificationCount++;
+        }
     }
 
 
