@@ -32,6 +32,7 @@ import java.util.List;
 @Slf4j
 public class ExperimentTable extends JDataTableBase {
 
+    private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
     private final JFrame parent;
     private final Instances data;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
@@ -115,7 +116,9 @@ public class ExperimentTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(experimentModel().getClassifier(row)));
+            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(experimentModel()
+                    .getClassifier(row), INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService
+                    .CLASSIFIER_INPUT_OPTIONS_TEXT, false));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ExperimentTable.this.getTableHeader().getFont());

@@ -35,6 +35,7 @@ public class ClassifyInstancePanel extends JPanel {
     private static final String CLASS_VALUE_TEXT = "Значение класса: ";
     private static final String CLASS_PROBABILITY_TEXT = "Вероятность класса: ";
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(400, 300);
+    private static final int ATTR_INFO_FONT_SIZE = 12;
 
     private Classifier classifier;
     private final ClassifyInstanceTable table;
@@ -75,7 +76,7 @@ public class ClassifyInstancePanel extends JPanel {
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, table.data().classAttribute().name())));
         bottom.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(table.data().classAttribute(),
-                table.getAttributeStatistics()));
+                table.getAttributeStatistics(), ATTR_INFO_FONT_SIZE));
         JPanel top = new JPanel(new GridBagLayout());
         //--------------------------------------------
         JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);

@@ -22,10 +22,10 @@ public class TextInfoFrame extends JFrame {
 
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
-    private static final Font DEFAULT_TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 12);
-    private JTextArea textInfo = new JTextArea(15, 40);
+    private static final Dimension OPTIONS_PANE_PREFERRED_SIZE = new Dimension(475, 200);
+    private JTextPane inputOptionsPane = new JTextPane();
 
-    public TextInfoFrame(String title, String str, JFrame parent) {
+    public TextInfoFrame(String title, String text, JFrame parent) {
         this.setLayout(new GridBagLayout());
         this.setTitle(title);
         try {
@@ -33,12 +33,9 @@ public class TextInfoFrame extends JFrame {
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
-        textInfo.setWrapStyleWord(true);
-        textInfo.setLineWrap(true);
-        textInfo.setEditable(false);
-        textInfo.setFont(DEFAULT_TEXT_AREA_FONT);
-        //----------------------------------------
-        JScrollPane scrollPanel = new JScrollPane(textInfo);
+        inputOptionsPane.setContentType("text/html");
+        inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
+        JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
         JButton okButton = ButtonUtils.createOkButton();
 
         okButton.addActionListener(new ActionListener() {
@@ -73,7 +70,7 @@ public class TextInfoFrame extends JFrame {
                     }
                     File file = fileChooser.getSelectedFile(TextInfoFrame.this);
                     if (file != null) {
-                        TextSaver.saveToFile(file, textInfo.getText());
+                        TextSaver.saveToFile(file, inputOptionsPane.getText());
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -83,9 +80,8 @@ public class TextInfoFrame extends JFrame {
             }
         });
         this.setJMenuBar(menu);
-
-        textInfo.setText(str);
-        textInfo.setCaretPosition(0);
+        inputOptionsPane.setText(text);
+        inputOptionsPane.setCaretPosition(0);
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);

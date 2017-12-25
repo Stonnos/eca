@@ -48,33 +48,44 @@ public class ClassifierInputOptionsService {
     public static final String ATTRIBUTES_NUM_TEXT = "Число атрибутов: ";
     public static final String CLASSES_NUM_TEXT = "Число классов: ";
 
+    private static final String ATTRIBUTE_CLASS_CSS_STYLE =
+            ".attr {font-weight: bold; font-family: 'Arial'; font-size: %d}";
+    private static final String VALUE_CLASS_CSS_STYLE =
+            ".val {font-family: 'Arial'; font-size: %d}";
+
     /**
      * Returns classifier input options html string.
      *
      * @param classifier classifier object
+     * @param fontSize   font size
      * @return classifier input options html string
      */
-    public static String getInputOptionsInfoAsHtml(Classifier classifier) {
-        StringBuilder info =
-                new StringBuilder("<html>");
-        info.append("<head><style>.attr {font-weight: bold;} th {font-size: 14;}</style></head>");
+    public static String getInputOptionsInfoAsHtml(Classifier classifier, int fontSize, String title,
+                                                   boolean extended) {
+        StringBuilder info = new StringBuilder("<html>");
+        info.append(
+                String.format("<head><style>%s %s</style></head>", String.format(ATTRIBUTE_CLASS_CSS_STYLE, fontSize),
+                        String.format(VALUE_CLASS_CSS_STYLE, fontSize)));
         info.append("<body>");
-        info.append("<table>");
-        info.append("<tr>");
-        info.append("<th colspan = '2'>").append(CLASSIFIER_INPUT_OPTIONS_TEXT).append("</th>");
-        info.append("</tr>");
-        String[] option = ((AbstractClassifier) classifier).getOptions();
-        for (int i = 0; i < option.length; i += 2) {
-            info.append("<tr>");
-            info.append("<td class = 'attr'>");
-            info.append(option[i]);
-            info.append("</td>");
-            info.append("<td>");
-            info.append(option[i + 1]);
-            info.append("</td>");
-            info.append("</tr>");
+        info.append(getInputOptionsTableAsHtml(classifier, title));
+
+        if (extended) {
+            if (classifier instanceof AbstractHeterogeneousClassifier) {
+                AbstractHeterogeneousClassifier heterogeneousClassifier = (AbstractHeterogeneousClassifier) classifier;
+                info.append(String.format("<h4 class = 'attr' style = 'text-align: center'>%s</h4>",
+                        INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS_TEXT));
+                info.append(getOptionsForIndividualClassifiersAsHtml(heterogeneousClassifier.getClassifiersSet()));
+            }
+            if (classifier instanceof StackingClassifier) {
+                StackingClassifier stackingClassifier = (StackingClassifier) classifier;
+                info.append(getOptionsForIndividualClassifiersAsHtml(stackingClassifier.getClassifiers()));
+                info.append(String.format("<h4 class = 'attr' style = 'text-align: center'>%s %s</h4>",
+                        META_CLASSIFIER_INPUT_OPTIONS_TEXT,
+                        stackingClassifier.getMetaClassifier().getClass().getSimpleName()));
+                info.append(getInputOptionsTableAsHtml(stackingClassifier, StringUtils.EMPTY));
+            }
         }
-        info.append("</table></body></html>");
+        info.append("</body></html>");
         return info.toString();
     }
 
@@ -170,8 +181,9 @@ public class ClassifierInputOptionsService {
      * @param attributeStatistics {@link AttributeStatistics} object
      * @return attribute statistics html string
      */
-    public static String getAttributeInfoAsHtml(Attribute a, AttributeStatistics attributeStatistics) {
-        StringBuilder info = new StringBuilder("<html><head><style>.attr {font-weight: bold;}</style></head><body>");
+    public static String getAttributeInfoAsHtml(Attribute a, AttributeStatistics attributeStatistics, int fontSize) {
+        StringBuilder info = new StringBuilder(String.format("<html><head><style>%s</style></head><body>",
+                String.format(ATTRIBUTE_CLASS_CSS_STYLE, fontSize)));
         info.append("<table><tr>");
         info.append("<td class = 'attr'>").append(ATTRIBUTE_TEXT).append("</td>")
                 .append("<td>").append(a.name()).append("</td>");
@@ -248,5 +260,36 @@ public class ClassifierInputOptionsService {
             setOptions(info, singleOptions);
             info.append(SEPARATOR);
         }
+    }
+
+    private static StringBuilder getInputOptionsTableAsHtml(Classifier classifier, String title) {
+        StringBuilder info = new StringBuilder("<table>");
+        info.append("<tr>");
+        info.append("<th class = 'attr' colspan = '2'>").append(title).append("</th>");
+        info.append("</tr>");
+        String[] options = ((AbstractClassifier) classifier).getOptions();
+        for (int i = 0; i < options.length; i += 2) {
+            info.append("<tr>");
+            info.append("<td class = 'attr'>");
+            info.append(options[i]);
+            info.append("</td>");
+            info.append("<td class = 'val'>");
+            info.append(options[i + 1]);
+            info.append("</td>");
+            info.append("</tr>");
+        }
+        info.append("</table>");
+        return info;
+    }
+
+    private static StringBuilder getOptionsForIndividualClassifiersAsHtml(ClassifiersSet classifiers) {
+        StringBuilder info = new StringBuilder(String.format("<h4 class = 'attr' style = 'text-align: center'>%s</h4>",
+                INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS_TEXT));
+        for (int i = 0; i < classifiers.size(); i++) {
+            Classifier currentClassifier = classifiers.getClassifier(i);
+            info.append(getInputOptionsTableAsHtml(currentClassifier,
+                    String.format("%s №%d", currentClassifier.getClass().getSimpleName(), i)));
+        }
+        return info;
     }
 }

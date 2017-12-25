@@ -138,7 +138,6 @@ public class AttributesTable extends JDataTableBase {
 
     public Instances createData(String relationName) throws Exception {
         if (lastCreatedInstances == null || lastModificationCount != instancesTable.model().getModificationCount()) {
-            log.info("Create new!!");
             Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
             DecimalFormat format = instancesTable.model().format();
             for (int i = 0; i < instancesTable.getRowCount(); i++) {

@@ -67,6 +67,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -96,21 +97,21 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String SAVE_MODEL_MENU_TEXT = "Сохранить модель";
     private static final String INPUT_OPTIONS_MENU_TEXT = "Входные параметры модели";
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
-    private static final String ATTR_INFO_MENU_TEXT = "Информация об атрибутах";
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
+    private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
 
+    private final Date creationDate = new Date();
     private final Classifier classifier;
     private final Instances data;
     private final Evaluation evaluation;
-    private final ClassifierIndexerService indexer = new ClassifierIndexerService();
     private JTabbedPane pane;
     private JScrollPane resultPane;
 
     private JTable statTable;
     private JTable misMatrix;
     private ClassificationCostsMatrix costMatrix;
-    private JFrame parent;
+    private JFrame parentFrame;
 
     private ROCCurvePanel rocCurvePanel;
 
@@ -120,7 +121,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
-        this.parent = parent;
+        this.parentFrame = parent;
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
         this.makeGUI(digits);
@@ -128,8 +129,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
-    public ClassifierIndexerService getIndexer() {
-        return indexer;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     public Classifier classifier() {
@@ -151,7 +152,8 @@ public class ClassificationResultsFrameBase extends JFrame {
     public final void setStatisticsTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier));
+        this.statTable.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier,
+                INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService.CLASSIFIER_INPUT_OPTIONS_TEXT, false));
         resultPane.setViewportView(table);
     }
 
@@ -164,7 +166,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke("F1"));
-        JMenuItem attrMenu = new JMenuItem(ATTR_INFO_MENU_TEXT);
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         //--------------------------------------------
@@ -180,7 +181,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                     if (fileChooser == null) {
                         fileChooser = new SaveModelChooser();
                     }
-                    fileChooser.setSelectedFile(new File(indexer.getIndex(classifier())));
+                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
                     File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                     if (file != null) {
                         HashMap<String, String> props = new HashMap<>();
@@ -205,7 +206,10 @@ public class ClassificationResultsFrameBase extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
                     inputParamInfo = new TextInfoFrame(inputMenu.getText(),
-                            ClassifierInputOptionsService.getInputOptionsInfo(classifier), ClassificationResultsFrameBase.this);
+                            ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier,
+                                    INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService
+                                            .CLASSIFIER_INPUT_OPTIONS_TEXT, true),
+                            ClassificationResultsFrameBase.this);
                     ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
@@ -214,26 +218,6 @@ public class ClassificationResultsFrameBase extends JFrame {
                     });
                 }
                 inputParamInfo.setVisible(true);
-            }
-        });
-        //--------------------------------------------
-        attrMenu.addActionListener(new ActionListener() {
-
-            TextInfoFrame attributesInfo;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (attributesInfo == null) {
-                    attributesInfo = new TextInfoFrame(attrMenu.getText(),
-                            getAttributesInfo(), ClassificationResultsFrameBase.this);
-                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent evt) {
-                            attributesInfo.dispose();
-                        }
-                    });
-                }
-                attributesInfo.setVisible(true);
             }
         });
         //--------------------------------------------
@@ -292,7 +276,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         fileMenu.add(saveModelMenu);
         serviceMenu.add(dataMenu);
         serviceMenu.add(inputMenu);
-        serviceMenu.add(attrMenu);
         serviceMenu.add(statMenu);
         helpMenu.add(refMenu);
         menu.add(fileMenu);
@@ -344,7 +327,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                     if (chooser == null) {
                         chooser = new SaveResultsChooser();
                     }
-                    chooser.setSelectedFile(new File(indexer.getResultsIndex(classifier())));
+                    chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
                     file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
                     if (file != null) {
                         if (xlsResultsSaver == null) {
@@ -370,7 +353,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     }
 
     public JFrame getParentFrame() {
-        return parent;
+        return parentFrame;
     }
 
     public static void createResults(ClassificationResultsFrameBase resultsFrameBase, int digits) throws Exception {
@@ -409,11 +392,6 @@ public class ClassificationResultsFrameBase extends JFrame {
                 resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
             }
         }
-    }
-
-    private String getAttributesInfo() {
-        ClassifyInstancePanel classifyInstancePanel = (ClassifyInstancePanel) pane.getComponentAt(1);
-        return ClassifierInputOptionsService.getAttributesInfo(data, classifyInstancePanel.getAttributeStatistics());
     }
 
     /**

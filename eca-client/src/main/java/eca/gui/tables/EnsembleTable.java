@@ -31,6 +31,7 @@ import java.util.List;
 @Slf4j
 public class EnsembleTable extends JDataTableBase {
 
+    private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
     private final JFrame parentFrame;
     private final int digits;
     private ClassificationResultsFrameBase[] classificationResultsFrameBases;
@@ -71,7 +72,8 @@ public class EnsembleTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(ensembleModel().get(row)));
+            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(ensembleModel().get(row),
+                    INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService.CLASSIFIER_INPUT_OPTIONS_TEXT, false));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());

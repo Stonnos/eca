@@ -48,6 +48,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private static final String INVALID_DATE_FORMAT_ERROR = "Недопустимый формат даты для атрибута '%s'";
     private static final String INTEGER_REGEX = "^[0-9]+$";
+    private static final int ATTR_INFO_FONT_SIZE = 12;
 
     private final DecimalFormat decimalFormat = NumericFormat.getInstance();
     private final AttributeStatistics attributeStatistics;
@@ -156,7 +157,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(data.attribute(i),
-                    attributeStatistics).toString());
+                    attributeStatistics, ATTR_INFO_FONT_SIZE).toString());
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());
