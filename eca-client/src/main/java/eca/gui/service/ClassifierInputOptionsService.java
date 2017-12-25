@@ -72,8 +72,6 @@ public class ClassifierInputOptionsService {
         if (extended) {
             if (classifier instanceof AbstractHeterogeneousClassifier) {
                 AbstractHeterogeneousClassifier heterogeneousClassifier = (AbstractHeterogeneousClassifier) classifier;
-                info.append(String.format("<h4 class = 'attr' style = 'text-align: center'>%s</h4>",
-                        INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS_TEXT));
                 info.append(getOptionsForIndividualClassifiersAsHtml(heterogeneousClassifier.getClassifiersSet()));
             }
             if (classifier instanceof StackingClassifier) {

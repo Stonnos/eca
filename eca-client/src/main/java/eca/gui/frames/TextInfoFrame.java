@@ -34,6 +34,7 @@ public class TextInfoFrame extends JFrame {
             LoggerUtils.error(log, e);
         }
         inputOptionsPane.setContentType("text/html");
+        inputOptionsPane.setEditable(false);
         inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
         JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
         JButton okButton = ButtonUtils.createOkButton();
