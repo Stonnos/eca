@@ -33,7 +33,7 @@ import java.util.List;
 public class ExperimentTable extends JDataTableBase {
 
     private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
-    private final JFrame parent;
+    private final JFrame parentFrame;
     private final Instances data;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
@@ -41,7 +41,7 @@ public class ExperimentTable extends JDataTableBase {
     public ExperimentTable(ArrayList<EvaluationResults> experiment,
                            JFrame parent, Instances data, int digits) throws Exception {
         super(new ExperimentTableModel(experiment, digits));
-        this.parent = parent;
+        this.parentFrame = parent;
         this.data = data;
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
         this.getColumnModel().getColumn(3)
@@ -151,7 +151,8 @@ public class ExperimentTable extends JDataTableBase {
                 if (classificationResultsFrameBases.get(index) == null) {
                     ExperimentTableModel model = experimentModel();
                     ClassificationResultsFrameBase result =
-                            new ClassificationResultsFrameBase(parent, classifierDescriptor.getClassifier().getClass()
+                            new ClassificationResultsFrameBase(parentFrame,
+                                    classifierDescriptor.getClassifier().getClass()
                                     .getSimpleName(), classifierDescriptor.getClassifier(), data,
                                     classifierDescriptor.getEvaluation(), model.digits());
                     ClassificationResultsFrameBase.createResults(result, model.digits());
