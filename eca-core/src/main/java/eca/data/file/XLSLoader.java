@@ -53,12 +53,12 @@ public class XLSLoader {
      * Sets the file object.
      *
      * @param file file object
-     * @throws Exception if a file object is null or has invalid extension
+     * @throws IllegalArgumentException if a file object is null or has invalid extension
      */
-    public void setFile(File file) throws Exception {
+    public void setFile(File file) {
         Assert.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
-            throw new Exception("Wrong file extension!");
+            throw new IllegalArgumentException("Wrong file extension!");
         }
         this.file = file;
     }

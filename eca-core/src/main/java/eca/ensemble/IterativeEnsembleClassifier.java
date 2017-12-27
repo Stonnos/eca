@@ -9,6 +9,7 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.voting.VotingMethod;
 import eca.filter.MissingValuesFilter;
+import org.springframework.util.CollectionUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
@@ -124,8 +125,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
     protected abstract void initialize() throws Exception;
 
-    protected final void checkModel() throws Exception {
-        if (classifiers.isEmpty()) {
+    protected final void checkModelForEmpty() throws Exception {
+        if (CollectionUtils.isEmpty(classifiers)) {
             throw new Exception(EnsembleDictionary.EMPTY_ENSEMBLE_ERROR_TEXT);
         }
     }

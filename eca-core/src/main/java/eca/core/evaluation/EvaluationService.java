@@ -31,26 +31,22 @@ public class EvaluationService {
                                            int numTests,
                                            Random random) throws Exception {
         Evaluation evaluation = new Evaluation(data);
-
         switch (evaluationMethod) {
-
             case TRAINING_DATA: {
                 model.buildClassifier(data);
                 evaluation.evaluateModel(model, data);
                 break;
             }
-
             case CROSS_VALIDATION: {
                 evaluation.kCrossValidateModel(AbstractClassifier.makeCopy(model), data,
                         numFolds, numTests, random);
                 model.buildClassifier(data);
                 break;
             }
-
             default:
-                throw new IllegalArgumentException("Invalid evaluation method!");
+                throw new IllegalArgumentException(
+                        String.format("Unexpected evaluation method: %s!", evaluationMethod));
         }
-
         return evaluation;
     }
 }

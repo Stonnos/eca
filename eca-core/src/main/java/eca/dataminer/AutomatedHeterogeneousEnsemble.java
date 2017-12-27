@@ -59,12 +59,16 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
      */
     private class AutomatedHeterogeneousBuilder extends AbstractAutomatedExperiment {
 
+        static final int INIT_STATE = 0;
+        static final int NEXT_PERMUTATION_STATE = 1;
+        static final int MODEL_LEARNING_STATE = 2;
+
         int i, s, a = -1, index, state, it;
         ClassifiersSet set = getClassifier().getClassifiersSet();
         ClassifiersSet currentSet = new ClassifiersSet();
         int[] marks = new int[getClassifier().getClassifiersSet().size()];
         PermutationsSearcher permutationsSearch = new PermutationsSearcher();
-        int numCombinations = getNumCombinations();
+        final int numCombinations = getNumCombinations();
 
         AutomatedHeterogeneousBuilder() {
             clearHistory();
@@ -94,16 +98,16 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
 
             switch (state) {
 
-                case 0: {
+                case INIT_STATE: {
                     for (int j = 0; j < marks.length; j++) {
                         marks[j] = j <= it ? 1 : 0;
                     }
                     permutationsSearch.setValues(marks);
-                    state = 1;
+                    state = NEXT_PERMUTATION_STATE;
                     break;
                 }
 
-                case 1: {
+                case NEXT_PERMUTATION_STATE: {
                     if (permutationsSearch.nextPermutation()) {
                         currentSet.clear();
                         for (int k = 0; k < marks.length; k++) {
@@ -111,42 +115,41 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                 currentSet.addClassifier(set.getClassifier(k));
                             }
                         }
-                        state = 2;
+                        state = MODEL_LEARNING_STATE;
                     } else {
                         it++;
-                        state = 0;
+                        state = INIT_STATE;
                     }
 
                     break;
                 }
 
-                case 2: {
+                case MODEL_LEARNING_STATE: {
                     if (getClassifier() instanceof HeterogeneousClassifier) {
                         for (; s < SAMPLE_METHOD.length; s++) {
                             for (; i < CLASSIFIER_SELECTION_METHOD.length; i++) {
                                 for (++a; a < VOTING_METHOD.length; ) {
-                                    HeterogeneousClassifier m_Model =
+                                    HeterogeneousClassifier nextModel =
                                             (HeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
-                                    m_Model.sampler().setSamplingMethod(SAMPLE_METHOD[s]);
-                                    m_Model.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
-                                    m_Model.setUseWeightedVotesMethod(VOTING_METHOD[a]);
-                                    m_Model.setClassifiersSet(currentSet.clone());
-                                    return evaluateModel(m_Model);
+                                    nextModel.sampler().setSamplingMethod(SAMPLE_METHOD[s]);
+                                    nextModel.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
+                                    nextModel.setUseWeightedVotesMethod(VOTING_METHOD[a]);
+                                    nextModel.setClassifiersSet(currentSet.clone());
+                                    return evaluateModel(nextModel);
                                 }
                                 a = -1;
                             }
                             i = 0;
                         }
                         s = 0;
-                        state = 1;
+                        state = NEXT_PERMUTATION_STATE;
                     } else {
-                        state = 1;
-                        AbstractHeterogeneousClassifier model
+                        state = NEXT_PERMUTATION_STATE;
+                        AbstractHeterogeneousClassifier nextModel
                                 = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
-                        model.setClassifiersSet(currentSet.clone());
-                        return evaluateModel(model);
+                        nextModel.setClassifiersSet(currentSet.clone());
+                        return evaluateModel(nextModel);
                     }
-
                     break;
                 }
 

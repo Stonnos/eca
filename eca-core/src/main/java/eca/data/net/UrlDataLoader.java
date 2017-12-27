@@ -42,9 +42,9 @@ public class UrlDataLoader extends AbstractDataLoader {
      * Creates object with given <tt>URL</tt>
      *
      * @param url source url
-     * @throws Exception if given url contains incorrect protocol or file extension
+     * @throws IllegalArgumentException if given url contains incorrect protocol or file extension
      */
-    public UrlDataLoader(URL url) throws Exception {
+    public UrlDataLoader(URL url) {
         this.setURL(url);
     }
 
@@ -70,16 +70,16 @@ public class UrlDataLoader extends AbstractDataLoader {
      * Sets source url.
      *
      * @param url source url
-     * @throws Exception if given url contains incorrect protocol or file extension
+     * @throws IllegalArgumentException if given url contains incorrect protocol or file extension
      */
-    public final void setURL(URL url) throws Exception {
+    public final void setURL(URL url) {
         Assert.notNull(url, "URL is not specified!");
         if (!Utils.contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
-            throw new Exception(String.format(UrlDataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
+            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
                     Arrays.asList(PROTOCOLS)));
         }
         if (!Utils.contains(FILE_EXTENSIONS, url.getFile(), (x, y) -> x.endsWith(y))) {
-            throw new Exception(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
         this.url = url;

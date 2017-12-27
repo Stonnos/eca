@@ -30,6 +30,8 @@ import java.util.Date;
  */
 public class XLSSaver {
 
+    private static final short FONT_SIZE = 12;
+
     private File file;
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -42,7 +44,7 @@ public class XLSSaver {
     public void setFile(File file) throws IOException {
         Assert.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
-            throw new IOException("Wrong file extension!");
+            throw new IllegalArgumentException("Unexpected file extension!");
         }
         file.createNewFile();
         this.file = file;
@@ -76,7 +78,7 @@ public class XLSSaver {
         try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
             Font font = book.createFont();
             font.setBold(true);
-            font.setFontHeightInPoints((short) 12);
+            font.setFontHeightInPoints(FONT_SIZE);
             CellStyle style = book.createCellStyle();
             CellStyle dateStyle = book.createCellStyle();
             short date = book.createDataFormat().getFormat(dateFormat);

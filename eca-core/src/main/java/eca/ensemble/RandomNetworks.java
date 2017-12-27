@@ -128,13 +128,8 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);
             multilayerPerceptron.setActivationFunction(randomActivationFunction);
-
-            Instances sample;
-            if (isUseBootstrapSamples()) {
-                sample = sampler.bootstrap(filteredData);
-            } else {
-                sample = sampler.initial(filteredData);
-            }
+            Instances sample =
+                    isUseBootstrapSamples() ? sampler.bootstrap(filteredData) : sampler.initial(filteredData);
             neuralNetwork.buildClassifier(sample);
 
             double error = Evaluation.error(neuralNetwork, sample);
@@ -143,7 +138,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
                 ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
             }
             if (index == getIterationsNum() - 1) {
-                checkModel();
+                checkModelForEmpty();
             }
             return ++index;
         }

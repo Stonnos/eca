@@ -124,12 +124,8 @@ public class ExtraTreesClassifier extends RandomForests {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances sample;
-            if (isUseBootstrapSamples()) {
-                sample = sampler.bootstrap(filteredData);
-            } else {
-                sample = sampler.initial(filteredData);
-            }
+            Instances sample =
+                    isUseBootstrapSamples() ? sampler.bootstrap(filteredData) : sampler.initial(filteredData);
             DecisionTreeClassifier treeClassifier = createDecisionTree();
             treeClassifier.setUseRandomSplits(true);
             treeClassifier.setNumRandomSplits(getNumRandomSplits());

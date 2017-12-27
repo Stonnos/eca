@@ -64,12 +64,8 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     @Override
     protected void initialize() {
         aggregator = new SubspacesAggregator(this);
-
-        if (getUseWeightedVotesMethod()) {
-            votes = new WeightedVoting(aggregator, getIterationsNum());
-        } else {
-            votes = new MajorityVoting(aggregator);
-        }
+        votes = getUseWeightedVotesMethod() ? new WeightedVoting(aggregator, getIterationsNum()) :
+                new MajorityVoting(aggregator);
     }
 
     /**
@@ -90,16 +86,10 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
             }
             Instances subSample =
                     sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
-
-            Classifier model;
-            if (getUseRandomClassifier()) {
-                model = getClassifiersSet().buildRandomClassifier(subSample);
-            } else {
-                model = getClassifiersSet().builtOptimalClassifier(subSample);
-            }
+            Classifier model = getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(subSample) :
+                    getClassifiersSet().builtOptimalClassifier(subSample);
 
             double error = Evaluation.error(model, subSample);
-
             if (error > getMinError() && error < getMaxError()) {
                 classifiers.add(model);
                 aggregator.setInstances(subSample);
@@ -108,7 +98,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
                 }
             }
             if (index == getIterationsNum() - 1) {
-                checkModel();
+                checkModelForEmpty();
             }
             return ++index;
         }

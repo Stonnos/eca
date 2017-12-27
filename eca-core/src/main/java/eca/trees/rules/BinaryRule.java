@@ -59,18 +59,18 @@ public class BinaryRule extends NominalRule {
         if (i < 0 || i > 1) {
             return null;
         }
-        StringBuilder r = new StringBuilder(attribute().name() + " = ");
+        StringBuilder strRule = new StringBuilder(attribute().name() + " = ");
         boolean found = false;
         for (int j = 0; j < codes.length; j++) {
             if ((i == 0 && codes[j] == 0) || (i == 1 && codes[j] == 1)) {
                 if (found) {
-                    r.append(",");
+                    strRule.append(",");
                 }
                 found = true;
-                r.append(j);
+                strRule.append(j);
             }
         }
-        return r.toString();
+        return strRule.toString();
     }
 
 }

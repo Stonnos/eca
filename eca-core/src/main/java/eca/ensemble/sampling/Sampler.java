@@ -177,7 +177,7 @@ public class Sampler implements java.io.Serializable {
      *
      * @param data    <tt>Instances</tt> object
      * @param numAttr number of input attributes
-     * @return
+     * @return sub sample with K random attributes
      */
     public Instances initial(Instances data, int numAttr) {
         ArrayList<Attribute> attr = randomAttributes(data, numAttr);

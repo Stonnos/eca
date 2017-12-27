@@ -143,12 +143,8 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         if (sampler.getSamplingMethod() == SamplingMethod.INITIAL) {
             setIterationsNum(getClassifiersSet().size());
         }
-
-        if (getUseWeightedVotesMethod()) {
-            votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
-        } else {
-            votes = new MajorityVoting(new Aggregator(this));
-        }
+        votes = getUseWeightedVotesMethod() ? new WeightedVoting(new Aggregator(this), getIterationsNum()) :
+                new MajorityVoting(new Aggregator(this));
     }
 
     /**
@@ -185,7 +181,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
                 }
             }
             if (index == getIterationsNum() - 1) {
-                checkModel();
+                checkModelForEmpty();
             }
             return ++index;
         }

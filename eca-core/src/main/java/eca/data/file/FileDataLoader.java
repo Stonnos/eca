@@ -27,12 +27,12 @@ public class FileDataLoader extends AbstractDataLoader {
      * Sets the file object.
      *
      * @param file file object
-     * @throws Exception if a file object is null or has invalid extension
+     * @throws IllegalArgumentException if a file object is null or has invalid extension
      */
-    public void setFile(File file) throws Exception {
+    public void setFile(File file) {
         Assert.notNull(file, "File is not specified!");
         if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
-            throw new Exception(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
         this.file = file;

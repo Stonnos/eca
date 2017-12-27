@@ -67,18 +67,14 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
                 throw new NoSuchElementException();
             }
             ++index;
-
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(getClassifier());
-
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTIONS_TYPES[getRandom().nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
-
             AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);
             model.network().setActivationFunction(randomActivationFunction);
             model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
-
             return evaluateModel(model);
         }
 

@@ -16,7 +16,7 @@ import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Instances;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classifier input options service.
@@ -248,7 +248,7 @@ public class ClassifierInputOptionsService {
         }
     }
 
-    private static void setOptionsForEnsemble(StringBuilder info, ArrayList<Classifier> set) {
+    private static void setOptionsForEnsemble(StringBuilder info, List<Classifier> set) {
         for (int i = 0; i < set.size(); i++) {
             AbstractClassifier single = (AbstractClassifier) set.get(i);
             info.append(INDIVIDUAL_CLASSIFIER_TEXT).append(StringUtils.SPACE).append(StringUtils.SPACE)

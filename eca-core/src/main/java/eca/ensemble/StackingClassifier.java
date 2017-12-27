@@ -15,6 +15,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements stacking algorithm.
@@ -219,8 +220,8 @@ public class StackingClassifier extends AbstractClassifier
     }
 
     @Override
-    public ArrayList<Classifier> getStructure() throws Exception {
-        ArrayList<Classifier> copies = getClassifiers().clone().toList();
+    public List<Classifier> getStructure() throws Exception {
+        List<Classifier> copies = getClassifiers().clone().toList();
         copies.add(AbstractClassifier.makeCopy(metaClassifier));
         return copies;
     }

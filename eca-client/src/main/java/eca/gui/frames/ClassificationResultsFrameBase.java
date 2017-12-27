@@ -66,9 +66,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Classification results frame.
@@ -465,7 +465,7 @@ public class ClassificationResultsFrameBase extends JFrame {
             }
         }
 
-        void setXlsEnsembleOptions(Sheet sheet, CellStyle style, ArrayList<Classifier> set) {
+        void setXlsEnsembleOptions(Sheet sheet, CellStyle style, List<Classifier> set) {
             for (int i = 0; i < set.size(); i++) {
                 AbstractClassifier single = (AbstractClassifier) set.get(i);
                 createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, single.getClass().getSimpleName());

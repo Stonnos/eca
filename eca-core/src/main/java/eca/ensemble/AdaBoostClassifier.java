@@ -114,7 +114,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 index = getIterationsNum() - 1;
             }
             if (index == getIterationsNum() - 1) {
-                checkModel();
+                checkModelForEmpty();
             }
             return ++index;
         }

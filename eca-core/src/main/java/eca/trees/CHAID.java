@@ -99,17 +99,17 @@ public class CHAID extends DecisionTreeClassifier {
         }
 
         double hiSquaredTest() {
-            double h = 0.0;
+            double hiSquaredVal = 0.0;
             for (int i = 0; i < contingencyTable.length - 1; i++) {
                 for (int j = 0; j < contingencyTable[i].length - 1; j++) {
                     double theoryFreq = theoryFrequency(i, j);
                     if (theoryFreq != 0.0) {
-                        h += (contingencyTable[i][j] - theoryFreq)
+                        hiSquaredVal += (contingencyTable[i][j] - theoryFreq)
                                 * (contingencyTable[i][j] - theoryFreq) / theoryFreq;
                     }
                 }
             }
-            return h;
+            return hiSquaredVal;
         }
 
         void computeContingencyTable(TreeNode x) {

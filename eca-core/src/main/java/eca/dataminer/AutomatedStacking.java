@@ -43,6 +43,11 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
      */
     private class AutomatedStackingBuilder extends AbstractAutomatedExperiment {
 
+        static final int META_MODEL_SELECTION_STATE = 0;
+        static final int INIT_STATE = 1;
+        static final int NEXT_PERMUTATION_STATE = 2;
+        static final int MODEL_LEARNING_STATE = 3;
+
         int index;
         int state;
         int it;
@@ -79,27 +84,27 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         @Override
         public EvaluationResults nextState() throws Exception {
             switch (state) {
-                case 0: {
+                case META_MODEL_SELECTION_STATE: {
                     Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClsIndex);
                     getClassifier().setMetaClassifier(metaClassifier);
-                    state = 1;
+                    state = INIT_STATE;
                     break;
                 }
-                case 1: {
+                case INIT_STATE: {
                     if (it == marks.length) {
                         metaClsIndex++;
                         it = 0;
-                        state = 0;
+                        state = META_MODEL_SELECTION_STATE;
                     } else {
                         for (int j = 0; j < marks.length; j++) {
                             marks[j] = j <= it ? 1 : 0;
                         }
                         permutationsSearch.setValues(marks);
-                        state = 2;
+                        state = NEXT_PERMUTATION_STATE;
                     }
                     break;
                 }
-                case 2: {
+                case NEXT_PERMUTATION_STATE: {
                     if (permutationsSearch.nextPermutation()) {
                         currentSet.clear();
                         for (int k = 0; k < marks.length; k++) {
@@ -107,19 +112,19 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                                 currentSet.addClassifier(set.getClassifier(k));
                             }
                         }
-                        state = 3;
+                        state = MODEL_LEARNING_STATE;
                     } else {
                         it++;
-                        state = 1;
+                        state = INIT_STATE;
                     }
                     break;
                 }
-                case 3: {
-                    state = 2;
-                    StackingClassifier model
+                case MODEL_LEARNING_STATE: {
+                    state = NEXT_PERMUTATION_STATE;
+                    StackingClassifier nextModel
                             = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
-                    model.setClassifiers(currentSet.clone());
-                    return evaluateModel(model);
+                    nextModel.setClassifiers(currentSet.clone());
+                    return evaluateModel(nextModel);
                 }
             }
             return null;

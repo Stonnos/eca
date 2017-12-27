@@ -12,6 +12,7 @@ import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -185,7 +186,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      *
      * @return classifiers set converted to <tt>ArrayList</tt> object
      */
-    public ArrayList<Classifier> toList() {
+    public List<Classifier> toList() {
         return classifiers;
     }
 
