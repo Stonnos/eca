@@ -31,16 +31,26 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Roman Batygin
  */
 @Slf4j
 public abstract class ExperimentFrame extends JFrame {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
@@ -63,13 +73,17 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String NUMBER_PREFIX = "№";
     private static final int DEFAULT_WIDTH = 1100;
     private static final int DEFAULT_HEIGHT = 600;
+    private static final String START_TIME_TEXT = "00:00:00:00";
+    private static final int TIMER_FIELD_LENGTH = 20;
+    private static final String TIMER_LABEL_TEXT = "Время выполнения эксперимента";
+    private static final int TIMER_DELAY_IN_MILLIS = 1;
 
     private final long experimentId = System.currentTimeMillis();
 
     private final AbstractExperiment experiment;
 
-    protected JProgressBar progress;
-    protected JTextArea text;
+    private JProgressBar progress;
+    private JTextArea text;
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private JSpinner foldsSpinner = new JSpinner();
@@ -82,9 +96,16 @@ public abstract class ExperimentFrame extends JFrame {
     private JButton stopButton;
     private JPanel left;
 
-    protected ExperimentTable table;
-    protected SwingWorker<Void, Void> worker;
+    private JTextField timerField;
+
+    private ExperimentTable table;
+    private SwingWorker<Void, Void> worker;
+    private SwingWorker<Void, Void> timer;
     private final int digits;
+
+    static {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
         this.experiment = experiment;
@@ -181,7 +202,8 @@ public abstract class ExperimentFrame extends JFrame {
 
     protected void doBegin() {
         progress.setValue(0);
-        worker = new SwingWorkerConstruction();
+        worker = new ExperimentWorker();
+        timer = new TimeWorker();
     }
 
     private void makeGUI() throws Exception {
@@ -278,6 +300,7 @@ public abstract class ExperimentFrame extends JFrame {
                 table.clear();
                 doBegin();
                 worker.execute();
+                timer.execute();
                 log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }
@@ -363,6 +386,11 @@ public abstract class ExperimentFrame extends JFrame {
                 }
             }
         });
+
+        timerField = new JTextField(TIMER_FIELD_LENGTH);
+        timerField.setEditable(false);
+        timerField.setText(START_TIME_TEXT);
+        timerField.setBackground(Color.WHITE);
         //---------------------------------------------------------------
         leftBottom.add(optionsButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
@@ -378,6 +406,12 @@ public abstract class ExperimentFrame extends JFrame {
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         leftBottom.add(saveButton,
                 new GridBagConstraints(0, 4, 1, 1, 1, 0,
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
+        leftBottom.add(new JLabel(TIMER_LABEL_TEXT),
+                new GridBagConstraints(0, 5, 1, 1, 1, 0,
+                        GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(25, 5, 5, 5), 0, 0));
+        leftBottom.add(timerField,
+                new GridBagConstraints(0, 6, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         //---------------------------------------------------------------
         right.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
@@ -403,15 +437,42 @@ public abstract class ExperimentFrame extends JFrame {
         this.getRootPane().setDefaultButton(startButton);
     }
 
+    private class TimeWorker extends SwingWorker<Void, Void> {
+
+        Date startTime;
+
+        TimeWorker() {
+            startTime = new Date();
+        }
+
+        @Override
+        protected Void doInBackground() {
+            while (!worker.isDone()) {
+                try {
+                    Thread.sleep(TIMER_DELAY_IN_MILLIS);
+                    setCurrentTime();
+                } catch (InterruptedException ex) {
+                    LoggerUtils.error(log, ex);
+                }
+            }
+            return null;
+        }
+
+        void setCurrentTime() {
+            long currentTimeMillis = new Date().getTime() - startTime.getTime();
+            timerField.setText(DATE_FORMAT.format(new Date(currentTimeMillis)));
+        }
+    }
+
     /**
-     *
+     * Experiment worker.
      */
-    protected class SwingWorkerConstruction extends SwingWorker<Void, Void> {
+    private class ExperimentWorker extends SwingWorker<Void, Void> {
 
         IterativeExperiment object;
         boolean error;
 
-        SwingWorkerConstruction() {
+        ExperimentWorker() {
             object = getExperiment().getIterativeExperiment();
             this.addPropertyChangeListener(new PropertyChangeListener() {
                 @Override
@@ -469,7 +530,6 @@ public abstract class ExperimentFrame extends JFrame {
         }
 
     }
-
 
     /**
      *
