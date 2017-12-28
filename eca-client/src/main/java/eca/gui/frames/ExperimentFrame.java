@@ -439,18 +439,14 @@ public abstract class ExperimentFrame extends JFrame {
 
     private class TimeWorker extends SwingWorker<Void, Void> {
 
-        Date startTime;
-
-        TimeWorker() {
-            startTime = new Date();
-        }
-
         @Override
         protected Void doInBackground() {
+            Date startTime = new Date();
             while (!worker.isDone()) {
                 try {
                     Thread.sleep(TIMER_DELAY_IN_MILLIS);
-                    setCurrentTime();
+                    long currentTimeMillis = new Date().getTime() - startTime.getTime();
+                    timerField.setText(DATE_FORMAT.format(new Date(currentTimeMillis)));
                 } catch (InterruptedException ex) {
                     LoggerUtils.error(log, ex);
                 }
@@ -458,10 +454,6 @@ public abstract class ExperimentFrame extends JFrame {
             return null;
         }
 
-        void setCurrentTime() {
-            long currentTimeMillis = new Date().getTime() - startTime.getTime();
-            timerField.setText(DATE_FORMAT.format(new Date(currentTimeMillis)));
-        }
     }
 
     /**
