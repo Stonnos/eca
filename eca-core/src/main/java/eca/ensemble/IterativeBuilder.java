@@ -49,7 +49,7 @@ public abstract class IterativeBuilder {
     public abstract int numIterations();
 
     /**
-     * Returns <tt>Evaluation</tt> object if the model ia
+     * Evaluates and returns <tt>Evaluation</tt> object if the model ia
      * already build, null otherwise.
      *
      * @return <tt>Evaluation</tt> object

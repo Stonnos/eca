@@ -136,6 +136,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      */
     protected abstract class AbstractBuilder extends IterativeBuilder {
 
+        Evaluation evaluation;
+
         protected AbstractBuilder(Instances dataSet) throws Exception {
             initialData = dataSet;
             filteredData = filter.filterInstances(initialData);
@@ -150,7 +152,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
         @Override
         public Evaluation evaluation() throws Exception {
-            return evaluateModel(IterativeEnsembleClassifier.this, initialData);
+            if (evaluation == null) {
+                evaluation = evaluateModel(IterativeEnsembleClassifier.this, initialData);
+            }
+            return evaluation;
         }
 
         @Override

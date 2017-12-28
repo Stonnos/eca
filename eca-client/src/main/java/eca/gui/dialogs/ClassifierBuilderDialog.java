@@ -5,10 +5,12 @@
  */
 package eca.gui.dialogs;
 
+import eca.core.evaluation.Evaluation;
 import eca.ensemble.IterativeBuilder;
 import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StopWatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -102,20 +104,24 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
 
         @Override
         protected Void doInBackground() {
-
             try {
+                StopWatch stopWatch = new StopWatch();
+                stopWatch.start();
                 while (!isCancelled() && builder.hasNext()) {
                     builder.next();
                     setProgress(builder.getPercent());
+                }
+                Evaluation evaluation = builder.evaluation();
+                stopWatch.stop();
+                if (evaluation != null) {
+                    evaluation.setTotalTimeMillis(stopWatch.getTotalTimeMillis());
                 }
             } catch (Throwable e) {
                 LoggerUtils.error(log, e);
                 isSuccess = false;
                 errorMessage = e.getMessage();
             }
-
             setProgress(100);
-
             if (!isCancelled()) {
                 try {
                     Thread.sleep(DELAY);
@@ -123,7 +129,6 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                     LoggerUtils.error(log, e);
                 }
             }
-
             return null;
         }
 

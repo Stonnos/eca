@@ -708,6 +708,7 @@ public class JMainFrame extends JFrame {
                 process(progress, new CallbackAction() {
                     @Override
                     public void apply() throws Exception {
+                        builder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
                         resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
                                 builder.evaluation(), maximumFractionDigits);
 
@@ -1779,8 +1780,10 @@ public class JMainFrame extends JFrame {
                 return new CVIterativeBuilder(model, data, evaluationMethodOptionsDialog.numFolds(),
                         evaluationMethodOptionsDialog.numTests());
             }
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected evaluation method: %s",
+                        evaluationMethodOptionsDialog.getEvaluationMethod()));
         }
-        return null;
     }
 
     private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,

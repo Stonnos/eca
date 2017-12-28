@@ -9,6 +9,7 @@ import eca.gui.actions.CallbackAction;
 import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StopWatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +30,8 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
 
     private boolean isSuccess = true;
     private String errorMessage;
+
+    private final StopWatch stopWatch = new StopWatch();
 
     public LoadDialog(Window parent, CallbackAction action, String msg) {
         super(parent, StringUtils.EMPTY);
@@ -79,6 +82,10 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
         return errorMessage;
     }
 
+    public long getTotalTimeMillis() {
+        return stopWatch.getTotalTimeMillis();
+    }
+
     /**
      *
      */
@@ -87,7 +94,9 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
         @Override
         protected Void doInBackground() {
             try {
+                stopWatch.start();
                 action.apply();
+                stopWatch.stop();
             } catch (Throwable e) {
                 LoggerUtils.error(log, e);
                 isSuccess = false;

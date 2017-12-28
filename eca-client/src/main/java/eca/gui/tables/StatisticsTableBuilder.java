@@ -20,7 +20,10 @@ import weka.classifiers.Classifier;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Roman Batygin
@@ -59,11 +62,19 @@ public class StatisticsTableBuilder {
     public static final String AF_OF_OUT_LAYER_TEXT = "Активационная функция нейронов выходного слоя";
     public static final String LEARNING_ALGORITHM_TEXT = "Алгоритм обучения";
     public static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
+    public static final String TOTAL_TIME_TEXT = "Затраченное время";
 
     private final DecimalFormat FORMAT = NumericFormat.getInstance();
 
+    private static final SimpleDateFormat DATE_FORMAT;
+
+    static {
+        DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+
     /**
-     *
+     * Evaluation statistics model.
      */
     private class ResultsModel extends AbstractTableModel {
 
@@ -100,6 +111,7 @@ public class StatisticsTableBuilder {
                 results.add(new Entry(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
                         String.format("[%s; %s]", FORMAT.format(x[0]), FORMAT.format(x[1]))));
             }
+            results.add(new Entry(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
         }
 
         @Override

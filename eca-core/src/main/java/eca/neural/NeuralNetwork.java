@@ -234,6 +234,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     private class NetworkBuilder extends IterativeBuilder {
 
         MultilayerPerceptron.IterativeBuilder iterativeBuilder;
+        Evaluation evaluation;
 
         NetworkBuilder(Instances data) throws Exception {
             initialize(data);
@@ -259,7 +260,10 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         @Override
         public Evaluation evaluation() throws Exception {
-            return evaluateModel(NeuralNetwork.this, data);
+            if (evaluation == null) {
+                evaluation = evaluateModel(NeuralNetwork.this, data);
+            }
+            return evaluation;
         }
 
         @Override

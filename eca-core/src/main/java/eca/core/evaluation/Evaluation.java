@@ -25,6 +25,8 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
     public static final int MINIMUM_NUMBER_OF_TESTS = 1;
 
+    private long totalTimeMillis;
+
     private int validationsNum;
 
     private double varianceError;
@@ -146,10 +148,10 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      */
     public void computeErrorVariance(double[] error) {
         this.error = error;
-        double err_Mean = pctIncorrect() / 100.0;
+        double meanError = pctIncorrect() / 100.0;
         varianceError = 0.0;
         for (int i = 0; i < error.length; i++) {
-            varianceError += (error[i] - err_Mean) * (error[i] - err_Mean);
+            varianceError += (error[i] - meanError) * (error[i] - meanError);
         }
         varianceError /= error.length - 1;
     }
@@ -224,4 +226,21 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
         return (double) count / data.numInstances();
     }
 
+    /**
+     * Returns evaluation total time in milliseconds.
+     *
+     * @return evaluation total time in milliseconds
+     */
+    public long getTotalTimeMillis() {
+        return totalTimeMillis;
+    }
+
+    /**
+     * Sets the evaluation total time in milliseconds.
+     *
+     * @param totalTimeMillis evaluation total time in milliseconds
+     */
+    public void setTotalTimeMillis(long totalTimeMillis) {
+        this.totalTimeMillis = totalTimeMillis;
+    }
 }
