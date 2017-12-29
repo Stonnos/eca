@@ -73,7 +73,7 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String NUMBER_PREFIX = "№";
     private static final int DEFAULT_WIDTH = 1100;
     private static final int DEFAULT_HEIGHT = 600;
-    private static final String START_TIME_TEXT = "00:00:00:00";
+    private static final String START_TIME_TEXT = "00:00:00:000";
     private static final int TIMER_FIELD_LENGTH = 20;
     private static final String TIMER_LABEL_TEXT = "Время выполнения эксперимента";
     private static final int TIMER_DELAY_IN_MILLIS = 1;
