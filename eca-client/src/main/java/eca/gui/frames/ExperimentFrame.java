@@ -391,6 +391,7 @@ public abstract class ExperimentFrame extends JFrame {
         timerField.setEditable(false);
         timerField.setText(START_TIME_TEXT);
         timerField.setBackground(Color.WHITE);
+        timerField.setHighlighter(null);
         //---------------------------------------------------------------
         leftBottom.add(optionsButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
