@@ -78,6 +78,7 @@ public class ExperimentTable extends JDataTableBase {
 
     public void clear() {
         experimentModel().clear();
+        classificationResultsFrameBases.clear();
     }
 
     public int getBestNumber() {
