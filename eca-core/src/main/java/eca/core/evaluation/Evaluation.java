@@ -25,7 +25,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
     public static final int MINIMUM_NUMBER_OF_TESTS = 1;
 
-    private long totalTimeMillis;
+    private Long totalTimeMillis;
 
     private int validationsNum;
 
@@ -231,7 +231,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      *
      * @return evaluation total time in milliseconds
      */
-    public long getTotalTimeMillis() {
+    public Long getTotalTimeMillis() {
         return totalTimeMillis;
     }
 
@@ -240,7 +240,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      *
      * @param totalTimeMillis evaluation total time in milliseconds
      */
-    public void setTotalTimeMillis(long totalTimeMillis) {
+    public void setTotalTimeMillis(Long totalTimeMillis) {
         this.totalTimeMillis = totalTimeMillis;
     }
 }

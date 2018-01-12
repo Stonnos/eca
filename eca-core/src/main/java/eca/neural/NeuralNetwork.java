@@ -47,7 +47,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     /**
      * Multilayer perceptron
      **/
-    private final MultilayerPerceptron network;
+    private MultilayerPerceptron network;
 
     /**
      * Decimal format.
@@ -65,14 +65,14 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      */
     public NeuralNetwork(Instances data) {
         Assert.notNull(data, "Instances is not specified!");
-        this.data = data;
-        this.network = new MultilayerPerceptron(data.numAttributes() - 1,
-                data.numClasses());
-        int neuronsNum = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data);
-        if (neuronsNum < NIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
-            neuronsNum = NIN_NEURONS_NUM_IN_HIDDEN_LAYER;
-        }
-        this.network.setHiddenLayer(String.valueOf(neuronsNum));
+        initializeInputOptions(data);
+    }
+
+    /**
+     * Default constructor for creation <tt>NeuralNetwork</tt> object.
+     */
+    public NeuralNetwork() {
+
     }
 
     /**
@@ -210,10 +210,25 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     private void initialize(Instances data) throws Exception {
         this.data = data;
-        network.setInLayerNeuronsNum(data.numAttributes() - 1);
-        network.setOutLayerNeuronsNum(data.numClasses());
+        initializeInputOptions(data);
         normalizer = new MinMaxNormalizer(filter.filterInstances(data));
         buildNetwork();
+    }
+
+    private void initializeInputOptions(Instances data) {
+        if (network == null) {
+            this.network = new MultilayerPerceptron(data.numAttributes() - 1, data.numClasses());
+        } else {
+            network.setInLayerNeuronsNum(data.numAttributes() - 1);
+            network.setOutLayerNeuronsNum(data.numClasses());
+        }
+        if (network.getHiddenLayer() == null) {
+            int neuronsNum = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data);
+            if (neuronsNum < NIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
+                neuronsNum = NIN_NEURONS_NUM_IN_HIDDEN_LAYER;
+            }
+            network.setHiddenLayer(String.valueOf(neuronsNum));
+        }
     }
 
     private double classValue(double[] y) {

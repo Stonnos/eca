@@ -111,7 +111,9 @@ public class StatisticsTableBuilder {
                 results.add(new Entry(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
                         String.format("[%s; %s]", FORMAT.format(x[0]), FORMAT.format(x[1]))));
             }
-            results.add(new Entry(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
+            if (e.getTotalTimeMillis() != null) {
+                results.add(new Entry(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
+            }
         }
 
         @Override
