@@ -24,6 +24,7 @@ import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import eca.gui.tables.StatisticsTableBuilder;
+import eca.util.EvaluationMethodConstraints;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -54,10 +55,6 @@ public abstract class ExperimentFrame extends JFrame {
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
-    private static final int MINIMUM_NUMBER_OF_FOLDS = 2;
-    private static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
-    private static final int MINIMUM_NUMBER_OF_TESTS = 1;
-    private static final int MAXIMUM_NUMBER_OF_TESTS = 100;
     private static final String EXPERIMENT_HISTORY_TITLE = "История эксперимента";
     private static final String INFO_TITLE = "Информация";
     private static final String START_BUTTON_TEXT = "Начать эксперимент";
@@ -233,10 +230,12 @@ public abstract class ExperimentFrame extends JFrame {
         group.add(useTrainingSet);
         group.add(useTestingSet);
         //---------------------------------
-        foldsSpinner.setModel(new SpinnerNumberModel(experiment.getNumFolds(), MINIMUM_NUMBER_OF_FOLDS,
-                MAXIMUM_NUMBER_OF_FOLDS, 1));
-        validationsSpinner.setModel(new SpinnerNumberModel(experiment.getNumTests(), MINIMUM_NUMBER_OF_TESTS,
-                MAXIMUM_NUMBER_OF_TESTS, 1));
+        foldsSpinner.setModel(
+                new SpinnerNumberModel(experiment.getNumFolds(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
+                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
+        validationsSpinner.setModel(
+                new SpinnerNumberModel(experiment.getNumTests(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_TESTS,
+                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
         validationsSpinner.setEnabled(false);
 

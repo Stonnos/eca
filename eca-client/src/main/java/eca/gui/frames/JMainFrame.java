@@ -61,6 +61,7 @@ import eca.gui.dialogs.EnsembleOptionsDialog;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
 import eca.gui.dialogs.ExecutorDialog;
 import eca.gui.dialogs.ExperimentRequestDialog;
+import eca.gui.dialogs.J48OptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LoadDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
@@ -85,6 +86,7 @@ import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
+import eca.trees.J48;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -610,7 +612,7 @@ public class JMainFrame extends JFrame {
     }
 
     /**
-     *
+     * Classification results history model.
      */
     public class ResultsHistory extends DefaultListModel<String> {
 
@@ -1030,7 +1032,8 @@ public class JMainFrame extends JFrame {
                                 int digits;
                                 Map<String, String> properties = model.getAdditionalProperties();
                                 if (model.getAdditionalProperties() != null) {
-                                    String descriptionProp = properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
+                                    String descriptionProp =
+                                            properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
                                     description = descriptionProp != null ? descriptionProp
                                             : model.getClassifier().getClass().getSimpleName();
                                     String digitsProp = properties.get(ClassificationModelDictionary.DIGITS_KEY);
@@ -1310,6 +1313,7 @@ public class JMainFrame extends JFrame {
         JMenuItem c45Item = new JMenuItem(ClassifiersNamesDictionary.C45);
         JMenuItem cartItem = new JMenuItem(ClassifiersNamesDictionary.CART);
         JMenuItem chaidItem = new JMenuItem(ClassifiersNamesDictionary.CHAID);
+        JMenuItem j48Item = new JMenuItem(ClassifiersNamesDictionary.J48);
         id3Item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1346,11 +1350,34 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+        j48Item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+                        final DataBuilder dataBuilder = new DataBuilder();
+                        createTrainingData(dataBuilder, new CallbackAction() {
+                            @Override
+                            public void apply() throws Exception {
+                                J48OptionsDialog frame = new J48OptionsDialog(JMainFrame.this,
+                                        ClassifiersNamesDictionary.J48, new J48(), dataBuilder.getData());
+                                executeSimpleBuilding(frame);
+                            }
+                        });
+                    } catch (Throwable e) {
+                        LoggerUtils.error(log, e);
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
 
         treesMenu.add(id3Item);
         treesMenu.add(c45Item);
         treesMenu.add(cartItem);
         treesMenu.add(chaidItem);
+        treesMenu.add(j48Item);
         //------------------------------------------------------------------
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
         classifiersMenu.add(logisticItem);

@@ -10,6 +10,7 @@ import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.util.EvaluationMethodConstraints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,10 +31,6 @@ public class EvaluationMethodOptionsDialog extends JDialog {
     public static final String METHOD_TITLE = "Метод оценки точности";
     public static final String BLOCKS_NUM_TITLE = "Количество блоков:";
     public static final String TESTS_NUM_TITLE = "Количество проверок:";
-    public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
-    public static final int MAXIMUM_NUMBER_OF_FOLDS = 100;
-    public static final int MINIMUM_NUMBER_OF_TESTS = 1;
-    public static final int MAXIMUM_NUMBER_OF_TESTS = 100;
     public static final String OPTIONS_TITLE = "Настройки";
 
     private JRadioButton useTrainingSetRadioButton;
@@ -97,10 +94,10 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         group.add(useTrainingSetRadioButton);
         group.add(useTestingSetRadioButton);
         //---------------------------------
-        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, MINIMUM_NUMBER_OF_FOLDS,
-                MAXIMUM_NUMBER_OF_FOLDS, 1));
-        testsSpinner.setModel(new SpinnerNumberModel(numTests, MINIMUM_NUMBER_OF_TESTS,
-                MAXIMUM_NUMBER_OF_TESTS, 1));
+        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
+                EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
+        testsSpinner.setModel(new SpinnerNumberModel(numTests, EvaluationMethodConstraints.MINIMUM_NUMBER_OF_TESTS,
+                EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
         testsSpinner.setEnabled(false);
         //--------------------------------

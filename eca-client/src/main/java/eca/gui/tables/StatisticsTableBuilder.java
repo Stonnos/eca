@@ -13,6 +13,7 @@ import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.NumericFormat;
 import eca.trees.DecisionTreeClassifier;
+import eca.trees.J48;
 import eca.util.Entry;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
@@ -26,6 +27,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
+ * Implements building classifiers evaluation results represented in table.
+ *
  * @author Roman Batygin
  */
 public class StatisticsTableBuilder {
@@ -46,7 +49,8 @@ public class StatisticsTableBuilder {
     public static final String CLASSIFIER_MEAN_ERROR_TEXT = "Средняя абсолютная ошибка классификации";
     public static final String ROOT_MEAN_SQUARED_ERROR_TEXT = "Среднеквадратическая ошибка классификации";
     public static final String VARIANCE_ERROR_TEXT = "Дисперсия ошибки классификатора";
-    public static final String ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT = "95% доверительный интервал ошибки классификатора";
+    public static final String ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT =
+            "95% доверительный интервал ошибки классификатора";
     public static final String NUMBER_OF_NODES_TEXT = "Число узлов";
     public static final String NUMBER_OF_LEAVES_TEXT = "Число листьев";
     public static final String TREE_DEPTH_TEXT = "Глубина дерева";
@@ -80,8 +84,7 @@ public class StatisticsTableBuilder {
 
         ArrayList<Entry> results = new ArrayList<>();
 
-        public ResultsModel(Evaluation e, Classifier classifier) {
-
+        ResultsModel(Evaluation e, Classifier classifier) {
             results.add(new Entry(INITIAL_DATA_TEXT, e.getHeader().relationName()));
             results.add(new Entry(NUMBER_OF_INSTANCES_TEXT, FORMAT.format(e.getData().numInstances())));
             results.add(new Entry(NUMBER_OF_ATTRIBUTES_TEXT, FORMAT.format(e.getData().numAttributes())));
@@ -89,7 +92,6 @@ public class StatisticsTableBuilder {
             results.add(new Entry(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
 
             String evaluationMethodStr;
-
             if (e.isKCrossValidationMethod()) {
                 evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
                         (e.getValidationsNum() > 1 ? e.getValidationsNum() + "*" : StringUtils.EMPTY), e.numFolds());
@@ -152,7 +154,7 @@ public class StatisticsTableBuilder {
         model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf(tree.numNodes())));
         model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf(tree.numLeaves())));
         model.addRow(new Entry(TREE_DEPTH_TEXT, String.valueOf(tree.depth())));
-        return create(model);
+        return createTable(model);
     }
 
     public final JTable createStatistics(NeuralNetwork mlp, Evaluation e) throws Exception {
@@ -166,31 +168,39 @@ public class StatisticsTableBuilder {
                 .getActivationFunctionType().getDescription()));
         model.addRow(new Entry(AF_OF_OUT_LAYER_TEXT, mlp.network()
                 .getOutActivationFunction().getActivationFunctionType().getDescription()));
-        model.addRow(new Entry(LEARNING_ALGORITHM_TEXT, mlp.network().getLearningAlgorithm().getClass().getSimpleName()));
-        return create(model);
+        model.addRow(
+                new Entry(LEARNING_ALGORITHM_TEXT, mlp.network().getLearningAlgorithm().getClass().getSimpleName()));
+        return createTable(model);
     }
 
     public final JTable createStatistics(IterativeEnsembleClassifier cls, Evaluation e) throws Exception {
         ResultsModel model = new ResultsModel(e, cls);
         model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
-        return create(model);
+        return createTable(model);
     }
 
     public final JTable createStatistics(Logistic cls, Evaluation e) throws Exception {
-        return create(new ResultsModel(e, cls));
+        return createTable(new ResultsModel(e, cls));
     }
 
     public final JTable createStatistics(KNearestNeighbours cls, Evaluation e) throws Exception {
         ResultsModel model = new ResultsModel(e, cls);
         model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.distance().getDistanceType().getDescription()));
-        return create(model);
+        return createTable(model);
     }
 
     public final JTable createStatistics(StackingClassifier cls, Evaluation e) throws Exception {
         ResultsModel model = new ResultsModel(e, cls);
         model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
         model.addRow(new Entry(META_CLASSIFIER_NAME_TEXT, cls.getMetaClassifier().getClass().getSimpleName()));
-        return create(model);
+        return createTable(model);
+    }
+
+    public final JTable createStatistics(J48 j48, Evaluation e) throws Exception {
+        ResultsModel model = new ResultsModel(e, j48);
+        model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf((int) j48.measureTreeSize())));
+        model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf((int) j48.measureNumLeaves())));
+        return createTable(model);
     }
 
     public final JTable createStatistics(Classifier cls, Evaluation e) throws Exception {
@@ -206,12 +216,14 @@ public class StatisticsTableBuilder {
             return createStatistics((KNearestNeighbours) cls, e);
         } else if (cls instanceof StackingClassifier) {
             return createStatistics((StackingClassifier) cls, e);
+        } else if (cls instanceof J48) {
+            return createStatistics((J48) cls, e);
         } else {
             return null;
         }
     }
 
-    private JTable create(ResultsModel model) {
+    private JTable createTable(ResultsModel model) {
         JDataTableBase jDataTableBase = new JDataTableBase(model);
         jDataTableBase.setAutoResizeOff(false);
         return jDataTableBase;

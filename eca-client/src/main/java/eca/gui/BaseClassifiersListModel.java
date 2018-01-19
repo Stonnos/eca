@@ -9,6 +9,7 @@ import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
+import eca.trees.J48;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -80,6 +81,10 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
             name = ClassifiersNamesDictionary.KNN;
             frames.add(new KNNOptionDialog(parent,
                     name, (KNearestNeighbours) classifier, data));
+        } else if (classifier instanceof J48) {
+            name = ClassifiersNamesDictionary.J48;
+            frames.add(new J48OptionsDialog(parent,
+                    name, (J48) classifier, data));
         }
         super.addElement(name);
     }
@@ -124,6 +129,10 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
                 kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
                 frames.add(new KNNOptionDialog(parent,
                         ClassifiersNamesDictionary.KNN, kNearestNeighbours, data));
+                break;
+            case ClassifiersNamesDictionary.J48:
+                frames.add(new J48OptionsDialog(parent,
+                        ClassifiersNamesDictionary.J48, new J48(), data));
                 break;
 
         }

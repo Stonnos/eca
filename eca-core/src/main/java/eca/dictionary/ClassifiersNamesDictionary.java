@@ -13,6 +13,7 @@ public class ClassifiersNamesDictionary {
     public static final String C45 = "Алгоритм C4.5";
     public static final String CART = "Алгоритм CART";
     public static final String CHAID = "Алгоритм CHAID";
+    public static final String J48 = "Алгоритм J48";
     public static final String NEURAL_NETWORK = "Нейронная сеть (Многослойный персептрон)";
     public static final String LOGISTIC = "Логистическая регрессия";
     public static final String KNN = "Алгоритм k - взвешенных ближайших соседей";

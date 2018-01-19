@@ -35,6 +35,7 @@ import eca.regression.Logistic;
 import eca.roc.AttributesSelection;
 import eca.roc.RocCurve;
 import eca.trees.DecisionTreeClassifier;
+import eca.trees.J48;
 import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -53,6 +54,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+import weka.gui.treevisualizer.PlaceNode2;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -125,7 +127,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
         this.makeGUI(digits);
-        this.makeMenu(digits);
+        this.createMenu(digits);
         this.setLocationRelativeTo(parent);
     }
 
@@ -157,7 +159,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         resultPane.setViewportView(table);
     }
 
-    private void makeMenu(final int digits) {
+    private void createMenu(final int digits) {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
@@ -360,8 +362,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         if (resultsFrameBase != null) {
             if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
                 JScrollPane pane
-                        = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(),
-                        digits));
+                        = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(), digits));
                 resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
                 JScrollBar bar = pane.getHorizontalScrollBar();
                 bar.setValue(bar.getMaximum());
@@ -371,8 +372,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 resultsFrameBase.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
             } else if (resultsFrameBase.classifier() instanceof Logistic) {
                 LogisticCoefficientsTable table
-                        =
-                        new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
+                        = new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
                                 digits);
                 JScrollPane pane = new JScrollPane(table);
                 resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
@@ -382,7 +382,6 @@ public class ClassificationResultsFrameBase extends JFrame {
                 SignificantAttributesTable signTable
                         = new SignificantAttributesTable(attributesSelection, digits);
                 JScrollPane signPane = new JScrollPane(signTable);
-
                 resultsFrameBase.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
             } else if (resultsFrameBase.classifier() instanceof EnsembleClassifier) {
                 EnsembleClassifier ensembleClassifier = (EnsembleClassifier) resultsFrameBase.classifier();
@@ -390,6 +389,10 @@ public class ClassificationResultsFrameBase extends JFrame {
                         resultsFrameBase.getParentFrame(), digits);
                 JScrollPane pane = new JScrollPane(table);
                 resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
+            } else if (resultsFrameBase.classifier() instanceof J48) {
+                J48 j48 = (J48) resultsFrameBase.classifier();
+                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, new weka.gui.treevisualizer.TreeVisualizer(null,
+                        j48.graph(), new PlaceNode2()));
             }
         }
     }

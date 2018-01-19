@@ -20,6 +20,8 @@ import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
+import eca.trees.J48;
+import eca.util.EvaluationMethodConstraints;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -46,11 +48,12 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private static final String META_CLASSIFIER_OPTIONS_BUTTON_TEXT = "Настройка параметров";
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE = "Необходимо выбрать базовые классификаторы!";
 
-    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[]{ClassifiersNamesDictionary.ID3,
+    private static final String[] AVAILABLE_INDIVIDUAL_CLASSIFIERS = new String[] {ClassifiersNamesDictionary.ID3,
             ClassifiersNamesDictionary.C45,
             ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
             ClassifiersNamesDictionary.NEURAL_NETWORK,
-            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN};
+            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN,
+            ClassifiersNamesDictionary.J48};
 
     private static final Dimension ALGORITHMS_LIST_DIM = new Dimension(300, 180);
 
@@ -69,7 +72,6 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     public StackingOptionsDialog(Window parent, String title,
                                  StackingClassifier stackingClassifier, Instances data, final int digits) {
         super(parent, title, stackingClassifier, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.makeGUI(digits);
@@ -104,7 +106,9 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         useTrainingSet.setSelected(true);
         group.add(useTrainingSet);
         group.add(useTestingSet);
-        foldsSpinner.setModel(new SpinnerNumberModel(classifier.getNumFolds(), 2, 100, 1));
+        foldsSpinner.setModel(
+                new SpinnerNumberModel(classifier.getNumFolds(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
+                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
         foldsSpinner.setEnabled(false);
         panel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
@@ -237,6 +241,10 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                             kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
                             metaClsOptionsDialog = new KNNOptionDialog(StackingOptionsDialog.this,
                                     ClassifiersNamesDictionary.KNN, kNearestNeighbours, data);
+                            break;
+                        case ClassifiersNamesDictionary.J48:
+                            metaClsOptionsDialog = new J48OptionsDialog(StackingOptionsDialog.this,
+                                    ClassifiersNamesDictionary.J48, new J48(), data);
                             break;
                     }
                 } catch (Exception e) {

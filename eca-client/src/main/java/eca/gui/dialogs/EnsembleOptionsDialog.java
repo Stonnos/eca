@@ -65,7 +65,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             ClassifiersNamesDictionary.ID3, ClassifiersNamesDictionary.C45,
             ClassifiersNamesDictionary.CART, ClassifiersNamesDictionary.CHAID,
             ClassifiersNamesDictionary.NEURAL_NETWORK,
-            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN
+            ClassifiersNamesDictionary.LOGISTIC, ClassifiersNamesDictionary.KNN,
+            ClassifiersNamesDictionary.J48
     };
 
     private static final int ALGORITHMS_LIST_WIDTH = 320;

@@ -51,7 +51,6 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
     public RandomForestsOptionDialog(Window parent, String title,
                                      RandomForests forest, Instances data) {
         super(parent, title, forest, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         //------------------------------------

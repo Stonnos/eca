@@ -47,7 +47,6 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
     public KNNOptionDialog(Window parent, String title,
                            KNearestNeighbours knn, Instances data) {
         super(parent, title, knn, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         //-------------------------------------------

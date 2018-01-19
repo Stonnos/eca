@@ -56,7 +56,6 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
     public DecisionTreeOptionsDialog(Window parent, String title,
                                      DecisionTreeClassifier tree, Instances data) {
         super(parent, title, tree, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
 

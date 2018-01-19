@@ -25,8 +25,8 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
 
     private static final String OPTIONS_MESSAGE = "Параметры логистической регрессии";
 
-    private static final String NUM_ITS_MESSAGE = "<html><body>Максимальное число итераций для"
-            + " поиска<br>минимума функции -Log(Likelihood):</body></html>";
+    private static final String NUM_ITS_MESSAGE =
+            "<html><body>Максимальное число итераций для поиска<br>минимума функции -Log(Likelihood):</body></html>";
 
     private static final String OPT_METHOD_MESSAGE = "Метод поиска минимума";
 
@@ -35,12 +35,12 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
 
     private JTextField numItsTextField;
 
-    private JRadioButton newtonRadioButton, gradientRadioButton;
+    private JRadioButton newtonRadioButton;
+    private JRadioButton gradientRadioButton;
 
     public LogisticOptionsDialogBase(Window parent, String title,
                                      Logistic model, Instances data) {
         super(parent, title, model, data);
-        this.data = data;
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         //------------------------------------
