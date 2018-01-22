@@ -20,7 +20,7 @@ public class MissingCellRenderer extends DefaultTableCellRenderer {
         Component comp = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, column);
         if (!isSelected) {
-            comp.setForeground(value == null ? Color.YELLOW : Color.WHITE);
+            comp.setBackground(value == null ? Color.YELLOW : Color.WHITE);
         }
         return comp;
     }
