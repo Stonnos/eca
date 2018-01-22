@@ -126,7 +126,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.parentFrame = parent;
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
-        this.makeGUI(digits);
+        this.createGUI(digits);
         this.createMenu(digits);
         this.setLocationRelativeTo(parent);
     }
@@ -286,7 +286,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setJMenuBar(menu);
     }
 
-    private void makeGUI(final int digits) throws Exception {
+    private void createGUI(final int digits) throws Exception {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         pane = new JTabbedPane();
         JPanel resultPanel = new JPanel(new GridBagLayout());

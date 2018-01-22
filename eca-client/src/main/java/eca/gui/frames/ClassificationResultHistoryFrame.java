@@ -26,12 +26,11 @@ public class ClassificationResultHistoryFrame extends JFrame {
     public ClassificationResultHistoryFrame(JFrame parent, JMainFrame.ResultsHistory historyModel) {
         this.setIconImage(parent.getIconImage());
         this.historyModel = historyModel;
-        this.makeGUI();
+        this.createGUI();
         this.setLocationRelativeTo(parent);
     }
 
-
-    private void makeGUI() {
+    private void createGUI() {
         this.setResizable(false);
         this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());

@@ -116,7 +116,7 @@ public abstract class ExperimentFrame extends JFrame {
                 }
             }
         });
-        this.makeGUI();
+        this.createGUI();
         this.setLocationRelativeTo(parent);
     }
 
@@ -203,7 +203,7 @@ public abstract class ExperimentFrame extends JFrame {
         timer = new TimeWorker();
     }
 
-    private void makeGUI() throws Exception {
+    private void createGUI() throws Exception {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setLayout(new GridBagLayout());
         table = new ExperimentTable(new java.util.ArrayList<>(), this, experiment.getData(), digits);

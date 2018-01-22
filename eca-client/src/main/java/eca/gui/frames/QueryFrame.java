@@ -51,17 +51,17 @@ public class QueryFrame extends JFrame {
 
     private InstancesSetTable instancesSetTable;
 
-    private SwingWorkerConstruction worker;
+    private QueryWorker worker;
 
-    private JMainFrame parent;
+    private JMainFrame parentFrame;
 
-    public QueryFrame(JMainFrame parent, DataBaseQueryExecutor connection) {
-        this.parent = parent;
+    public QueryFrame(JMainFrame parentFrame, DataBaseQueryExecutor connection) {
+        this.parentFrame = parentFrame;
         this.connection = connection;
         this.setLayout(new GridBagLayout());
-        this.setIconImage(parent.getIconImage());
+        this.setIconImage(parentFrame.getIconImage());
         this.setResizable(false);
-        this.makeGUI();
+        this.createGUI();
         this.addWindowListener(new WindowAdapter() {
 
             @Override
@@ -78,7 +78,7 @@ public class QueryFrame extends JFrame {
         });
 
         this.pack();
-        this.setLocationRelativeTo(parent);
+        this.setLocationRelativeTo(parentFrame);
     }
 
     public java.util.ArrayList<Instances> getSelectedInstances() {
@@ -109,7 +109,7 @@ public class QueryFrame extends JFrame {
         });
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         JPanel paramPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         paramPanel.setBorder(PanelBorderUtils.createTitledBorder(DB_TITLE));
         JTextField url = new JTextField(30);
@@ -142,7 +142,7 @@ public class QueryFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 progress.setIndeterminate(true);
-                worker = new SwingWorkerConstruction(queryArea.getText().trim());
+                worker = new QueryWorker(queryArea.getText().trim());
                 interrupt.setEnabled(true);
                 worker.execute();
             }
@@ -199,12 +199,12 @@ public class QueryFrame extends JFrame {
                 if (instancesSetTable.getSelectedRows().length != 0) {
                     try {
                         for (Instances instances : getSelectedInstances()) {
-                            parent.createDataFrame(instances);
+                            parentFrame.createDataFrame(instances);
                         }
                         dispose();
                     } catch (Throwable ex) {
                         LoggerUtils.error(log, ex);
-                        JOptionPane.showMessageDialog(parent, ex.getMessage(),
+                        JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);
                     }
 
@@ -233,15 +233,15 @@ public class QueryFrame extends JFrame {
     }
 
     /**
-     *
+     * Database query worker.
      */
-    private class SwingWorkerConstruction extends SwingWorker<Void, Void> {
+    private class QueryWorker extends SwingWorker<Void, Void> {
 
         String query;
         Instances data;
         String errorMessage;
 
-        SwingWorkerConstruction(String query) {
+        QueryWorker(String query) {
             this.query = query;
         }
 

@@ -85,16 +85,7 @@ public class ClassifyInstancePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    Instance obj = table.instance();
-                    int i = (int) classifier.classifyInstance(obj);
-                    double probability = classifier.distributionForInstance(obj)[i];
-                    StringBuilder result = new StringBuilder();
-                    result.append(CLASS_CODE_TEXT).append(i)
-                            .append("\n").append(CLASS_VALUE_TEXT)
-                            .append(table.data().classAttribute().value(i))
-                            .append("\n").append(CLASS_PROBABILITY_TEXT)
-                            .append(table.getDecimalFormat().format(probability));
-                    classField.setText(result.toString());
+                    classField.setText(buildClassificationResult());
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(ClassifyInstancePanel.this.getParent(),
                             e.getMessage(), null,
@@ -124,4 +115,16 @@ public class ClassifyInstancePanel extends JPanel {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
     }
 
+    private String buildClassificationResult() throws Exception {
+        Instance obj = table.instance();
+        int i = (int) classifier.classifyInstance(obj);
+        double probability = classifier.distributionForInstance(obj)[i];
+        StringBuilder result = new StringBuilder();
+        result.append(CLASS_CODE_TEXT).append(i)
+                .append("\n").append(CLASS_VALUE_TEXT)
+                .append(table.data().classAttribute().value(i))
+                .append("\n").append(CLASS_PROBABILITY_TEXT)
+                .append(table.getDecimalFormat().format(probability));
+        return result.toString();
+    }
 }

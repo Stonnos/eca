@@ -24,11 +24,11 @@ public class AboutProgramFrame extends JFrame {
 
     public AboutProgramFrame(JFrame parent) {
         this.setIconImage(parent.getIconImage());
-        this.makeGUI();
+        this.createGUI();
         this.setLocationRelativeTo(parent);
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         this.setResizable(false);
         this.setTitle(ABOUT_PROGRAM_TITLE);
         this.setLayout(new GridBagLayout());
