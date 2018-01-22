@@ -36,7 +36,7 @@ public abstract class SaveFileChooser {
                 }
             }
             FileNameExtensionFilter ext = (FileNameExtensionFilter) chooser.getFileFilter();
-            file = new File(file.getAbsolutePath() + "." + ext.getExtensions()[0]);
+            file = new File(String.format("%s.%s", file.getAbsolutePath(), ext.getExtensions()[0]));
             return file;
         } else {
             return null;

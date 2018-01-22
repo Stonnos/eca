@@ -47,7 +47,7 @@ import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorLoader;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
-import eca.gui.actions.URLLoader;
+import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
@@ -112,6 +112,8 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * Implements the main application frame.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -198,8 +200,8 @@ public class JMainFrame extends JFrame {
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
-        this.makeGUI();
-        resultHistoryFrame = new ClassificationResultHistoryFrame(this, resultsHistory);
+        this.createGUI();
+        this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, resultsHistory);
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
@@ -250,8 +252,8 @@ public class JMainFrame extends JFrame {
     }
 
     /**
-     * Implements data internal frame. This class provides the mains
-     * operations with training data sets.
+     * Implements data internal frame. This class provides the main
+     * operations with training data set.
      */
     private class DataInternalFrame extends JInternalFrame {
 
@@ -294,8 +296,8 @@ public class JMainFrame extends JFrame {
 
         DataInternalFrame(Instances data, JMenuItem menu, int digits) throws Exception {
             this.setLayout(new GridBagLayout());
-            this.makeUpperPanel();
-            this.makeLowerPanel();
+            this.createUpperPanel();
+            this.createLowerPanel();
             this.setFrameColor(FRAME_COLOR);
             this.setMenu(menu);
             this.createPopMenu();
@@ -374,7 +376,7 @@ public class JMainFrame extends JFrame {
             numAttributesTextField.setText(String.valueOf(data.numAttributes()));
         }
 
-        void makeUpperPanel() {
+        void createUpperPanel() {
             upperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             upperPanel.setBorder(PanelBorderUtils.createTitledBorder(UPPER_TITLE));
             relationNameTextField = new JTextField(RELATION_NAME_FIELD_LENGTH);
@@ -397,13 +399,13 @@ public class JMainFrame extends JFrame {
                     new Insets(5, 0, 5, 0), 0, 0));
         }
 
-        void makeLowerPanel() {
+        void createLowerPanel() {
             lowerPanel = new JPanel(new GridBagLayout());
             dataScrollPane = new JScrollPane();
             dataScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
-            this.makeAttrPanel();
+            this.createAttrPanel();
             lowerPanel.add(dataScrollPane, new GridBagConstraints(0, 0, 1, 2, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 2, 5), 0, 0));
@@ -414,7 +416,7 @@ public class JMainFrame extends JFrame {
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         }
 
-        void makeAttrPanel() {
+        void createAttrPanel() {
             attrPanel = new JPanel(new GridBagLayout());
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
             selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
@@ -633,7 +635,6 @@ public class JMainFrame extends JFrame {
             ClassificationResultsFrameBase.createResults(res, digits);
             add(res);
             res.setVisible(true);
-
             log.info("Evaluation for classifier {} has been successfully finished!",
                     classifier.getClass().getSimpleName());
         }
@@ -643,10 +644,6 @@ public class JMainFrame extends JFrame {
             addElement(String.format(HISTORY_FORMAT,
                     DateFormat.SIMPLE_DATE_FORMAT.format(resultsFrameBase.getCreationDate()),
                     resultsFrameBase.classifier().getClass().getSimpleName()));
-        }
-
-        public ArrayList<ClassificationResultsFrameBase> getResultsFrameBases() {
-            return resultsFrameBases;
         }
 
         public ClassificationResultsFrameBase getFrame(int i) {
@@ -681,7 +678,7 @@ public class JMainFrame extends JFrame {
         });
     }
 
-    public void process(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
+    private void process(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
         ExecutorService.process(executorDialog, successAction, new CallbackAction() {
             @Override
             public void apply() {
@@ -732,10 +729,10 @@ public class JMainFrame extends JFrame {
         return (DataInternalFrame) dataPanels.getSelectedFrame();
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize((int) (WIDTH_COEFFICIENT * dim.getWidth()), (int) (HEIGHT_COEFFICIENT * dim.getHeight()));
-        this.makeMenu();
+        this.createMenu();
         dataPanels.setBackground(Color.GRAY);
         this.add(dataPanels);
     }
@@ -798,7 +795,7 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    private void makeMenu() {
+    private void createMenu() {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenu algorithmsMenu = new JMenu(CLASSIFIERS_MENU_TEXT);
@@ -984,7 +981,7 @@ public class JMainFrame extends JFrame {
                     try {
                         UrlDataLoader dataLoader = new UrlDataLoader(new URL(dataUrl.trim()));
                         dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
-                        URLLoader loader = new URLLoader(dataLoader);
+                        UrlLoader loader = new UrlLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
 
@@ -1708,14 +1705,10 @@ public class JMainFrame extends JFrame {
 
     private void executeIterativeBuilding(final BaseOptionsDialog frame, String progressMessage) throws Exception {
         if (frame.dialogResult()) {
-
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
-
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
-
             try {
-
                 if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
                     executeWithEcaService(frame);
                 } else {

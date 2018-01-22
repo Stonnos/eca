@@ -15,10 +15,10 @@ import java.awt.*;
  */
 public class PanelBorderUtils {
 
-    private static final Font BORDER_FONT = new Font("Arial", 1, 14);
+    private static final Font BORDER_FONT = new Font("Arial", Font.BOLD, 14);
     private static final Color COLOR = new Color(133, 133, 133);
 
-    public static final TitledBorder createTitledBorder(String title) {
+    public static TitledBorder createTitledBorder(String title) {
         TitledBorder border = new TitledBorder(title);
         border.setBorder(new EtchedBorder(COLOR, null));
         border.setTitlePosition(TitledBorder.CENTER);

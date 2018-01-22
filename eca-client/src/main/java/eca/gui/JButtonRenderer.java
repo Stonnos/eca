@@ -8,8 +8,7 @@ import java.awt.*;
  * @author Roman Batygin
  */
 
-public class JButtonRenderer extends JButton
-        implements TableCellRenderer {
+public class JButtonRenderer extends JButton implements TableCellRenderer {
 
     private final String text;
 
