@@ -86,6 +86,7 @@ public abstract class ExperimentFrame extends JFrame {
     private JSpinner foldsSpinner = new JSpinner();
     private JSpinner validationsSpinner = new JSpinner();
 
+    private JButton initialDataButton;
     private JButton startButton;
     private JButton optionsButton;
     private JButton saveButton;
@@ -231,6 +232,7 @@ public abstract class ExperimentFrame extends JFrame {
         left.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
         //--------------------------------------------------------------
+        initialDataButton = new JButton("Исходные данные");
         startButton = new JButton(START_BUTTON_TEXT);
         stopButton = new JButton(STOP_BUTTON_TEXT);
         stopButton.setEnabled(false);
@@ -238,6 +240,24 @@ public abstract class ExperimentFrame extends JFrame {
         saveButton = new JButton(SAVE_BUTTON_TEXT);
         loadButton = new JButton(LOAD_BUTTON_TEXT);
         //---------------------------------------------------------------
+        initialDataButton.addActionListener(new ActionListener() {
+
+            InstancesFrame dataFrame;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (dataFrame == null) {
+                    dataFrame = new InstancesFrame(experiment.getData(), ExperimentFrame.this);
+                    ExperimentFrame.this.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent evt) {
+                            dataFrame.dispose();
+                        }
+                    });
+                }
+                dataFrame.setVisible(true);
+            }
+        });
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -351,26 +371,29 @@ public abstract class ExperimentFrame extends JFrame {
         timerField.setBackground(Color.WHITE);
         timerField.setHighlighter(null);
         //---------------------------------------------------------------
-        leftBottom.add(optionsButton,
+        leftBottom.add(initialDataButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(startButton,
+        leftBottom.add(optionsButton,
                 new GridBagConstraints(0, 1, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(stopButton,
+        leftBottom.add(startButton,
                 new GridBagConstraints(0, 2, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(loadButton,
+        leftBottom.add(stopButton,
                 new GridBagConstraints(0, 3, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(saveButton,
+        leftBottom.add(loadButton,
                 new GridBagConstraints(0, 4, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(new JLabel(TIMER_LABEL_TEXT),
+        leftBottom.add(saveButton,
                 new GridBagConstraints(0, 5, 1, 1, 1, 0,
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
+        leftBottom.add(new JLabel(TIMER_LABEL_TEXT),
+                new GridBagConstraints(0, 6, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(25, 5, 5, 5), 0, 0));
         leftBottom.add(timerField,
-                new GridBagConstraints(0, 6, 1, 1, 1, 0,
+                new GridBagConstraints(0, 7, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         //---------------------------------------------------------------
         right.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
