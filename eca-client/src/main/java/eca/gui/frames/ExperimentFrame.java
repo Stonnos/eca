@@ -42,6 +42,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -69,7 +70,7 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
     private static final String NUMBER_PREFIX = "№";
     private static final int DEFAULT_WIDTH = 1100;
-    private static final int DEFAULT_HEIGHT = 600;
+    private static final int DEFAULT_HEIGHT = 630;
     private static final String START_TIME_TEXT = "00:00:00:000";
     private static final int TIMER_FIELD_LENGTH = 20;
     private static final String TIMER_LABEL_TEXT = "Время выполнения эксперимента";
@@ -206,7 +207,7 @@ public abstract class ExperimentFrame extends JFrame {
     private void createGUI() throws Exception {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setLayout(new GridBagLayout());
-        table = new ExperimentTable(new java.util.ArrayList<>(), this, experiment.getData(), digits);
+        table = new ExperimentTable(new ArrayList<>(), this, experiment.getData(), digits);
         JPanel top = new JPanel(new GridBagLayout());
         text = new JTextArea(10, 10);
         text.setEditable(false);
@@ -329,8 +330,8 @@ public abstract class ExperimentFrame extends JFrame {
                     if (fileChooser == null) {
                         fileChooser = new SaveModelChooser();
                     }
-                    ClassifierIndexerService indexer = new ClassifierIndexerService();
-                    fileChooser.setSelectedFile(new File(indexer.getExperimentIndex(experiment.getClassifier())));
+                    fileChooser.setSelectedFile(
+                            new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
                         ModelConverter.saveModel(file,
@@ -357,10 +358,10 @@ public abstract class ExperimentFrame extends JFrame {
                 if (file != null) {
                     try {
                         ExperimentLoader loader = new ExperimentLoader(file);
-                        LoadDialog progress = new LoadDialog(ExperimentFrame.this,
+                        LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
                                 loader, LOAD_EXPERIMENT_TITLE);
 
-                        ExecutorService.process(progress, new CallbackAction() {
+                        ExecutorService.process(loadDialog, new CallbackAction() {
                             @Override
                             public void apply() throws Exception {
                                 table.setRenderer(Color.RED);
@@ -372,7 +373,7 @@ public abstract class ExperimentFrame extends JFrame {
                             @Override
                             public void apply() throws Exception {
                                 JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                        progress.getErrorMessageText(),
+                                        loadDialog.getErrorMessageText(),
                                         null, JOptionPane.WARNING_MESSAGE);
                             }
                         });
@@ -524,7 +525,7 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     /**
-     *
+     * Implements experiment loading callback action.
      */
     private static class ExperimentLoader implements CallbackAction {
 

@@ -41,6 +41,8 @@ public class QueryFrame extends JFrame {
 
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
     private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
+    private static final int URL_FIELD_LENGTH = 30;
+    private static final int USER_FIELD_LENGTH = 10;
 
     private final DataBaseQueryExecutor connection;
 
@@ -112,12 +114,12 @@ public class QueryFrame extends JFrame {
     private void createGUI() {
         JPanel paramPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         paramPanel.setBorder(PanelBorderUtils.createTitledBorder(DB_TITLE));
-        JTextField url = new JTextField(30);
+        JTextField url = new JTextField(URL_FIELD_LENGTH);
         url.setText(connection.getConnectionDescriptor().getUrl());
         url.setBackground(Color.WHITE);
         url.setCaretPosition(0);
         url.setEditable(false);
-        JTextField user = new JTextField(10);
+        JTextField user = new JTextField(USER_FIELD_LENGTH);
         user.setText(connection.getConnectionDescriptor().getLogin());
         user.setBackground(Color.WHITE);
         user.setEditable(false);
