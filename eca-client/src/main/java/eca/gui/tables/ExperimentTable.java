@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.config.ApplicationProperties;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
@@ -32,13 +33,13 @@ import java.util.List;
 @Slf4j
 public class ExperimentTable extends JDataTableBase {
 
+    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
     private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
     private final JFrame parentFrame;
     private final Instances data;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
-
-    public ExperimentTable(ArrayList<EvaluationResults> experiment,
+    public ExperimentTable(List<EvaluationResults> experiment,
                            JFrame parent, Instances data, int digits) throws Exception {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
@@ -81,10 +82,6 @@ public class ExperimentTable extends JDataTableBase {
         classificationResultsFrameBases.clear();
     }
 
-    public int getBestNumber() {
-        return 10;
-    }
-
     public void setRenderer(final Color color) {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
@@ -92,7 +89,7 @@ public class ExperimentTable extends JDataTableBase {
                                                            boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected,
                         hasFocus, row, column);
-                if (row < getBestNumber()) {
+                if (row < APPLICATION_PROPERTIES.getNumBestResults()) {
                     cell.setForeground(color);
                 } else {
                     cell.setForeground(table.getForeground());

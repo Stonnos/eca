@@ -5,6 +5,7 @@
  */
 package eca.converters.model;
 
+import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,5 +33,20 @@ public class ExperimentHistory implements java.io.Serializable {
      * Training data
      */
     private Instances dataSet;
+
+    /**
+     * Evaluation method
+     */
+    private EvaluationMethod evaluationMethod;
+
+    /**
+     * Number of folds using in k * V cross - validation method
+     **/
+    private int numFolds;
+
+    /**
+     * Number of tests using in k * V cross - validation method
+     **/
+    private int numTests;
 
 }

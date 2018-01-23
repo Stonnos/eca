@@ -5,10 +5,15 @@
  */
 package eca.gui.service;
 
+import eca.converters.model.ExperimentHistory;
+import eca.core.evaluation.EvaluationMethodVisitor;
+import eca.core.evaluation.EvaluationResults;
+import eca.dataminer.AbstractExperiment;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
+import eca.gui.tables.StatisticsTableBuilder;
 import eca.statistics.AttributeStatistics;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -47,6 +52,9 @@ public class ClassifierInputOptionsService {
     public static final String OBJECTS_NUM_TEXT = "Число объектов: ";
     public static final String ATTRIBUTES_NUM_TEXT = "Число атрибутов: ";
     public static final String CLASSES_NUM_TEXT = "Число классов: ";
+    public static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
+    public static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
+    public static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
 
     private static final String ATTRIBUTE_CLASS_CSS_STYLE =
             ".attr {font-weight: bold; font-family: 'Arial'; font-size: %d}";
@@ -85,6 +93,106 @@ public class ClassifierInputOptionsService {
         }
         info.append("</body></html>");
         return info.toString();
+    }
+
+    /**
+     * Returns experiment results as html string.
+     *
+     * @param experimentHistory {@link ExperimentHistory} object
+     * @param fontSize          font size
+     * @return experiment results as html string
+     */
+    public static String getExperimentResultsAsHtml(ExperimentHistory experimentHistory, int fontSize,
+                                                    int resultsSize) {
+        StringBuilder info = new StringBuilder("<html>");
+        info.append(
+                String.format("<head><style>%s %s</style></head>", String.format(ATTRIBUTE_CLASS_CSS_STYLE, fontSize),
+                        String.format(VALUE_CLASS_CSS_STYLE, fontSize)));
+        info.append("<body>");
+        info.append(String.format("<h4 class = 'attr' style = 'text-align: left; color: red'>%s</h4>",
+                EXPERIMENT_END_TEXT));
+        info.append(getExperimentInputOptionsAsHtml(experimentHistory));
+        info.append(String.format("<h4 class = 'attr' style = 'text-align: center'>%s</h4>",
+                BEST_CLASSIFIER_STRUCTURES_TEXT));
+        for (int i = 0; i < Integer.min(experimentHistory.getExperiment().size(), resultsSize); i++) {
+            EvaluationResults evaluationResults = experimentHistory.getExperiment().get(i);
+            info.append(getInputOptionsTableAsHtml(evaluationResults.getClassifier(), String.format("%s №%d",
+                    evaluationResults.getClassifier().getClass().getSimpleName(), i)));
+        }
+        info.append("</body></html>");
+        return info.toString();
+    }
+
+    private static StringBuilder getExperimentInputOptionsAsHtml(ExperimentHistory experimentHistory) {
+        final StringBuilder info = new StringBuilder("<table>");
+        info.append("<tr>");
+        info.append("<th class = 'attr' colspan = '2'>").append("Входные параметры:").append("</th>");
+        info.append("</tr>");
+
+        info.append("<tr>");
+        info.append("<td class = 'attr'>");
+        info.append(RELATION_NAME_TEXT);
+        info.append("</td>");
+        info.append("<td class = 'val'>");
+        info.append(experimentHistory.getDataSet().relationName());
+        info.append("</td>");
+        info.append("</tr>");
+
+        info.append("<tr>");
+        info.append("<td class = 'attr'>");
+        info.append(OBJECTS_NUM_TEXT);
+        info.append("</td>");
+        info.append("<td class = 'val'>");
+        info.append(experimentHistory.getDataSet().numInstances());
+        info.append("</td>");
+        info.append("</tr>");
+
+        info.append("<tr>");
+        info.append("<td class = 'attr'>");
+        info.append(ATTRIBUTES_NUM_TEXT);
+        info.append("</td>");
+        info.append("<td class = 'val'>");
+        info.append(experimentHistory.getDataSet().numAttributes());
+        info.append("</td>");
+        info.append("</tr>");
+
+        info.append("<tr>");
+        info.append("<td class = 'attr'>");
+        info.append(CLASSES_NUM_TEXT);
+        info.append("</td>");
+        info.append("<td class = 'val'>");
+        info.append(experimentHistory.getDataSet().numClasses());
+        info.append("</td>");
+        info.append("</tr>");
+
+        info.append("<tr>");
+        info.append("<td class = 'attr'>");
+        info.append(EVALUATION_METHOD_TEXT);
+        info.append("</td>");
+        info.append("<td class = 'val'>");
+        experimentHistory.getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
+
+            @Override
+            public Void evaluateModel() {
+                info.append(StatisticsTableBuilder.TRAINING_DATA_METHOD_TEXT);
+                return null;
+            }
+
+            @Override
+            public Void crossValidateModel() {
+                String evaluationMethodStr = String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
+                        (experimentHistory.getNumTests() > 1 ? experimentHistory.getNumTests() + "*" :
+                                StringUtils.EMPTY),
+                        experimentHistory.getNumFolds());
+                info.append(evaluationMethodStr);
+                return null;
+            }
+        });
+        info.append("</td>");
+        info.append("</tr>");
+        info.append("</table>");
+
+        return info;
     }
 
     /**

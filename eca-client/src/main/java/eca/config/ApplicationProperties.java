@@ -29,6 +29,7 @@ public class ApplicationProperties {
     private static final String ECA_MIN_DIGITS_PROPERTY = "eca.minDigits";
     private static final String ECA_MAX_DIGITS_PROPERTY = "eca.maxDigits";
     private static final String ECA_MAX_DATA_LIST_SIZE = "eca.maxDataListSize";
+    private static final String EXPERIMENT_NUM_BEST_RESUTLS = "experiment.numBestResults";
 
     private static Properties PROPERTIES = new Properties();
 
@@ -190,6 +191,15 @@ public class ApplicationProperties {
      */
     public Integer getNumTests() {
         return Integer.valueOf(PROPERTIES.getProperty(CROSS_VALIDATION_TESTS));
+    }
+
+    /**
+     * Returns the number of best experiment models.
+     *
+     * @return the number of best experiment models
+     */
+    public Integer getNumBestResults() {
+        return Integer.valueOf(PROPERTIES.getProperty(EXPERIMENT_NUM_BEST_RESUTLS));
     }
 
 }

@@ -5,6 +5,7 @@
  */
 package eca.gui.frames;
 
+import eca.config.ApplicationProperties;
 import eca.converters.ModelConverter;
 import eca.converters.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethod;
@@ -23,12 +24,8 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
-import eca.gui.tables.StatisticsTableBuilder;
 import eca.util.EvaluationMethodConstraints;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,6 +50,7 @@ import java.util.TimeZone;
 public abstract class ExperimentFrame extends JFrame {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
+    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
@@ -65,23 +63,23 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String LOAD_BUTTON_TEXT = "Загрузить эксперимент";
 
     private static final Font TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 13);
-    private static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
-    private static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
-    private static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
-    private static final String NUMBER_PREFIX = "№";
     private static final int DEFAULT_WIDTH = 1100;
-    private static final int DEFAULT_HEIGHT = 630;
+    private static final int DEFAULT_HEIGHT = 650;
     private static final String START_TIME_TEXT = "00:00:00:000";
     private static final int TIMER_FIELD_LENGTH = 20;
     private static final String TIMER_LABEL_TEXT = "Время выполнения эксперимента";
     private static final int TIMER_DELAY_IN_MILLIS = 1;
+    private static final int EXPERIMENT_RESULTS_FONT_SIZE = 12;
+    private static final Dimension RESULTS_PANE_PREFERRED_SIZE = new Dimension(1000, 300);
+    private static final String PROGRESS_TITLE_FORMAT =
+            "<html><body><p style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</p></body></html>";
 
     private final long experimentId = System.currentTimeMillis();
 
     private final AbstractExperiment experiment;
 
     private JProgressBar progress;
-    private JTextArea text;
+    private JTextPane text;
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private JSpinner foldsSpinner = new JSpinner();
@@ -147,52 +145,9 @@ public abstract class ExperimentFrame extends JFrame {
         }
     }
 
-    public final void setDataInfo(Instances data) {
-        text.setText(ClassifierInputOptionsService.getInstancesInfo(data));
-        text.setCaretPosition(0);
-    }
-
-    public final void setResults() {
-        setResults(experiment.getData());
-    }
-
-    public final void setResults(Instances data) {
-        final StringBuilder str = new StringBuilder();
-        str.append(EXPERIMENT_END_TEXT).append("\n");
-        str.append(ClassifierInputOptionsService.getInstancesInfo(data));
-        str.append(EVALUATION_METHOD_TEXT);
-
-        getExperiment().getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
-
-            @Override
-            public Void evaluateModel() {
-                str.append(StatisticsTableBuilder.TRAINING_DATA_METHOD_TEXT);
-                return null;
-            }
-
-            @Override
-            public Void crossValidateModel() {
-                String evaluationMethodStr = String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
-                        (getExperiment().getNumTests() > 1 ? getExperiment().getNumTests() + "*" : StringUtils.EMPTY),
-                        getExperiment().getNumFolds());
-
-                str.append(evaluationMethodStr);
-                return null;
-            }
-        });
-
-        str.append("\n\n").append(BEST_CLASSIFIER_STRUCTURES_TEXT).append("\n");
-        for (int i = 0; i < Integer.min(table.getBestNumber(), table.getRowCount()); i++) {
-            str.append(table.experimentModel().getClassifier(i).getClass().getSimpleName())
-                    .append(StringUtils.SPACE).append(NUMBER_PREFIX).append(i).append("\n");
-            AbstractClassifier cls = (AbstractClassifier) table.experimentModel().getClassifier(i);
-            String[] options = cls.getOptions();
-            for (int j = 0; j < options.length; j += 2) {
-                str.append(options[j]).append(StringUtils.SPACE).append(options[j + 1]).append("\n");
-            }
-            str.append("\n");
-        }
-        text.setText(str.toString());
+    public final void setResults(ExperimentHistory experimentHistory) {
+        text.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
+                EXPERIMENT_RESULTS_FONT_SIZE, APPLICATION_PROPERTIES.getNumBestResults()));
         text.setCaretPosition(0);
     }
 
@@ -209,14 +164,13 @@ public abstract class ExperimentFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         table = new ExperimentTable(new ArrayList<>(), this, experiment.getData(), digits);
         JPanel top = new JPanel(new GridBagLayout());
-        text = new JTextArea(10, 10);
+        text = new JTextPane();
         text.setEditable(false);
         text.setFont(TEXT_AREA_FONT);
-        text.setWrapStyleWord(true);
-        text.setLineWrap(true);
+        text.setContentType("text/html");
+        text.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
         JScrollPane bottom = new JScrollPane(text);
         bottom.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
-        setDataInfo(experiment.getData());
         progress = new JProgressBar();
         progress.setStringPainted(true);
         //----------------------------------------------
@@ -293,7 +247,7 @@ public abstract class ExperimentFrame extends JFrame {
                     experiment.setNumTests(
                             ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
                 }
-                text.setText(BUILDING_PROGRESS_TITLE);
+                text.setText(String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
                 setStateForButtons(false);
                 setStateForOptions(false);
                 table.setRenderer(Color.BLACK);
@@ -335,7 +289,9 @@ public abstract class ExperimentFrame extends JFrame {
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
                         ModelConverter.saveModel(file,
-                                new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData()));
+                                new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData(),
+                                        experiment.getEvaluationMethod(), experiment.getNumFolds(),
+                                        experiment.getNumTests()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -367,7 +323,7 @@ public abstract class ExperimentFrame extends JFrame {
                                 table.setRenderer(Color.RED);
                                 ExperimentHistory history = loader.getExperiment();
                                 table.setExperiment(history.getExperiment());
-                                setResults(history.getDataSet());
+                                setResults(history);
                             }
                         }, new CallbackAction() {
                             @Override
@@ -516,7 +472,8 @@ public abstract class ExperimentFrame extends JFrame {
             setStateForOptions(true);
             table.sort();
             if (!error) {
-                setResults();
+                setResults(new ExperimentHistory(experiment.getHistory(), experiment.getData(),
+                        experiment.getEvaluationMethod(), experiment.getNumFolds(), experiment.getNumTests()));
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }

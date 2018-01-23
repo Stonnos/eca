@@ -30,7 +30,7 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     private final DecimalFormat format = NumericFormat.getInstance();
 
-    public ExperimentTableModel(ArrayList<EvaluationResults> experiment, int digits) throws Exception {
+    public ExperimentTableModel(List<EvaluationResults> experiment, int digits) throws Exception {
         this.experiment = experiment;
         format.setMaximumFractionDigits(digits);
     }
