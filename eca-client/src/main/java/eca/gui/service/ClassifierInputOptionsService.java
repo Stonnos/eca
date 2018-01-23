@@ -16,6 +16,7 @@ import eca.ensemble.StackingClassifier;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.statistics.AttributeStatistics;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -55,6 +56,7 @@ public class ClassifierInputOptionsService {
     public static final String BEST_CLASSIFIER_STRUCTURES_TEXT = "Наилучшие конфигурации классификаторов:";
     public static final String EXPERIMENT_END_TEXT = "Эксперимент завершен.";
     public static final String EVALUATION_METHOD_TEXT = "Метод оценки точности: ";
+    public static final String KV_CROSS_VALIDATION = "k * V блочная кросс - проверка";
 
     private static final String ATTRIBUTE_CLASS_CSS_STYLE =
             ".attr {font-weight: bold; font-family: 'Arial'; font-size: %d}";
@@ -180,11 +182,15 @@ public class ClassifierInputOptionsService {
 
             @Override
             public Void crossValidateModel() {
-                String evaluationMethodStr = String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
-                        (experimentHistory.getNumTests() > 1 ? experimentHistory.getNumTests() + "*" :
-                                StringUtils.EMPTY),
-                        experimentHistory.getNumFolds());
-                info.append(evaluationMethodStr);
+                if (experimentHistory.getEvaluationParams() == null) {
+                    info.append(KV_CROSS_VALIDATION);
+                } else {
+                    String evaluationMethodStr = String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
+                            (experimentHistory.getEvaluationParams().getNumTests() > 1 ?
+                                    experimentHistory.getEvaluationParams().getNumTests() + "*" : StringUtils.EMPTY),
+                            experimentHistory.getEvaluationParams().getNumFolds());
+                    info.append(evaluationMethodStr);
+                }
                 return null;
             }
         });

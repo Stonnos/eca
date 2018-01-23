@@ -40,13 +40,8 @@ public class ExperimentHistory implements java.io.Serializable {
     private EvaluationMethod evaluationMethod;
 
     /**
-     * Number of folds using in k * V cross - validation method
-     **/
-    private int numFolds;
-
-    /**
-     * Number of tests using in k * V cross - validation method
-     **/
-    private int numTests;
+     * Evaluation params
+     */
+    private EvaluationParams evaluationParams;
 
 }

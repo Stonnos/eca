@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.config.ApplicationProperties;
 import eca.converters.ModelConverter;
+import eca.converters.model.EvaluationParams;
 import eca.converters.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationMethodVisitor;
@@ -247,7 +248,8 @@ public abstract class ExperimentFrame extends JFrame {
                     experiment.setNumTests(
                             ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
                 }
-                text.setText(String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
+                text.setText(
+                        String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
                 setStateForButtons(false);
                 setStateForOptions(false);
                 table.setRenderer(Color.BLACK);
@@ -288,10 +290,10 @@ public abstract class ExperimentFrame extends JFrame {
                             new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
+
                         ModelConverter.saveModel(file,
                                 new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData(),
-                                        experiment.getEvaluationMethod(), experiment.getNumFolds(),
-                                        experiment.getNumTests()));
+                                        experiment.getEvaluationMethod(), createEvaluationParams()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -394,6 +396,11 @@ public abstract class ExperimentFrame extends JFrame {
         this.getRootPane().setDefaultButton(startButton);
     }
 
+    private EvaluationParams createEvaluationParams() {
+        return EvaluationMethod.TRAINING_DATA.equals(experiment.getEvaluationMethod()) ? null :
+                new EvaluationParams(experiment.getNumFolds(), experiment.getNumTests());
+    }
+
     private class TimeWorker extends SwingWorker<Void, Void> {
 
         @Override
@@ -473,7 +480,7 @@ public abstract class ExperimentFrame extends JFrame {
             table.sort();
             if (!error) {
                 setResults(new ExperimentHistory(experiment.getHistory(), experiment.getData(),
-                        experiment.getEvaluationMethod(), experiment.getNumFolds(), experiment.getNumTests()));
+                        experiment.getEvaluationMethod(), createEvaluationParams()));
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }
