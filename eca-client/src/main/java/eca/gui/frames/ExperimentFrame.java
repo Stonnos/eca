@@ -73,7 +73,7 @@ public abstract class ExperimentFrame extends JFrame {
     private static final int EXPERIMENT_RESULTS_FONT_SIZE = 12;
     private static final Dimension RESULTS_PANE_PREFERRED_SIZE = new Dimension(1000, 300);
     private static final String PROGRESS_TITLE_FORMAT =
-            "<html><body><p style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</p></body></html>";
+            "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
 
     private final long experimentId = System.currentTimeMillis();
 
