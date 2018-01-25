@@ -41,8 +41,6 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
      **/
     private double[] weights;
 
-    private final Random random = new Random();
-
     /**
      * Creates <tt>AdaBoostClassifier</tt> object.
      */
@@ -99,6 +97,8 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
      * AdaBoost iterative builder.
      */
     private class AdaBoostBuilder extends AbstractBuilder {
+
+        Random random = new Random();
 
         AdaBoostBuilder(Instances dataSet) throws Exception {
             super(dataSet);
