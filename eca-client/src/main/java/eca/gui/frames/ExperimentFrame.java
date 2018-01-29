@@ -62,16 +62,17 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String OPTIONS_BUTTON_TEXT = "Настройки";
     private static final String SAVE_BUTTON_TEXT = "Сохранить эксперимент";
     private static final String LOAD_BUTTON_TEXT = "Загрузить эксперимент";
+    private static final String INITIAL_DATA_BUTTON_TEXT = "Исходные данные";
 
     private static final Font TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 13);
     private static final int DEFAULT_WIDTH = 1100;
-    private static final int DEFAULT_HEIGHT = 650;
+    private static final int DEFAULT_HEIGHT = 725;
     private static final String START_TIME_TEXT = "00:00:00:000";
     private static final int TIMER_FIELD_LENGTH = 20;
     private static final String TIMER_LABEL_TEXT = "Время выполнения эксперимента";
     private static final int TIMER_DELAY_IN_MILLIS = 1;
     private static final int EXPERIMENT_RESULTS_FONT_SIZE = 12;
-    private static final Dimension RESULTS_PANE_PREFERRED_SIZE = new Dimension(1000, 300);
+    private static final Dimension RESULTS_PANE_PREFERRED_SIZE = new Dimension(1000, 325);
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
 
@@ -232,7 +233,7 @@ public abstract class ExperimentFrame extends JFrame {
         left.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
         //--------------------------------------------------------------
-        initialDataButton = new JButton("Исходные данные");
+        initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
         startButton = new JButton(START_BUTTON_TEXT);
         stopButton = new JButton(STOP_BUTTON_TEXT);
         stopButton.setEnabled(false);

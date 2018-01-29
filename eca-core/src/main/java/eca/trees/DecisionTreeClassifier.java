@@ -514,7 +514,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             this.node = node;
         }
 
-
         AbstractRule getRule() {
             return rule;
         }
