@@ -62,7 +62,6 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     public String[] getOptions() {
-        int threads = getNumThreads() != null ? getNumThreads() : 1;
         return new String[] {
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, COMMON_DECIMAL_FORMAT.format(getMinError()),
@@ -70,7 +69,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
                 EnsembleDictionary.SAMPLING_METHOD,
                 isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
                         : EnsembleDictionary.TRAINING_SAMPLE_METHOD,
-                EnsembleDictionary.NUM_THREADS, String.valueOf(threads)
+                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this))
         };
     }
 

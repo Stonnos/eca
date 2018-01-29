@@ -120,7 +120,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(getClassifiersSet().size() + 6) * 2];
+        String[] options = new String[(getClassifiersSet().size() + 7) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
@@ -136,6 +136,8 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = EnsembleDictionary.CLASSIFIER_SELECTION;
         options[k++] = getUseRandomClassifier() ? EnsembleDictionary.RANDOM_CLASSIFIER
                 : EnsembleDictionary.OPTIMAL_CLASSIFIER;
+        options[k++] = EnsembleDictionary.NUM_THREADS;
+        options[k++] = String.valueOf(EnsembleUtils.getNumThreads(this));
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();

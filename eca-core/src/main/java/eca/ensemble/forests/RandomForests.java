@@ -8,6 +8,7 @@ package eca.ensemble.forests;
 import eca.core.ListOptionsHandler;
 import eca.ensemble.Aggregator;
 import eca.ensemble.EnsembleDictionary;
+import eca.ensemble.EnsembleUtils;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
@@ -165,13 +166,12 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     @Override
     public List<String> getListOptions() {
         List<String> optionsList = new ArrayList<>();
-        int threads = getNumThreads() != null ? getNumThreads() : 1;
         optionsList.addAll(Arrays.asList(ForestsDictionary.NUM_TREES, String.valueOf(getIterationsNum()),
                 DecisionTreeDictionary.MIN_NUM_OBJECTS_IN_LEAF, String.valueOf(minObj),
                 DecisionTreeDictionary.MAX_DEPTH, String.valueOf(maxDepth),
                 DecisionTreeDictionary.NUM_RANDOM_ATTRS, String.valueOf(numRandomAttr),
                 ForestsDictionary.DECISION_TREE_ALGORITHM, decisionTreeType.name(),
-                EnsembleDictionary.NUM_THREADS, String.valueOf(threads)));
+                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this))));
         return optionsList;
     }
 
