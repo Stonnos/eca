@@ -1,13 +1,14 @@
 package eca.ensemble.forests;
 
 import eca.ensemble.EnsembleDictionary;
-import eca.ensemble.IterativeBuilder;
+import eca.ensemble.sampling.Sampler;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.DecisionTreeDictionary;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Class for generating Extra trees model. <p>
@@ -96,11 +97,6 @@ public class ExtraTreesClassifier extends RandomForests {
         return options;
     }
 
-    @Override
-    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new ExtraTreesBuilder(data);
-    }
-
     /**
      * Sets the value of use bootstrap samples.
      *
@@ -110,28 +106,18 @@ public class ExtraTreesClassifier extends RandomForests {
         this.useBootstrapSamples = useBootstrapSamples;
     }
 
-    /**
-     * Extra trees iterative builder.
-     */
-    private class ExtraTreesBuilder extends ForestBuilder {
-
-        ExtraTreesBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
-        }
-
-        @Override
-        public int next() throws Exception {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            Instances sample =
-                    isUseBootstrapSamples() ? sampler.bootstrap(filteredData) : sampler.initial(filteredData);
-            DecisionTreeClassifier treeClassifier = createDecisionTree();
-            treeClassifier.setUseRandomSplits(true);
-            treeClassifier.setNumRandomSplits(getNumRandomSplits());
-            treeClassifier.buildClassifier(sample);
-            classifiers.add(treeClassifier);
-            return ++index;
-        }
+    @Override
+    protected Instances createSample() throws Exception {
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random()) : Sampler.initial(filteredData);
     }
+
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+        DecisionTreeClassifier treeClassifier = createDecisionTree();
+        treeClassifier.setUseRandomSplits(true);
+        treeClassifier.setNumRandomSplits(getNumRandomSplits());
+        treeClassifier.buildClassifier(data);
+        return treeClassifier;
+    }
+
 }

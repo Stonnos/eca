@@ -17,6 +17,10 @@ import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Class for generating iterative ensemble classification model. <p>
@@ -24,13 +28,17 @@ import java.util.List;
  * Valid options are: <p>
  * <p>
  * Set the number of iterations (Default: 10) <p>
+ * <p>
+ * Set the number of threads (Default: 1) <p>
+ * <p>
  *
  * @author Roman Batygin
  */
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
-        implements Iterable, EnsembleClassifier, InstancesHandler {
+        implements Iterable, EnsembleClassifier, InstancesHandler, ConcurrentClassifier {
 
     private static final int MINIMUM_ITERATIONS_NUMBER = 1;
+    private static final int MINIMUM_THREADS_NUMBER = 1;
 
     /**
      * Initial training set
@@ -41,6 +49,11 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      * Number of iterations
      **/
     private int numIterations = 10;
+
+    /**
+     * Number of threads
+     */
+    private Integer numThreads = 1;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
@@ -58,6 +71,20 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      * Filtered training set
      **/
     protected Instances filteredData;
+
+    @Override
+    public Integer getNumThreads() {
+        return numThreads;
+    }
+
+    @Override
+    public void setNumThreads(Integer numThreads) {
+        if (numThreads != null && numThreads < MINIMUM_THREADS_NUMBER) {
+            throw new IllegalArgumentException(
+                    String.format(EnsembleDictionary.INVALID_NUM_THREADS_ERROR_FORMAT, MINIMUM_THREADS_NUMBER));
+        }
+        this.numThreads = numThreads;
+    }
 
     /**
      * Sets the values of iterations number.
@@ -97,10 +124,19 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     }
 
     @Override
+    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
+        return new IterativeEnsembleBuilder(data);
+    }
+
+    @Override
     public void buildClassifier(Instances data) throws Exception {
-        IterativeBuilder i = getIterativeBuilder(data);
-        while (i.hasNext()) {
-            i.next();
+        if (getNumThreads() == null || getNumThreads() == 1) {
+            IterativeBuilder i = getIterativeBuilder(data);
+            while (i.hasNext()) {
+                i.next();
+            }
+        } else {
+            concurrentBuildClassifier(data);
         }
     }
 
@@ -123,26 +159,89 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         return copies;
     }
 
-    protected abstract void initialize() throws Exception;
+    /**
+     * Initialized classifier options before building.
+     *
+     * @throws Exception
+     */
+    protected abstract void initializeOptions() throws Exception;
 
-    protected final void checkModelForEmpty() throws Exception {
+    /**
+     * Creates training data for next iteration.
+     *
+     * @return {@link Instances} object
+     */
+    protected abstract Instances createSample() throws Exception;
+
+    /**
+     * Builds the next classifier model.
+     *
+     * @param iteration iteration number
+     * @param data      {@link Instances} object
+     * @return {@link Classifier} object
+     */
+    protected abstract Classifier buildNextClassifier(int iteration, Instances data) throws Exception;
+
+    /**
+     * Adds classifier to ensemble.
+     *
+     * @param classifier {@link Classifier} object
+     * @param data       {@link Instances} object
+     */
+    protected abstract void addClassifier(Classifier classifier, Instances data) throws Exception;
+
+    protected void checkModelForEmpty() throws Exception {
         if (CollectionUtils.isEmpty(classifiers)) {
             throw new Exception(EnsembleDictionary.EMPTY_ENSEMBLE_ERROR_TEXT);
         }
     }
 
+    private void initializeData(Instances data) throws Exception {
+        this.initialData = data;
+        this.filteredData = filter.filterInstances(initialData);
+        this.classifiers = new ArrayList<>(numIterations);
+    }
+
     /**
-     * Abstract class for ensemble iterative building.
+     * Implements concurrent algorithm for ensemble building.
+     *
+     * @param data {@link Instances} object
+     * @throws Exception
      */
-    protected abstract class AbstractBuilder extends IterativeBuilder {
+    private void concurrentBuildClassifier(Instances data) throws Exception {
+        initializeData(data);
+        initializeOptions();
+        final CountDownLatch finishedLatch = new CountDownLatch(getIterationsNum());
+        ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+        for (int i = 0; i < getIterationsNum(); i++) {
+            final int iteration = i;
+            executorService.submit(() -> {
+                try {
+                    Instances sample = createSample();
+                    Classifier classifier = buildNextClassifier(iteration, sample);
+                    addClassifier(classifier, sample);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                } finally {
+                    finishedLatch.countDown();
+                }
+            });
+        }
+        finishedLatch.await();
+        executorService.shutdownNow();
+        checkModelForEmpty();
+    }
+
+    /**
+     * Basic class for ensemble iterative building.
+     */
+    protected class IterativeEnsembleBuilder extends IterativeBuilder {
 
         Evaluation evaluation;
 
-        protected AbstractBuilder(Instances dataSet) throws Exception {
-            initialData = dataSet;
-            filteredData = filter.filterInstances(initialData);
-            classifiers = new ArrayList<>(numIterations);
-            initialize();
+        IterativeEnsembleBuilder(Instances data) throws Exception {
+            initializeData(data);
+            initializeOptions();
         }
 
         @Override
@@ -156,6 +255,20 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
                 evaluation = evaluateModel(IterativeEnsembleClassifier.this, initialData);
             }
             return evaluation;
+        }
+
+        @Override
+        public int next() throws Exception {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            Instances sample = createSample();
+            Classifier classifier = buildNextClassifier(index, sample);
+            addClassifier(classifier, sample);
+            if (index == getIterationsNum() - 1) {
+                checkModelForEmpty();
+            }
+            return ++index;
         }
 
         @Override

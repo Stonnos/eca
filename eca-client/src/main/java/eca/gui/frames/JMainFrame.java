@@ -36,6 +36,7 @@ import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
 import eca.ensemble.IterativeBuilder;
 import eca.ensemble.ModifiedHeterogeneousClassifier;
+import eca.ensemble.ConcurrentClassifier;
 import eca.ensemble.RandomNetworks;
 import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
@@ -691,32 +692,34 @@ public class JMainFrame extends JFrame {
     private void executeSimpleBuilding(BaseOptionsDialog frame) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
-
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
-
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
 
             if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
                 executeWithEcaService(frame);
             } else {
-                ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
-                LoadDialog progress = new LoadDialog(JMainFrame.this,
-                        builder, MODEL_BUILDING_MESSAGE);
-
-                process(progress, new CallbackAction() {
-                    @Override
-                    public void apply() throws Exception {
-                        builder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
-                        resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
-                                builder.evaluation(), maximumFractionDigits);
-
-                    }
-                });
+                processSimpleBuilding(frame);
             }
 
         }
         frame.dispose();
+    }
+
+    private void processSimpleBuilding(BaseOptionsDialog frame) throws Exception {
+        ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
+        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                builder, MODEL_BUILDING_MESSAGE);
+
+        process(progress, new CallbackAction() {
+            @Override
+            public void apply() throws Exception {
+                builder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
+                resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
+                        builder.evaluation(), maximumFractionDigits);
+
+            }
+        });
     }
 
     private void createTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
@@ -1315,9 +1318,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    ID3 id3 = new ID3();
-                    id3.setUseBinarySplits(false);
-                    createTreeOptionDialog(ClassifiersNamesDictionary.ID3, id3);
+                    createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
                 }
             }
         });
@@ -1325,9 +1326,7 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
-                    C45 c45 = new C45();
-                    c45.setUseBinarySplits(false);
-                    createTreeOptionDialog(ClassifiersNamesDictionary.C45, c45);
+                    createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
                 }
             }
         });
@@ -1418,7 +1417,6 @@ public class JMainFrame extends JFrame {
                                 NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
                                         ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork,
                                         dataBuilder.getData());
-                                frame.showDialog();
                                 executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                             }
                         });
@@ -1509,7 +1507,6 @@ public class JMainFrame extends JFrame {
                                         new RandomForestsOptionDialog(JMainFrame.this,
                                                 EnsemblesNamesDictionary.RANDOM_FORESTS,
                                                 new RandomForests(dataBuilder.getData()), dataBuilder.getData());
-                                frame.showDialog();
                                 executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                             }
                         });
@@ -1537,7 +1534,6 @@ public class JMainFrame extends JFrame {
                                         EnsemblesNamesDictionary.EXTRA_TREES,
                                         new ExtraTreesClassifier(dataBuilder.getData()),
                                         dataBuilder.getData());
-                                frame.showDialog();
                                 executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                             }
                         });
@@ -1596,8 +1592,8 @@ public class JMainFrame extends JFrame {
                                         new RandomNetworkOptionsDialog(JMainFrame.this,
                                                 EnsemblesNamesDictionary.RANDOM_NETWORKS, randomNetworks,
                                                 dataBuilder.getData());
-                                networkOptionsDialog.showDialog();
-                                executeIterativeBuilding(networkOptionsDialog, ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                                executeIterativeBuilding(networkOptionsDialog,
+                                        ENSEMBLE_BUILDING_PROGRESS_TITLE);
                             }
                         });
                     } catch (Exception e) {
@@ -1703,7 +1699,26 @@ public class JMainFrame extends JFrame {
         this.setJMenuBar(menu);
     }
 
+    private boolean isParallelClassifier(Classifier classifier) {
+        if (classifier != null && classifier instanceof ConcurrentClassifier) {
+            ConcurrentClassifier parallelClassifier = (ConcurrentClassifier) classifier;
+            if (parallelClassifier.getNumThreads() == null || parallelClassifier.getNumThreads() == 1) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Executes iterative classifier building.
+     *
+     * @param frame           {@link BaseOptionsDialog} object
+     * @param progressMessage progress message
+     * @throws Exception
+     */
     private void executeIterativeBuilding(final BaseOptionsDialog frame, String progressMessage) throws Exception {
+        frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
@@ -1711,20 +1726,11 @@ public class JMainFrame extends JFrame {
             try {
                 if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
                     executeWithEcaService(frame);
+                }
+                if (isParallelClassifier(frame.classifier())) {
+                    processSimpleBuilding(frame);
                 } else {
-                    IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(),
-                            frame.data());
-                    ClassifierBuilderDialog progress
-                            = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-
-                    process(progress, new CallbackAction() {
-                        @Override
-                        public void apply() throws Exception {
-                            resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
-                                    frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits);
-
-                        }
-                    });
+                    processIterativeBuilding(frame, progressMessage);
                 }
             } catch (Throwable e) {
                 LoggerUtils.error(log, e);
@@ -1733,6 +1739,20 @@ public class JMainFrame extends JFrame {
             }
 
         }
+    }
+
+    private void processIterativeBuilding(BaseOptionsDialog frame, String progressMessage) throws Exception {
+        IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
+        ClassifierBuilderDialog progress
+                = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
+        process(progress, new CallbackAction() {
+            @Override
+            public void apply() throws Exception {
+                resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
+                        frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits);
+
+            }
+        });
     }
 
     private boolean dataValidated() {
@@ -1778,7 +1798,6 @@ public class JMainFrame extends JFrame {
                     EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
                             title, heterogeneousClassifier, dataBuilder.getData(), maximumFractionDigits);
                     frame.setSampleEnabled(sample);
-                    frame.showDialog();
                     executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                 }
             });

@@ -16,4 +16,14 @@ public class EnsembleUtils {
     public static double getClassifierWeight(double error) {
         return 0.5 * Math.log((1.0 - error) / error);
     }
+
+    /**
+     * Returns the specified number of threads. Is threads number is not specified then return 1.
+     *
+     * @param classifier {@link ConcurrentClassifier} object
+     * @return threads number
+     */
+    public static int getNumThreads(ConcurrentClassifier classifier) {
+        return classifier.getNumThreads() != null ? classifier.getNumThreads() : 1;
+    }
 }

@@ -7,19 +7,20 @@ package eca.ensemble.forests;
 
 import eca.core.ListOptionsHandler;
 import eca.ensemble.Aggregator;
-import eca.ensemble.IterativeBuilder;
+import eca.ensemble.EnsembleDictionary;
 import eca.ensemble.IterativeEnsembleClassifier;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.DecisionTreeDictionary;
 import org.springframework.util.Assert;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Class for generating Random forests model. <p>
@@ -156,11 +157,6 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     }
 
     @Override
-    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new ForestBuilder(data);
-    }
-
-    @Override
     public String[] getOptions() {
         List<String> options = getListOptions();
         return options.toArray(new String[options.size()]);
@@ -169,55 +165,49 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     @Override
     public List<String> getListOptions() {
         List<String> optionsList = new ArrayList<>();
+        int threads = getNumThreads() != null ? getNumThreads() : 1;
         optionsList.addAll(Arrays.asList(ForestsDictionary.NUM_TREES, String.valueOf(getIterationsNum()),
                 DecisionTreeDictionary.MIN_NUM_OBJECTS_IN_LEAF, String.valueOf(minObj),
                 DecisionTreeDictionary.MAX_DEPTH, String.valueOf(maxDepth),
                 DecisionTreeDictionary.NUM_RANDOM_ATTRS, String.valueOf(numRandomAttr),
-                ForestsDictionary.DECISION_TREE_ALGORITHM, decisionTreeType.name()));
+                ForestsDictionary.DECISION_TREE_ALGORITHM, decisionTreeType.name(),
+                EnsembleDictionary.NUM_THREADS, String.valueOf(threads)));
         return optionsList;
     }
 
     @Override
-    protected void initialize() {
+    protected void initializeOptions() {
+        if (numRandomAttr > filteredData.numAttributes() - 1) {
+            setNumRandomAttr(0);
+        }
         votes = new MajorityVoting(new Aggregator(this));
     }
 
-    /**
-     * Random forests iterative builder.
-     */
-    protected class ForestBuilder extends AbstractBuilder {
+    @Override
+    protected Instances createSample() throws Exception {
+        return Sampler.bootstrap(filteredData, new Random());
+    }
 
-        Sampler sampler = new Sampler();
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+        DecisionTreeClassifier treeClassifier = createDecisionTree();
+        treeClassifier.setUseBinarySplits(true);
+        treeClassifier.buildClassifier(data);
+        return treeClassifier;
+    }
 
-        ForestBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
-            if (numRandomAttr > filteredData.numAttributes() - 1) {
-                throw new IllegalArgumentException(String.format("Wrong value of numRandomAttr: %d", numRandomAttr));
-            }
-        }
+    @Override
+    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
+        classifiers.add(classifier);
+    }
 
-        DecisionTreeClassifier createDecisionTree() {
-            DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(DECISION_TREE_BUILDER);
-            treeClassifier.setRandomTree(true);
-            treeClassifier.setNumRandomAttr(getNumRandomAttr());
-            treeClassifier.setMinObj(getMinObj());
-            treeClassifier.setMaxDepth(getMaxDepth());
-            return treeClassifier;
-        }
-
-        @Override
-        public int next() throws Exception {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            Instances bootstrap = sampler.bootstrap(filteredData);
-            DecisionTreeClassifier treeClassifier = createDecisionTree();
-            treeClassifier.setUseBinarySplits(true);
-            treeClassifier.buildClassifier(bootstrap);
-            classifiers.add(treeClassifier);
-            return ++index;
-        }
-
+    protected DecisionTreeClassifier createDecisionTree() {
+        DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(DECISION_TREE_BUILDER);
+        treeClassifier.setRandomTree(true);
+        treeClassifier.setNumRandomAttr(getNumRandomAttr());
+        treeClassifier.setMinObj(getMinObj());
+        treeClassifier.setMaxDepth(getMaxDepth());
+        return treeClassifier;
     }
 
 }

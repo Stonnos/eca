@@ -1,5 +1,6 @@
 package eca.gui.dialogs;
 
+import eca.ensemble.EnsembleUtils;
 import eca.ensemble.RandomNetworks;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
@@ -8,6 +9,7 @@ import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.text.NumericFormat;
+import eca.util.ThreadsUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -28,6 +30,7 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     private static final String MAX_ERROR_TITLE = "Макс. допустимая ошибка классификатора:";
     private static final String MIN_ERROR_TITLE = "Мин. допустимая ошибка классификатора:";
     private static final String USE_BOOTSTRAP_SAMPLE_TEXT = "Использование бутстрэп - выборок";
+    private static final String NUM_THREADS_TITLE = "Число потоков:";
 
     private final DecimalFormat estimateFormat = NumericFormat.getInstance();
 
@@ -36,12 +39,14 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     private JTextField classifierMaxErrorTextField;
     private JCheckBox useBootstrapSamplesCheckBox;
 
+    private JSpinner threadsSpinner;
+
     public RandomNetworkOptionsDialog(Window parent, String title,
                                       RandomNetworks randomNetworks, Instances data) {
         super(parent, title, randomNetworks, data);
         this.setResizable(false);
         this.createFormat();
-        this.makeGUI();
+        this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
     }
@@ -63,9 +68,12 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
         classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
         useBootstrapSamplesCheckBox.setSelected(classifier.isUseBootstrapSamples());
+        threadsSpinner.setModel(
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
+                        ThreadsUtils.getMaxNumThreads(), 1));
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         this.setLayout(new GridBagLayout());
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
@@ -80,6 +88,8 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         classifierMaxErrorTextField.setInputVerifier(new TextFieldInputVerifier());
 
         useBootstrapSamplesCheckBox = new JCheckBox(USE_BOOTSTRAP_SAMPLE_TEXT);
+
+        threadsSpinner = new JSpinner();
 
         optionPanel.add(new JLabel(ITS_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -97,6 +107,10 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         optionPanel.add(useBootstrapSamplesCheckBox, new GridBagConstraints(0, 3, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 20, 10), 0, 0));
+        optionPanel.add(new JLabel(NUM_THREADS_TITLE), new GridBagConstraints(0, 4, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(threadsSpinner, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
@@ -128,6 +142,8 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
                         classifier.setMaxError(estimateFormat
                                 .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
                         classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
+                        classifier.setNumThreads(
+                                ((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
                         dialogResult = true;
                         setVisible(false);
                     } catch (Exception e) {

@@ -11,10 +11,11 @@ import eca.ensemble.sampling.SamplingMethod;
 import eca.ensemble.voting.MajorityVoting;
 import eca.ensemble.voting.WeightedVotesAvailable;
 import eca.ensemble.voting.WeightedVoting;
+import org.springframework.util.Assert;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
-import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Implements heterogeneous ensemble algorithm. <p>
@@ -51,9 +52,9 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     private boolean useRandomClassifier = true;
 
     /**
-     * Sampling object
+     * Sampling method
      **/
-    private final Sampler sampler = new Sampler();
+    private SamplingMethod samplingMethod = SamplingMethod.INITIAL;
 
     /**
      * Creates <tt>HeterogeneousClassifier</tt> object.
@@ -72,17 +73,21 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     /**
-     * Returns <tt>Sampler</tt> object.
+     * Returns sampling method type.
      *
-     * @return <tt>Sampler</tt> object
+     * @return {@link SamplingMethod} object
      */
-    public final Sampler sampler() {
-        return sampler;
+    public final SamplingMethod getSamplingMethod() {
+        return samplingMethod;
     }
 
-    @Override
-    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new HeterogeneousBuilder(data);
+    /**
+     * Sets sampling method type.
+     * @param samplingMethod {@link SamplingMethod} object
+     */
+    public void setSamplingMethod(SamplingMethod samplingMethod) {
+        Assert.notNull(samplingMethod, "Sampling method is not specified!");
+        this.samplingMethod = samplingMethod;
     }
 
     @Override
@@ -127,7 +132,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = getUseWeightedVotesMethod() ?
                 EnsembleDictionary.WEIGHTED_VOTING : EnsembleDictionary.MAJORITY_VOTING;
         options[k++] = EnsembleDictionary.SAMPLING_METHOD;
-        options[k++] = sampler.getDescription();
+        options[k++] = getSamplingMethod().getDescription();
         options[k++] = EnsembleDictionary.CLASSIFIER_SELECTION;
         options[k++] = getUseRandomClassifier() ? EnsembleDictionary.RANDOM_CLASSIFIER
                 : EnsembleDictionary.OPTIMAL_CLASSIFIER;
@@ -139,53 +144,41 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     @Override
-    protected void initialize() {
-        if (sampler.getSamplingMethod() == SamplingMethod.INITIAL) {
+    protected void initializeOptions() {
+        if (getSamplingMethod() == SamplingMethod.INITIAL) {
             setIterationsNum(getClassifiersSet().size());
         }
         votes = getUseWeightedVotesMethod() ? new WeightedVoting(new Aggregator(this), getIterationsNum()) :
                 new MajorityVoting(new Aggregator(this));
     }
 
-    /**
-     * Heterogeneous classifier iterative builder.
-     */
-    private class HeterogeneousBuilder extends AbstractBuilder {
+    @Override
+    protected Instances createSample() throws Exception {
+        return Sampler.instances(samplingMethod, filteredData, new Random());
+    }
 
-        HeterogeneousBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+        Classifier model;
+        if (getSamplingMethod() == SamplingMethod.INITIAL) {
+            model = getClassifiersSet().buildClassifier(iteration, data);
+        } else if (getUseRandomClassifier()) {
+            model = getClassifiersSet().buildRandomClassifier(data);
+        } else {
+            model = getClassifiersSet().builtOptimalClassifier(data);
         }
+        return model;
+    }
 
-        @Override
-        public int next() throws Exception {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
+    @Override
+    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
+        double error = Evaluation.error(classifier, data);
+        if (error > getMinError() && error < getMaxError()) {
+            classifiers.add(classifier);
+            if (getUseWeightedVotesMethod()) {
+                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
             }
-
-            Instances bag = sampler.instances(filteredData);
-            Classifier model;
-            if (sampler.getSamplingMethod() == SamplingMethod.INITIAL) {
-                model = getClassifiersSet().buildClassifier(index, bag);
-            } else if (getUseRandomClassifier()) {
-                model = getClassifiersSet().buildRandomClassifier(bag);
-            } else {
-                model = getClassifiersSet().builtOptimalClassifier(bag);
-            }
-
-            double error = Evaluation.error(model, bag);
-
-            if (error > getMinError() && error < getMaxError()) {
-                classifiers.add(model);
-                if (getUseWeightedVotesMethod()) {
-                    ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
-                }
-            }
-            if (index == getIterationsNum() - 1) {
-                checkModelForEmpty();
-            }
-            return ++index;
         }
+    }
 
-    } //End of class HeterogeneousBuilder
-
-} //End of class HeterogeneousClassifier
+}

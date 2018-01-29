@@ -102,7 +102,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.createFormat();
-        this.makeGUI(digits);
+        this.createGUI(digits);
         this.pack();
         this.setLocationRelativeTo(parent);
         numClassifiersTextField.requestFocusInWindow();
@@ -125,9 +125,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         }
     }
 
-    private void makeGUI(final int digits) {
+    private void createGUI(final int digits) {
         pane = new JTabbedPane();
-
         firstPanel = new JPanel(new GridBagLayout());
         firstPanel.setPreferredSize(TAB_DIMENSION);
         JPanel optionPanel = new JPanel(new GridBagLayout());
@@ -276,7 +275,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.INITIAL);
+                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.INITIAL);
                 }
             }
         });
@@ -284,7 +283,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.BAGGING);
+                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.BAGGING);
                 }
             }
         });
@@ -292,7 +291,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.RANDOM);
+                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM);
                 }
             }
         });
@@ -300,7 +299,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).sampler().setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
+                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
                 }
             }
         });

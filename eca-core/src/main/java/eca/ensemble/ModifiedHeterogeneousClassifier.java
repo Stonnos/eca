@@ -12,7 +12,6 @@ import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
-import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
@@ -57,52 +56,35 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     }
 
     @Override
-    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new ModifiedHeterogeneousBuilder(data);
-    }
-
-    @Override
-    protected void initialize() {
+    protected void initializeOptions() {
         aggregator = new SubspacesAggregator(this);
         votes = getUseWeightedVotesMethod() ? new WeightedVoting(aggregator, getIterationsNum()) :
                 new MajorityVoting(aggregator);
     }
 
-    /**
-     * Modified heterogeneous classifier iterative builder.
-     */
-    private class ModifiedHeterogeneousBuilder extends AbstractBuilder {
-
+    @Override
+    protected Instances createSample() throws Exception {
         Random random = new Random();
+        return Sampler.instances(getSamplingMethod(), filteredData,
+                random.nextInt(filteredData.numAttributes() - 1) + 1, random);
+    }
 
-        ModifiedHeterogeneousBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+        return getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(data) :
+                getClassifiersSet().builtOptimalClassifier(data);
+    }
+
+    @Override
+    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
+        double error = Evaluation.error(classifier, data);
+        if (error > getMinError() && error < getMaxError()) {
+            classifiers.add(classifier);
+            aggregator.setInstances(data);
+            if (getUseWeightedVotesMethod()) {
+                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
+            }
         }
-
-        @Override
-        public int next() throws Exception {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            Instances subSample =
-                    sampler().instances(filteredData, random.nextInt(filteredData.numAttributes() - 1) + 1);
-            Classifier model = getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(subSample) :
-                    getClassifiersSet().builtOptimalClassifier(subSample);
-
-            double error = Evaluation.error(model, subSample);
-            if (error > getMinError() && error < getMaxError()) {
-                classifiers.add(model);
-                aggregator.setInstances(subSample);
-                if (getUseWeightedVotesMethod()) {
-                    ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
-                }
-            }
-            if (index == getIterationsNum() - 1) {
-                checkModelForEmpty();
-            }
-            return ++index;
-        }
-
     }
 
 }

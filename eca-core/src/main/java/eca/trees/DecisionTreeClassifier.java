@@ -42,7 +42,7 @@ import java.util.Random;
  * <p>
  * Set the number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  * <p>
- * Use binary splits. (Default: <tt>true</tt>) <p>
+ * Use binary splits. (Default: <tt>false</tt>) <p>
  * <p>
  * Use random splits of each attribute (Default: <tt>false</tt>) <p>
  * <p>
@@ -98,7 +98,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     /**
      * Use binary splits?
      **/
-    private boolean useBinarySplits = true;
+    private boolean useBinarySplits;
 
     /**
      * Use random splits?

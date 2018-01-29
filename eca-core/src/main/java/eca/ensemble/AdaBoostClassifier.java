@@ -58,6 +58,11 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     @Override
+    public Integer getNumThreads() {
+        return null;
+    }
+
+    @Override
     public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
         return new AdaBoostBuilder(data);
     }
@@ -87,21 +92,36 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     @Override
-    protected void initialize() {
+    protected void initializeOptions() {
         votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
 
+    @Override
+    protected Instances createSample() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void addClassifier(Classifier classifier, Instances data) throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * AdaBoost iterative builder.
      */
-    private class AdaBoostBuilder extends AbstractBuilder {
+    private class AdaBoostBuilder extends IterativeEnsembleBuilder {
 
         Random random = new Random();
 
-        AdaBoostBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
+        AdaBoostBuilder(Instances data) throws Exception {
+            super(data);
         }
 
         @Override

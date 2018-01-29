@@ -29,7 +29,8 @@ public class ApplicationProperties {
     private static final String ECA_MIN_DIGITS_PROPERTY = "eca.minDigits";
     private static final String ECA_MAX_DIGITS_PROPERTY = "eca.maxDigits";
     private static final String ECA_MAX_DATA_LIST_SIZE = "eca.maxDataListSize";
-    private static final String EXPERIMENT_NUM_BEST_RESUTLS = "experiment.numBestResults";
+    private static final String EXPERIMENT_NUM_BEST_RESULTS_PROPERTY = "experiment.numBestResults";
+    private static final String NUM_THREADS_PROPERTY = "eca.maxThreads";
 
     private static Properties PROPERTIES = new Properties();
 
@@ -199,7 +200,14 @@ public class ApplicationProperties {
      * @return the number of best experiment models
      */
     public Integer getNumBestResults() {
-        return Integer.valueOf(PROPERTIES.getProperty(EXPERIMENT_NUM_BEST_RESUTLS));
+        return Integer.valueOf(PROPERTIES.getProperty(EXPERIMENT_NUM_BEST_RESULTS_PROPERTY));
     }
 
+    /**
+     * Returns the maximum number of threads used by parallel algorithms.
+     * @return the maximum number of threads used by parallel algorithms
+     */
+    public Integer getMaxThreads() {
+        return Integer.valueOf(PROPERTIES.getProperty(NUM_THREADS_PROPERTY));
+    }
 }

@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.ensemble.EnsembleUtils;
 import eca.ensemble.forests.DecisionTreeType;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
@@ -13,6 +14,7 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.util.ThreadsUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -26,24 +28,23 @@ import java.awt.event.ActionListener;
 public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
 
     private static final String OPTIONS_TITLE = "Параметры леса";
-
     private static final String TREES_NUM_TITLE = "Количество деревьев:";
-
     private static final String MIN_OBJ_TITLE = "Минимальное число объектов в листе:";
-
     private static final String MAX_DEPTH_TITLE = "Максимальная глубина дерева:";
-
     private static final String NUM_RANDOM_ATTR_TITLE = "Число случайных атрибутов:";
-    private static final String RANDOM_ATTR_EXCEEDED_ERROR_FORMAT = "Число случайных атрибутов должно быть не больше %d";
+    private static final String RANDOM_ATTR_EXCEEDED_ERROR_FORMAT =
+            "Число случайных атрибутов должно быть не больше %d";
     private static final String DECISION_TREE_ALGORITHM_TEXT = "Дерево решений: ";
     private static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
     private static final String USE_BOOTSTRAP_SAMPLE_TEXT = "Использование бутстрэп - выборок";
+    private static final String NUM_THREADS_TITLE = "Число потоков:";
 
     private JTextField numClassifiersTextField;
     private JTextField minObjTextField;
     private JTextField maxDepthTextField;
     private JTextField numRandomAttrTextField;
     private JComboBox<String> treeAlgorithmBox;
+    private JSpinner threadsSpinner;
 
     private OptionsSetter optionsSetter;
     private EmptyTextFieldSearch emptyTextFieldSearch;
@@ -74,6 +75,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         for (DecisionTreeType treeType : DecisionTreeType.values()) {
             treeAlgorithmBox.addItem(treeType.getDescription());
         }
+
+        threadsSpinner = new JSpinner();
         //-------------------------------------------------------
         optionPanel.add(new JLabel(DECISION_TREE_ALGORITHM_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -98,6 +101,10 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         optionPanel.add(new JLabel(NUM_RANDOM_ATTR_TITLE), new GridBagConstraints(0, 4, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(numRandomAttrTextField, new GridBagConstraints(1, 4, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+        optionPanel.add(new JLabel(NUM_THREADS_TITLE), new GridBagConstraints(0, 5, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(threadsSpinner, new GridBagConstraints(1, 5, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         addAdditionalFormFields(optionPanel);
@@ -200,12 +207,12 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                 }
             };
 
-            optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 5, 1, 1, 1, 1,
+            optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 6, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-            optionPanel.add(numRandomSplitsField, new GridBagConstraints(1, 5, 1, 1, 1, 1,
+            optionPanel.add(numRandomSplitsField, new GridBagConstraints(1, 6, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
-            optionPanel.add(useBootstrapSamplesCheckBox, new GridBagConstraints(0, 6, 2, 1, 1, 1,
+            optionPanel.add(useBootstrapSamplesCheckBox, new GridBagConstraints(0, 7, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 20, 10), 0, 0));
 
         } else {
@@ -229,6 +236,9 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             maxDepthTextField.setText(String.valueOf(classifier.getMaxDepth()));
             numRandomAttrTextField.setText(String.valueOf(classifier.getNumRandomAttr()));
             treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
+            threadsSpinner.setModel(
+                    new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
+                            ThreadsUtils.getMaxNumThreads(), 1));
         }
 
         void setClassifierOptions() {
@@ -238,6 +248,7 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
             classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
+            classifier.setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
         }
 
     }

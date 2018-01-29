@@ -12,10 +12,10 @@ import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
 import eca.text.NumericFormat;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.text.DecimalFormat;
-import java.util.NoSuchElementException;
 import java.util.Random;
 
 /**
@@ -56,24 +56,21 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     private DecimalFormat decimalFormat = NumericFormat.getInstance();
 
     @Override
-    public IterativeBuilder getIterativeBuilder(Instances data) throws Exception {
-        return new NetworkBuilder(data);
-    }
-
-    @Override
     public DecimalFormat getDecimalFormat() {
         return decimalFormat;
     }
 
     @Override
     public String[] getOptions() {
+        int threads = getNumThreads() != null ? getNumThreads() : 1;
         return new String[] {
                 EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, COMMON_DECIMAL_FORMAT.format(getMinError()),
                 EnsembleDictionary.NETWORK_MAX_ERROR, COMMON_DECIMAL_FORMAT.format(getMaxError()),
                 EnsembleDictionary.SAMPLING_METHOD,
                 isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
-                        : EnsembleDictionary.TRAINING_SAMPLE_METHOD
+                        : EnsembleDictionary.TRAINING_SAMPLE_METHOD,
+                EnsembleDictionary.NUM_THREADS, String.valueOf(threads)
         };
     }
 
@@ -96,52 +93,39 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     }
 
     @Override
-    protected void initialize() throws Exception {
+    protected void initializeOptions() throws Exception {
         votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
     }
 
-    /**
-     * Random networks iterative builder.
-     */
-    private class NetworkBuilder extends AbstractBuilder {
-
-        Sampler sampler = new Sampler();
-        Random random = new Random();
-
-        NetworkBuilder(Instances dataSet) throws Exception {
-            super(dataSet);
-        }
-
-        @Override
-        public int next() throws Exception {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-
-            NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
-            neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
-            MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
-            multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
-            ActivationFunctionType activationFunctionType =
-                    ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
-            AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
-            double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
-            randomActivationFunction.setCoefficient(coefficientValue);
-            multilayerPerceptron.setActivationFunction(randomActivationFunction);
-            Instances sample =
-                    isUseBootstrapSamples() ? sampler.bootstrap(filteredData) : sampler.initial(filteredData);
-            neuralNetwork.buildClassifier(sample);
-
-            double error = Evaluation.error(neuralNetwork, sample);
-            if (error > getMinError() && error < getMaxError()) {
-                classifiers.add(neuralNetwork);
-                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
-            }
-            if (index == getIterationsNum() - 1) {
-                checkModelForEmpty();
-            }
-            return ++index;
-        }
-
+    @Override
+    protected Instances createSample()  throws Exception {
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random()) : Sampler.initial(filteredData);
     }
+
+    @Override
+    protected Classifier buildNextClassifier(int iteration, Instances data)  throws Exception {
+        NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
+        Random random = new Random();
+        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
+        MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
+        multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
+        ActivationFunctionType activationFunctionType =
+                ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
+        AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
+        double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
+        randomActivationFunction.setCoefficient(coefficientValue);
+        multilayerPerceptron.setActivationFunction(randomActivationFunction);
+        neuralNetwork.buildClassifier(data);
+        return neuralNetwork;
+    }
+
+    @Override
+    protected synchronized void addClassifier(Classifier classifier, Instances data)  throws Exception {
+        double error = Evaluation.error(classifier, data);
+        if (error > getMinError() && error < getMaxError()) {
+            classifiers.add(classifier);
+            ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
+        }
+    }
+
 }

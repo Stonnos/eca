@@ -27,6 +27,8 @@ public class EnsembleDictionary {
     public static final String TRAINING_SET_METHOD = "Использование обучающего множества";
     public static final String CROSS_VALIDATION = "%d - блочная кросс-проверка";
 
+    public static final String NUM_THREADS = "Число потоков";
+
     public static final String NETWORK_MIN_ERROR = "Минимальная допустимая ошибка сети:";
     public static final String NETWORK_MAX_ERROR = "Максимальная допустимая ошибка сети:";
 
@@ -37,5 +39,6 @@ public class EnsembleDictionary {
             "Значение допустимой ошибки классификатора должно лежать в интервале: [%.1f, %.1f]!";
 
     public static final String INVALID_NUM_ITS_ERROR_FORMAT = "Число итераций должно быть не менее %d!";
+    public static final String INVALID_NUM_THREADS_ERROR_FORMAT = "Число потоков должно быть не менее %d!";
 
 }
