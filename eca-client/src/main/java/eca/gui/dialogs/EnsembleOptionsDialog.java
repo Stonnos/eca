@@ -8,6 +8,7 @@ package eca.gui.dialogs;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
+import eca.ensemble.EnsembleUtils;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.sampling.SamplingMethod;
 import eca.gui.BaseClassifiersListModel;
@@ -19,6 +20,7 @@ import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.text.NumericFormat;
+import eca.util.ThreadsUtils;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -58,6 +60,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final String DELETE_BUTTON_TEXT = "Удалить";
     private static final String MAIN_OPTIONS_TAB_TITLE = "Основные настройки";
     private static final String ADDITIONAL_OPTIONS_TAB_TITLE = "Дополнительные настройки";
+    private static final String NUM_THREADS_TITLE = "Число потоков:";
     private static final String EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE =
             "Необходимо выбрать индивидуальные классификаторы!";
 
@@ -71,7 +74,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private static final int ALGORITHMS_LIST_WIDTH = 320;
     private static final int ALGORITHMS_HEIGHT_HEIGHT = 265;
-    private static final Dimension TAB_DIMENSION = new Dimension(620, 375);
+    private static final Dimension TAB_DIMENSION = new Dimension(620, 430);
 
     private final DecimalFormat estimateFormat = NumericFormat.getInstance();
 
@@ -96,6 +99,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private JRadioButton randomClsRadioButton;
     private JRadioButton optimalClsRadioButton;
 
+    private JSpinner threadsSpinner;
+
     public EnsembleOptionsDialog(JFrame parent, String title,
                                  AbstractHeterogeneousClassifier classifier, Instances data, final int digits) {
         super(parent, title, classifier, data);
@@ -111,6 +116,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     @Override
     public void showDialog() {
         this.setOptions();
+        threadsSpinner.setEnabled(classifier instanceof HeterogeneousClassifier);
         super.showDialog();
     }
 
@@ -140,6 +146,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         classifierMaxErrorTextField = new JTextField(TEXT_FIELD_LENGTH);
         classifierMaxErrorTextField.setDocument(new EstimateDocument(FIELD_LENGTH));
         classifierMaxErrorTextField.setInputVerifier(new TextFieldInputVerifier());
+        threadsSpinner = new JSpinner();
         //----------------------------------------------------
         firstPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
@@ -157,6 +164,11 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         optionPanel.add(new JLabel(MAX_ERROR_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(classifierMaxErrorTextField, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+
+        optionPanel.add(new JLabel(NUM_THREADS_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+        optionPanel.add(threadsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         Dimension dim = new Dimension(ALGORITHMS_LIST_WIDTH, ALGORITHMS_HEIGHT_HEIGHT);
@@ -401,6 +413,9 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
         classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
         classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
+        threadsSpinner.setModel(
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
+                        ThreadsUtils.getMaxNumThreads(), 1));
     }
 
     private boolean isValidate() {
@@ -414,6 +429,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             textField = classifierMaxErrorTextField;
             classifier.setMaxError(estimateFormat
                     .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
+            classifier.setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
