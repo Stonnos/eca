@@ -103,7 +103,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data)  throws Exception {
-        NeuralNetwork neuralNetwork = new NeuralNetwork(filteredData);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
         Random random = new Random();
         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
         MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
