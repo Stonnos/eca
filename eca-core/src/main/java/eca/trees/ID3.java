@@ -39,10 +39,9 @@ public class ID3 extends DecisionTreeClassifier {
             return p == 0 ? p : p * Utils.log2(p);
         }
 
-        double info(TreeNode x) {
+        double info(double[] p) {
             double info = 0.0;
-            calculateProbabilities(x);
-            for (double probability : probabilities) {
+            for (double probability : p) {
                 info += log(probability);
             }
             return -info;
@@ -50,14 +49,16 @@ public class ID3 extends DecisionTreeClassifier {
 
         double infoS(TreeNode x) {
             double infoS = 0.0;
-            for (TreeNode child : x.children()) {
-                infoS += child.objectsNum() * info(child) / x.objectsNum();
+            for (int i = 0; i < childrenSizes.length; i++) {
+                infoS += childrenSizes[i] * info(probabilitiesMatrix[i]) / x.objectsNum();
             }
             return infoS;
         }
 
         double gain(TreeNode x) {
-            return info(x) - infoS(x);
+            calculateProbabilities(x);
+            calculateProbabilities(x, true);
+            return info(probabilities) - infoS(x);
         }
     }
 

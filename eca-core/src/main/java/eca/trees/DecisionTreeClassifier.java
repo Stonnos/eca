@@ -42,7 +42,7 @@ import java.util.Random;
  * <p>
  * Set the number of random attributes at each split. (Default: 0 (denotes all attributes)) <p>
  * <p>
- * Use binary splits. (Default: <tt>false</tt>) <p>
+ * Use binary splits. (Default: <tt>true</tt>) <p>
  * <p>
  * Use random splits of each attribute (Default: <tt>false</tt>) <p>
  * <p>
@@ -121,6 +121,8 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected SplitAlgorithm splitAlgorithm;
 
     protected double[] probabilities;
+    protected double[][] probabilitiesMatrix;
+    protected int[] childrenSizes;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
@@ -370,7 +372,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     /**
      * Tree node model.
      */
-    protected static class TreeNode implements java.io.Serializable {
+    protected static class TreeNode implements Serializable {
 
         Instances objects;
         TreeNode[] child;
@@ -558,7 +560,46 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     }
 
-    protected void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
+    private int getNumChildren(Attribute attribute) {
+        return attribute.isNumeric() || isUseRandomSplits() || getUseBinarySplits() ? 2 : attribute.numValues();
+    }
+
+    private void initializeProbabilityArrays(Attribute attribute) {
+        int numChildren = getNumChildren(attribute);
+        if (getUseBinarySplits() || isUseRandomSplits()) {
+            if (probabilitiesMatrix == null) {
+                probabilitiesMatrix = new double[numChildren][data.numClasses()];
+                childrenSizes = new int[numChildren];
+            } else {
+                for (double[] probabilitiesArray : probabilitiesMatrix) {
+                    Arrays.fill(probabilitiesArray, 0);
+                }
+                Arrays.fill(childrenSizes, 0);
+            }
+        } else {
+            probabilitiesMatrix = new double[numChildren][data.numClasses()];
+            childrenSizes = new int[numChildren];
+        }
+    }
+
+    protected final void calculateProbabilities(TreeNode x, boolean normalize) {
+        initializeProbabilityArrays(x.getRule().attribute());
+        for (int i = 0; i < x.objects().numInstances(); i++) {
+            Instance obj = x.objects().instance(i);
+            int k = x.getRule().getChild(obj);
+            probabilitiesMatrix[k][(int) obj.classValue()]++;
+            childrenSizes[k]++;
+        }
+        if (normalize) {
+            for (double[] probabilitiesArray : probabilitiesMatrix) {
+                if (!Utils.eq(Utils.sum(probabilitiesArray), 0)) {
+                    Utils.normalize(probabilitiesArray);
+                }
+            }
+        }
+    }
+
+    private void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         x.objects().sort(a);
         NumericRule rule = new NumericRule(a);
@@ -567,7 +608,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         for (int i = 0; i < x.objectsNum() - 1; i++) {
             rule.setMeanValue((x.objects().instance(i).value(a)
                     + x.objects().instance(i + 1).value(a)) / 2);
-            createChildren(x, 2);
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
                 split.setParams(measure, x.children(), x.getRule());
@@ -577,17 +617,16 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         rule.setMeanValue(optThreshold);
     }
 
-    protected void processNominalSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
+    private void processNominalSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         x.rule = new NominalRule(a);
-        createChildren(x, a.numValues());
         double measure = splitAlgorithm.getMeasure(x);
         if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
             split.setParams(measure, x.children(), x.getRule());
         }
     }
 
-    protected void processBinarySplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
+    private void processBinarySplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         int[] values = new int[a.numValues()];
         int[] optValues = null;
@@ -605,49 +644,57 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         rule.setCodes(optValues);
     }
 
-    protected void processRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
-        TreeNode x = split.getNode();
+    private void processRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
         if (a.isNumeric()) {
-            double minAttrValue = x.objects().kthSmallestValue(a, 1);
-            double maxAttrValue = x.objects().kthSmallestValue(a, x.objects().size());
-            NumericRule rule = new NumericRule(a);
-            double optThreshold = 0.0;
+            processNumericRandomSplit(a, splitAlgorithm, split, k);
+        } else {
+            processNominalRandomSplit(a, splitAlgorithm, split, k);
+        }
+    }
+
+    private void processNumericRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
+        TreeNode x = split.getNode();
+        double minAttrValue = x.objects().kthSmallestValue(a, 1);
+        double maxAttrValue = x.objects().kthSmallestValue(a, x.objects().size());
+        NumericRule rule = new NumericRule(a);
+        double optThreshold = 0.0;
+        x.rule = rule;
+        for (int i = 0; i < k; i++) {
+            rule.setMeanValue(NumberGenerator.random(minAttrValue, maxAttrValue));
+            double measure = splitAlgorithm.getMeasure(x);
+            if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
+                split.setParams(measure, x.children(), x.getRule());
+                optThreshold = rule.getMeanValue();
+            }
+        }
+        rule.setMeanValue(optThreshold);
+    }
+
+    private void processNominalRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
+        TreeNode x = split.getNode();
+        if (k < Math.pow(2, a.numValues() - 1.0) - 1) {
+            int[] values = new int[a.numValues()];
+            int[] optValues = null;
+            BinaryRule rule = new BinaryRule(a, values);
             x.rule = rule;
             for (int i = 0; i < k; i++) {
-                rule.setMeanValue(NumberGenerator.random(minAttrValue, maxAttrValue));
-                createChildren(x, 2);
-                double measure = splitAlgorithm.getMeasure(x);
-                if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
-                    split.setParams(measure, x.children(), x.getRule());
-                    optThreshold = rule.getMeanValue();
+                Arrays.fill(values, 0);
+                int subSetSize = random.nextInt(a.numValues() - 1) + 1;
+                while (subSetSize != 0) {
+                    int randomIndex = random.nextInt(values.length);
+                    if (values[randomIndex] == 0) {
+                        values[randomIndex] = 1;
+                        subSetSize--;
+                    }
+                }
+                int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
+                if (currentOptValues != null) {
+                    optValues = currentOptValues;
                 }
             }
-            rule.setMeanValue(optThreshold);
+            rule.setCodes(optValues);
         } else {
-            if (k < Math.pow(2, a.numValues() - 1) - 1) {
-                int[] values = new int[a.numValues()];
-                int[] optValues = null;
-                BinaryRule rule = new BinaryRule(a, values);
-                x.rule = rule;
-                for (int i = 0; i < k; i++) {
-                    Arrays.fill(values, 0);
-                    int subSetSize = random.nextInt(a.numValues() - 1) + 1;
-                    while (subSetSize != 0) {
-                        int randomIndex = random.nextInt(values.length);
-                        if (values[randomIndex] == 0) {
-                            values[randomIndex] = 1;
-                            subSetSize--;
-                        }
-                    }
-                    int[] currentOptValues = findOptimalBinarySplit(splitAlgorithm, split, values);
-                    if (currentOptValues != null) {
-                        optValues = currentOptValues;
-                    }
-                }
-                rule.setCodes(optValues);
-            } else {
-                processBinarySplit(a, splitAlgorithm, split);
-            }
+            processBinarySplit(a, splitAlgorithm, split);
         }
     }
 
@@ -657,7 +704,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         permutationsSearch.setValues(values);
         while (permutationsSearch.nextPermutation()) {
-            createChildren(x, 2);
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(splitDescriptor.getCurrentMeasure(), measure)) {
                 splitDescriptor.setParams(measure, x.children(), x.getRule());
@@ -681,15 +727,25 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return splitDescriptor.getNode().isSplit(minObj);
     }
 
-    protected final void doSplit(TreeNode x) {
+    private void doSplit(TreeNode x) {
         if (x.isMaxDepth(maxDepth) || x.isMinObj(minObj) || isClean(x)) {
             x.setLeaf();
             numLeaves++;
         } else {
             SplitDescriptor split = createOptSplit(x);
-            x.child = split.child;
-            if (isSplit(split)) {
+            //x.child = split.child;
+            /*if (isSplit(split)) {
                 x.rule = split.rule;
+                numNodes += x.childrenNum();
+                createChildren(x, 2);
+                setClasses(x);
+            } else {
+                x.setLeaf();
+                numLeaves++;
+            }*/
+            x.rule = split.rule;
+            createChildren(x, getNumChildren(x.getRule().attribute()));
+            if (isSplit(split)) {
                 numNodes += x.childrenNum();
                 setClasses(x);
             } else {
@@ -699,7 +755,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
-    protected SplitDescriptor createOptSplit(TreeNode x) {
+    private SplitDescriptor createOptSplit(TreeNode x) {
         SplitDescriptor split = new SplitDescriptor(x, splitAlgorithm.getMaxMeasure());
         for (Enumeration<Attribute> e = attributes(); e.hasMoreElements(); ) {
             Attribute a = e.nextElement();
@@ -727,11 +783,13 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             for (int i = 0; i < x.objects().numInstances(); i++) {
                 probabilities[(int) x.objects().instance(i).classValue()]++;
             }
-            Utils.normalize(probabilities);
+            if (!Utils.eq(Utils.sum(probabilities), 0)) {
+                Utils.normalize(probabilities);
+            }
         }
     }
 
-    protected final double classValue(TreeNode x) {
+    private double classValue(TreeNode x) {
         double classValue = 0.0;
         double max = -Double.MAX_VALUE;
         calculateProbabilities(x);
@@ -741,17 +799,15 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                 classValue = k;
             }
         }
-
         for (int i = 0; i < probabilities.length - 1; i++) {
             if (probabilities[i] != probabilities[i + 1]) {
                 return classValue;
             }
         }
-
         return x.parent != null ? x.parent.classValue() : classValue;
     }
 
-    protected final double nodeError(TreeNode x) {
+    protected final double calculateNodeError(TreeNode x) {
         int count = 0;
         for (int i = 0; i < x.objects().numInstances(); i++) {
             if (x.objects().instance(i).classValue() != x.classValue()) {
@@ -761,7 +817,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return (double) count / x.objectsNum();
     }
 
-    protected final boolean isClean(TreeNode x) {
+    private boolean isClean(TreeNode x) {
         for (int i = 0; i < x.objectsNum() - 1; i++) {
             if (x.objects().instance(i).classValue() != x.objects().instance(i + 1).classValue()) {
                 return false;
@@ -770,20 +826,20 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return true;
     }
 
-    protected final void setChildren(TreeNode x) {
+    private void setChildren(TreeNode x) {
         for (int i = 0; i < x.childrenNum(); i++) {
             x.setChild(i, new TreeNode(x));
             x.getChild(i).setDepth(x.getDepth() + 1);
         }
     }
 
-    protected final void setClasses(TreeNode x) {
+    private void setClasses(TreeNode x) {
         for (TreeNode c : x.children()) {
             c.setClassValue(classValue(c));
         }
     }
 
-    protected final void addObjects(TreeNode x) {
+    private void addObjects(TreeNode x) {
         for (int i = 0; i < x.objects().numInstances(); i++) {
             Instance obj = x.objects().instance(i);
             int k = x.getRule().getChild(obj);

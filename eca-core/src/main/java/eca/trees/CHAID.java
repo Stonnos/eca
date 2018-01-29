@@ -94,6 +94,7 @@ public class CHAID extends DecisionTreeClassifier {
 
         @Override
         public double getMeasure(TreeNode x) {
+            calculateProbabilities(x, false);
             computeContingencyTable(x);
             return hiSquaredTest();
         }
@@ -123,10 +124,9 @@ public class CHAID extends DecisionTreeClassifier {
                             ? 3 : x.getRule().attribute().numValues() + 1];
                 }
             }
-
             for (int i = 0; i < contingencyTable.length - 1; i++) {
                 for (int j = 0; j < contingencyTable[i].length - 1; j++) {
-                    contingencyTable[i][j] = frequency(x.getChild(j), i);
+                    contingencyTable[i][j] = probabilitiesMatrix[j][i];
                     contingencyTable[i][getTableSize() - 1] += contingencyTable[i][j];
                     contingencyTable[contingencyTable.length - 1][j] += contingencyTable[i][j];
                 }
@@ -143,16 +143,6 @@ public class CHAID extends DecisionTreeClassifier {
             return (contingencyTable[contingencyTable.length - 1][j]
                     * contingencyTable[i][getTableSize() - 1])
                     / contingencyTable[contingencyTable.length - 1][getTableSize() - 1];
-        }
-
-        int frequency(TreeNode x, double classValue) {
-            int freq = 0;
-            for (int i = 0; i < x.objects().numInstances(); i++) {
-                if (x.objects().instance(i).classValue() == classValue) {
-                    freq++;
-                }
-            }
-            return freq;
         }
 
     }

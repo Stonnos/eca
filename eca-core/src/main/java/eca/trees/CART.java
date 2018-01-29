@@ -38,10 +38,9 @@ public class CART extends DecisionTreeClassifier {
             return giniSplit(x);
         }
 
-        double giniIndex(TreeNode x) {
+        double giniIndex(double[] p) {
             double giniIndex = 0.0;
-            calculateProbabilities(x);
-            for (double probability : probabilities) {
+            for (double probability : p) {
                 giniIndex += probability * probability;
             }
             return 1.0 - giniIndex;
@@ -49,8 +48,9 @@ public class CART extends DecisionTreeClassifier {
 
         double giniSplit(TreeNode x) {
             double infoS = 0.0;
-            for (TreeNode child : x.children()) {
-                infoS += child.objectsNum() * giniIndex(child) / x.objectsNum();
+            calculateProbabilities(x, true);
+            for (int i = 0; i < childrenSizes.length; i++) {
+                infoS += childrenSizes[i] * giniIndex(probabilitiesMatrix[i]) / x.objectsNum();
             }
             return infoS;
         }

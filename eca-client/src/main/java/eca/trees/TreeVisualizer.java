@@ -487,7 +487,7 @@ public class TreeVisualizer extends JPanel {
             int c = (int) node.classValue();
             str.append("<tr>");
             str.append(String.format(CELL_FORMAT, NODE_ERROR_TEXT)).append("<td>").
-                    append(fmt.format(tree.nodeError(node))).append("</td>");
+                    append(fmt.format(tree.calculateNodeError(node))).append("</td>");
             str.append("</tr><tr>");
             str.append(String.format(CELL_FORMAT, CLASS_VALUE_TEXT)).append("<td>").append(c)
                     .append(StringUtils.SPACE).append("(").append(tree.getData().classAttribute().value(c))

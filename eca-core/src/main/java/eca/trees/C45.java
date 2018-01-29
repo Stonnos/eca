@@ -24,15 +24,16 @@ public class C45 extends ID3 {
                     x.rule.attribute().numValues() < 0.3 * (double) x.objectsNum()) {
                 return super.getMeasure(x);
             } else {
+                double measure = super.getMeasure(x);
                 double splitInfo = splitInfo(x);
-                return splitInfo != 0.0 ? super.getMeasure(x) / splitInfo : splitInfo;
+                return splitInfo != 0.0 ? measure / splitInfo : splitInfo;
             }
         }
 
         double splitInfo(TreeNode x) {
             double splitInfo = 0.0;
-            for (TreeNode child : x.children()) {
-                splitInfo += log((double) child.objectsNum() / x.objectsNum());
+            for (int i = 0; i < childrenSizes.length; i++) {
+                splitInfo += log((double) childrenSizes[i] / x.objectsNum());
             }
             return -splitInfo;
         }
