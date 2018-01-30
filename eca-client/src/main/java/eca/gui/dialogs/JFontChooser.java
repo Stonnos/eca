@@ -36,6 +36,9 @@ public class JFontChooser extends JDialog {
     private static final String FONT_EXAMPLE = "Аа Яя Aa Zz";
     private static final int DEFAULT_FONT_SIZE = 12;
     private static final Dimension COMBO_BOX_DIM = new Dimension(175, 25);
+    private static final String DEFAULT_FONT_NAME = "Arial";
+    private static final int EXAMPLE_FIELD_ROWS = 3;
+    private static final int EXAMPLE_FIELD_COLUMNS = 5;
 
     private JComboBox<String> fontTypeBox;
     private JComboBox<String> fontSize;
@@ -58,7 +61,7 @@ public class JFontChooser extends JDialog {
         super(parent, TITLE_TEXT);
         this.setModal(true);
         this.setResizable(false);
-        this.makeGUI(font);
+        this.createGUI(font);
         this.pack();
         this.setLocationRelativeTo(parent);
     }
@@ -99,7 +102,7 @@ public class JFontChooser extends JDialog {
         return new Font(getFontType(), getFontTracing(), getFontSize());
     }
 
-    private void makeGUI(Font font) {
+    private void createGUI(Font font) {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
@@ -131,16 +134,16 @@ public class JFontChooser extends JDialog {
                 if (i >= 0) {
                     switch (i) {
                         case 0:
-                            label.setFont(new Font("Arial", Font.PLAIN, DEFAULT_FONT_SIZE));
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE));
                             break;
                         case 1:
-                            label.setFont(new Font("Arial", Font.BOLD, DEFAULT_FONT_SIZE));
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD, DEFAULT_FONT_SIZE));
                             break;
                         case 2:
-                            label.setFont(new Font("Arial", Font.ITALIC, DEFAULT_FONT_SIZE));
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
                         case 3:
-                            label.setFont(new Font("Arial", Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
                     }
                     label.setText(STYLES[i]);
@@ -180,7 +183,7 @@ public class JFontChooser extends JDialog {
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
         //----------------------------------
-        exampleField = new JTextArea(3, 5);
+        exampleField = new JTextArea(EXAMPLE_FIELD_ROWS, EXAMPLE_FIELD_COLUMNS);
         exampleField.setWrapStyleWord(true);
         exampleField.setLineWrap(true);
         exampleField.setEditable(false);
