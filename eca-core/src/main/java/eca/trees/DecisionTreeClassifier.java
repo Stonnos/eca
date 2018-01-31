@@ -550,12 +550,12 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     private int getNumChildren(Attribute attribute) {
-        return attribute.isNumeric() || isUseRandomSplits() || getUseBinarySplits() ? 2 : attribute.numValues();
+        return attribute.isNumeric() || getUseBinarySplits() ? 2 : attribute.numValues();
     }
 
     private void initializeProbabilityArrays(Attribute attribute) {
         int numChildren = getNumChildren(attribute);
-        if (getUseBinarySplits() || isUseRandomSplits()) {
+        if (getUseBinarySplits()) {
             if (probabilitiesMatrix == null) {
                 probabilitiesMatrix = new double[numChildren][data.numClasses()];
                 childrenSizes = new int[numChildren];

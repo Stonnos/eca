@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.db.DataBaseQueryExecutor;
 import eca.gui.ButtonUtils;
+import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.InstancesSetTable;
@@ -43,6 +44,9 @@ public class QueryFrame extends JFrame {
     private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
+    private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
+    private static final int QUERY_TEXT_ROWS = 10;
+    private static final int QUERY_TEXT_COLUMNS = 20;
 
     private final DataBaseQueryExecutor connection;
 
@@ -130,7 +134,7 @@ public class QueryFrame extends JFrame {
         //-----------------------------------------------------
         JPanel queryPanel = new JPanel(new GridBagLayout());
         queryPanel.setBorder(PanelBorderUtils.createTitledBorder(QUERY_TITLE));
-        queryArea = new JTextArea(10, 20);
+        queryArea = new JTextArea(QUERY_TEXT_ROWS, QUERY_TEXT_COLUMNS);
         queryArea.setWrapStyleWord(true);
         queryArea.setLineWrap(true);
         queryArea.setFont(QUERY_AREA_FONT);
@@ -143,10 +147,15 @@ public class QueryFrame extends JFrame {
         execute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                progress.setIndeterminate(true);
-                worker = new QueryWorker(queryArea.getText().trim());
-                interrupt.setEnabled(true);
-                worker.execute();
+                if (queryArea.getText() == null || StringUtils.isEmpty(queryArea.getText().trim())) {
+                    GuiUtils.showErrorMessageAndRequestFocusOn(QueryFrame.this, queryArea);
+                    queryArea.setText(StringUtils.EMPTY);
+                } else {
+                    progress.setIndeterminate(true);
+                    worker = new QueryWorker(queryArea.getText().trim());
+                    interrupt.setEnabled(true);
+                    worker.execute();
+                }
             }
         });
 
@@ -164,10 +173,9 @@ public class QueryFrame extends JFrame {
             }
         });
         //-----------------------------------------
-        Dimension dim = new Dimension(150, 25);
-        execute.setPreferredSize(dim);
-        clear.setPreferredSize(dim);
-        interrupt.setPreferredSize(dim);
+        execute.setPreferredSize(QUERY_BUTTON_DIM);
+        clear.setPreferredSize(QUERY_BUTTON_DIM);
+        interrupt.setPreferredSize(QUERY_BUTTON_DIM);
         queryPanel.add(scrollPanel, new GridBagConstraints(0, 0, 3, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         queryPanel.add(execute, new GridBagConstraints(0, 1, 1, 1, 1, 1,

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
+import java.awt.*;
 import java.util.Enumeration;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class GuiUtils {
         }
     }
 
-    public static void showErrorMessageAndRequestFocusOn(JDialog component, JComponent target) {
+    public static void showErrorMessageAndRequestFocusOn(Window component, JComponent target) {
         JOptionPane.showMessageDialog(component,
                 FILL_ALL_FIELDS_ERROR_TEXT,
                 INPUT_ERROR_TEXT, JOptionPane.WARNING_MESSAGE);
