@@ -6,7 +6,7 @@
 package eca.gui.tables.models;
 
 import eca.roc.AttributesSelection;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
@@ -21,7 +21,7 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
     private static final String AUC_FORMAT = "AUC (Класс %d)";
     private final AttributesSelection roc;
     private String[] titles;
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     public SignificantAttributesTableModel(AttributesSelection roc, int digits) {
         this.roc = roc;

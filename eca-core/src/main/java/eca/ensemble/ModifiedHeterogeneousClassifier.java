@@ -71,7 +71,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
-        return getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(data) :
+        return getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(data, new Random()) :
                 getClassifiersSet().builtOptimalClassifier(data);
     }
 

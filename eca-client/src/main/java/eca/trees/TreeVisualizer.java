@@ -11,7 +11,7 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.gui.service.ClassifierIndexerService;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
@@ -67,7 +67,7 @@ public class TreeVisualizer extends JPanel {
     private Stroke linkStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
     private Font nodeFont = new Font("Arial", Font.BOLD, 12);
     private Font ruleFont = new Font("Arial", Font.BOLD, 11);
-    private final DecimalFormat fmt = NumericFormat.getInstance();
+    private final DecimalFormat fmt = NumericFormatFactory.getInstance();
 
     private double screenWidth = 100.0;
     private double stepBetweenLevels = 100.0;

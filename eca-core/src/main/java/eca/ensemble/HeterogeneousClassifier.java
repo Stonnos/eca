@@ -165,7 +165,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         if (getSamplingMethod() == SamplingMethod.INITIAL) {
             model = getClassifiersSet().buildClassifier(iteration, data);
         } else if (getUseRandomClassifier()) {
-            model = getClassifiersSet().buildRandomClassifier(data);
+            model = getClassifiersSet().buildRandomClassifier(data, new Random());
         } else {
             model = getClassifiersSet().builtOptimalClassifier(data);
         }

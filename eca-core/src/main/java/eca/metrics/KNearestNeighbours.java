@@ -12,7 +12,7 @@ import eca.filter.MissingValuesFilter;
 import eca.metrics.distances.Distance;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.InstanceDistance;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
@@ -74,7 +74,7 @@ public class KNearestNeighbours extends AbstractClassifier
     /**
      * Decimal format.
      */
-    private DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private MinMaxNormalizer normalizer;
     private InstanceDistance[] distances;

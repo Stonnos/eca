@@ -123,7 +123,7 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                     state = NEXT_PERMUTATION_STATE;
                     StackingClassifier nextModel
                             = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
-                    nextModel.setClassifiers(currentSet.clone());
+                    nextModel.setClassifiers(new ClassifiersSet(currentSet));
                     return evaluateModel(nextModel);
                 }
             }

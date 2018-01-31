@@ -4,6 +4,7 @@ import java.util.function.BiPredicate;
 
 /**
  * Utility class.
+ *
  * @author Roman Batygin
  */
 
@@ -11,8 +12,9 @@ public class Utils {
 
     /**
      * Check value in list by specified predicate.
-     * @param list list
-     * @param val value
+     *
+     * @param list      list
+     * @param val       value
      * @param predicate {@link BiPredicate} object
      * @return <tt>true</tt> if the value contains in list
      */

@@ -7,13 +7,12 @@ package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.ClassifierComparator;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class ExperimentTableModel extends AbstractTableModel {
     private final String[] titles = {"№", "Классификатор", "Точность, %", "Результаты"};
     private List<EvaluationResults> experiment;
 
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     public ExperimentTableModel(List<EvaluationResults> experiment, int digits) throws Exception {
         this.experiment = experiment;

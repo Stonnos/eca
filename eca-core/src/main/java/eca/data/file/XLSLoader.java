@@ -58,7 +58,7 @@ public class XLSLoader {
     public void setFile(File file) {
         Assert.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
-            throw new IllegalArgumentException("Wrong file extension!");
+            throw new IllegalArgumentException("Unexpected file extension!");
         }
         this.file = file;
     }

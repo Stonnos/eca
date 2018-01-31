@@ -22,7 +22,7 @@ import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -79,8 +79,8 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
 
     private JComboBox<String> activationFunctionsBox;
 
-    private DecimalFormat doubleFormat = NumericFormat.getInstance();
-    private DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private DecimalFormat doubleFormat = NumericFormatFactory.getInstance();
+    private DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
 
     private ActivationFunctionBuilder activationFunctionBuilder = new ActivationFunctionBuilder();
 

@@ -12,7 +12,7 @@ import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.util.ImageSaver;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -56,7 +56,7 @@ public class NetworkVisualizer extends JPanel {
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
 
-    private final DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private Color linkColor = Color.GRAY;
     private Color inLayerColor = Color.BLUE;

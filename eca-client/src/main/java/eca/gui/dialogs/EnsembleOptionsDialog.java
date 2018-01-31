@@ -19,7 +19,7 @@ import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.util.ThreadsUtils;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -76,7 +76,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private static final int ALGORITHMS_HEIGHT_HEIGHT = 265;
     private static final Dimension TAB_DIMENSION = new Dimension(620, 430);
 
-    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private final DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
 
     private JTabbedPane pane;
     private JPanel firstPanel;

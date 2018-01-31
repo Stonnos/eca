@@ -5,7 +5,7 @@
  */
 package eca.neural;
 
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ public class BackPropagation extends LearningAlgorithm {
     public static final double MIN_MOMENTUM = 0.0;
     public static final double MAX_MOMENTUM = 1.0;
 
-    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
+    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
     /**
      * Learning rate value

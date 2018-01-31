@@ -1,7 +1,7 @@
 package eca.gui.tables.models;
 
 import eca.statistics.diagram.FrequencyData;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
@@ -16,7 +16,7 @@ public class FrequencyDiagramTableModel extends AbstractTableModel {
     private static final String[] TITLES = {"Интервал", "Частота"};
     private static final String FIRST_INTERVAL_FORMAT = "[%s; %s]";
     private static final String INTERVAL_FORMAT = "(%s; %s]";
-    private final DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private final List<FrequencyData> frequencyDataList;
 
     public FrequencyDiagramTableModel(List<FrequencyData> frequencyDataList, int digits) {

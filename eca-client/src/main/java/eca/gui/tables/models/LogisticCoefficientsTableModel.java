@@ -6,7 +6,7 @@
 package eca.gui.tables.models;
 
 import eca.regression.Logistic;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
@@ -27,7 +27,7 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
     private final Logistic logistic;
     private Instances data;
     private String[] titles;
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final NominalToBinary ntbFilter = new NominalToBinary();
     private final ReplaceMissingValues missValFilter = new ReplaceMissingValues();
     private final RemoveUseless uselessFilter = new RemoveUseless();

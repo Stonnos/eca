@@ -7,6 +7,7 @@ package eca.gui.frames;
 
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedStacking;
+import eca.ensemble.ClassifiersSet;
 import eca.gui.dialogs.StackingOptionsDialog;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ public class AutomatedStackingFrame extends ExperimentFrame {
                 exp.getClassifier(), exp.getData(), getDigits());
         options.setMetaEnabled(false);
         try {
-            options.addClassifiers(exp.getClassifier().getClassifiers().clone());
+            options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiers()));
             options.showDialog();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,

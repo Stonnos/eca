@@ -5,7 +5,7 @@
  */
 package eca.gui.tables.models;
 
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
@@ -20,7 +20,7 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     private static final String SENSITIVITY_TEXT = "Чувствительность";
     private static final String CLASS_THRESHOLD_TEXT = "Порог для класса (%s)";
     private String[] titles;
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final Instances data;
     private final String className;
 

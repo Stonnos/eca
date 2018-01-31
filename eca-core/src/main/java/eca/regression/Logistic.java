@@ -16,12 +16,12 @@ import weka.core.Instances;
 public class Logistic extends weka.classifiers.functions.Logistic
         implements InstancesHandler {
 
-    private static final int MAX_ITS = 500;
+    private static final int DEFAULT_NUM_ITS = 200;
 
     private Instances data;
 
     public Logistic() {
-        this.setMaxIts(MAX_ITS);
+        this.setMaxIts(DEFAULT_NUM_ITS);
     }
 
     @Override

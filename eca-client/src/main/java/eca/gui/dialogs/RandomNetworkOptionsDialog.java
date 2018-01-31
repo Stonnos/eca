@@ -8,7 +8,7 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.util.ThreadsUtils;
 import weka.core.Instances;
 
@@ -32,7 +32,7 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
     private static final String USE_BOOTSTRAP_SAMPLE_TEXT = "Использование бутстрэп - выборок";
     private static final String NUM_THREADS_TITLE = "Число потоков:";
 
-    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private final DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
 
     private JTextField numClassifiersTextField;
     private JTextField classifierMinErrorTextField;

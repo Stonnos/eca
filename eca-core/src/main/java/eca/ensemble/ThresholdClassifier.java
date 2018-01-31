@@ -1,6 +1,6 @@
 package eca.ensemble;
 
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 
 import java.text.DecimalFormat;
 
@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
  */
 public abstract class ThresholdClassifier extends IterativeEnsembleClassifier {
 
-    public static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
+    public static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
     public static final double MIN_ERROR_THRESHOLD = 0.0;
 

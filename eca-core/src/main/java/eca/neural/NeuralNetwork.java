@@ -15,7 +15,7 @@ import eca.ensemble.IterativeBuilder;
 import eca.filter.MissingValuesFilter;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
@@ -37,7 +37,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     private static final int NIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;
 
-    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormat.getInstance(Integer.MAX_VALUE);
+    private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
     /**
      * Initial training set
@@ -52,7 +52,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     /**
      * Decimal format.
      */
-    private DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private MinMaxNormalizer normalizer;
     private final MissingValuesFilter filter = new MissingValuesFilter();

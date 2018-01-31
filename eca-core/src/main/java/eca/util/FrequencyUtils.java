@@ -9,7 +9,6 @@ import weka.core.Instances;
  *
  * @author Roman Batygin
  */
-
 public class FrequencyUtils {
 
     /**

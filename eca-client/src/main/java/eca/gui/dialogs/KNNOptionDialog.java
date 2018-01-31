@@ -14,7 +14,7 @@ import eca.gui.validators.TextFieldInputVerifier;
 import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.DistanceBuilder;
 import eca.metrics.distances.DistanceType;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -41,7 +41,7 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
     private final JTextField weightTextField;
     private final JComboBox<String> metricBox;
 
-    private final DecimalFormat estimateFormat = NumericFormat.getInstance();
+    private final DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
     private final DistanceBuilder distanceBuilder = new DistanceBuilder();
 
     public KNNOptionDialog(Window parent, String title,

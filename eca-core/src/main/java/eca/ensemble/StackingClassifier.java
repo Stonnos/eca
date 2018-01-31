@@ -170,7 +170,7 @@ public class StackingClassifier extends AbstractClassifier
         if (getUseCrossValidation()) {
             Instances newData = new Instances(filteredData);
             newData.stratify(numFolds);
-            ClassifiersSet copies = classifiers.clone();
+            ClassifiersSet copies = new ClassifiersSet(classifiers);
             for (int i = 0; i < numFolds; i++) {
                 Instances train = newData.trainCV(numFolds, i);
                 for (int j = 0; j < classifiers.size(); j++) {
@@ -221,7 +221,7 @@ public class StackingClassifier extends AbstractClassifier
 
     @Override
     public List<Classifier> getStructure() throws Exception {
-        List<Classifier> copies = getClassifiers().clone().toList();
+        List<Classifier> copies = new ClassifiersSet(getClassifiers()).toList();
         copies.add(AbstractClassifier.makeCopy(metaClassifier));
         return copies;
     }
@@ -252,18 +252,14 @@ public class StackingClassifier extends AbstractClassifier
         ArrayList<Attribute> attr = new ArrayList<>(classifiers.size() + 1);
         ArrayList<String> values = new ArrayList<>(filteredData.numClasses());
         Attribute classAttr = filteredData.classAttribute();
-
         for (int k = 0; k < classAttr.numValues(); k++) {
             values.add(classAttr.value(k));
         }
-
         for (int k = 0; k < classifiers.size(); k++) {
             attr.add(new Attribute(String.format("%s %d",
-                    classifiers.getClassifier(k).getClass().getSimpleName(), k), (ArrayList<String>) values.clone()));
+                    classifiers.getClassifier(k).getClass().getSimpleName(), k), new ArrayList<>(values)));
         }
-
         attr.add((Attribute) classAttr.copy());
-
         metaSet = new Instances(META_SET_NAME, attr, filteredData.numInstances());
         metaSet.setClassIndex(metaSet.numAttributes() - 1);
     }

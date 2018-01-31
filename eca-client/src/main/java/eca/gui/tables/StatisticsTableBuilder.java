@@ -11,7 +11,7 @@ import eca.ensemble.StackingClassifier;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.J48;
 import eca.util.Entry;
@@ -68,7 +68,7 @@ public class StatisticsTableBuilder {
     public static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
     public static final String TOTAL_TIME_TEXT = "Затраченное время";
 
-    private final DecimalFormat FORMAT = NumericFormat.getInstance();
+    private final DecimalFormat FORMAT = NumericFormatFactory.getInstance();
 
     private static final SimpleDateFormat DATE_FORMAT;
 

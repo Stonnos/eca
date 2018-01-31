@@ -6,7 +6,7 @@
 package eca.gui.tables.models;
 
 import eca.text.DateFormat;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
 import weka.core.Instances;
 
@@ -25,7 +25,7 @@ public class InstancesTableModel extends AbstractTableModel {
 
     private final Instances data;
     private final ArrayList<ArrayList<Object>> values;
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     private int modificationCount;
 

@@ -4,9 +4,9 @@ import eca.statistics.diagram.IntervalData;
 
 /**
  * Interval utility class.
+ *
  * @author Roman Batygin
  */
-
 public class IntervalUtils {
 
     /**

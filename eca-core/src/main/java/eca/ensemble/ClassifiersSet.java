@@ -20,10 +20,29 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
-public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable, Cloneable {
+public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.Serializable {
 
     private ArrayList<Classifier> classifiers = new ArrayList<>();
-    private Random random = new Random();
+
+    /**
+     * Default constructor.
+     */
+    public ClassifiersSet() {
+
+    }
+
+    /**
+     * Creates classifiers copies.
+     *
+     * @param another another object
+     * @throws Exception
+     */
+    public ClassifiersSet(ClassifiersSet another) throws Exception {
+        this.classifiers = new ArrayList<>(another.size());
+        for (int i = 0; i < another.size(); i++) {
+            addClassifier(another.getClassifierCopy(i));
+        }
+    }
 
     /**
      * Adds classifier to collection.
@@ -113,32 +132,14 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
         return classifiers.iterator();
     }
 
-    @Override
-    public ClassifiersSet clone() {
-        ClassifiersSet clone;
-        try {
-            clone = (ClassifiersSet) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError(e);
-        }
-        clone.classifiers = (ArrayList<Classifier>) classifiers.clone();
-        try {
-            for (int i = 0; i < clone.classifiers.size(); i++) {
-                clone.classifiers.set(i, getClassifierCopy(i));
-            }
-        } catch (Exception e) {
-            throw new InternalError(e);
-        }
-        return clone;
-    }
-
     /**
      * Returns <tt>Classifier</tt> object at random position.
      *
-     * @return <tt>Classifier</tt> object at random position
+     * @param random {@link Random} object
+     * @return {@link Classifier} object at random position
      * @throws Exception
      */
-    public Classifier randomClassifier() throws Exception {
+    public Classifier randomClassifier(Random random) throws Exception {
         return isEmpty() ? null : AbstractClassifier.makeCopy(classifiers.get(random.nextInt(size())));
     }
 
@@ -146,13 +147,14 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      * Returns classifier model at random position in this collection
      * built on given training set.
      *
-     * @param data <tt>Instances</tt> object
+     * @param data   {@link Instances} object
+     * @param random {@link Random} object
      * @return classifier model at random position in this collection
      * built on given training set
      * @throws Exception
      */
-    public Classifier buildRandomClassifier(Instances data) throws Exception {
-        Classifier classifier = randomClassifier();
+    public Classifier buildRandomClassifier(Instances data, Random random) throws Exception {
+        Classifier classifier = randomClassifier(random);
         classifier.buildClassifier(data);
         return classifier;
     }
@@ -187,7 +189,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      * @return classifiers set converted to <tt>ArrayList</tt> object
      */
     public List<Classifier> toList() {
-        return classifiers;
+        return new ArrayList<>(classifiers);
     }
 
 }

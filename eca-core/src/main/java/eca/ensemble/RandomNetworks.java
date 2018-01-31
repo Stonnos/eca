@@ -11,7 +11,7 @@ import eca.neural.NeuralNetworkUtil;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -53,7 +53,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     /**
      * Decimal format.
      */
-    private DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     @Override
     public DecimalFormat getDecimalFormat() {

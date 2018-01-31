@@ -6,7 +6,7 @@
 package eca.gui.tables.models;
 
 import eca.core.evaluation.Evaluation;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
@@ -24,7 +24,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
             "Полнота", "Точность", "F - мера", "AUC"};
     private Object[][] values;
 
-    private final DecimalFormat format = NumericFormat.getInstance();
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     public ClassificationCostsTableModel(Evaluation ev, int digits) {
         this.ev = ev;

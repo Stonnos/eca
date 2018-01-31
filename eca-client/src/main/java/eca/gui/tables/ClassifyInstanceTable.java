@@ -13,7 +13,7 @@ import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
 import eca.statistics.AttributeStatistics;
 import eca.text.DateFormat;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -50,7 +50,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final String INTEGER_REGEX = "^[0-9]+$";
     private static final int ATTR_INFO_FONT_SIZE = 12;
 
-    private final DecimalFormat decimalFormat = NumericFormat.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private final AttributeStatistics attributeStatistics;
 
     public ClassifyInstanceTable(Instances data, int digits) {

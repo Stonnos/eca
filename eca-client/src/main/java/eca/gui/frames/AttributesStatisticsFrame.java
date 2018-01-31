@@ -12,7 +12,7 @@ import eca.gui.tables.models.NumericAttributeTableModel;
 import eca.statistics.AttributeStatistics;
 import eca.statistics.diagram.FrequencyData;
 import eca.statistics.diagram.FrequencyDiagramBuilder;
-import eca.text.NumericFormat;
+import eca.text.NumericFormatFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.jfree.chart.ChartFactory;
@@ -83,7 +83,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private FrequencyDiagramBuilder frequencyDiagramBuilder;
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
-        DecimalFormat decimalFormat = NumericFormat.getInstance();
+        DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
         decimalFormat.setMaximumFractionDigits(digits);
         this.parentFrame = parent;
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];

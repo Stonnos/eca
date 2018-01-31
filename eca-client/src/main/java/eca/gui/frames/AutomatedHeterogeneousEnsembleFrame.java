@@ -7,7 +7,9 @@ package eca.gui.frames;
 
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.ensemble.ClassifiersSet;
 import eca.gui.dialogs.EnsembleOptionsDialog;
+import eca.gui.logging.LoggerUtils;
 
 import javax.swing.*;
 
@@ -30,8 +32,13 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
         EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, OPTIONS_TITLE, exp.getClassifier(),
                 exp.getData(), getDigits());
         options.setSampleEnabled(false);
-        options.addClassifiers(exp.getClassifier().getClassifiersSet().clone());
-        options.showDialog();
+        try {
+            options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiersSet()));
+            options.showDialog();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(AutomatedHeterogeneousEnsembleFrame.this,
+                    ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        }
     }
 
 }
