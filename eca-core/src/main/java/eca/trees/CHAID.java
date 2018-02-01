@@ -60,7 +60,7 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
-        contingencyTable = getUseBinarySplits() ? new double[data.numClasses() + 1][3]
+        contingencyTable = getUseBinarySplits() || isUseRandomSplits() ? new double[data.numClasses() + 1][3]
                 : new double[data.numClasses() + 1][];
         super.buildClassifier(data);
     }
