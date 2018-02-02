@@ -67,7 +67,7 @@ public class TreeVisualizer extends JPanel {
     private Stroke linkStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
     private Font nodeFont = new Font("Arial", Font.BOLD, 12);
     private Font ruleFont = new Font("Arial", Font.BOLD, 11);
-    private final DecimalFormat fmt = NumericFormatFactory.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private double screenWidth = 100.0;
     private double stepBetweenLevels = 100.0;
@@ -75,8 +75,8 @@ public class TreeVisualizer extends JPanel {
     private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
     public TreeVisualizer(DecisionTreeClassifier tree, int digits) {
+        this.decimalFormat.setMaximumFractionDigits(digits);
         this.setTree(tree);
-        fmt.setMaximumFractionDigits(digits);
         this.createPopupMenu();
         this.setLayout(null);
     }
@@ -487,7 +487,7 @@ public class TreeVisualizer extends JPanel {
             int c = (int) node.classValue();
             str.append("<tr>");
             str.append(String.format(CELL_FORMAT, NODE_ERROR_TEXT)).append("<td>").
-                    append(fmt.format(tree.calculateNodeError(node))).append("</td>");
+                    append(decimalFormat.format(tree.calculateNodeError(node))).append("</td>");
             str.append("</tr><tr>");
             str.append(String.format(CELL_FORMAT, CLASS_VALUE_TEXT)).append("<td>").append(c)
                     .append(StringUtils.SPACE).append("(").append(tree.getData().classAttribute().value(c))
@@ -568,7 +568,7 @@ public class TreeVisualizer extends JPanel {
         g.setColor(ruleColor);
         g.setFont(ruleFont);
         AbstractRule rule = p.getRule();
-        g.drawString(rule instanceof NumericRule ? ((NumericRule) rule).rule(index, fmt) : rule.rule(index),
+        g.drawString(rule instanceof NumericRule ? ((NumericRule) rule).rule(index, decimalFormat) : rule.rule(index),
                 (float) xt, (float) yt);
     }
 
