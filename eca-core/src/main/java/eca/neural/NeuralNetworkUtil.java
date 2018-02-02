@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class NeuralNetworkUtil {
 
+    private static final int MIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;
     private static final int MIN_HIDDEN_LAYERS_NUMBER = 1;
     private static final int MAX_HIDDEN_LAYERS_NUMBER = 2;
     private static final int MIN_SCORE_VALUE = 1;
@@ -30,49 +31,36 @@ public class NeuralNetworkUtil {
      */
     public static String generateRandomHiddenLayer(Instances data) {
         double neuronsCount = generateNeuronsNumberInHiddenLayer(data);
-
-        if (neuronsCount < 1.0) {
-            return String.valueOf(1);
+        if (neuronsCount < MIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
+            return String.valueOf(MIN_NEURONS_NUM_IN_HIDDEN_LAYER);
         }
-
         Random random = new Random();
-
         int hiddenLayersCount = random.nextInt(MAX_HIDDEN_LAYERS_NUMBER) + MIN_HIDDEN_LAYERS_NUMBER;
-
         if (hiddenLayersCount == 1 || neuronsCount <= hiddenLayersCount) {
             return String.valueOf((int) neuronsCount);
         }
-
         double[] scores = new double[hiddenLayersCount];
         double resultSum = 0.0;
-
         for (int i = 0; i < scores.length; i++) {
             scores[i] = random.nextInt(MAX_SCORE_VALUE) + MIN_SCORE_VALUE;
             resultSum += scores[i];
         }
-
         double normalizationValue = neuronsCount / resultSum;
         resultSum = 0.0;
-
         for (int i = 0; i < scores.length; i++) {
             scores[i] = Math.round(scores[i] * normalizationValue);
             resultSum += scores[i];
         }
-
         if (neuronsCount != resultSum) {
             double residue = neuronsCount - resultSum;
             int randomIndex = random.nextInt(scores.length);
             scores[randomIndex] += residue;
         }
-
-
         StringBuilder hiddenLayerStr = new StringBuilder();
         hiddenLayerStr.append((int) scores[0]);
-
         for (int i = 1; i < scores.length; i++) {
             hiddenLayerStr.append(",").append((int) scores[i]);
         }
-
         return hiddenLayerStr.toString().replace(",0", StringUtils.EMPTY);
     }
 
@@ -118,7 +106,8 @@ public class NeuralNetworkUtil {
      * @return the minimum number of neurons in hidden layers
      */
     public static int getMinNumNeuronsInHiddenLayer(Instances data) {
-        return getMinLinksNum(data) / (data.numAttributes() + data.numClasses() - 1);
+        int minNumNeurons = getMinLinksNum(data) / (data.numAttributes() + data.numClasses() - 1);
+        return minNumNeurons < MIN_NEURONS_NUM_IN_HIDDEN_LAYER ? MIN_NEURONS_NUM_IN_HIDDEN_LAYER : minNumNeurons;
     }
 
     /**

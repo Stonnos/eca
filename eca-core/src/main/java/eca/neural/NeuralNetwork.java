@@ -35,8 +35,6 @@ import java.util.NoSuchElementException;
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler,
         ListOptionsHandler, DecimalFormatHandler {
 
-    private static final int NIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;
-
     private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
     /**
@@ -221,11 +219,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         network.setInLayerNeuronsNum(data.numAttributes() - 1);
         network.setOutLayerNeuronsNum(data.numClasses());
         if (network.getHiddenLayer() == null) {
-            int neuronsNum = NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data);
-            if (neuronsNum < NIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
-                neuronsNum = NIN_NEURONS_NUM_IN_HIDDEN_LAYER;
-            }
-            network.setHiddenLayer(String.valueOf(neuronsNum));
+            network.setHiddenLayer(String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data)));
         }
     }
 
