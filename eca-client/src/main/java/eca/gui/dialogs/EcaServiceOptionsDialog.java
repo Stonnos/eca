@@ -29,6 +29,7 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     public EcaServiceOptionsDialog(Window parent) {
         super(parent, TITLE_TEXT);
+        this.setModal(true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
 
