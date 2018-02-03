@@ -6,6 +6,7 @@
 package eca.gui.tables;
 
 import eca.config.ApplicationProperties;
+import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
 import eca.gui.JButtonEditor;
@@ -148,10 +149,11 @@ public class ExperimentTable extends JDataTableBase {
             try {
                 if (classificationResultsFrameBases.get(index) == null) {
                     ExperimentTableModel model = experimentModel();
+                    Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
                     ClassificationResultsFrameBase result =
                             new ClassificationResultsFrameBase(parentFrame,
                                     classifierDescriptor.getClassifier().getClass()
-                                    .getSimpleName(), classifierDescriptor.getClassifier(), data,
+                                    .getSimpleName(), classifierDescriptor.getClassifier(), dataSet,
                                     classifierDescriptor.getEvaluation(), model.digits());
                     ClassificationResultsFrameBase.createResults(result, model.digits());
                     StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
