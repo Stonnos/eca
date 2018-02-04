@@ -90,7 +90,7 @@ public class ClassifierInputOptionsService {
                 info.append(String.format("<h4 class = 'attr' style = 'text-align: center'>%s %s</h4>",
                         META_CLASSIFIER_INPUT_OPTIONS_TEXT,
                         stackingClassifier.getMetaClassifier().getClass().getSimpleName()));
-                info.append(getInputOptionsTableAsHtml(stackingClassifier, StringUtils.EMPTY));
+                info.append(getInputOptionsTableAsHtml(stackingClassifier.getMetaClassifier(), StringUtils.EMPTY));
             }
         }
         info.append("</body></html>");
@@ -376,9 +376,11 @@ public class ClassifierInputOptionsService {
 
     private static StringBuilder getInputOptionsTableAsHtml(Classifier classifier, String title) {
         StringBuilder info = new StringBuilder("<table>");
-        info.append("<tr>");
-        info.append("<th class = 'attr' colspan = '2'>").append(title).append("</th>");
-        info.append("</tr>");
+        if (!StringUtils.isEmpty(title)) {
+            info.append("<tr>");
+            info.append("<th class = 'attr' colspan = '2'>").append(title).append("</th>");
+            info.append("</tr>");
+        }
         String[] options = ((AbstractClassifier) classifier).getOptions();
         for (int i = 0; i < options.length; i += 2) {
             info.append("<tr>");
