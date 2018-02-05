@@ -63,7 +63,6 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      */
     public NeuralNetwork(Instances data) {
         Assert.notNull(data, "Instances is not specified!");
-        this.network = new MultilayerPerceptron(data.numAttributes() - 1, data.numClasses());
         initializeInputOptions(data);
     }
 
@@ -216,8 +215,12 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     }
 
     private void initializeInputOptions(Instances data) {
-        network.setInLayerNeuronsNum(data.numAttributes() - 1);
-        network.setOutLayerNeuronsNum(data.numClasses());
+        if (network == null) {
+            network = new MultilayerPerceptron(data.numAttributes() - 1, data.numClasses());
+        } else {
+            network.setInLayerNeuronsNum(data.numAttributes() - 1);
+            network.setOutLayerNeuronsNum(data.numClasses());
+        }
         if (network.getHiddenLayer() == null) {
             network.setHiddenLayer(String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data)));
         }
