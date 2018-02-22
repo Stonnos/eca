@@ -59,7 +59,8 @@ public class AttributesTable extends JDataTableBase {
     private final InstancesTable instancesTable;
     private final JComboBox<String> classBox;
 
-    private int lastModificationCount;
+    private int lastDataModificationCount;
+    private int lastAttributesModificationCount;
     private Instances lastCreatedInstances;
 
     public AttributesTable(InstancesTable instancesTable, final JComboBox<String> classBox) {
@@ -114,8 +115,7 @@ public class AttributesTable extends JDataTableBase {
                         String trimName = attrNewName.trim();
                         if (!StringUtils.isEmpty(trimName)) {
                             try {
-                                getAttributesTableModel().data().renameAttribute(i, trimName);
-                                getAttributesTableModel().fireTableRowsUpdated(i, i);
+                                getAttributesTableModel().renameAttribute(i, trimName);
                                 instancesTable.getColumnModel().getColumn(i + 1).setHeaderValue(trimName);
                                 instancesTable.getRootPane().repaint();
                                 classBox.insertItemAt(trimName, i);
@@ -137,7 +137,9 @@ public class AttributesTable extends JDataTableBase {
     }
 
     public Instances createData(String relationName) throws Exception {
-        if (lastCreatedInstances == null || lastModificationCount != instancesTable.model().getModificationCount()) {
+        if (lastCreatedInstances == null ||
+                (lastDataModificationCount != instancesTable.model().getModificationCount() ||
+                        lastAttributesModificationCount != getAttributesTableModel().getModificationCount())) {
             Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
             DecimalFormat format = instancesTable.model().format();
             for (int i = 0; i < instancesTable.getRowCount(); i++) {
@@ -163,7 +165,8 @@ public class AttributesTable extends JDataTableBase {
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
             }
-            lastModificationCount = instancesTable.model().getModificationCount();
+            lastDataModificationCount = instancesTable.model().getModificationCount();
+            lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
             lastCreatedInstances = filterInstances;
         }
         return lastCreatedInstances;

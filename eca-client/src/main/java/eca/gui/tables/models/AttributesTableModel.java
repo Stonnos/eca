@@ -11,6 +11,7 @@ import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author Roman Batygin
@@ -26,16 +27,25 @@ public class AttributesTableModel extends AbstractTableModel {
 
     private final Instances data;
 
+    private int modificationCount;
+
     public AttributesTableModel(Instances data) {
         this.data = data;
-        selectedAttr = new ArrayList<>(data.numAttributes());
-        attrType = new ArrayList<>(data.numAttributes());
+        this.selectedAttr = new ArrayList<>(data.numAttributes());
+        this.attrType = new ArrayList<>(data.numAttributes());
         for (int i = 0; i < data.numAttributes(); i++) {
-            selectedAttr.add(true);
-            attrType.add(AttributesTypesDictionary.getType(data.attribute(i)));
+            this.selectedAttr.add(true);
+            this.attrType.add(AttributesTypesDictionary.getType(data.attribute(i)));
         }
     }
 
+    public Instances data() {
+        return data;
+    }
+
+    public int getModificationCount() {
+        return modificationCount;
+    }
 
     @Override
     public int getColumnCount() {
@@ -88,8 +98,13 @@ public class AttributesTableModel extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == EDIT_INDEX) {
             selectedAttr.set(rowIndex, aValue);
+            modificationCount += Boolean.FALSE.equals(aValue) ? 1 : -1;
         } else if (columnIndex == LIST_INDEX) {
+            Object oldValue = attrType.get(rowIndex);
             attrType.set(rowIndex, aValue);
+            if (!Objects.equals(aValue, oldValue)) {
+                modificationCount++;
+            }
         }
         fireTableCellUpdated(rowIndex, columnIndex);
     }
@@ -99,34 +114,37 @@ public class AttributesTableModel extends AbstractTableModel {
         return title[column];
     }
 
-    public final boolean isAttributeSelected(int i) {
+    public boolean isAttributeSelected(int i) {
         return (Boolean) getValueAt(i, EDIT_INDEX);
     }
 
-    public final boolean isNumeric(int i) {
+    public boolean isNumeric(int i) {
         return getValueAt(i, LIST_INDEX).equals(AttributesTypesDictionary.NUMERIC);
     }
 
-    public final boolean isDate(int i) {
+    public boolean isDate(int i) {
         return getValueAt(i, LIST_INDEX).equals(AttributesTypesDictionary.DATE);
     }
 
-    public final void selectAllAttributes() {
+    public void selectAllAttributes() {
         for (int i = 0; i < getRowCount(); i++) {
             setValueAt(true, i, EDIT_INDEX);
         }
     }
 
-    public final void resetValues() {
+    public void resetValues() {
         for (int i = 0; i < this.getRowCount(); i++) {
             setValueAt(true, i, EDIT_INDEX);
             setValueAt(AttributesTypesDictionary.getType(data.attribute(i)), i, LIST_INDEX);
         }
     }
 
-    public Instances data() {
-        return data;
+    public void renameAttribute(int index, String newName) {
+        if (!Objects.equals(data.attribute(index).name(), newName)) {
+            data.renameAttribute(index, newName);
+            fireTableRowsUpdated(index, index);
+            modificationCount++;
+        }
     }
-
 
 }
