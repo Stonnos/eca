@@ -260,7 +260,7 @@ public class AttributesStatisticsFrame extends JFrame {
         List<FrequencyData> frequencyDataList =
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNumericAttribute(attribute);
         for (FrequencyData frequencyData : frequencyDataList) {
-            series.add(frequencyData.getLowerBound(), frequencyData.getFrequency());
+            series.add((frequencyData.getUpperBound() + frequencyData.getLowerBound()) / 2.0, frequencyData.getFrequency());
         }
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         xySeriesCollection.addSeries(series);
