@@ -1,18 +1,20 @@
 package eca.data.file;
 
-import eca.data.FileExtension;
+import eca.data.DataFileExtension;
+import eca.data.FileUtil;
 import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVSaver;
+import weka.core.converters.JSONSaver;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
  * Class for saving {@link Instances} objects to file with extensions such as:
- * csv, arff, xls, xlsx.
+ * csv, arff, xls, xlsx, json.
  *
  * @author Roman Batygin
  */
@@ -22,6 +24,7 @@ public class FileDataSaver {
 
     /**
      * Returns date format.
+     *
      * @return date format
      */
     public String getDateFormat() {
@@ -30,6 +33,7 @@ public class FileDataSaver {
 
     /**
      * Sets date format.
+     *
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
@@ -47,25 +51,32 @@ public class FileDataSaver {
     public void saveData(File file, Instances data) throws IOException {
         Assert.notNull(file, "File is not specified!");
         Assert.notNull(data, "Data is not specified!");
-        String name = file.getName();
-        if (name.endsWith(FileExtension.XLS) || name.endsWith(FileExtension.XLSX)) {
+        if (FileUtil.isXlsExtension(file.getName())) {
             XLSSaver xlsSaver = new XLSSaver();
             xlsSaver.setFile(file);
             xlsSaver.setDateFormat(dateFormat);
             xlsSaver.write(data);
         } else {
-            AbstractFileSaver abstractFileSaver;
-            if (name.endsWith(FileExtension.CSV)) {
-                abstractFileSaver = new CSVSaver();
-            } else if (name.endsWith(FileExtension.ARFF)) {
-                abstractFileSaver = new ArffSaver();
-            } else {
-                throw new IOException(String.format("Can't save data %s to file '%s'",
-                        data.relationName(), file.getAbsoluteFile()));
-            }
+            AbstractFileSaver abstractFileSaver = createFileSaver(file, data);
             abstractFileSaver.setFile(file);
             abstractFileSaver.setInstances(data);
             abstractFileSaver.writeBatch();
         }
+    }
+
+    private AbstractFileSaver createFileSaver(File file, Instances data) throws IOException {
+        String fileName = file.getName();
+        AbstractFileSaver abstractFileSaver;
+        if (fileName.endsWith(DataFileExtension.CSV.getExtension())) {
+            abstractFileSaver = new CSVSaver();
+        } else if (fileName.endsWith(DataFileExtension.ARFF.getExtension())) {
+            abstractFileSaver = new ArffSaver();
+        } else if (fileName.endsWith(DataFileExtension.JSON.getExtension())) {
+            abstractFileSaver = new JSONSaver();
+        } else {
+            throw new IOException(
+                    String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile()));
+        }
+        return abstractFileSaver;
     }
 }

@@ -1,7 +1,8 @@
 package eca.data.file;
 
 import eca.data.AbstractDataLoader;
-import eca.data.FileExtension;
+import eca.data.DataFileExtension;
+import eca.data.FileUtil;
 import eca.data.net.UrlDataLoaderDictionary;
 import eca.util.Utils;
 import org.springframework.util.Assert;
@@ -12,14 +13,14 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static eca.data.FileExtension.FILE_EXTENSIONS;
-
 /**
  * Class for loading input data from file.
  *
  * @author Roman Batygin
  */
 public class FileDataLoader extends AbstractDataLoader {
+
+    private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
 
     private File file;
 
@@ -50,10 +51,10 @@ public class FileDataLoader extends AbstractDataLoader {
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        if (file.getName().endsWith(FileExtension.CSV) || file.getName().endsWith(FileExtension.ARFF)) {
+        if (FileUtil.isWekaExtension(file.getName())) {
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
             data = source.getDataSet();
-        } else if (file.getName().endsWith(FileExtension.XLS) || file.getName().endsWith(FileExtension.XLSX)) {
+        } else if (FileUtil.isXlsExtension(file.getName())) {
             XLSLoader loader = new XLSLoader();
             loader.setFile(file);
             loader.setDateFormat(getDateFormat());

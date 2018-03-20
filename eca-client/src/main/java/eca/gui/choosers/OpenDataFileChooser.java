@@ -21,6 +21,8 @@ public class OpenDataFileChooser extends OpenFileChooser {
                 new FileNameExtensionFilter("Csv data files (*.csv)", "csv"));
         chooser.addChoosableFileFilter(
                 new FileNameExtensionFilter("Arff data files (*.arff)", "arff"));
+        chooser.addChoosableFileFilter(
+                new FileNameExtensionFilter("Json data files (*.json)", "json"));
     }
 
 }

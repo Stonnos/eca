@@ -5,7 +5,7 @@
  */
 package eca.data.file;
 
-import eca.data.FileExtension;
+import eca.data.DataFileExtension;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -57,7 +57,8 @@ public class XLSLoader {
      */
     public void setFile(File file) {
         Assert.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
+        if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
+                !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
             throw new IllegalArgumentException("Unexpected file extension!");
         }
         this.file = file;
@@ -93,6 +94,7 @@ public class XLSLoader {
 
     /**
      * Returns date format.
+     *
      * @return date format
      */
     public String getDateFormat() {
@@ -101,6 +103,7 @@ public class XLSLoader {
 
     /**
      * Sets date format.
+     *
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {

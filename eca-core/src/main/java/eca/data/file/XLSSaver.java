@@ -5,7 +5,7 @@
  */
 package eca.data.file;
 
-import eca.data.FileExtension;
+import eca.data.DataFileExtension;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -43,7 +43,8 @@ public class XLSSaver {
      */
     public void setFile(File file) throws IOException {
         Assert.notNull(file, "File is not specified!");
-        if (!file.getName().endsWith(FileExtension.XLS) && !file.getName().endsWith(FileExtension.XLSX)) {
+        if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
+                !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
             throw new IllegalArgumentException("Unexpected file extension!");
         }
         file.createNewFile();
@@ -52,6 +53,7 @@ public class XLSSaver {
 
     /**
      * Returns date format.
+     *
      * @return date format
      */
     public String getDateFormat() {
@@ -60,6 +62,7 @@ public class XLSSaver {
 
     /**
      * Sets date format.
+     *
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
@@ -116,7 +119,7 @@ public class XLSSaver {
     }
 
     private Workbook createWorkbook(File file) {
-        return file.getName().endsWith(FileExtension.XLS) ? new HSSFWorkbook() : new XSSFWorkbook();
+        return file.getName().endsWith(DataFileExtension.XLS.getExtension()) ? new HSSFWorkbook() : new XSSFWorkbook();
     }
 
 }
