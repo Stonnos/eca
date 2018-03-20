@@ -1,0 +1,54 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td class='attr'>Атрибут:</td>
+        <td>$name</td>
+    </tr>
+    <tr>
+        <td class='attr'>Тип:</td>
+        <td>$typeDescription</td>
+    </tr>
+    #if ($type)
+        <tr>
+            <td class='attr'>Минимальное значение:</td>
+            <td>$minValue</td>
+        </tr>
+        <tr>
+            <td class='attr'>Максимальное значение:</td>
+            <td>$maxValue</td>
+        </tr>
+        <tr>
+            <td class='attr'>Математическое ожидание:</td>
+            <td>$meanValue</td>
+        </tr>
+        <tr>
+            <td class='attr'>Дисперсия:</td>
+            <td>$varianceValue</td>
+        </tr>
+        <tr>
+            <td class='attr'>Среднеквадратическое отклонение:</td>
+            <td>$stdDevValue</td>
+        </tr>
+    #else
+        <tr>
+            <td class = "attr" colspan = "2" style = "text-align: center;">Значения:</td>
+        </tr>
+        #foreach($val in $attributeValues)
+            <tr>
+                <td>Код: $foreach.index</td>
+                <td>| Значение: $val</td>
+            </tr>
+        #end
+    #end
+</table>
+</body>

@@ -14,6 +14,7 @@ import eca.gui.text.LengthDocument;
 import eca.statistics.AttributeStatistics;
 import eca.text.DateFormat;
 import eca.text.NumericFormatFactory;
+import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -32,6 +33,7 @@ import java.util.Enumeration;
 
 /**
  * Instances classification panel.
+ *
  * @author Roman Batygin
  */
 public class ClassifyInstanceTable extends JDataTableBase {
@@ -48,7 +50,6 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private static final String INVALID_DATE_FORMAT_ERROR = "Недопустимый формат даты для атрибута '%s'";
     private static final String INTEGER_REGEX = "^[0-9]+$";
-    private static final int ATTR_INFO_FONT_SIZE = 12;
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private final AttributeStatistics attributeStatistics;
@@ -110,7 +111,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             while (en.hasMoreElements()) {
                 Attribute a = en.nextElement();
                 String strValue = (String) vector[a.index()];
-                if (strValue == null || strValue.isEmpty()) {
+                if (StringUtils.isEmpty(strValue)) {
                     throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
                 }
                 if (a.isDate()) {
@@ -156,8 +157,8 @@ public class ClassifyInstanceTable extends JDataTableBase {
             Instances data = getClassifyInstanceTableModel().data();
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getAttributeInfoAsHtml(data.attribute(i),
-                    attributeStatistics, ATTR_INFO_FONT_SIZE).toString());
+            this.setToolTipText(ClassifierInputOptionsService.getAttributeStatisticsAsHtml(data.attribute(i),
+                    attributeStatistics));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());

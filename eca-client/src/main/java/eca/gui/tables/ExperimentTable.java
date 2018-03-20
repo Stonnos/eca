@@ -35,16 +35,12 @@ import java.util.List;
 public class ExperimentTable extends JDataTableBase {
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
-    private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
     private final JFrame parentFrame;
-    private final Instances data;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
-    public ExperimentTable(List<EvaluationResults> experiment,
-                           JFrame parent, Instances data, int digits) throws Exception {
+    public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) throws Exception {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
-        this.data = data;
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
         this.getColumnModel().getColumn(3)
                 .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
@@ -115,9 +111,8 @@ public class ExperimentTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(experimentModel()
-                    .getClassifier(row), INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService
-                    .CLASSIFIER_INPUT_OPTIONS_TEXT, false));
+            this.setToolTipText(ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(experimentModel()
+                    .getClassifier(row), false));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(ExperimentTable.this.getTableHeader().getFont());
@@ -153,7 +148,7 @@ public class ExperimentTable extends JDataTableBase {
                     ClassificationResultsFrameBase result =
                             new ClassificationResultsFrameBase(parentFrame,
                                     classifierDescriptor.getClassifier().getClass()
-                                    .getSimpleName(), classifierDescriptor.getClassifier(), dataSet,
+                                            .getSimpleName(), classifierDescriptor.getClassifier(), dataSet,
                                     classifierDescriptor.getEvaluation(), model.digits());
                     ClassificationResultsFrameBase.createResults(result, model.digits());
                     StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());

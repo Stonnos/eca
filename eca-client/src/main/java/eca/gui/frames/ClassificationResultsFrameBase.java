@@ -154,8 +154,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     public final void setStatisticsTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier,
-                INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService.CLASSIFIER_INPUT_OPTIONS_TEXT, false));
+        this.statTable.setToolTipText(ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(classifier, false));
         resultPane.setViewportView(table);
     }
 
@@ -208,9 +207,7 @@ public class ClassificationResultsFrameBase extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
                     inputParamInfo = new TextInfoFrame(inputMenu.getText(),
-                            ClassifierInputOptionsService.getInputOptionsInfoAsHtml(classifier,
-                                    INPUT_OPTIONS_INFO_FONT_SIZE, ClassifierInputOptionsService
-                                            .CLASSIFIER_INPUT_OPTIONS_TEXT, true),
+                            ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(classifier, true),
                             ClassificationResultsFrameBase.this);
                     ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override

@@ -137,7 +137,7 @@
                                     <directory>src/main/resources</directory>
                                     <excludes>
                                         <exclude>application.properties</exclude>
-                                        <exclude>aboutProgramTemplate.vm</exclude>
+                                        <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
                                     </excludes>
                                 </resource>

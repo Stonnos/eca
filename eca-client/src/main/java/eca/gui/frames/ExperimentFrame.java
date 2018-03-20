@@ -97,7 +97,7 @@ public abstract class ExperimentFrame extends JFrame {
 
     private JTextField timerField;
 
-    private ExperimentTable table;
+    private ExperimentTable experimentTable;
     private SwingWorker<Void, Void> worker;
     private SwingWorker<Void, Void> timer;
     private final int digits;
@@ -149,8 +149,8 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     public final void setResults(ExperimentHistory experimentHistory) {
-        text.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
-                EXPERIMENT_RESULTS_FONT_SIZE, APPLICATION_PROPERTIES.getNumBestResults()));
+        text.setText(
+                ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory, APPLICATION_PROPERTIES.getNumBestResults()));
         text.setCaretPosition(0);
     }
 
@@ -165,7 +165,7 @@ public abstract class ExperimentFrame extends JFrame {
     private void createGUI() throws Exception {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setLayout(new GridBagLayout());
-        table = new ExperimentTable(new ArrayList<>(), this, experiment.getData(), digits);
+        experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
         JPanel top = new JPanel(new GridBagLayout());
         text = new JTextPane();
         text.setEditable(false);
@@ -178,7 +178,7 @@ public abstract class ExperimentFrame extends JFrame {
         progress.setStringPainted(true);
         //----------------------------------------------
         left = new JPanel(new GridBagLayout());
-        JScrollPane right = new JScrollPane(table);
+        JScrollPane right = new JScrollPane(experimentTable);
         JPanel leftBottom = new JPanel(new GridBagLayout());
         left.setBorder(PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.METHOD_TITLE));
         //-------------------------------------------------------------
@@ -273,8 +273,8 @@ public abstract class ExperimentFrame extends JFrame {
                         String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
                 setStateForButtons(false);
                 setStateForOptions(false);
-                table.setRenderer(Color.BLACK);
-                table.clear();
+                experimentTable.setRenderer(Color.BLACK);
+                experimentTable.clear();
                 doBegin();
                 worker.execute();
                 timer.execute();
@@ -313,7 +313,8 @@ public abstract class ExperimentFrame extends JFrame {
                     if (file != null) {
 
                         ModelConverter.saveModel(file,
-                                new ExperimentHistory(table.experimentModel().getExperiment(), experiment.getData(),
+                                new ExperimentHistory(experimentTable.experimentModel().getExperiment(),
+                                        experiment.getData(),
                                         experiment.getEvaluationMethod(), createEvaluationParams()));
                     }
                 } catch (Exception e) {
@@ -343,9 +344,9 @@ public abstract class ExperimentFrame extends JFrame {
                         ExecutorService.process(loadDialog, new CallbackAction() {
                             @Override
                             public void apply() throws Exception {
-                                table.setRenderer(Color.RED);
+                                experimentTable.setRenderer(Color.RED);
                                 ExperimentHistory history = loader.getExperiment();
-                                table.setExperiment(history.getExperiment());
+                                experimentTable.setExperiment(history.getExperiment());
                                 setResults(history);
                             }
                         }, new CallbackAction() {
@@ -473,7 +474,7 @@ public abstract class ExperimentFrame extends JFrame {
                     try {
                         EvaluationResults classifier = object.next();
                         if (!isCancelled()) {
-                            table.addExperiment(classifier);
+                            experimentTable.addExperiment(classifier);
                         }
                     } catch (Exception e) {
                         LoggerUtils.error(log, e);
@@ -498,13 +499,14 @@ public abstract class ExperimentFrame extends JFrame {
         @Override
         protected void done() {
             setProgress(100);
-            table.setRenderer(Color.RED);
+            experimentTable.setRenderer(Color.RED);
             setStateForButtons(true);
             setStateForOptions(true);
-            table.sort();
+            experimentTable.sort();
             if (!error) {
-                setResults(new ExperimentHistory(experiment.getHistory(), experiment.getData(),
-                        experiment.getEvaluationMethod(), createEvaluationParams()));
+                setResults(
+                        new ExperimentHistory(experimentTable.experimentModel().getExperiment(), experiment.getData(),
+                                experiment.getEvaluationMethod(), createEvaluationParams()));
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }

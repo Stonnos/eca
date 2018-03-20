@@ -1,0 +1,62 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+
+        .val {
+            font-family: 'Arial';
+            font-size: 12
+        }
+    </style>
+</head>
+<body>
+<h4 class="attr" style="text-align: left; color: red">Эксперимент завершен.</h4>
+<table>
+    <tr>
+        <th class="attr" colspan="2">Входные параметры:</th>
+    </tr>
+    <tr>
+        <td class="attr">Данные:</td>
+        <td class="val">$relationName</td>
+    </tr>
+    <tr>
+        <td class="attr">Число объектов:</td>
+        <td class="val">$numInstances</td>
+    </tr>
+    <tr>
+        <td class="attr">Число атрибутов:</td>
+        <td class="val">$numAttributes</td>
+    </tr>
+    <tr>
+        <td class="attr">Число классов:</td>
+        <td class="val">$numClasses</td>
+    </tr>
+    <tr>
+        <td class="attr">Атрибут класса:</td>
+        <td class="val">$classAttribute</td>
+    </tr>
+    <tr>
+        <td class="attr">Метод оценки точности:</td>
+        <td class="val">$evaluationMethod</td>
+    </tr>
+</table>
+<h4 class="attr" style="text-align: center">Наилучшие конфигурации классификаторов:</h4>
+<table>
+    #foreach($inputOptionsMap in $classifiersOptions.entrySet())
+        <tr>
+            <th class="attr" colspan="2">$inputOptionsMap.key</th>
+        </tr>
+        #foreach($optionEntry in $inputOptionsMap.value.entrySet())
+            <tr>
+                <td class="attr">$optionEntry.key</td>
+                <td class="val">$optionEntry.value</td>
+            </tr>
+        #end
+    #end
+</table>
+</body>
+</html>

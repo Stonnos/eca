@@ -1,0 +1,45 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+
+        .val {
+            font-family: 'Arial';
+            font-size: 12
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <th class="attr" colspan="2">Входные параметры классификатора</th>
+    </tr>
+    #foreach($entry in $optionsMap.entrySet())
+        <tr>
+            <td class="attr">$entry.key</td>
+            <td class="val">$entry.value</td>
+        </tr>
+    #end
+</table>
+    #if ($extendedOptions)
+    <h4 class="attr" style="text-align: center">Входные параметры базовых классификаторов:</h4>
+    <table>
+        #foreach($inputOptionsMap in $classifiersOptions.entrySet())
+            <tr>
+                <th class="attr" colspan="2">$inputOptionsMap.key</th>
+            </tr>
+            #foreach($optionEntry in $inputOptionsMap.value.entrySet())
+                <tr>
+                    <td class="attr">$optionEntry.key</td>
+                    <td class="val">$optionEntry.value</td>
+                </tr>
+            #end
+        #end
+    </table>
+    #end
+</body>
+</html>

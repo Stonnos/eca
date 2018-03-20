@@ -17,15 +17,10 @@ import java.io.StringWriter;
 public class AboutProgramService {
 
     private static final String TITLE = "title";
-
     private static final String DESCRIPTION = "description";
-
     private static final String AUTHOR = "author";
-
     private static final String EMAIL = "email";
-
     private static final String VERSION = "version";
-
     private static final String LAST_UPDATE_DATE = "lastUpdateDate";
 
     private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
@@ -33,7 +28,7 @@ public class AboutProgramService {
     private static final VelocityConfiguration VELOCITY_CONFIGURATION =
             VelocityConfiguration.getVelocityConfiguration();
 
-    private static final String TEMPLATE_FILE_NAME = "aboutProgramTemplate.vm";
+    private static final String TEMPLATE_FILE_NAME = "vm-templates/aboutProgramTemplate.vm";
 
     private static String aboutProgramHtmlString;
 
