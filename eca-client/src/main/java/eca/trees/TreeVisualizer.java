@@ -6,6 +6,7 @@
 package eca.trees;
 
 import eca.buffer.ImageCopier;
+import eca.config.VelocityConfiguration;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -16,7 +17,8 @@ import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import eca.util.ImageSaver;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import org.springframework.util.Assert;
 
 import javax.swing.*;
@@ -27,15 +29,29 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Decision tree visualization panel.
+ *
  * @author Roman Batygin
  */
 public class TreeVisualizer extends JPanel {
+
+    /**
+     * Velocity configuration
+     */
+    private static final VelocityConfiguration VELOCITY_CONFIGURATION =
+            VelocityConfiguration.getVelocityConfiguration();
+
+    private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/decisionTreeNode.vm";
 
     private static final double MIN_SIZE = 15;
     private static final double MAX_SIZE = 100;
@@ -47,6 +63,11 @@ public class TreeVisualizer extends JPanel {
     private static final String OPTIONS_MENU_TEXT = "Настройки";
     private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
+    private static final int MIN_SCREEN_WIDTH = 100;
+    private static final int STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD = 50;
+    private static final int MAX_STEP_BETWEEN_LEVELS = 180;
+    private static final int MIN_STEP_BETWEEN_LEVELS = 100;
+    private static final int SCREEN_WIDTH_MARGIN = 100;
 
     private double nodeWidth = 25.0;
     private double nodeHeight = 25.0;
@@ -56,7 +77,7 @@ public class TreeVisualizer extends JPanel {
 
     private Color linkColor = Color.GRAY;
     private Color classColor = Color.RED;
-    private Color color = Color.WHITE;
+    private Color nodeColor = Color.WHITE;
     private Color leafColor = Color.GREEN;
     private Color borderColor = Color.BLACK;
     private Color textColor = Color.BLUE;
@@ -81,7 +102,7 @@ public class TreeVisualizer extends JPanel {
         this.setLayout(null);
     }
 
-    public final void setTree(DecisionTreeClassifier tree) {
+    public void setTree(DecisionTreeClassifier tree) {
         Assert.notNull(tree, "Tree is not specified!");
         this.tree = tree;
         this.createNodes();
@@ -99,84 +120,6 @@ public class TreeVisualizer extends JPanel {
 
     public int getStroke() {
         return stroke;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setLeafColor(Color leafColor) {
-        this.leafColor = leafColor;
-    }
-
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
-    }
-
-    public void setTextColor(Color textColor) {
-        this.textColor = textColor;
-    }
-
-    public void setClassColor(Color classColor) {
-        this.classColor = classColor;
-    }
-
-    public void setLinkColor(Color linkColor) {
-        this.linkColor = linkColor;
-    }
-
-    public void setRuleColor(Color ruleColor) {
-        this.ruleColor = ruleColor;
-    }
-
-    public Color color() {
-        return color;
-    }
-
-    public Color linkColor() {
-        return linkColor;
-    }
-
-    public Color ruleColor() {
-        return ruleColor;
-    }
-
-    public Color leafColor() {
-        return leafColor;
-    }
-
-    public Color borderColor() {
-        return borderColor;
-    }
-
-    public Color classColor() {
-        return classColor;
-    }
-
-    public Color textColor() {
-        return textColor;
-    }
-
-    public void setNodeWidth(double width) {
-        if (width < MIN_SIZE || width > MAX_SIZE) {
-            throw new IllegalArgumentException("Wrong value of width!");
-        }
-        this.nodeWidth = width;
-    }
-
-    public void setNodeHeight(double height) {
-        if (height < MIN_SIZE || height > MAX_SIZE) {
-            throw new IllegalArgumentException("Wrong value of height!");
-        }
-        this.nodeHeight = height;
-    }
-
-    public double getNodeWidth() {
-        return nodeWidth;
-    }
-
-    public double getNodeHeight() {
-        return nodeHeight;
     }
 
     @Override
@@ -210,15 +153,15 @@ public class TreeVisualizer extends JPanel {
                     nodeWidth = frame.getNodeWidth();
                     nodeHeight = frame.getNodeHeight();
                     setStroke(frame.getStroke());
-                    nodeFont = frame.getNodeFont();
-                    ruleFont = frame.getRuleFont();
-                    ruleColor = frame.getRuleColor();
-                    textColor = frame.getTextColor();
-                    linkColor = frame.getLinkColor();
-                    color = frame.getNodeColor();
-                    leafColor = frame.getLeafColor();
-                    classColor = frame.getClassColor();
-                    borderColor = frame.getBorderColor();
+                    nodeFont = frame.getSelectedNodeFont();
+                    ruleFont = frame.getSelectedRuleFont();
+                    ruleColor = frame.getSelectedRuleColor();
+                    textColor = frame.getSelectedTextColor();
+                    linkColor = frame.getSelectedLinkColor();
+                    nodeColor = frame.getSelectedNodeColor();
+                    leafColor = frame.getSelectedLeafColor();
+                    classColor = frame.getSelectedClassColor();
+                    borderColor = frame.getSelectedBorderColor();
                     TreeVisualizer.this.setBackground(frame.getBackgroundColor());
                     resizeTree();
                 }
@@ -278,7 +221,6 @@ public class TreeVisualizer extends JPanel {
         saveImage.addActionListener(new ActionListener() {
 
             SaveImageFileChooser fileChooser;
-            ClassifierIndexerService indexer = new ClassifierIndexerService();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -286,7 +228,7 @@ public class TreeVisualizer extends JPanel {
                     if (fileChooser == null) {
                         fileChooser = new SaveImageFileChooser();
                     }
-                    fileChooser.setSelectedFile(new File(indexer.getIndex(tree)));
+                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
                     File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
                     if (file != null) {
                         ImageSaver.saveImage(file, getImage());
@@ -310,8 +252,9 @@ public class TreeVisualizer extends JPanel {
     }
 
     private void resizeTree() {
-        screenWidth = 100;
-        stepBetweenLevels = nodeHeight >= 50 ? 180 : 100;
+        screenWidth = MIN_SCREEN_WIDTH;
+        stepBetweenLevels =
+                nodeHeight >= STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD ? MAX_STEP_BETWEEN_LEVELS : MIN_STEP_BETWEEN_LEVELS;
         computeCoordinates(tree.root);
         setDimension();
         getRootPane().repaint();
@@ -368,7 +311,6 @@ public class TreeVisualizer extends JPanel {
      */
     private class NodeDescriptor {
 
-        static final String CELL_FORMAT = "<td class = 'attr'>%s</td>";
         static final String NODE_INDEX = "Номер узла:";
         static final String NODE_TYPE_TEXT = "Тип узла:";
         static final String OBJECTS_NUM_TEXT = "Число объектов:";
@@ -378,6 +320,8 @@ public class TreeVisualizer extends JPanel {
         static final String CLASS_VALUE_TEXT = "Значение класса:";
         static final String LEAF_TEXT = "Лист";
         static final String INNER_NODE_TEXT = "Внутренний";
+        static final String CLASS_FORMAT = "%d (%s)";
+        static final String NODE_PARAMS = "nodeParams";
 
         TreeNode node;
         Rectangle2D.Double rect;
@@ -387,7 +331,7 @@ public class TreeVisualizer extends JPanel {
             this.node = node;
             TreeVisualizer.this.add(info);
             info.setCursor(handCursor);
-            info.setToolTipText(toString());
+            info.setToolTipText(getNodeInfoAsHtml());
         }
 
         NodeDescriptor(TreeNode node, Rectangle2D.Double rect) {
@@ -459,41 +403,29 @@ public class TreeVisualizer extends JPanel {
             return rect.contains(x, y);
         }
 
-        @Override
-        public String toString() {
-            StringBuilder str =
-                    new StringBuilder("<html><head><style>.attr {font-weight: bold;}</style></head><body>");
-            str.append("<table>");
-            str.append("<tr>");
-            str.append(String.format(CELL_FORMAT, NODE_INDEX))
-                    .append("<td>").append(node.index()).append("</td>");
-            str.append("</tr><tr>");
-            String type = isLeaf() ? LEAF_TEXT : INNER_NODE_TEXT;
-            str.append(String.format(CELL_FORMAT, NODE_TYPE_TEXT)).append("<td>")
-                    .append(type).append("</td>");
-            str.append("</tr><tr>");
-            str.append(String.format(CELL_FORMAT, OBJECTS_NUM_TEXT)).append("<td>").
-                    append(String.valueOf(objectsNum())).append("</td>");
-            str.append("</tr><tr>");
-            str.append(String.format(CELL_FORMAT, NODE_DEPTH_TEXT)).append("<td>").
-                    append(String.valueOf(node.getDepth())).append("</td>");
-            str.append("</tr>");
+        String getNodeInfoAsHtml() {
+            Template template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_DECISION_TREE_NODE_VM);
+            VelocityContext context = new VelocityContext();
+            context.put(NODE_PARAMS, fillNodeParams());
+            StringWriter stringWriter = new StringWriter();
+            template.merge(context, stringWriter);
+            return stringWriter.toString();
+        }
+
+        Map<String, String> fillNodeParams() {
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put(NODE_INDEX, String.valueOf(node.index()));
+            map.put(NODE_TYPE_TEXT, isLeaf() ? LEAF_TEXT : INNER_NODE_TEXT);
+            map.put(OBJECTS_NUM_TEXT, String.valueOf(objectsNum()));
+            map.put(NODE_DEPTH_TEXT, String.valueOf(node.getDepth()));
             if (!isLeaf()) {
-                str.append("<tr>");
-                str.append(String.format(CELL_FORMAT, SPLIT_ATTR_TEXT)).append("<td>").
-                        append(getRule().attribute().name()).append("</td>");
-                str.append("</tr>");
+                map.put(SPLIT_ATTR_TEXT, getRule().attribute().name());
             }
-            int c = (int) node.classValue();
-            str.append("<tr>");
-            str.append(String.format(CELL_FORMAT, NODE_ERROR_TEXT)).append("<td>").
-                    append(decimalFormat.format(tree.calculateNodeError(node))).append("</td>");
-            str.append("</tr><tr>");
-            str.append(String.format(CELL_FORMAT, CLASS_VALUE_TEXT)).append("<td>").append(c)
-                    .append(StringUtils.SPACE).append("(").append(tree.getData().classAttribute().value(c))
-                    .append(")").append("</td>");
-            str.append("</tr></table></body></html>");
-            return str.toString();
+            int classValue = (int) node.classValue();
+            map.put(NODE_ERROR_TEXT, decimalFormat.format(tree.calculateNodeError(node)));
+            map.put(CLASS_VALUE_TEXT,
+                    String.format(CLASS_FORMAT, classValue, tree.getData().classAttribute().value(classValue)));
+            return map;
         }
 
         void paintString(Graphics2D g) {
@@ -524,7 +456,7 @@ public class TreeVisualizer extends JPanel {
         }
 
         void paint(Graphics2D g) {
-            g.setColor(isLeaf() ? leafColor : color);
+            g.setColor(isLeaf() ? leafColor : nodeColor);
             g.fill(rect);
             paintBorder(g);
             paintString(g);
@@ -534,7 +466,7 @@ public class TreeVisualizer extends JPanel {
     } //End of class NodeDescriptor
 
     private void setDimension() {
-        Dimension dim = new Dimension((int) (screenWidth + 100),
+        Dimension dim = new Dimension((int) (screenWidth + SCREEN_WIDTH_MARGIN),
                 (int) (tree.depth() * (nodeHeight + stepBetweenLevels)));
         this.setPreferredSize(dim);
         this.setMinimumSize(dim);
@@ -550,9 +482,7 @@ public class TreeVisualizer extends JPanel {
             TreeNode parent = innerNodes.pop();
             parent.setIndex(++index);
             if (!parent.isLeaf()) {
-                for (TreeNode child : parent.child) {
-                    innerNodes.add(child);
-                }
+                innerNodes.addAll(Arrays.asList(parent.child));
             }
             treeNodes.add(new NodeDescriptor(parent, new Rectangle2D.Double()));
         }
@@ -603,18 +533,18 @@ public class TreeVisualizer extends JPanel {
         static final String BACK_COLOR_TEXT = "Цвет фона:";
 
         boolean dialogResult;
-        Font nFont = nodeFont;
-        Font rFont = ruleFont;
+        Font selectedNodeFont = nodeFont;
+        Font selectedRuleFont = ruleFont;
         JSpinner widthSpinner = new JSpinner();
         JSpinner heightSpinner = new JSpinner();
         JSpinner strokeSpinner = new JSpinner();
-        Color ruleC = ruleColor;
-        Color textC = textColor;
-        Color linkC = linkColor;
-        Color leafC = leafColor;
-        Color nodeC = color;
-        Color classC = classColor;
-        Color borderC = borderColor;
+        Color selectedRuleColor = ruleColor;
+        Color selectedTextColor = textColor;
+        Color selectedLinkColor = linkColor;
+        Color selectedLeafColor = leafColor;
+        Color selectedNodeColor = nodeColor;
+        Color selectedClassColor = classColor;
+        Color selectedBorderColor = borderColor;
         Color backgroundColor = TreeVisualizer.this.getBackground();
 
         TreeOptions(JFrame parent) {
@@ -622,6 +552,12 @@ public class TreeVisualizer extends JPanel {
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);
+            this.init();
+            this.pack();
+            this.setLocationRelativeTo(parent);
+        }
+
+        void init() {
             JPanel panel = new JPanel(new GridLayout(13, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_TITLE));
             //-------------------------------------------
@@ -639,10 +575,10 @@ public class TreeVisualizer extends JPanel {
             nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, nFont);
+                    JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, selectedNodeFont);
                     nodeFontChooser.setVisible(true);
                     if (nodeFontChooser.dialogResult()) {
-                        nFont = nodeFontChooser.getSelectedFont();
+                        selectedNodeFont = nodeFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -651,10 +587,10 @@ public class TreeVisualizer extends JPanel {
             ruleButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, rFont);
+                    JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, selectedRuleFont);
                     ruleFontChooser.setVisible(true);
                     if (ruleFontChooser.dialogResult()) {
-                        rFont = ruleFontChooser.getSelectedFont();
+                        selectedRuleFont = ruleFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -664,9 +600,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
-                            ruleC);
+                            selectedRuleColor);
                     if (newRuleColor != null) {
-                        ruleC = newRuleColor;
+                        selectedRuleColor = newRuleColor;
                     }
                 }
             });
@@ -676,9 +612,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
-                            textC);
+                            selectedTextColor);
                     if (newTextColor != null) {
-                        textC = newTextColor;
+                        selectedTextColor = newTextColor;
                     }
                 }
             });
@@ -688,9 +624,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
-                            linkC);
+                            selectedLinkColor);
                     if (newLinkColor != null) {
-                        linkC = newLinkColor;
+                        selectedLinkColor = newLinkColor;
                     }
                 }
             });
@@ -700,9 +636,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
-                            nodeC);
+                            selectedNodeColor);
                     if (newLeafColor != null) {
-                        nodeC = newLeafColor;
+                        selectedNodeColor = newLeafColor;
                     }
                 }
             });
@@ -712,9 +648,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
-                            leafC);
+                            selectedLeafColor);
                     if (obj != null) {
-                        leafC = obj;
+                        selectedLeafColor = obj;
                     }
                 }
             });
@@ -724,9 +660,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
-                            classC);
+                            selectedClassColor);
                     if (newClassColor != null) {
-                        classC = newClassColor;
+                        selectedClassColor = newClassColor;
                     }
                 }
             });
@@ -736,9 +672,9 @@ public class TreeVisualizer extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
-                            borderC);
+                            selectedBorderColor);
                     if (newBorderColor != null) {
-                        borderC = newBorderColor;
+                        selectedBorderColor = newBorderColor;
                     }
                 }
             });
@@ -802,8 +738,6 @@ public class TreeVisualizer extends JPanel {
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
             //-----------------------------------------------------------
             this.getRootPane().setDefaultButton(okButton);
-            this.pack();
-            this.setLocationRelativeTo(parent);
         }
 
         int getStroke() {
@@ -818,40 +752,40 @@ public class TreeVisualizer extends JPanel {
             return ((SpinnerNumberModel) heightSpinner.getModel()).getNumber().doubleValue();
         }
 
-        Font getNodeFont() {
-            return nFont;
+        Font getSelectedNodeFont() {
+            return selectedNodeFont;
         }
 
-        Font getRuleFont() {
-            return rFont;
+        Font getSelectedRuleFont() {
+            return selectedRuleFont;
         }
 
-        Color getRuleColor() {
-            return ruleC;
+        Color getSelectedRuleColor() {
+            return selectedRuleColor;
         }
 
-        Color getTextColor() {
-            return textC;
+        Color getSelectedTextColor() {
+            return selectedTextColor;
         }
 
-        Color getLinkColor() {
-            return linkC;
+        Color getSelectedLinkColor() {
+            return selectedLinkColor;
         }
 
-        Color getNodeColor() {
-            return nodeC;
+        Color getSelectedNodeColor() {
+            return selectedNodeColor;
         }
 
-        Color getLeafColor() {
-            return leafC;
+        Color getSelectedLeafColor() {
+            return selectedLeafColor;
         }
 
-        Color getClassColor() {
-            return classC;
+        Color getSelectedClassColor() {
+            return selectedClassColor;
         }
 
-        Color getBorderColor() {
-            return borderC;
+        Color getSelectedBorderColor() {
+            return selectedBorderColor;
         }
 
         Color getBackgroundColor() {

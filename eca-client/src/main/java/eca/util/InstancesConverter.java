@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class for converting {@link Instances} objects to lists.
@@ -23,9 +24,9 @@ public class InstancesConverter {
      * @param simpleDateFormat <tt>SimpleDateFormat</tt> object
      * @return list representation of <tt>Instances</tt> object
      */
-    public static ArrayList<ArrayList<Object>> toArray(Instances data, DecimalFormat format,
-                                                       SimpleDateFormat simpleDateFormat) {
-        ArrayList<ArrayList<Object>> values = new ArrayList<>(data.numInstances());
+    public static List<List<Object>> toArray(Instances data, DecimalFormat format,
+                                             SimpleDateFormat simpleDateFormat) {
+        List<List<Object>> values = new ArrayList<>(data.numInstances());
         for (int i = 0; i < data.numInstances(); i++) {
             ArrayList<Object> row = new ArrayList<>(data.numAttributes());
             for (int j = 0; j < data.numAttributes(); j++) {

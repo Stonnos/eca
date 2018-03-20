@@ -13,6 +13,7 @@ import weka.core.Instances;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public class InstancesTableModel extends AbstractTableModel {
     private static final String NUMBER = "№";
 
     private final Instances data;
-    private final ArrayList<ArrayList<Object>> values;
+    private final List<List<Object>> values;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     private int modificationCount;
@@ -64,7 +65,7 @@ public class InstancesTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        for (ArrayList<Object> row : values) {
+        for (List<Object> row : values) {
             row.clear();
         }
         values.clear();
@@ -79,7 +80,7 @@ public class InstancesTableModel extends AbstractTableModel {
     }
 
     public void removeMissing() {
-        ListIterator<ArrayList<Object>> iterator = values.listIterator();
+        ListIterator<List<Object>> iterator = values.listIterator();
         while (iterator.hasNext()) {
             if (iterator.next().contains(null)) {
                 iterator.remove();

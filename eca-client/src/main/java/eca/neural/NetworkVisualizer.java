@@ -49,6 +49,8 @@ public class NetworkVisualizer extends JPanel {
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
 
     private static final String SEPARATOR = System.getProperty("line.separator");
+    private static final int SCREEN_WIDTH_MARGIN = 400;
+    private static final int SCREEN_HEIGHT_MARGIN = 200;
 
     private double neuronDiam = 25.0;
 
@@ -101,73 +103,6 @@ public class NetworkVisualizer extends JPanel {
         drawNet((Graphics2D) g);
     }
 
-    public void setNeuronDiam(double diam) {
-        if (diam < MIN_SIZE || diam > MAX_SIZE) {
-            throw new IllegalArgumentException("Wrong value of diameter!");
-        }
-        this.neuronDiam = diam;
-    }
-
-    public double getNeuronDiam() {
-        return neuronDiam;
-    }
-
-    public void setInLayerColor(Color color) {
-        this.inLayerColor = color;
-    }
-
-    public void setOutLayerColor(Color color) {
-        this.outLayerColor = color;
-    }
-
-    public void setHidLayerColor(Color color) {
-        this.hidLayerColor = color;
-    }
-
-    public void setTextColor(Color textColor) {
-        this.textColor = textColor;
-    }
-
-    public void setClassColor(Color classColor) {
-        this.classColor = classColor;
-    }
-
-    public void setLinkColor(Color linkColor) {
-        this.linkColor = linkColor;
-    }
-
-    public void setAttributeColor(Color color) {
-        this.attrColor = color;
-    }
-
-    public Color getInLayerColor() {
-        return inLayerColor;
-    }
-
-    public Color linkColor() {
-        return linkColor;
-    }
-
-    public Color getAttributeColor() {
-        return attrColor;
-    }
-
-    public Color getOutLayerColor() {
-        return outLayerColor;
-    }
-
-    public Color hidLayerColor() {
-        return hidLayerColor;
-    }
-
-    public Color classColor() {
-        return classColor;
-    }
-
-    public Color textColor() {
-        return textColor;
-    }
-
     private void drawNet(Graphics2D g2d) {
         Enumeration<Attribute> attr = net.getData().enumerateAttributes();
         for (Neuron n : net.network().inLayerNeurons) {
@@ -185,14 +120,6 @@ public class NetworkVisualizer extends JPanel {
             }
             n.paint(g2d);
         }
-    }
-
-    public StringBuilder getInfo() {
-        StringBuilder textInfo = new StringBuilder();
-        for (NeuronNode n : nodes) {
-            textInfo.append(n.getInfo()).append("\n");
-        }
-        return textInfo;
     }
 
     private void createPopupMenu() {
@@ -237,16 +164,16 @@ public class NetworkVisualizer extends JPanel {
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
                     neuronDiam = dialog.getNodeDiameter();
-                    nodeFont = dialog.getNodeFont();
-                    attrFont = dialog.getAttributeFont();
-                    linkColor = dialog.getLinkColor();
-                    classColor = dialog.getClassColor();
-                    attrColor = dialog.getAttributeColor();
-                    inLayerColor = dialog.getInNeuronColor();
-                    outLayerColor = dialog.getOutNeuronColor();
-                    hidLayerColor = dialog.getHidNeuronColor();
-                    textColor = dialog.getTextColor();
-                    NetworkVisualizer.this.setBackground(dialog.getBackgroundColor());
+                    nodeFont = dialog.getSelectedNodeFont();
+                    attrFont = dialog.getSelectedAttributeFont();
+                    linkColor = dialog.getSelectedLinkColor();
+                    classColor = dialog.getSelectedClassColor();
+                    attrColor = dialog.getSelectedAttributeColor();
+                    inLayerColor = dialog.getSelectedInNeuronColor();
+                    outLayerColor = dialog.getSelectedOutNeuronColor();
+                    hidLayerColor = dialog.getSelectedHidNeuronColor();
+                    textColor = dialog.getSelectedTextColor();
+                    NetworkVisualizer.this.setBackground(dialog.getSelectedBackgroundColor());
                     resizeNetwork();
                 }
                 dialog.dispose();
@@ -290,7 +217,6 @@ public class NetworkVisualizer extends JPanel {
         saveImage.addActionListener(new ActionListener() {
 
             SaveImageFileChooser fileChooser;
-            ClassifierIndexerService indexer = new ClassifierIndexerService();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -298,7 +224,7 @@ public class NetworkVisualizer extends JPanel {
                     if (fileChooser == null) {
                         fileChooser = new SaveImageFileChooser();
                     }
-                    fileChooser.setSelectedFile(new File(indexer.getIndex(net)));
+                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
                     File file = fileChooser.getSelectedFile(frame);
                     if (file != null) {
                         ImageSaver.saveImage(file, getImage());
@@ -339,7 +265,7 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setEditable(false);
             textInfo.setFont(new Font("Arial", Font.BOLD, 12));
             //----------------------------------------           
-            textInfo.setText(getInfo().toString());
+            textInfo.setText(getNeuralNetworkStructureAsText());
             textInfo.setCaretPosition(0);
             //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
@@ -362,6 +288,14 @@ public class NetworkVisualizer extends JPanel {
             this.getRootPane().setDefaultButton(okButton);
             this.pack();
             this.setLocationRelativeTo(frame);
+        }
+
+        String getNeuralNetworkStructureAsText() {
+            StringBuilder textStructure = new StringBuilder();
+            for (NeuronNode neuronNode : nodes) {
+                textStructure.append(neuronNode.getInfo()).append(SEPARATOR);
+            }
+            return textStructure.toString();
         }
     }
 
@@ -561,7 +495,6 @@ public class NetworkVisualizer extends JPanel {
                             + ((float) width() - fm.stringWidth(text)) / 2.0f,
                     (float) y1() + fm.getAscent()
                             + ((float) width() - (fm.getAscent() + fm.getDescent())) / 2.0f);
-
         }
 
         void paint(Graphics2D g) {
@@ -575,6 +508,8 @@ public class NetworkVisualizer extends JPanel {
                 case Neuron.HIDDEN_LAYER:
                     g.setColor(hidLayerColor);
                     break;
+                default:
+                    g.setColor(Color.BLACK);
             }
             g.fill(ellipse);
             paintString(g);
@@ -589,14 +524,14 @@ public class NetworkVisualizer extends JPanel {
     }
 
     private double screenWidth() {
-        return net.network().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + 400;
+        return net.network().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
     }
 
     private double screenHeight() {
         int max = Integer.max(Integer.max(net.network().inLayerNeurons.length,
                 net.network().outLayerNeurons.length),
                 maxHiddenLayerSize());
-        return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + 200;
+        return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
     }
 
     private int maxHiddenLayerSize() {
@@ -769,6 +704,12 @@ public class NetworkVisualizer extends JPanel {
             this.setLayout(new GridBagLayout());
             this.setModal(true);
             this.setResizable(false);
+            this.init();
+            this.pack();
+            this.setLocationRelativeTo(parent);
+        }
+
+        void init() {
             JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
             //-------------------------------------------
@@ -780,10 +721,10 @@ public class NetworkVisualizer extends JPanel {
             nodeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontchooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
-                    nodeFontchooser.setVisible(true);
-                    if (nodeFontchooser.dialogResult()) {
-                        selectedNodeFont = nodeFontchooser.getSelectedFont();
+                    JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
+                    nodeFontChooser.setVisible(true);
+                    if (nodeFontChooser.dialogResult()) {
+                        selectedNodeFont = nodeFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -792,10 +733,10 @@ public class NetworkVisualizer extends JPanel {
             attrButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontchooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
-                    ruleFontchooser.setVisible(true);
-                    if (ruleFontchooser.dialogResult()) {
-                        selectedAttrFont = ruleFontchooser.getSelectedFont();
+                    JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
+                    ruleFontChooser.setVisible(true);
+                    if (ruleFontChooser.dialogResult()) {
+                        selectedAttrFont = ruleFontChooser.getSelectedFont();
                     }
                 }
             });
@@ -943,51 +884,49 @@ public class NetworkVisualizer extends JPanel {
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
             //-----------------------------------------------------------
             this.getRootPane().setDefaultButton(okButton);
-            this.pack();
-            this.setLocationRelativeTo(parent);
         }
 
         double getNodeDiameter() {
             return ((SpinnerNumberModel) diamSpinner.getModel()).getNumber().doubleValue();
         }
 
-        Font getNodeFont() {
+        Font getSelectedNodeFont() {
             return selectedNodeFont;
         }
 
-        Font getAttributeFont() {
+        Font getSelectedAttributeFont() {
             return selectedAttrFont;
         }
 
-        Color getInNeuronColor() {
+        Color getSelectedInNeuronColor() {
             return selectedInLayerColor;
         }
 
-        Color getTextColor() {
+        Color getSelectedTextColor() {
             return selectedTextColor;
         }
 
-        Color getLinkColor() {
+        Color getSelectedLinkColor() {
             return selectedLinkColor;
         }
 
-        Color getOutNeuronColor() {
+        Color getSelectedOutNeuronColor() {
             return selectedOutLayerColor;
         }
 
-        Color getHidNeuronColor() {
+        Color getSelectedHidNeuronColor() {
             return selectedHiddenLayerColor;
         }
 
-        Color getClassColor() {
+        Color getSelectedClassColor() {
             return selectedClassColor;
         }
 
-        Color getAttributeColor() {
+        Color getSelectedAttributeColor() {
             return selectedAttrColor;
         }
 
-        Color getBackgroundColor() {
+        Color getSelectedBackgroundColor() {
             return selectedBackgroundColor;
         }
 

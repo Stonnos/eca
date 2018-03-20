@@ -1,0 +1,19 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<table>
+    #foreach($nodeParam in $nodeParams.entrySet())
+        <tr>
+            <td class = "attr">$nodeParam.key</td>
+            <td>$nodeParam.value</td>
+        </tr>
+    #end
+</table>
+</body>
+</html>
