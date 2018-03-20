@@ -1,7 +1,12 @@
 package eca.gui;
 
 import eca.dictionary.ClassifiersNamesDictionary;
-import eca.gui.dialogs.*;
+import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.J48OptionsDialog;
+import eca.gui.dialogs.KNNOptionDialog;
+import eca.gui.dialogs.LogisticOptionsDialogBase;
+import eca.gui.dialogs.NetworkOptionsDialog;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -16,6 +21,7 @@ import weka.core.Instances;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -37,7 +43,7 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
         this.digits = digits;
     }
 
-    public ArrayList<BaseOptionsDialog> getFrames() {
+    public List<BaseOptionsDialog> getFrames() {
         return frames;
     }
 

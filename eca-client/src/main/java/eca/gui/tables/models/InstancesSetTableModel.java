@@ -15,7 +15,7 @@ public class InstancesSetTableModel extends AbstractTableModel {
     public static final int BUTTON_INDEX = 4;
     public static final String RESULT_TITLE = "Посмотреть";
 
-    private final String[] titles = {"Название", "Объекты", "Атрибуты",
+    private static final String[] TITLES = {"Название", "Объекты", "Атрибуты",
             "Классы", "Данные"};
 
     private ArrayList<Instances> instances = new ArrayList<>();
@@ -26,7 +26,7 @@ public class InstancesSetTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return titles.length;
+        return TITLES.length;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class InstancesSetTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return titles[column];
+        return TITLES[column];
     }
 
     @Override

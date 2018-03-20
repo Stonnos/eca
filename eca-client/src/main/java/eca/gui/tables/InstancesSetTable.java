@@ -17,12 +17,12 @@ import java.util.ArrayList;
 @Slf4j
 public class InstancesSetTable extends JDataTableBase {
 
-    private JFrame parent;
+    private JFrame parentFrame;
     private ArrayList<InstancesFrame> instancesFrameArrayList = new ArrayList<>();
 
-    public InstancesSetTable(JFrame parent) {
+    public InstancesSetTable(JFrame parentFrame) {
         super(new InstancesSetTableModel());
-        this.parent = parent;
+        this.parentFrame = parentFrame;
         this.getColumnModel().getColumn(InstancesSetTableModel.BUTTON_INDEX)
                 .setCellRenderer(new JButtonRenderer(InstancesSetTableModel.RESULT_TITLE));
         this.getColumnModel().getColumn(InstancesSetTableModel.BUTTON_INDEX)
@@ -62,12 +62,12 @@ public class InstancesSetTable extends JDataTableBase {
         protected void doAfterPushing() {
             try {
                 if (instancesFrameArrayList.get(index) == null) {
-                    instancesFrameArrayList.set(index, new InstancesFrame(data, parent));
+                    instancesFrameArrayList.set(index, new InstancesFrame(data, parentFrame));
                 }
                 instancesFrameArrayList.get(index).setVisible(true);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(parent, e.getMessage(),
+                JOptionPane.showMessageDialog(parentFrame, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }
         }

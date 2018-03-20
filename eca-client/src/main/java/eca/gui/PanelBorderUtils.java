@@ -21,9 +21,9 @@ public class PanelBorderUtils {
     public static TitledBorder createTitledBorder(String title) {
         TitledBorder border = new TitledBorder(title);
         border.setBorder(new EtchedBorder(COLOR, null));
-        border.setTitlePosition(TitledBorder.CENTER);
+        border.setTitlePosition(TitledBorder.TOP);
         border.setTitleFont(BORDER_FONT);
-        border.setTitleJustification(TitledBorder.TOP);
+        border.setTitleJustification(TitledBorder.CENTER);
         return border;
     }
 

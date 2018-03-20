@@ -17,6 +17,8 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ClassifyInstanceTableModel extends AbstractTableModel {
 
+    private static final String[] TITLES = {"№", "Атрибут", "Тип", "Диапазон значений", "Значение"};
+
     public static final int NUMERATOR_COLUMN_INDEX = 0;
     public static final int ATTRIBUTE_INFO_COLUMN_INDEX = 1;
     public static final int ATTRIBUTE_TYPE_COLUMN_INDEX = 2;
@@ -29,7 +31,6 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     private final Instances data;
     private final Object[] values;
-    private final String[] titles = {"№", "Атрибут", "Тип", "Диапазон значений", "Значение"};
 
     public ClassifyInstanceTableModel(Instances data) {
         this.data = data;
@@ -38,7 +39,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return titles.length;
+        return TITLES.length;
     }
 
     @Override
@@ -95,7 +96,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return titles[column];
+        return TITLES[column];
     }
 
     public Object[] values() {

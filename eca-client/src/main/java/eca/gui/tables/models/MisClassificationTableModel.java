@@ -16,14 +16,14 @@ public class MisClassificationTableModel extends AbstractTableModel {
 
     private static final String ACTUAL_VALUE_TEXT = "Реальное";
     private static final String PREDICTED_VALUE_FORMAT = "%d (Прогнозное)";
-    private Evaluation ev;
+    private Evaluation evaluation;
     private String[] titles;
     private double[][] values;
 
-    public MisClassificationTableModel(Evaluation ev) throws Exception {
-        this.ev = ev;
-        this.makeTitles();
-        this.makeMatrix();
+    public MisClassificationTableModel(Evaluation evaluation) {
+        this.evaluation = evaluation;
+        this.createTitles();
+        this.createConfusionMatrix();
     }
 
     @Override
@@ -46,16 +46,16 @@ public class MisClassificationTableModel extends AbstractTableModel {
         return titles[column];
     }
 
-    private void makeTitles() {
-        titles = new String[ev.getData().numClasses() + 1];
+    private void createTitles() {
+        titles = new String[evaluation.getData().numClasses() + 1];
         titles[0] = ACTUAL_VALUE_TEXT;
         for (int i = 1; i < titles.length; i++) {
             titles[i] = String.format(PREDICTED_VALUE_FORMAT, i - 1);
         }
     }
 
-    private void makeMatrix() throws Exception {
-        values = ev.confusionMatrix();
+    private void createConfusionMatrix() {
+        values = evaluation.confusionMatrix();
     }
 
 }

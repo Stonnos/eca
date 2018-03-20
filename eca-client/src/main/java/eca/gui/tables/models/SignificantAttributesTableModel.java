@@ -19,12 +19,12 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
     private static final String ATTR_TEXT = "Атрибут";
     private static final String AVG_AUC_TEXT = "Avg. AUC";
     private static final String AUC_FORMAT = "AUC (Класс %d)";
-    private final AttributesSelection roc;
+    private final AttributesSelection attributesSelection;
     private String[] titles;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
-    public SignificantAttributesTableModel(AttributesSelection roc, int digits) {
-        this.roc = roc;
+    public SignificantAttributesTableModel(AttributesSelection attributesSelection, int digits) {
+        this.attributesSelection = attributesSelection;
         this.createNames();
         format.setMaximumFractionDigits(digits);
     }
@@ -36,18 +36,18 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return roc.underROCValues().length - 1;
+        return attributesSelection.underROCValues().length - 1;
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        int i = row >= roc.data().classIndex() ? row + 1 : row;
+        int i = row >= attributesSelection.data().classIndex() ? row + 1 : row;
         if (column == 0) {
-            return roc.data().attribute(i).name();
+            return attributesSelection.data().attribute(i).name();
         } else if (column == getColumnCount() - 1) {
-            return format.format(roc.underROCAverageValues()[i]);
+            return format.format(attributesSelection.underROCAverageValues()[i]);
         } else {
-            return format.format(roc.underROCValues()[i][column - 1]);
+            return format.format(attributesSelection.underROCValues()[i][column - 1]);
         }
     }
 
@@ -58,9 +58,9 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
 
 
     private void createNames() {
-        titles = new String[roc.data().numClasses() + 2];
+        titles = new String[attributesSelection.data().numClasses() + 2];
         titles[0] = ATTR_TEXT;
-        for (int k = 0; k < roc.data().numClasses(); k++) {
+        for (int k = 0; k < attributesSelection.data().numClasses(); k++) {
             titles[k + 1] = String.format(AUC_FORMAT, k);
         }
         titles[titles.length - 1] = AVG_AUC_TEXT;

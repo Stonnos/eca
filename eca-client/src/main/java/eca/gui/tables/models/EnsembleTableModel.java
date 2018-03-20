@@ -16,12 +16,13 @@ import java.util.List;
  */
 public class EnsembleTableModel extends AbstractTableModel {
 
-    private final String[] titles = {"№", "Классификатор", "Результаты"};
+    private static final String[] TITLES = {"№", "Классификатор", "Результаты"};
+
     private final List<Classifier> classifierArrayList;
 
     public static final String RESULT_TITLE = "Посмотреть";
 
-    public EnsembleTableModel(List<Classifier> classifierArrayList) throws Exception {
+    public EnsembleTableModel(List<Classifier> classifierArrayList) {
         this.classifierArrayList = classifierArrayList;
     }
 
@@ -31,7 +32,7 @@ public class EnsembleTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return titles.length;
+        return TITLES.length;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class EnsembleTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return titles[column];
+        return TITLES[column];
     }
 
     @Override

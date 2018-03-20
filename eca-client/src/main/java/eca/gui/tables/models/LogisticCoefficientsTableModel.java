@@ -52,13 +52,16 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? (row == 0 ? INTERCEPT : data.attribute(row - 1).name())
-                : format.format(logistic.coefficients()[row][column - 1]);
+        return column == 0 ? getAttributeName(row) : format.format(logistic.coefficients()[row][column - 1]);
     }
 
     @Override
     public String getColumnName(int column) {
         return titles[column];
+    }
+
+    private String getAttributeName(int row) {
+        return row == 0 ? INTERCEPT : data.attribute(row - 1).name();
     }
 
     private void filterInstances() throws Exception {

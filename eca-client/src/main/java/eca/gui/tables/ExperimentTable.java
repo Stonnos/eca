@@ -38,7 +38,7 @@ public class ExperimentTable extends JDataTableBase {
     private final JFrame parentFrame;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
-    public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) throws Exception {
+    public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
         this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());

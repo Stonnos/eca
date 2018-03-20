@@ -34,6 +34,7 @@ public class TextFieldInputVerifier extends InputVerifier {
         return true;
     }
 
+    @Override
     public boolean shouldYieldFocus(JComponent input) {
         verify(input);
         return true;

@@ -24,12 +24,13 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
 
-    private final String[] titles = {"№", "Классификатор", "Точность, %", "Результаты"};
+    private static final String[] TITLES = {"№", "Классификатор", "Точность, %", "Результаты"};
+
     private List<EvaluationResults> experiment;
 
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
-    public ExperimentTableModel(List<EvaluationResults> experiment, int digits) throws Exception {
+    public ExperimentTableModel(List<EvaluationResults> experiment, int digits) {
         this.experiment = experiment;
         format.setMaximumFractionDigits(digits);
     }
@@ -52,7 +53,7 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return titles.length;
+        return TITLES.length;
     }
 
     @Override
@@ -91,7 +92,7 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return titles[column];
+        return TITLES[column];
     }
 
     @Override

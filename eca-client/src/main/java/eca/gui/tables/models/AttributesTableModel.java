@@ -18,10 +18,11 @@ import java.util.Objects;
  */
 public class AttributesTableModel extends AbstractTableModel {
 
+    private static final String[] TITLES = {"№", StringUtils.EMPTY, "Атрибут", "Тип"};
+
     public static final int EDIT_INDEX = 1;
     public static final int LIST_INDEX = 3;
 
-    private final String[] title = {"№", StringUtils.EMPTY, "Атрибут", "Тип"};
     private final ArrayList<Object> selectedAttr;
     private final ArrayList<Object> attrType;
 
@@ -49,7 +50,7 @@ public class AttributesTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return title.length;
+        return TITLES.length;
     }
 
     @Override
@@ -111,7 +112,7 @@ public class AttributesTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return title[column];
+        return TITLES[column];
     }
 
     public boolean isAttributeSelected(int i) {

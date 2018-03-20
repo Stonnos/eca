@@ -11,7 +11,7 @@ import javax.swing.table.AbstractTableModel;
 
 public abstract class AttributeTableModel extends AbstractTableModel {
 
-    protected Object[][] statistica;
+    protected Object[][] statistics;
 
     protected Attribute attribute;
     protected AttributeStatistics attributeStatistics;
@@ -24,7 +24,7 @@ public abstract class AttributeTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return statistica.length;
+        return statistics.length;
     }
 
     @Override
@@ -34,7 +34,7 @@ public abstract class AttributeTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return statistica[row][column];
+        return statistics[row][column];
     }
 
 }

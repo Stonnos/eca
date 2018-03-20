@@ -8,7 +8,7 @@ import javax.swing.*;
 
 public class JTableConverter {
 
-    public static final String convertToString(JTable table, boolean copyHeaders) {
+    public static String convertToString(JTable table, boolean copyHeaders) {
         StringBuilder str = new StringBuilder();
 
         if (copyHeaders) {

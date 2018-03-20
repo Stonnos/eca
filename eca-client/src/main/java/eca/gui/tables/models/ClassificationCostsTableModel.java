@@ -19,9 +19,8 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
 
     private static final String NAN = "NaN";
     private final Evaluation ev;
-    private final String[] titles = {"Класс", "TPR", "FPR",
-            "TNR", "FNR",
-            "Полнота", "Точность", "F - мера", "AUC"};
+    private static final String[] TITLES =
+            {"Класс", "TPR", "FPR", "TNR", "FNR", "Полнота", "Точность", "F - мера", "AUC"};
     private Object[][] values;
 
     private final DecimalFormat format = NumericFormatFactory.getInstance();
@@ -38,7 +37,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return titles.length;
+        return TITLES.length;
     }
 
     @Override
@@ -53,12 +52,12 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return titles[column];
+        return TITLES[column];
     }
 
     private void makeMatrix() {
         Instances data = ev.getData();
-        values = new Object[data.numClasses()][titles.length - 1];
+        values = new Object[data.numClasses()][TITLES.length - 1];
         for (int i = 0; i < data.numClasses(); i++) {
             values[i][0] = format.format(ev.truePositiveRate(i));
             values[i][1] = format.format(ev.falsePositiveRate(i));

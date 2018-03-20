@@ -50,8 +50,9 @@ public class ROCThresholdTableModel extends AbstractTableModel {
                 return format.format(data.instance(row).value(4) * 100);
             case 2:
                 return format.format(data.instance(row).value(5) * 100);
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override

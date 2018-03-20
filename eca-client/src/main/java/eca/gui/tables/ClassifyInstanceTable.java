@@ -107,30 +107,26 @@ public class ClassifyInstanceTable extends JDataTableBase {
         Enumeration<Attribute> en = data.enumerateAttributes();
         Instance instance = new DenseInstance(data.numAttributes());
         instance.setDataset(data);
-        try {
-            while (en.hasMoreElements()) {
-                Attribute a = en.nextElement();
-                String strValue = (String) vector[a.index()];
-                if (StringUtils.isEmpty(strValue)) {
-                    throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
-                }
-                if (a.isDate()) {
-                    try {
-                        Date date = DateFormat.SIMPLE_DATE_FORMAT.parse(strValue);
-                        instance.setValue(a, date.getTime());
-                    } catch (ParseException e) {
-                        throw new Exception(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
-                    }
-                } else {
-                    double value = decimalFormat.parse(strValue).doubleValue();
-                    if (a.isNominal() && (!strValue.matches(INTEGER_REGEX) || !a.isInRange(value))) {
-                        throw new Exception(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
-                    }
-                    instance.setValue(a, value);
-                }
+        while (en.hasMoreElements()) {
+            Attribute a = en.nextElement();
+            String strValue = (String) vector[a.index()];
+            if (StringUtils.isEmpty(strValue)) {
+                throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
             }
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            if (a.isDate()) {
+                try {
+                    Date date = DateFormat.SIMPLE_DATE_FORMAT.parse(strValue);
+                    instance.setValue(a, date.getTime());
+                } catch (ParseException e) {
+                    throw new Exception(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
+                }
+            } else {
+                double value = decimalFormat.parse(strValue).doubleValue();
+                if (a.isNominal() && (!strValue.matches(INTEGER_REGEX) || !a.isInRange(value))) {
+                    throw new Exception(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
+                }
+                instance.setValue(a, value);
+            }
         }
         return instance;
     }

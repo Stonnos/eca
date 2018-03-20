@@ -35,7 +35,7 @@ public class EnsembleTable extends JDataTableBase {
     private final int digits;
     private ClassificationResultsFrameBase[] classificationResultsFrameBases;
 
-    public EnsembleTable(List<Classifier> classifierArrayList, JFrame parent, int digits) throws Exception {
+    public EnsembleTable(List<Classifier> classifierArrayList, JFrame parent, int digits) {
         super(new EnsembleTableModel(classifierArrayList));
         this.parentFrame = parent;
         this.digits = digits;

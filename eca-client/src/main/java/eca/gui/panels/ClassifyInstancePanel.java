@@ -46,7 +46,7 @@ public class ClassifyInstancePanel extends JPanel {
         this.table = table;
         this.setLayout(new GridBagLayout());
         this.setBorder(PanelBorderUtils.createTitledBorder(CLASSIFY_INSTANCE_TITLE));
-        this.makeGUI();
+        this.createGUI();
     }
 
     public AttributeStatistics getAttributeStatistics() {
@@ -61,7 +61,7 @@ public class ClassifyInstancePanel extends JPanel {
         this.classifier = classifier;
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         JScrollPane pane = new JScrollPane(table);
         pane.setPreferredSize(SCROLL_PANE_PREFERRED_SIZE);
         pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
