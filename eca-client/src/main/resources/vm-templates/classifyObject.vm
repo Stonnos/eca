@@ -1,0 +1,32 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+
+        .val {
+            font-family: 'Arial';
+            font-size: 12
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td class="attr">Код класса:</td>
+        <td class="val">$classIndex</td>
+    </tr>
+    <tr>
+        <td class="attr">Значение класса:</td>
+        <td class="val">$classValue</td>
+    </tr>
+    <tr>
+        <td class="attr">Вероятность класса:</td>
+        <td class="val">$classProbability</td>
+    </tr>
+</table>
+</body>
+</html>
