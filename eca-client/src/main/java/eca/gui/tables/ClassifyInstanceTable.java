@@ -101,7 +101,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         return getClassifyInstanceTableModel().data();
     }
 
-    public Instance instance() throws Exception {
+    public Instance instance() throws ParseException {
         Object[] vector = getClassifyInstanceTableModel().values();
         Instances data = data();
         Enumeration<Attribute> en = data.enumerateAttributes();
@@ -111,19 +111,19 @@ public class ClassifyInstanceTable extends JDataTableBase {
             Attribute a = en.nextElement();
             String strValue = (String) vector[a.index()];
             if (StringUtils.isEmpty(strValue)) {
-                throw new Exception(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
+                throw new IllegalArgumentException(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
             }
             if (a.isDate()) {
                 try {
                     Date date = DateFormat.SIMPLE_DATE_FORMAT.parse(strValue);
                     instance.setValue(a, date.getTime());
                 } catch (ParseException e) {
-                    throw new Exception(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
+                    throw new IllegalArgumentException(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
                 }
             } else {
                 double value = decimalFormat.parse(strValue).doubleValue();
                 if (a.isNominal() && (!strValue.matches(INTEGER_REGEX) || !a.isInRange(value))) {
-                    throw new Exception(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
+                    throw new IllegalArgumentException(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
                 }
                 instance.setValue(a, value);
             }

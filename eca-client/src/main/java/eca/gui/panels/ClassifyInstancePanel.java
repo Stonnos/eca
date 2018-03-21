@@ -118,12 +118,10 @@ public class ClassifyInstancePanel extends JPanel {
         Instance obj = table.instance();
         int i = (int) classifier.classifyInstance(obj);
         double probability = classifier.distributionForInstance(obj)[i];
-        StringBuilder result = new StringBuilder();
-        result.append(CLASS_CODE_TEXT).append(i)
+        return new StringBuilder().append(CLASS_CODE_TEXT).append(i)
                 .append("\n").append(CLASS_VALUE_TEXT)
                 .append(table.data().classAttribute().value(i))
                 .append("\n").append(CLASS_PROBABILITY_TEXT)
-                .append(table.getDecimalFormat().format(probability));
-        return result.toString();
+                .append(table.getDecimalFormat().format(probability)).toString();
     }
 }

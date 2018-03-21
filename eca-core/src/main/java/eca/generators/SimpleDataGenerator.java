@@ -188,6 +188,9 @@ public class SimpleDataGenerator implements DataGenerator {
                         random.nextInt(MAXIMUM_NUMBER_OF_CATEGORIES - 1) + 2);
                 break;
             }
+
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected attribute type: %d", type));
         }
         return attribute;
     }

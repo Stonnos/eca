@@ -39,15 +39,13 @@ public class XLSSaver {
      * Sets file object.
      *
      * @param file {@link File} object
-     * @throws IOException
      */
-    public void setFile(File file) throws IOException {
+    public void setFile(File file) {
         Assert.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
                 !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
             throw new IllegalArgumentException("Unexpected file extension!");
         }
-        file.createNewFile();
         this.file = file;
     }
 

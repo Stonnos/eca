@@ -64,7 +64,7 @@ public class FileDataSaver {
         }
     }
 
-    private AbstractFileSaver createFileSaver(File file, Instances data) throws IOException {
+    private AbstractFileSaver createFileSaver(File file, Instances data) {
         String fileName = file.getName();
         AbstractFileSaver abstractFileSaver;
         if (fileName.endsWith(DataFileExtension.CSV.getExtension())) {
@@ -74,7 +74,7 @@ public class FileDataSaver {
         } else if (fileName.endsWith(DataFileExtension.JSON.getExtension())) {
             abstractFileSaver = new JSONSaver();
         } else {
-            throw new IOException(
+            throw new IllegalArgumentException(
                     String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile()));
         }
         return abstractFileSaver;

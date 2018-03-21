@@ -36,6 +36,17 @@ public class Utils {
     }
 
     /**
+     * Normalizes arrays values.
+     *
+     * @param doubles - array of double values
+     */
+    public static void normalize(double[] doubles) {
+        if (!weka.core.Utils.eq(weka.core.Utils.sum(doubles), 0.0)) {
+            weka.core.Utils.normalize(doubles);
+        }
+    }
+
+    /**
      * Gets all values of nominal attribute.
      *
      * @param attribute - attribute

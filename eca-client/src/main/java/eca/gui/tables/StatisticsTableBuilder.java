@@ -68,7 +68,7 @@ public class StatisticsTableBuilder {
     public static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
     public static final String TOTAL_TIME_TEXT = "Затраченное время";
 
-    private final DecimalFormat FORMAT = NumericFormatFactory.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private static final SimpleDateFormat DATE_FORMAT;
 
@@ -86,9 +86,9 @@ public class StatisticsTableBuilder {
 
         ResultsModel(Evaluation e, Classifier classifier) {
             results.add(new Entry(INITIAL_DATA_TEXT, e.getHeader().relationName()));
-            results.add(new Entry(NUMBER_OF_INSTANCES_TEXT, FORMAT.format(e.getData().numInstances())));
-            results.add(new Entry(NUMBER_OF_ATTRIBUTES_TEXT, FORMAT.format(e.getData().numAttributes())));
-            results.add(new Entry(NUMBER_OF_CLASSES_TEXT, FORMAT.format(e.getData().numClasses())));
+            results.add(new Entry(NUMBER_OF_INSTANCES_TEXT, decimalFormat.format(e.getData().numInstances())));
+            results.add(new Entry(NUMBER_OF_ATTRIBUTES_TEXT, decimalFormat.format(e.getData().numAttributes())));
+            results.add(new Entry(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(e.getData().numClasses())));
             results.add(new Entry(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
 
             String evaluationMethodStr;
@@ -100,18 +100,18 @@ public class StatisticsTableBuilder {
             }
 
             results.add(new Entry(EVALUATION_METHOD_TEXT, evaluationMethodStr));
-            results.add(new Entry(NUMBER_OF_TEST_INSTANCES, FORMAT.format(e.numInstances())));
-            results.add(new Entry(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, FORMAT.format(e.correct())));
-            results.add(new Entry(INCORRECTLY_CLASSIFIED_INSTANCES_TEXT, FORMAT.format(e.incorrect())));
-            results.add(new Entry(CLASSIFIER_ACCURACY_TEXT, FORMAT.format(e.pctCorrect())));
-            results.add(new Entry(CLASSIFIER_ERROR_TEXT, FORMAT.format(e.pctIncorrect())));
-            results.add(new Entry(CLASSIFIER_MEAN_ERROR_TEXT, FORMAT.format(e.meanAbsoluteError())));
-            results.add(new Entry(ROOT_MEAN_SQUARED_ERROR_TEXT, FORMAT.format(e.rootMeanSquaredError())));
+            results.add(new Entry(NUMBER_OF_TEST_INSTANCES, decimalFormat.format(e.numInstances())));
+            results.add(new Entry(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.correct())));
+            results.add(new Entry(INCORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.incorrect())));
+            results.add(new Entry(CLASSIFIER_ACCURACY_TEXT, decimalFormat.format(e.pctCorrect())));
+            results.add(new Entry(CLASSIFIER_ERROR_TEXT, decimalFormat.format(e.pctIncorrect())));
+            results.add(new Entry(CLASSIFIER_MEAN_ERROR_TEXT, decimalFormat.format(e.meanAbsoluteError())));
+            results.add(new Entry(ROOT_MEAN_SQUARED_ERROR_TEXT, decimalFormat.format(e.rootMeanSquaredError())));
             if (e.isKCrossValidationMethod()) {
-                results.add(new Entry(VARIANCE_ERROR_TEXT, FORMAT.format(e.varianceError())));
+                results.add(new Entry(VARIANCE_ERROR_TEXT, decimalFormat.format(e.varianceError())));
                 double[] x = e.errorConfidenceInterval();
                 results.add(new Entry(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
-                        String.format("[%s; %s]", FORMAT.format(x[0]), FORMAT.format(x[1]))));
+                        String.format("[%s; %s]", decimalFormat.format(x[0]), decimalFormat.format(x[1]))));
             }
             if (e.getTotalTimeMillis() != null) {
                 results.add(new Entry(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
@@ -146,19 +146,19 @@ public class StatisticsTableBuilder {
     }
 
     public StatisticsTableBuilder(int digits) {
-        FORMAT.setMaximumFractionDigits(digits);
+        decimalFormat.setMaximumFractionDigits(digits);
     }
 
-    public final JTable createStatistics(DecisionTreeClassifier tree, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, tree);
+    public final JTable createStatistics(DecisionTreeClassifier tree, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, tree);
         model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf(tree.numNodes())));
         model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf(tree.numLeaves())));
         model.addRow(new Entry(TREE_DEPTH_TEXT, String.valueOf(tree.depth())));
         return createTable(model);
     }
 
-    public final JTable createStatistics(NeuralNetwork mlp, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, mlp);
+    public final JTable createStatistics(NeuralNetwork mlp, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, mlp);
         model.addRow(new Entry(IN_LAYER_NEURONS_NUM_TEXT, String.valueOf(mlp.network().inLayerNeuronsNum())));
         model.addRow(new Entry(OUT_LAYER_NEURONS_NUM_TEXT, String.valueOf(mlp.network().outLayerNeuronsNum())));
         model.addRow(new Entry(HIDDEN_LAYERS_NUM_TEXT, String.valueOf(mlp.network().hiddenLayersNum())));
@@ -173,51 +173,51 @@ public class StatisticsTableBuilder {
         return createTable(model);
     }
 
-    public final JTable createStatistics(IterativeEnsembleClassifier cls, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, cls);
+    public final JTable createStatistics(IterativeEnsembleClassifier cls, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, cls);
         model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
         return createTable(model);
     }
 
-    public final JTable createStatistics(Logistic cls, Evaluation e) throws Exception {
-        return createTable(new ResultsModel(e, cls));
+    public final JTable createStatistics(Logistic cls, Evaluation evaluation) {
+        return createTable(new ResultsModel(evaluation, cls));
     }
 
-    public final JTable createStatistics(KNearestNeighbours cls, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, cls);
+    public final JTable createStatistics(KNearestNeighbours cls, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, cls);
         model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.distance().getDistanceType().getDescription()));
         return createTable(model);
     }
 
-    public final JTable createStatistics(StackingClassifier cls, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, cls);
+    public final JTable createStatistics(StackingClassifier cls, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, cls);
         model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
         model.addRow(new Entry(META_CLASSIFIER_NAME_TEXT, cls.getMetaClassifier().getClass().getSimpleName()));
         return createTable(model);
     }
 
-    public final JTable createStatistics(J48 j48, Evaluation e) throws Exception {
-        ResultsModel model = new ResultsModel(e, j48);
+    public final JTable createStatistics(J48 j48, Evaluation evaluation) {
+        ResultsModel model = new ResultsModel(evaluation, j48);
         model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf((int) j48.measureTreeSize())));
         model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf((int) j48.measureNumLeaves())));
         return createTable(model);
     }
 
-    public final JTable createStatistics(Classifier cls, Evaluation e) throws Exception {
+    public final JTable createStatistics(Classifier cls, Evaluation evaluation) {
         if (cls instanceof IterativeEnsembleClassifier) {
-            return createStatistics((IterativeEnsembleClassifier) cls, e);
+            return createStatistics((IterativeEnsembleClassifier) cls, evaluation);
         } else if (cls instanceof NeuralNetwork) {
-            return createStatistics((NeuralNetwork) cls, e);
+            return createStatistics((NeuralNetwork) cls, evaluation);
         } else if (cls instanceof DecisionTreeClassifier) {
-            return createStatistics((DecisionTreeClassifier) cls, e);
+            return createStatistics((DecisionTreeClassifier) cls, evaluation);
         } else if (cls instanceof Logistic) {
-            return createStatistics((Logistic) cls, e);
+            return createStatistics((Logistic) cls, evaluation);
         } else if (cls instanceof KNearestNeighbours) {
-            return createStatistics((KNearestNeighbours) cls, e);
+            return createStatistics((KNearestNeighbours) cls, evaluation);
         } else if (cls instanceof StackingClassifier) {
-            return createStatistics((StackingClassifier) cls, e);
+            return createStatistics((StackingClassifier) cls, evaluation);
         } else if (cls instanceof J48) {
-            return createStatistics((J48) cls, e);
+            return createStatistics((J48) cls, evaluation);
         } else {
             return null;
         }

@@ -16,11 +16,11 @@ import eca.filter.MissingValuesFilter;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import eca.text.NumericFormatFactory;
+import eca.util.Utils;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Utils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -189,11 +189,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     public double[] distributionForInstance(Instance obj) {
         double[] x = normalizer.normalizeObject(filter.filterInstance(obj));
         double[] y = network.computeOutputVector(x);
-        if (Utils.eq(Utils.sum(y), 0)) {
-            return y;
-        } else {
-            Utils.normalize(y);
-        }
+        Utils.normalize(y);
         return y;
     }
 

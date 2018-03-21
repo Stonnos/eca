@@ -163,7 +163,7 @@ public class AttributesTable extends JDataTableBase {
             newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
-                throw new Exception(CONSTANT_ATTR_ERROR_MESSAGE);
+                throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
             }
             lastDataModificationCount = instancesTable.model().getModificationCount();
             lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
@@ -172,41 +172,20 @@ public class AttributesTable extends JDataTableBase {
         return lastCreatedInstances;
     }
 
-    public void validateData() throws Exception {
+    public void validateData() {
         if (instancesTable.getRowCount() == 0) {
-            throw new Exception(EMPTY_DATA_ERROR_MESSAGE);
+            throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
         if (validateSelectedAttributesCount()) {
-            throw new Exception(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
+            throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
         }
         if (!isSelected(classIndex())) {
-            throw new Exception(CLASS_NOT_SELECTED_ERROR_MESSAGE);
+            throw new IllegalArgumentException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
         }
         if (isNumeric(classIndex())) {
-            throw new Exception(BAD_CLASS_TYPE_ERROR_MESSAGE);
+            throw new IllegalArgumentException(BAD_CLASS_TYPE_ERROR_MESSAGE);
         }
-        for (int j = 1; j < instancesTable.getColumnCount(); j++) {
-            String attribute = instancesTable.getColumnName(j);
-            int attrIndex = j - 1;
-            if (isSelected(attrIndex)) {
-                for (int k = 0; k < instancesTable.getRowCount(); k++) {
-                    String str = (String) instancesTable.getValueAt(k, j);
-                    if (str != null) {
-                        if (isNumeric(attrIndex) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                            throw new Exception(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
-                        }
-                        if (isDate(attrIndex)) {
-                            try {
-                                DateFormat.SIMPLE_DATE_FORMAT.parse(str);
-                            } catch (Exception e) {
-                                throw new Exception(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                                        attribute, DateFormat.DATE_FORMAT));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        validateValues();
     }
 
     public void selectAllAttributes() {
@@ -251,7 +230,32 @@ public class AttributesTable extends JDataTableBase {
         return classBox.getSelectedIndex();
     }
 
-    private ArrayList<Attribute> createAttributesList() throws Exception {
+    private void validateValues() {
+        for (int j = 1; j < instancesTable.getColumnCount(); j++) {
+            String attribute = instancesTable.getColumnName(j);
+            int attrIndex = j - 1;
+            if (isSelected(attrIndex)) {
+                for (int k = 0; k < instancesTable.getRowCount(); k++) {
+                    String str = (String) instancesTable.getValueAt(k, j);
+                    if (str != null) {
+                        if (isNumeric(attrIndex) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                            throw new IllegalArgumentException(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                        }
+                        if (isDate(attrIndex)) {
+                            try {
+                                DateFormat.SIMPLE_DATE_FORMAT.parse(str);
+                            } catch (Exception e) {
+                                throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
+                                        attribute, DateFormat.DATE_FORMAT));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private ArrayList<Attribute> createAttributesList() {
         ArrayList<Attribute> attr = new ArrayList<>(instancesTable.getColumnCount() - 1);
         for (int i = 1; i < instancesTable.getColumnCount(); i++) {
             String attribute = instancesTable.getColumnName(i);
@@ -269,7 +273,7 @@ public class AttributesTable extends JDataTableBase {
         return attr;
     }
 
-    private Attribute createNominalAttribute(String attribute) throws Exception {
+    private Attribute createNominalAttribute(String attribute) {
         ArrayList<String> values = new ArrayList<>();
         for (int j = 0; j < instancesTable.getRowCount(); j++) {
             String stringValue = (String) instancesTable.getValueAt(j, getAttrIndex(attribute));
@@ -280,7 +284,6 @@ public class AttributesTable extends JDataTableBase {
                 }
             }
         }
-
         return new Attribute(attribute, values);
     }
 

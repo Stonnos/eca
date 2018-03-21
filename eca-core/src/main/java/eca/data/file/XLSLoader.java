@@ -159,6 +159,10 @@ public class XLSLoader {
                                 o.setValue(j, val);
                                 break;
                             }
+
+                            default:
+                                throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);
+
                         }
                     }
                 }
@@ -177,7 +181,7 @@ public class XLSLoader {
         return sheet.getRow(0).getCell(i).getStringCellValue().trim();
     }
 
-    private ArrayList<Attribute> createAttributes(Sheet sheet) throws Exception {
+    private ArrayList<Attribute> createAttributes(Sheet sheet) {
         ArrayList<Attribute> attr = new ArrayList<>();
         for (int i = 0; i < getColNum(sheet); i++) {
             ArrayList<String> values = new ArrayList<>();
@@ -214,27 +218,25 @@ public class XLSLoader {
         return attr;
     }
 
-    private void validateData(Sheet sheet) throws Exception {
-
+    private void validateData(Sheet sheet) {
         if (sheet.getRow(0).getLastCellNum() > sheet.getRow(0).getPhysicalNumberOfCells()) {
-            throw new Exception(FileDataDictionary.EMPTY_COLUMNS_ERROR);
+            throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
-
         for (int i = 0; i < getColNum(sheet); i++) {
             CellType cellType = null;
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Row row = sheet.getRow(j);
                 if (row == null) {
-                    throw new Exception(FileDataDictionary.BAD_DATA_FORMAT);
+                    throw new IllegalArgumentException(FileDataDictionary.BAD_DATA_FORMAT);
                 }
                 Cell cell = row.getCell(i);
                 if (cell != null) {
-                    if (!AVAILABLE_CELL_TYPES.contains(cell.getCellTypeEnum())) {
-                        throw new Exception(FileDataDictionary.BAD_CELL_VALUES);
+                    CellType cellTypeEnum = cell.getCellTypeEnum();
+                    if (!AVAILABLE_CELL_TYPES.contains(cellTypeEnum)) {
+                        throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);
                     }
-                    CellType t = cell.getCellTypeEnum();
-                    if (cellType != null && !t.equals(CellType.BLANK) && !t.equals(cellType)) {
-                        throw new Exception(String.format(
+                    if (cellType != null && !cellTypeEnum.equals(CellType.BLANK) && !cellTypeEnum.equals(cellType)) {
+                        throw new IllegalArgumentException(String.format(
                                 FileDataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
                         cellType = cell.getCellTypeEnum();

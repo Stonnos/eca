@@ -60,10 +60,10 @@ public class FileDataLoader extends AbstractDataLoader {
             loader.setDateFormat(getDateFormat());
             data = loader.getDataSet();
         } else {
-            throw new Exception(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));
         }
         if (Objects.isNull(data)) {
-            throw new Exception(String.format("Can't load data from file '%s'. Data is null!", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(String.format("Can't load data from file '%s'. Data is null!", file.getAbsoluteFile()));
         }
         data.setClassIndex(data.numAttributes() - 1);
         return data;

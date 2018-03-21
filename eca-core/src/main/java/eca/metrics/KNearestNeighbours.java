@@ -13,11 +13,11 @@ import eca.metrics.distances.Distance;
 import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.InstanceDistance;
 import eca.text.NumericFormatFactory;
+import eca.util.Utils;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
 
@@ -205,11 +205,7 @@ public class KNearestNeighbours extends AbstractClassifier
     @Override
     public double[] distributionForInstance(Instance obj) {
         double[] weights = getWeights(obj);
-        if (Utils.eq(Utils.sum(weights), 0)) {
-            return weights;
-        } else {
-            Utils.normalize(weights);
-        }
+        Utils.normalize(weights);
         return weights;
     }
 

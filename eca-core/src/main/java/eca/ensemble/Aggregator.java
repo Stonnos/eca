@@ -5,10 +5,10 @@
  */
 package eca.ensemble;
 
+import eca.util.Utils;
 import weka.core.Instance;
-import weka.core.Utils;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements ensemble classification results aggregating.
@@ -95,7 +95,7 @@ public class Aggregator implements java.io.Serializable {
      * @return the array of classes probabilities
      * @throws Exception
      */
-    public double[] distributionForInstance(Instance obj, ArrayList<Double> weights) throws Exception {
+    public double[] distributionForInstance(Instance obj, List<Double> weights) throws Exception {
         double[] sums;
         if (classifier.classifiers.size() == 1) {
             return classifier.classifiers.get(0).distributionForInstance(obj);
@@ -110,11 +110,7 @@ public class Aggregator implements java.io.Serializable {
         } else {
             sums = getVoices(obj, weights);
         }
-        if (Utils.eq(Utils.sum(sums), 0)) {
-            return sums;
-        } else {
-            Utils.normalize(sums);
-        }
+        Utils.normalize(sums);
         return sums;
     }
 
@@ -126,7 +122,7 @@ public class Aggregator implements java.io.Serializable {
      * @return the voices array for given instance
      * @throws Exception
      */
-    public double[] getVoices(Instance obj, ArrayList<Double> weights) throws Exception {
+    public double[] getVoices(Instance obj, List<Double> weights) throws Exception {
         double[] voices = new double[obj.numClasses()];
         for (int i = 0; i < classifier.classifiers.size(); i++) {
             int classIndex = (int) classifyInstance(i, obj);
@@ -144,7 +140,7 @@ public class Aggregator implements java.io.Serializable {
      * @return class value
      * @throws Exception
      */
-    public double aggregate(Instance obj, ArrayList<Double> weights) throws Exception {
+    public double aggregate(Instance obj, List<Double> weights) throws Exception {
         if (obj == null) {
             throw new IllegalArgumentException();
         }

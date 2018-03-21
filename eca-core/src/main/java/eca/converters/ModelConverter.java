@@ -25,7 +25,7 @@ public class ModelConverter {
         Assert.notNull(file, "File is not specified!");
         Assert.notNull(model, "Object is not specified!");
         if (!file.getName().endsWith(FILE_EXTENSION)) {
-            throw new Exception(String.format("Can't save object %s to file '%s'",
+            throw new IllegalArgumentException(String.format("Can't save object %s to file '%s'",
                     model, file.getAbsoluteFile()));
         }
         SerializationUtils.serialize(model, file.getAbsolutePath());
@@ -41,7 +41,8 @@ public class ModelConverter {
     public static Object loadModel(File file) throws Exception {
         Assert.notNull(file, "File is not specified!");
         if (!file.getName().endsWith(FILE_EXTENSION)) {
-            throw new Exception(String.format("Can't load object from file '%s'", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(
+                    String.format("Can't load object from file '%s'", file.getAbsoluteFile()));
         }
         return SerializationUtils.deserialize(file.getAbsolutePath());
     }

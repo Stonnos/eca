@@ -581,9 +581,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
         if (normalize) {
             for (double[] probabilitiesArray : probabilitiesMatrix) {
-                if (!Utils.eq(Utils.sum(probabilitiesArray), 0)) {
-                    Utils.normalize(probabilitiesArray);
-                }
+                eca.util.Utils.normalize(probabilitiesArray);
             }
         }
     }
