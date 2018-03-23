@@ -18,11 +18,23 @@ import java.util.Map;
 @JsonSerialize(using = EvaluationRequestSerializer.class)
 public class EvaluationRequestDto {
 
+    /**
+     * Classifier model
+     */
     private AbstractClassifier classifier;
 
+    /**
+     * Training data
+     */
     private Instances data;
 
+    /**
+     * Evaluation method
+     */
     private EvaluationMethod evaluationMethod;
 
+    /**
+     * Evaluation method options map
+     */
     private Map<EvaluationOption, String> evaluationOptionsMap;
 }
