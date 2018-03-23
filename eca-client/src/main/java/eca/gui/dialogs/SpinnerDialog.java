@@ -26,8 +26,9 @@ public class SpinnerDialog extends JDialog {
     public SpinnerDialog(Window window, String title1, String title2, int digits, int min, int max) {
         super(window, title1);
         this.setModal(true);
+        this.setResizable(false);
         this.setLayout(new GridBagLayout());
-        this.makeGUI(title2, digits, min, max);
+        this.createGUI(title2, digits, min, max);
         this.pack();
         this.setLocationRelativeTo(window);
     }
@@ -40,7 +41,7 @@ public class SpinnerDialog extends JDialog {
         return Integer.valueOf(spinner.getValue().toString());
     }
 
-    private void makeGUI(String title2, int digits, int min, int max) {
+    private void createGUI(String title2, int digits, int min, int max) {
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.add(new JLabel(title2),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,

@@ -189,4 +189,37 @@ public abstract class AbstractExperiment<T extends Classifier>
         }
     }
 
+    /**
+     * Base class for experiment iterative building.
+     */
+    protected abstract class AbstractIterativeBuilder implements IterativeExperiment {
+
+        private int index;
+
+        /**
+         * Creates experiment iterative builder.
+         */
+        AbstractIterativeBuilder() {
+            clearHistory();
+        }
+
+        /**
+         * Increase experiment index.
+         */
+        void incrementIndex() {
+            ++index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < getNumIterations();
+        }
+
+        @Override
+        public int getPercent() {
+            return index * 100 / getNumIterations();
+        }
+
+    }
+
 }

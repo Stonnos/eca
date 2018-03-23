@@ -121,6 +121,7 @@ public class JMainFrame extends JFrame {
             "Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм";
     private static final String DATA_MINER_ADA_BOOST_MENU_TEXT = "Автоматическое построение: алгоритм AdaBoost";
     private static final String DATA_MINER_STACKING_MENU_TEXT = "Автоматическое построение: алгоритм Stacking";
+    private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: Случайные леса";
     private static final String INDIVIDUAL_CLASSIFIERS_MENU_TEXT = "Индувидуальные алгоритмы";
     private static final String ENSEMBLE_CLASSIFIERS_MENU_TEXT = "Ансамблевые алгоритмы";
     private static final String DECISION_TREES_MENU_TEXT = "Деревья решений";
@@ -1104,6 +1105,7 @@ public class JMainFrame extends JFrame {
         JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
         JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
         JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
+        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
         //--------------------------------------------------
         aNeuralMenu.addActionListener(new ActionListener() {
             @Override
@@ -1250,6 +1252,32 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+
+        //--------------------------------------------------
+        automatedRandomForestsMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (dataValidated()) {
+                    try {
+                        final DataBuilder dataBuilder = new DataBuilder();
+                        createTrainingData(dataBuilder, new CallbackAction() {
+                            @Override
+                            public void apply() throws Exception {
+                                AutomatedRandomForestsFrame automatedRandomForestsFrame =
+                                        new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
+                                                new AutomatedRandomForests(dataBuilder.getData()), JMainFrame.this,
+                                                maximumFractionDigits);
+                                automatedRandomForestsFrame.setVisible(true);
+                            }
+                        });
+                    } catch (Exception e) {
+                        LoggerUtils.error(log, e);
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
         //----------------------------------------
         dataMinerMenu.add(aNeuralMenu);
         dataMinerMenu.add(aHeteroEnsMenu);
@@ -1257,6 +1285,7 @@ public class JMainFrame extends JFrame {
         dataMinerMenu.add(aAdaBoostMenu);
         dataMinerMenu.add(aStackingMenu);
         dataMinerMenu.add(knnOptimizerMenu);
+        dataMinerMenu.add(automatedRandomForestsMenu);
         //-------------------------------
         JMenu classifiersMenu = new JMenu(INDIVIDUAL_CLASSIFIERS_MENU_TEXT);
         JMenu ensembleMenu = new JMenu(ENSEMBLE_CLASSIFIERS_MENU_TEXT);

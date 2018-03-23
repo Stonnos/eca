@@ -38,8 +38,8 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
     /**
      * Creates <tt>AutomatedNeuralNetwork</tt> object with given options
      *
-     * @param data                training set
-     * @param classifier          classifier object
+     * @param data       training set
+     * @param classifier classifier object
      */
     public AutomatedNeuralNetwork(Instances data, NeuralNetwork classifier) {
         super(data, classifier);
@@ -53,20 +53,14 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
     /**
      * Automated network builder.
      */
-    private class AutomatedNetworkBuilder implements IterativeExperiment {
-
-        int index;
-
-        AutomatedNetworkBuilder() {
-            clearHistory();
-        }
+    private class AutomatedNetworkBuilder extends AbstractIterativeBuilder {
 
         @Override
         public EvaluationResults next() throws Exception {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            ++index;
+            incrementIndex();
             NeuralNetwork model = (NeuralNetwork) AbstractClassifier.makeCopy(getClassifier());
             ActivationFunctionType activationFunctionType =
                     ACTIVATION_FUNCTIONS_TYPES[getRandom().nextInt(ACTIVATION_FUNCTIONS_TYPES.length)];
@@ -76,16 +70,6 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             model.network().setActivationFunction(randomActivationFunction);
             model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData()));
             return evaluateModel(model);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < getNumIterations();
-        }
-
-        @Override
-        public int getPercent() {
-            return index * 100 / getNumIterations();
         }
     }
 

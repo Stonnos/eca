@@ -14,5 +14,6 @@ public class ExperimentTypeDictionary {
     public static final String ADA_BOOST_NAME = "Алгоритм AdaBoost";
     public static final String STACKING_NAME = "Алгоритм Stacking";
     public static final String KNN_NAME = "Алгоритм KNN";
+    public static final String RANDOM_FORESTS_NAME = "Случайные леса";
 
 }

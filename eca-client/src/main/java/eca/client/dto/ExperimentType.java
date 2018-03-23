@@ -37,7 +37,12 @@ public enum ExperimentType {
     /**
      * Optimal options automatic selection for k - nearest neighbours algorithm.
      */
-    KNN(ExperimentTypeDictionary.KNN_NAME);
+    KNN(ExperimentTypeDictionary.KNN_NAME),
+
+    /**
+     * Optimal options automatic selection for Random forests algorithm.
+     */
+    RANDOM_FORESTS(ExperimentTypeDictionary.RANDOM_FORESTS_NAME);
 
     private String description;
 

@@ -11,8 +11,7 @@ import weka.core.Instances;
 import java.util.NoSuchElementException;
 
 /**
- * Implements automatic selection of optimal number of neighbours
- * for knn algorithm.
+ * Implements automatic selection of optimal options for knn algorithm.
  *
  * @author Roman Batygin
  */
@@ -43,20 +42,14 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
     /**
      * K - nearest neighbours iterative builder.
      */
-    private class KNearestNeighboursIterativeBuilder implements IterativeExperiment {
-
-        int index;
-
-        KNearestNeighboursIterativeBuilder() {
-            clearHistory();
-        }
+    private class KNearestNeighboursIterativeBuilder extends AbstractIterativeBuilder {
 
         @Override
         public EvaluationResults next() throws Exception {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            ++index;
+            incrementIndex();
             KNearestNeighbours kNearestNeighbours = (KNearestNeighbours) AbstractClassifier.makeCopy(getClassifier());
             int neighbours = getRandom().nextInt(getData().numInstances() - 1) + 1;
             kNearestNeighbours.setNumNeighbours(neighbours);
@@ -66,17 +59,6 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
                     KNearestNeighbours.MAX_WEIGHT));
             return evaluateModel(kNearestNeighbours);
         }
-
-        @Override
-        public boolean hasNext() {
-            return index < getNumIterations();
-        }
-
-        @Override
-        public int getPercent() {
-            return index * 100 / getNumIterations();
-        }
-
     }
 
 }
