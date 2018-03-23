@@ -9,8 +9,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>eca-core</artifactId>
+    <artifactId>eca-client</artifactId>
     <version>5.0.3</version>
     <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>eca</groupId>
+            <artifactId>eca-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
