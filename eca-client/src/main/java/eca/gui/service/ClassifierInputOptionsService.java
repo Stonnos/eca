@@ -12,7 +12,7 @@ import eca.core.evaluation.EvaluationResults;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
-import eca.ensemble.EnsembleClassifier;
+import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.StackingClassifier;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.statistics.AttributeStatistics;
@@ -206,6 +206,6 @@ public class ClassifierInputOptionsService {
     }
 
     private static boolean canHandleExtendedOptions(Classifier classifier, boolean extended) {
-        return classifier instanceof EnsembleClassifier && extended;
+        return (classifier instanceof HeterogeneousClassifier || classifier instanceof StackingClassifier) && extended;
     }
 }
