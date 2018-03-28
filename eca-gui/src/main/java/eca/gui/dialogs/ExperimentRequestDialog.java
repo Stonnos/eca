@@ -24,7 +24,7 @@ import java.awt.event.ActionListener;
 public class ExperimentRequestDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 15;
-    private static final int FIELD_LENGTH = 255;
+    private static final int FIELD_LENGTH = 50;
 
     private static final String TITLE_TEXT = "Создание заявки на эксперимент";
     private static final String FIRST_NAME_TEXT = "Ваше имя:";
