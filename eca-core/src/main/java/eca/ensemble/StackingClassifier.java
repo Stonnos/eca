@@ -82,19 +82,19 @@ public class StackingClassifier extends AbstractClassifier
     /**
      * Creates <tt>StackingClassifier</tt> object.
      *
-     * @param flag the value of use cross validation.
+     * @param useCrossValidation the value of use cross validation.
      */
-    public StackingClassifier(boolean flag) {
-        this.setUseCrossValidation(flag);
+    public StackingClassifier(boolean useCrossValidation) {
+        this.setUseCrossValidation(useCrossValidation);
     }
 
     /**
      * Sets the value of use cross validation.
      *
-     * @param flag the value of use cross validation
+     * @param useCrossValidation the value of use cross validation
      */
-    public final void setUseCrossValidation(boolean flag) {
-        this.useCrossValidation = flag;
+    public final void setUseCrossValidation(boolean useCrossValidation) {
+        this.useCrossValidation = useCrossValidation;
     }
 
     /**

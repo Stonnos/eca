@@ -14,7 +14,6 @@ import java.util.Base64;
  *
  * @author Roman Batygin
  */
-
 public class EvaluationRequestSerializer extends JsonSerializer<EvaluationRequestDto> {
 
     @Override

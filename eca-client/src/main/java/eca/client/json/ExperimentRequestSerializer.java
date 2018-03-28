@@ -11,6 +11,7 @@ import java.util.Base64;
 
 /**
  * Experiment request serializer.
+ *
  * @author Roman Batygin
  */
 public class ExperimentRequestSerializer extends JsonSerializer<ExperimentRequestDto> {

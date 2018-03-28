@@ -17,7 +17,6 @@ import java.util.Base64;
  *
  * @author Roman Batygin
  */
-
 public class EvaluationResponseDeserializer extends JsonDeserializer<EvaluationResponse> {
 
     @Override

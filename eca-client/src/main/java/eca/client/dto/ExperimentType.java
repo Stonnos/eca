@@ -17,12 +17,12 @@ public enum ExperimentType {
     /**
      * Optimal options automatic selection for heterogeneous ensemble algorithm.
      */
-    HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.HEC_NAME),
+    HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.HETEROGENEOUS_ENSEMBLE_NAME),
 
     /**
      * Optimal options automatic selection for modified heterogeneous ensemble algorithm.
      */
-    MODIFIED_HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.MHEC_NAME),
+    MODIFIED_HETEROGENEOUS_ENSEMBLE(ExperimentTypeDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE_NAME),
 
     /**
      * Optimal options automatic selection for AdaBoost algorithm.
@@ -42,7 +42,13 @@ public enum ExperimentType {
     /**
      * Optimal options automatic selection for Random forests algorithm.
      */
-    RANDOM_FORESTS(ExperimentTypeDictionary.RANDOM_FORESTS_NAME);
+    RANDOM_FORESTS(ExperimentTypeDictionary.RANDOM_FORESTS_NAME),
+
+    /**
+     * Optimal options automatic selection for stacking algorithm using cross - validation
+     * method for meta data set creation.
+     */
+    STACKING_CV(ExperimentTypeDictionary.STACKING_CV_NAME);
 
     private String description;
 
