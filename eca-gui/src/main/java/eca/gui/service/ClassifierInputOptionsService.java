@@ -205,6 +205,6 @@ public class ClassifierInputOptionsService {
     }
 
     private static boolean canHandleExtendedOptions(Classifier classifier, boolean extended) {
-        return (classifier instanceof AbstractHeterogeneousClassifier || classifier instanceof StackingClassifier) && extended;
+        return extended && (classifier instanceof AbstractHeterogeneousClassifier || classifier instanceof StackingClassifier);
     }
 }
