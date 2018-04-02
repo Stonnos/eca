@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ModelConverter {
 
-    public static final String FILE_EXTENSION = ".txt";
+    private static final String MODEL_EXTENSION = ".model";
 
     /**
      * Serialise and saves given object to file.
@@ -24,7 +24,7 @@ public class ModelConverter {
     public static void saveModel(File file, Object model) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
         Objects.requireNonNull(model, "Object is not specified!");
-        if (!file.getName().endsWith(FILE_EXTENSION)) {
+        if (!file.getName().endsWith(MODEL_EXTENSION)) {
             throw new IllegalArgumentException(String.format("Can't save object %s to file '%s'",
                     model, file.getAbsoluteFile()));
         }
@@ -40,7 +40,7 @@ public class ModelConverter {
      */
     public static Object loadModel(File file) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
-        if (!file.getName().endsWith(FILE_EXTENSION)) {
+        if (!file.getName().endsWith(MODEL_EXTENSION)) {
             throw new IllegalArgumentException(
                     String.format("Can't load object from file '%s'", file.getAbsoluteFile()));
         }
