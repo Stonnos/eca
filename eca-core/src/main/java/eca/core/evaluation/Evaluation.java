@@ -21,8 +21,8 @@ import java.util.Random;
  */
 public class Evaluation extends weka.classifiers.evaluation.Evaluation implements InstancesHandler {
 
-    private static final int MINIMUM_NUMBER_OF_FOLDS = 2;
-    private static final int MINIMUM_NUMBER_OF_TESTS = 1;
+    public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
+    public static final int MINIMUM_NUMBER_OF_TESTS = 1;
 
     private Long totalTimeMillis;
 
