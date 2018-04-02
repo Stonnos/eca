@@ -66,12 +66,31 @@ public enum ActivationFunctionType {
         public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
             return activationFunctionTypeVisitor.caseSoftSign();
         }
+    },
+
+    /**
+     * Inverse square root unit.
+     */
+    INVERSE_SQUARE_ROOT_UNIT(ActivationFunctionsDictionary.INVERSE_SQUARE_ROOT_UNIT_TEXT,
+            ActivationFunctionFormulasDictionary.ISRU_FORMULA,
+            ActivationFunctionFormulasDictionary.ISRU_FORMULA_FORMAT) {
+        @Override
+        public <T> T handle(ActivationFunctionTypeVisitor<T> activationFunctionTypeVisitor) {
+            return activationFunctionTypeVisitor.caseInverseSquareRootUnit();
+        }
     };
 
     private String description;
     private String formula;
     private String formulaFormat;
 
+    /**
+     * Constructor with activation function type params.
+     *
+     * @param description   - description
+     * @param formula       - formula text
+     * @param formulaFormat - formula format text
+     */
     ActivationFunctionType(String description, String formula, String formulaFormat) {
         this.description = description;
         this.formula = formula;
@@ -98,6 +117,7 @@ public enum ActivationFunctionType {
 
     /**
      * Returns activation function formula format.
+     *
      * @return activation function formula format
      */
     public String getFormulaFormat() {

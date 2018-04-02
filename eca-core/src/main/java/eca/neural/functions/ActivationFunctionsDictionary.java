@@ -12,5 +12,5 @@ public class ActivationFunctionsDictionary {
     public static final String SINUSOID_TEXT = "Тригонометрический синус";
     public static final String EXPONENTIAL_TEXT = "Экспоненциальная";
     public static final String SOFT_SIGN_TEXT = "Функция SoftSign";
-
+    public static final String INVERSE_SQUARE_ROOT_UNIT_TEXT = "Функция ISRU";
 }

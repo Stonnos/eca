@@ -31,8 +31,8 @@ public class HyperbolicTangentFunction extends AbstractFunction {
 
     @Override
     public double process(double s) {
-        return (Math.exp(getCoefficient() * s) - Math.exp(- getCoefficient() * s)) /
-                (Math.exp(getCoefficient() * s) + Math.exp(- getCoefficient() * s));
+        return (Math.exp(getCoefficient() * s) - Math.exp(-getCoefficient() * s)) /
+                (Math.exp(getCoefficient() * s) + Math.exp(-getCoefficient() * s));
     }
 
     @Override

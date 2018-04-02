@@ -43,4 +43,11 @@ public interface ActivationFunctionTypeVisitor<T> {
      */
     T caseSoftSign();
 
+    /**
+     * Method executed in case if activation function type is INVERSE_SQUARE_ROOT_UNIT.
+     *
+     * @return generic object
+     */
+    T caseInverseSquareRootUnit();
+
 }
