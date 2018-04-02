@@ -5,10 +5,11 @@
  */
 package eca.filter;
 
-import org.springframework.util.Assert;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
+
+import java.util.Objects;
 
 /**
  * Implements filtering of missing values for input data.
@@ -27,7 +28,7 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
 
     @Override
     public Instances filterInstances(Instances data) throws Exception {
-        Assert.notNull(data, "Input data is not specified!");
+        Objects.requireNonNull(data, "Input data is not specified!");
         if (data.checkForStringAttributes()) {
             throw new IllegalArgumentException(FilterDictionary.STRING_ATTR_ERROR_TEXT);
         }

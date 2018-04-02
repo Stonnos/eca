@@ -7,9 +7,9 @@ package eca.neural;
 
 import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.LogisticFunction;
-import org.springframework.util.Assert;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -291,7 +291,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param function the neurons activation function in hidden layer
      */
     public final void setActivationFunction(ActivationFunction function) {
-        Assert.notNull(function, "Activation function is not specified!");
+        Objects.requireNonNull(function, "Activation function is not specified!");
         this.hiddenFunction = function;
     }
 
@@ -301,7 +301,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param function the neurons activation function in output layer
      */
     public final void setOutActivationFunction(ActivationFunction function) {
-        Assert.notNull(function, "Activation function is not specified!");
+        Objects.requireNonNull(function, "Activation function is not specified!");
         this.outerFunction = function;
     }
 
@@ -311,7 +311,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param algorithm the learning algorithm object
      */
     public void setLearningAlgorithm(LearningAlgorithm algorithm) {
-        Assert.notNull(algorithm, "Learning algorithm is not specified!");
+        Objects.requireNonNull(algorithm, "Learning algorithm is not specified!");
         if (algorithm.network != this) {
             throw new IllegalArgumentException();
         }
@@ -533,15 +533,15 @@ public class MultilayerPerceptron implements java.io.Serializable {
     }
 
     private void checkVector(double[] x, int size) {
-        Assert.notNull(x, "Vector is not specified!");
+        Objects.requireNonNull(x, "Vector is not specified!");
         if (x.length != size) {
             throw new IllegalArgumentException(String.format("Illegal value: %d", x.length));
         }
     }
 
     private void checkInputVectors(double[][] input, double[][] output) {
-        Assert.notNull(input, "Input vector is not specified!");
-        Assert.notNull(input, "Output vector is not specified!");
+        Objects.requireNonNull(input, "Input vector is not specified!");
+        Objects.requireNonNull(input, "Output vector is not specified!");
         if (input.length != output.length) {
             throw new IllegalArgumentException("Input and output vectors must have the same lengths!");
         }

@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -22,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Implements saving {@link Instances} into XLS file.
@@ -41,7 +41,7 @@ public class XLSSaver {
      * @param file {@link File} object
      */
     public void setFile(File file) {
-        Assert.notNull(file, "File is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
         if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
                 !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
             throw new IllegalArgumentException("Unexpected file extension!");
@@ -64,7 +64,7 @@ public class XLSSaver {
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
-        Assert.notNull(dateFormat, "Date format is not specified!");
+        Objects.requireNonNull(dateFormat, "Date format is not specified!");
         this.dateFormat = dateFormat;
     }
 
@@ -75,7 +75,7 @@ public class XLSSaver {
      * @throws IOException
      */
     public void write(Instances data) throws IOException {
-        Assert.notNull(data, "Data is not specified!");
+        Objects.requireNonNull(data, "Data is not specified!");
         try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
             Font font = book.createFont();
             font.setBold(true);

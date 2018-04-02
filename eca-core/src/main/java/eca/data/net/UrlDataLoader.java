@@ -10,7 +10,6 @@ import eca.data.DataFileExtension;
 import eca.data.FileUtil;
 import eca.data.file.XLSLoader;
 import eca.util.Utils;
-import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
 import weka.core.converters.ArffLoader;
@@ -20,6 +19,7 @@ import weka.core.converters.JSONLoader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Objects;
 
 
 /**
@@ -78,7 +78,7 @@ public class UrlDataLoader extends AbstractDataLoader {
      * @throws IllegalArgumentException if given url contains incorrect protocol or file extension
      */
     public final void setURL(URL url) {
-        Assert.notNull(url, "URL is not specified!");
+        Objects.requireNonNull(url, "URL is not specified!");
         if (!Utils.contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
             throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
                     Arrays.asList(PROTOCOLS)));

@@ -14,7 +14,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
@@ -56,7 +55,7 @@ public class XLSLoader {
      * @throws IllegalArgumentException if a file object is null or has invalid extension
      */
     public void setFile(File file) {
-        Assert.notNull(file, "File is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
         if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
                 !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
             throw new IllegalArgumentException("Unexpected file extension!");
@@ -79,7 +78,7 @@ public class XLSLoader {
      * @param inputStream <tt>InputStream</tt> object
      */
     public void setInputStream(InputStream inputStream) {
-        Assert.notNull(inputStream, "InputStream is not specified!");
+        Objects.requireNonNull(inputStream, "InputStream is not specified!");
         this.inputStream = inputStream;
     }
 
@@ -107,7 +106,7 @@ public class XLSLoader {
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
-        Assert.notNull(dateFormat, "Date format is not specified!");
+        Objects.requireNonNull(dateFormat, "Date format is not specified!");
         this.dateFormat = dateFormat;
     }
 

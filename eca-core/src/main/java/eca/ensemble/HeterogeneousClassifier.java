@@ -11,10 +11,10 @@ import eca.ensemble.sampling.SamplingMethod;
 import eca.ensemble.voting.MajorityVoting;
 import eca.ensemble.voting.WeightedVotesAvailable;
 import eca.ensemble.voting.WeightedVoting;
-import org.springframework.util.Assert;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -86,7 +86,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
      * @param samplingMethod {@link SamplingMethod} object
      */
     public void setSamplingMethod(SamplingMethod samplingMethod) {
-        Assert.notNull(samplingMethod, "Sampling method is not specified!");
+        Objects.requireNonNull(samplingMethod, "Sampling method is not specified!");
         this.samplingMethod = samplingMethod;
     }
 

@@ -2,7 +2,6 @@ package eca.data.file;
 
 import eca.data.DataFileExtension;
 import eca.data.FileUtil;
-import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
@@ -11,6 +10,7 @@ import weka.core.converters.JSONSaver;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Class for saving {@link Instances} objects to file with extensions such as:
@@ -37,7 +37,7 @@ public class FileDataSaver {
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
-        Assert.notNull(dateFormat, "Date format is not specified!");
+        Objects.requireNonNull(dateFormat, "Date format is not specified!");
         this.dateFormat = dateFormat;
     }
 
@@ -49,8 +49,8 @@ public class FileDataSaver {
      * @throws IOException
      */
     public void saveData(File file, Instances data) throws IOException {
-        Assert.notNull(file, "File is not specified!");
-        Assert.notNull(data, "Data is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
+        Objects.requireNonNull(data, "Data is not specified!");
         if (FileUtil.isXlsExtension(file.getName())) {
             XLSSaver xlsSaver = new XLSSaver();
             xlsSaver.setFile(file);

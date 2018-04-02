@@ -1,6 +1,6 @@
 package eca.data;
 
-import org.springframework.util.Assert;
+import java.util.Objects;
 
 /**
  * Abstract data loader class.
@@ -27,7 +27,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
-        Assert.notNull(dateFormat, "Date format is not specified!");
+        Objects.requireNonNull(dateFormat, "Date format is not specified!");
         this.dateFormat = dateFormat;
     }
 }

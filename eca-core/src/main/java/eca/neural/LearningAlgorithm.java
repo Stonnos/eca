@@ -6,9 +6,9 @@
 package eca.neural;
 
 import eca.generators.NumberGenerator;
-import org.springframework.util.Assert;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Implements multilayer perceptron learning algorithm.
@@ -20,7 +20,7 @@ public abstract class LearningAlgorithm implements java.io.Serializable {
     protected MultilayerPerceptron network;
 
     protected LearningAlgorithm(MultilayerPerceptron network) {
-        Assert.notNull(network, "Network is not specified!");
+        Objects.requireNonNull(network, "Network is not specified!");
         this.network = network;
     }
 

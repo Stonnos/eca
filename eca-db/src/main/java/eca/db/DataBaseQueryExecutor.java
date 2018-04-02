@@ -6,7 +6,6 @@
 package eca.db;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -21,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Implements loading data from database.
@@ -107,8 +107,8 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
      * @param connectionDescriptor <tt>ConnectionDescriptor</tt> object
      */
     public void setConnectionDescriptor(ConnectionDescriptor connectionDescriptor) {
-        Assert.notNull(connectionDescriptor, "Connection descriptor is not specified!");
-        Assert.notNull(connectionDescriptor.getDriver(), "Driver is not specified!");
+        Objects.requireNonNull(connectionDescriptor, "Connection descriptor is not specified!");
+        Objects.requireNonNull(connectionDescriptor.getDriver(), "Driver is not specified!");
         this.connectionDescriptor = connectionDescriptor;
     }
 
@@ -127,7 +127,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
      * @param dateFormat date format
      */
     public void setDateFormat(String dateFormat) {
-        Assert.notNull(dateFormat, "Date format is not specified!");
+        Objects.requireNonNull(dateFormat, "Date format is not specified!");
         this.dateFormat = dateFormat;
     }
 

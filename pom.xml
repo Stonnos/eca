@@ -24,7 +24,6 @@
         <lombok.version>1.16.12</lombok.version>
         <apache.poi.version>3.16-beta2</apache.poi.version>
         <jre.version>1.8.0</jre.version>
-        <spring.version>4.3.9.RELEASE</spring.version>
         <github.global.server>github</github.global.server>
         <github.maven-plugin>0.12</github.maven-plugin>
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -84,13 +83,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${apache.poi.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
 
         <!-- Slf4j -->

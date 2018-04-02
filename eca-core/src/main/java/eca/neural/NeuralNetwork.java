@@ -17,7 +17,6 @@ import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
 import eca.text.NumericFormatFactory;
 import eca.util.Utils;
-import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -26,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Class for generating neural network for classification task.
@@ -62,7 +62,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * @param data training data
      */
     public NeuralNetwork(Instances data) {
-        Assert.notNull(data, "Instances is not specified!");
+        Objects.requireNonNull(data, "Instances is not specified!");
         initializeInputOptions(data);
     }
 

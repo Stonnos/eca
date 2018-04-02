@@ -5,7 +5,6 @@ import eca.data.DataFileExtension;
 import eca.data.FileUtil;
 import eca.data.net.UrlDataLoaderDictionary;
 import eca.util.Utils;
-import org.springframework.util.Assert;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
@@ -31,7 +30,7 @@ public class FileDataLoader extends AbstractDataLoader {
      * @throws IllegalArgumentException if a file object is null or has invalid extension
      */
     public void setFile(File file) {
-        Assert.notNull(file, "File is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
         if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
             throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));

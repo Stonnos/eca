@@ -2,12 +2,12 @@ package eca.statistics.diagram;
 
 import eca.statistics.AttributeStatistics;
 import eca.util.FrequencyUtils;
-import org.springframework.util.Assert;
 import weka.core.Attribute;
 import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Frequency diagram builder.
@@ -25,7 +25,7 @@ public class FrequencyDiagramBuilder {
      * @param attributeStatistics {@link AttributeStatistics} object
      */
     public FrequencyDiagramBuilder(AttributeStatistics attributeStatistics) {
-        Assert.notNull(attributeStatistics, "Attribute statistics is not specified!");
+        Objects.requireNonNull(attributeStatistics, "Attribute statistics is not specified!");
         this.attributeStatistics = attributeStatistics;
     }
 
@@ -63,8 +63,10 @@ public class FrequencyDiagramBuilder {
      * @return frequency diagram data {@link List}
      */
     public List<FrequencyData> calculateFrequencyDiagramDataForNumericAttribute(Attribute attribute) {
-        Assert.notNull(attribute, "Attribute is not specified!");
-        Assert.isTrue(attribute.isNumeric(), "Attribute must be numeric!");
+        Objects.requireNonNull(attribute, "Attribute is not specified!");
+        if (!attribute.isNumeric()) {
+            throw new IllegalArgumentException("Attribute must be numeric!");
+        }
         int intervalsNum = FrequencyUtils.stigessFormula(getData().numInstances());
         List<FrequencyData> frequencyModelList = new ArrayList<>(intervalsNum);
         double minAttrValue = attributeStatistics.getMin(attribute);
@@ -90,8 +92,10 @@ public class FrequencyDiagramBuilder {
      * @return frequency diagram data {@link List}
      */
     public List<FrequencyData> calculateFrequencyDiagramDataForNominalAttribute(Attribute attribute) {
-        Assert.notNull(attribute, "Attribute is not specified!");
-        Assert.isTrue(attribute.isNominal(), "Attribute must be nominal!");
+        Objects.requireNonNull(attribute, "Attribute is not specified!");
+        if (!attribute.isNominal()) {
+            throw new IllegalArgumentException("Attribute must be nominal!");
+        }
         List<FrequencyData> frequencyModelList = new ArrayList<>(attribute.numValues());
         for (int i = 0; i < attribute.numValues(); i++) {
             FrequencyData frequencyData = new FrequencyData(i, i, false);

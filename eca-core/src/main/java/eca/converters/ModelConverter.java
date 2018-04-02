@@ -1,9 +1,9 @@
 package eca.converters;
 
 import eca.util.SerializationUtils;
-import org.springframework.util.Assert;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Implements saving and loading serialized object from file.
@@ -22,8 +22,8 @@ public class ModelConverter {
      * @throws Exception
      */
     public static void saveModel(File file, Object model) throws Exception {
-        Assert.notNull(file, "File is not specified!");
-        Assert.notNull(model, "Object is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
+        Objects.requireNonNull(model, "Object is not specified!");
         if (!file.getName().endsWith(FILE_EXTENSION)) {
             throw new IllegalArgumentException(String.format("Can't save object %s to file '%s'",
                     model, file.getAbsoluteFile()));
@@ -39,7 +39,7 @@ public class ModelConverter {
      * @throws Exception
      */
     public static Object loadModel(File file) throws Exception {
-        Assert.notNull(file, "File is not specified!");
+        Objects.requireNonNull(file, "File is not specified!");
         if (!file.getName().endsWith(FILE_EXTENSION)) {
             throw new IllegalArgumentException(
                     String.format("Can't load object from file '%s'", file.getAbsoluteFile()));

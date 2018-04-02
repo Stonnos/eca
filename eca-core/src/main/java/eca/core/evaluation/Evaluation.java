@@ -6,7 +6,6 @@
 package eca.core.evaluation;
 
 import eca.core.InstancesHandler;
-import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
@@ -22,8 +21,8 @@ import java.util.Random;
  */
 public class Evaluation extends weka.classifiers.evaluation.Evaluation implements InstancesHandler {
 
-    public static final int MINIMUM_NUMBER_OF_FOLDS = 2;
-    public static final int MINIMUM_NUMBER_OF_TESTS = 1;
+    private static final int MINIMUM_NUMBER_OF_FOLDS = 2;
+    private static final int MINIMUM_NUMBER_OF_TESTS = 1;
 
     private Long totalTimeMillis;
 
@@ -113,10 +112,14 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      */
     public void kCrossValidateModel(Classifier classifier, Instances data, int numFolds,
                                     int numTests, Random r) throws Exception {
-        Assert.isTrue(numFolds >= MINIMUM_NUMBER_OF_FOLDS,
-                String.format("Number of folds must be greater or equals to %d!", numFolds));
-        Assert.isTrue(numTests >= MINIMUM_NUMBER_OF_TESTS,
-                String.format("Number of tests must be greater or equals to %d!", numTests));
+        if (numFolds < MINIMUM_NUMBER_OF_FOLDS) {
+            throw new IllegalArgumentException(
+                    String.format("Number of folds must be greater or equals to %d!", numFolds));
+        }
+        if (numTests < MINIMUM_NUMBER_OF_TESTS) {
+            throw new IllegalArgumentException(
+                    String.format("Number of tests must be greater or equals to %d!", numTests));
+        }
         error = new double[numTests * numFolds];
 
         for (int i = 0; i < numTests; i++) {

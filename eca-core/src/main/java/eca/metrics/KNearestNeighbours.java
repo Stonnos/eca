@@ -14,7 +14,6 @@ import eca.metrics.distances.EuclidDistance;
 import eca.metrics.distances.InstanceDistance;
 import eca.text.NumericFormatFactory;
 import eca.util.Utils;
-import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -23,6 +22,7 @@ import weka.filters.unsupervised.attribute.NominalToBinary;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class for generating k - nearest neighbours model. <p>
@@ -181,7 +181,7 @@ public class KNearestNeighbours extends AbstractClassifier
      * @param metric the distance function object
      */
     public void setDistance(Distance metric) {
-        Assert.notNull(metric, "Distance is not specified!");
+        Objects.requireNonNull(metric, "Distance is not specified!");
         this.metric = metric;
     }
 

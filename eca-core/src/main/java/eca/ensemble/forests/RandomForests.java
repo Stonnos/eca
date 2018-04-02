@@ -14,13 +14,13 @@ import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.DecisionTreeDictionary;
-import org.springframework.util.Assert;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -153,7 +153,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @param decisionTreeType {@link DecisionTreeType} object
      */
     public void setDecisionTreeType(DecisionTreeType decisionTreeType) {
-        Assert.notNull(decisionTreeType, "Decision tree type is not specified!");
+        Objects.requireNonNull(decisionTreeType, "Decision tree type is not specified!");
         this.decisionTreeType = decisionTreeType;
     }
 
