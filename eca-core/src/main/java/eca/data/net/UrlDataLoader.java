@@ -16,6 +16,7 @@ import weka.core.converters.ArffLoader;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.JSONLoader;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
@@ -58,15 +59,17 @@ public class UrlDataLoader extends AbstractDataLoader {
     public Instances loadInstances() throws Exception {
         Instances data;
         URLConnection connection = url.openConnection();
-        if (FileUtil.isXlsExtension(url.getFile())) {
-            XLSLoader loader = new XLSLoader();
-            loader.setInputStream(connection.getInputStream());
-            loader.setDateFormat(getDateFormat());
-            data = loader.getDataSet();
-        } else {
-            AbstractFileLoader saver = createFileLoaderByUrl();
-            saver.setSource(connection.getInputStream());
-            data = saver.getDataSet();
+        try (InputStream inputStream = connection.getInputStream()) {
+            if (FileUtil.isXlsExtension(url.getFile())) {
+                XLSLoader loader = new XLSLoader();
+                loader.setInputStream(inputStream);
+                loader.setDateFormat(getDateFormat());
+                data = loader.getDataSet();
+            } else {
+                AbstractFileLoader saver = createFileLoaderByUrl();
+                saver.setSource(inputStream);
+                data = saver.getDataSet();
+            }
         }
         return data;
     }
