@@ -43,7 +43,9 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
-                worker.cancel(true);
+                if (!isCancelled()) {
+                    worker.cancel(true);
+                }
             }
         });
         //----------------------------------------------------
