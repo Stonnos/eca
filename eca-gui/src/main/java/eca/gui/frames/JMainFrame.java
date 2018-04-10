@@ -135,6 +135,12 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
+    private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
+            "Ваша заявка на эксперимент '%s' была успешно создана, пожалуйста ожидайте ответное письмо на email.";
+    private static final String EXPERIMENT_TIMEOUT_MESSAGE = "There was a timeout.";
+    private static final String EXPERIMENT_REQUEST_LOADING_MESSAGE =
+            "Пожалуйста подождите, идет создание заявки на эксперимент...";
+
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
 
@@ -433,72 +439,6 @@ public class JMainFrame extends JFrame {
         }
 
     } //End of class DataInternalFrame
-
-    /**
-     * Experiment request worker.
-     */
-    private class ExperimentRequestWorker extends SwingWorker<Void, Void> {
-
-        static final String SUCCESS_MESSAGE =
-                "Ваша заявка находится в обработке, пожалуйста ожидайте ответное письмо на email.";
-        static final String TIMEOUT_MESSAGE = "There was a timeout.";
-
-        EcaServiceClient restClient;
-        ExperimentRequestDto experimentRequestDto;
-        EcaResponse ecaResponse;
-        boolean success = true;
-        String errorMessage;
-
-        ExperimentRequestWorker(EcaServiceClient restClient, ExperimentRequestDto experimentRequestDto) {
-            this.restClient = restClient;
-            this.experimentRequestDto = experimentRequestDto;
-        }
-
-        @Override
-        protected Void doInBackground() {
-            try {
-                ecaResponse = restClient.createExperimentRequest(experimentRequestDto);
-            } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                success = false;
-                errorMessage = e.getMessage();
-            }
-            setProgress(100);
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            if (success) {
-                ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
-                    @Override
-                    public Void caseSuccessStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                SUCCESS_MESSAGE, null, JOptionPane.INFORMATION_MESSAGE);
-                        return null;
-                    }
-
-                    @Override
-                    public Void caseErrorStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, ecaResponse.getErrorMessage(),
-                                null, JOptionPane.ERROR_MESSAGE);
-                        return null;
-                    }
-
-                    @Override
-                    public Void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE,
-                                null, JOptionPane.ERROR_MESSAGE);
-                        return null;
-                    }
-                });
-            } else {
-                JOptionPane.showMessageDialog(JMainFrame.this, errorMessage,
-                        null, JOptionPane.ERROR_MESSAGE);
-            }
-        }
-
-    }
 
     /**
      * Classifier model builder.
@@ -1028,7 +968,7 @@ public class JMainFrame extends JFrame {
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
                     try {
-                        DataGeneratorLoader loader = new DataGeneratorLoader(dialog.getDataGenerator());
+                        DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
                         LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
                                 DATA_GENERATION_LOADING_MESSAGE);
 
@@ -1605,17 +1545,17 @@ public class JMainFrame extends JFrame {
         disabledMenuElementList.add(experimentRequestMenu);
         experimentRequestMenu.addActionListener(new ActionListener() {
 
-            EcaServiceClientImpl restClient;
+            EcaServiceClientImpl ecaServiceClient;
             ExperimentRequestDto experimentRequestDto;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        if (restClient == null) {
-                            restClient = new EcaServiceClientImpl();
+                        if (ecaServiceClient == null) {
+                            ecaServiceClient = new EcaServiceClientImpl();
                         }
-                        restClient.setExperimentUrl(ECA_SERVICE_PROPERTIES.getEcaServiceExperimentUrl());
+                        ecaServiceClient.setExperimentUrl(ECA_SERVICE_PROPERTIES.getEcaServiceExperimentUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, new CallbackAction() {
                             @Override
@@ -1626,9 +1566,42 @@ public class JMainFrame extends JFrame {
                                 if (experimentRequestDialog.isDialogResult()) {
                                     experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
                                     experimentRequestDto.setData(dataBuilder.getData());
-                                    ExperimentRequestWorker requestWorker =
-                                            new ExperimentRequestWorker(restClient, experimentRequestDto);
-                                    requestWorker.execute();
+                                    ExperimentRequestSender experimentRequestSender =
+                                            new ExperimentRequestSender(ecaServiceClient, experimentRequestDto);
+                                    LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                            experimentRequestSender, EXPERIMENT_REQUEST_LOADING_MESSAGE);
+
+                                    process(progress, new CallbackAction() {
+                                        @Override
+                                        public void apply() throws Exception {
+                                            EcaResponse ecaResponse = experimentRequestSender.getEcaResponse();
+                                            ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
+                                                @Override
+                                                public Void caseSuccessStatus() {
+                                                    JOptionPane.showMessageDialog(JMainFrame.this,
+                                                            String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT,
+                                                                    experimentRequestDto.getExperimentType()), null,
+                                                            JOptionPane.INFORMATION_MESSAGE);
+                                                    return null;
+                                                }
+
+                                                @Override
+                                                public Void caseErrorStatus() {
+                                                    JOptionPane.showMessageDialog(JMainFrame.this,
+                                                            ecaResponse.getErrorMessage(),
+                                                            null, JOptionPane.ERROR_MESSAGE);
+                                                    return null;
+                                                }
+
+                                                @Override
+                                                public Void caseTimeoutStatus() {
+                                                    JOptionPane.showMessageDialog(JMainFrame.this,
+                                                            EXPERIMENT_TIMEOUT_MESSAGE, null, JOptionPane.ERROR_MESSAGE);
+                                                    return null;
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             }
                         });

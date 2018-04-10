@@ -7,13 +7,13 @@ import weka.core.Instances;
  * @author Roman Batygin
  */
 
-public class DataGeneratorLoader implements CallbackAction {
+public class DataGeneratorCallback implements CallbackAction {
 
     private DataGenerator dataGenerator;
 
     private Instances result;
 
-    public DataGeneratorLoader(DataGenerator dataGenerator) {
+    public DataGeneratorCallback(DataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
     }
 
