@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>eca</groupId>
-  <artifactId>eca-core</artifactId>
+  <artifactId>eca-client</artifactId>
   <versioning>
     <release>5.0.5</release>
     <versions>
       <version>5.0.5</version>
     </versions>
-    <lastUpdated>20180410201140</lastUpdated>
+    <lastUpdated>20180410201218</lastUpdated>
   </versioning>
 </metadata>
