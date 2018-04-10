@@ -24,6 +24,12 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>eca</groupId>
+            <artifactId>eca-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Databases jdbc drivers -->
         <dependency>
             <groupId>mysql</groupId>
