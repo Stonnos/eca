@@ -21,13 +21,16 @@ import java.util.ArrayList;
  */
 public class AttributesSelection {
 
-    private static final double THRESHOLD_VALUE = 0.6;
+    private static final double MIN_THRESHOLD_VALUE = 0.5;
+    private static final double MAX_THRESHOLD_VALUE = 1.0;
 
     private final Instances data;
 
-    private final double[][] auc;
+    private final double[][] aucAreas;
 
-    private final double[] avgAUC;
+    private final double[] averageAUC;
+
+    private double aucThresholdValue = 0.6;
 
     /**
      * Creates <tt>AttributesSelection</tt> object.
@@ -36,14 +39,12 @@ public class AttributesSelection {
      */
     public AttributesSelection(Instances data) {
         this.data = data;
-        this.auc = new double[data.numAttributes()][data.numClasses()];
-        this.avgAUC = new double[data.numAttributes()];
-
+        this.aucAreas = new double[data.numAttributes()][data.numClasses()];
+        this.averageAUC = new double[data.numAttributes()];
         for (int k = 0; k < data.numClasses(); k++) {
-            this.auc[data.classIndex()][k] = Double.NaN;
+            this.aucAreas[data.classIndex()][k] = Double.NaN;
         }
-
-        this.avgAUC[data.classIndex()] = Double.NaN;
+        this.averageAUC[data.classIndex()] = Double.NaN;
     }
 
     /**
@@ -69,12 +70,35 @@ public class AttributesSelection {
                 Evaluation evaluation = new Evaluation(set);
                 evaluation.evaluateModel(model, set);
                 for (int k = 0; k < data.numClasses(); k++) {
-                    auc[i][k] = evaluation.areaUnderROC(k);
-                    avgAUC[i] += auc[i][k];
+                    aucAreas[i][k] = evaluation.areaUnderROC(k);
+                    averageAUC[i] += aucAreas[i][k];
                 }
-                avgAUC[i] /= data.numClasses();
+                averageAUC[i] /= data.numClasses();
             }
         }
+    }
+
+    /**
+     * Returns AUC threshold value.
+     *
+     * @return AUC threshold value
+     */
+    public double getAucThresholdValue() {
+        return aucThresholdValue;
+    }
+
+    /**
+     * Sets AUC threshold value.
+     *
+     * @param aucThresholdValue - AUC threshold value
+     */
+    public void setAucThresholdValue(double aucThresholdValue) {
+        if (aucThresholdValue <= MIN_THRESHOLD_VALUE || aucThresholdValue >= MAX_THRESHOLD_VALUE) {
+            throw new IllegalArgumentException(
+                    String.format("AUC threshold value must lies in (%.1f, %.1f)!", MIN_THRESHOLD_VALUE,
+                            MAX_THRESHOLD_VALUE));
+        }
+        this.aucThresholdValue = aucThresholdValue;
     }
 
     /**
@@ -83,7 +107,7 @@ public class AttributesSelection {
      * @return the array of under ROC areas
      */
     public double[][] underROCValues() {
-        return auc;
+        return aucAreas;
     }
 
     /**
@@ -92,7 +116,7 @@ public class AttributesSelection {
      * @return the array of under ROC average areas
      */
     public double[] underROCAverageValues() {
-        return avgAUC;
+        return averageAUC;
     }
 
     /**
@@ -102,7 +126,7 @@ public class AttributesSelection {
      * @return <tt>true</tt> if attribute is significant
      */
     public boolean isSignificant(int attrIndex) {
-        return avgAUC[attrIndex] > THRESHOLD_VALUE;
+        return averageAUC[attrIndex] > getAucThresholdValue();
     }
 
     private Instances createInstances(int attrIndex) {
@@ -110,14 +134,12 @@ public class AttributesSelection {
         attr.add(data.attribute(attrIndex).copy(data.attribute(attrIndex).name()));
         attr.add(data.classAttribute().copy(data.classAttribute().name()));
         Instances set = new Instances(data.relationName(), attr, data.numInstances());
-
         for (int i = 0; i < data.numInstances(); i++) {
             Instance obj = new DenseInstance(set.numAttributes());
             obj.setValue(0, data.get(i).value(attrIndex));
             obj.setValue(1, data.get(i).classValue());
             set.add(obj);
         }
-
         set.setClassIndex(1);
         return set;
     }

@@ -6,6 +6,8 @@
 package eca.gui.frames;
 
 import eca.Reference;
+import eca.config.ApplicationConfig;
+import eca.config.ApplicationConfigService;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -80,6 +82,10 @@ import java.util.List;
 @Slf4j
 public class ClassificationResultsFrameBase extends JFrame {
 
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
+    private static final ApplicationConfig APPLICATION_CONFIG = CONFIG_SERVICE.getApplicationConfig();
+
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
     private static final String MATRIX_TEXT = "Матрица классификации";
@@ -101,7 +107,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
-    private static final int INPUT_OPTIONS_INFO_FONT_SIZE = 12;
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
@@ -375,6 +380,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
 
                 AttributesSelection attributesSelection = new AttributesSelection(resultsFrameBase.data());
+                attributesSelection.setAucThresholdValue(APPLICATION_CONFIG.getAucThresholdValue());
                 attributesSelection.calculate();
                 SignificantAttributesTable signTable
                         = new SignificantAttributesTable(attributesSelection, digits);

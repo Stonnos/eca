@@ -47,6 +47,10 @@ public class ApplicationConfig {
      */
     private Integer maxThreads;
     /**
+     * AUC threshold value for significant attributes selection.
+     */
+    private Double aucThresholdValue;
+    /**
      * Cross - validation config
      */
     private CrossValidationConfig crossValidationConfig;

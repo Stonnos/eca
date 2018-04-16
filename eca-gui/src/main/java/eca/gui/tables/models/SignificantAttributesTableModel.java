@@ -21,12 +21,12 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
     private static final String AUC_FORMAT = "AUC (Класс %d)";
     private final AttributesSelection attributesSelection;
     private String[] titles;
-    private final DecimalFormat format = NumericFormatFactory.getInstance();
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     public SignificantAttributesTableModel(AttributesSelection attributesSelection, int digits) {
         this.attributesSelection = attributesSelection;
         this.createNames();
-        format.setMaximumFractionDigits(digits);
+        this.decimalFormat.setMaximumFractionDigits(digits);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class SignificantAttributesTableModel extends AbstractTableModel {
         if (column == 0) {
             return attributesSelection.data().attribute(i).name();
         } else if (column == getColumnCount() - 1) {
-            return format.format(attributesSelection.underROCAverageValues()[i]);
+            return decimalFormat.format(attributesSelection.underROCAverageValues()[i]);
         } else {
-            return format.format(attributesSelection.underROCValues()[i][column - 1]);
+            return decimalFormat.format(attributesSelection.underROCValues()[i][column - 1]);
         }
     }
 
