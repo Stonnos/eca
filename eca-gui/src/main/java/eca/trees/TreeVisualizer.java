@@ -6,7 +6,7 @@
 package eca.trees;
 
 import eca.buffer.ImageCopier;
-import eca.config.VelocityConfiguration;
+import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -34,7 +34,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,8 +47,8 @@ public class TreeVisualizer extends JPanel {
     /**
      * Velocity configuration
      */
-    private static final VelocityConfiguration VELOCITY_CONFIGURATION =
-            VelocityConfiguration.getVelocityConfiguration();
+    private static final VelocityConfigService VELOCITY_CONFIGURATION =
+            VelocityConfigService.getVelocityConfigService();
 
     private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/decisionTreeNode.vm";
 

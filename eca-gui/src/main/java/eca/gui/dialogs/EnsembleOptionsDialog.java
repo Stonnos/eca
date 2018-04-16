@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.config.ApplicationConfigService;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
@@ -15,12 +16,12 @@ import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.text.NumericFormatFactory;
-import eca.util.ThreadsUtils;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -40,6 +41,9 @@ import java.text.DecimalFormat;
 public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneousClassifier> {
 
     private static final int FIELD_LENGTH = 5;
+
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     private static final String ITS_NUM_TITLE = "Число итераций:";
     private static final String MAX_ERROR_TITLE = "Макс. допустимая ошибка классификатора:";
@@ -414,8 +418,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
         classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
         threadsSpinner.setModel(
-                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
-                        ThreadsUtils.getMaxNumThreads(), 1));
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                        CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
     }
 
     private boolean isValidate() {

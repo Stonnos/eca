@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.config.ApplicationProperties;
+import eca.config.ApplicationConfigService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
@@ -34,7 +34,8 @@ import java.util.List;
 @Slf4j
 public class ExperimentTable extends JDataTableBase {
 
-    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
     private final JFrame parentFrame;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
@@ -86,7 +87,7 @@ public class ExperimentTable extends JDataTableBase {
                                                            boolean isSelected, boolean hasFocus, int row, int column) {
                 Component cell = super.getTableCellRendererComponent(table, value, isSelected,
                         hasFocus, row, column);
-                if (row < APPLICATION_PROPERTIES.getNumBestResults()) {
+                if (row < CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()) {
                     cell.setForeground(color);
                 } else {
                     cell.setForeground(table.getForeground());

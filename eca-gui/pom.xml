@@ -100,7 +100,7 @@
                                 <resource>
                                     <directory>src/main/resources</directory>
                                     <excludes>
-                                        <exclude>application.properties</exclude>
+                                        <exclude>application-config.json</exclude>
                                         <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
                                     </excludes>

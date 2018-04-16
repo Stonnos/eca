@@ -23,6 +23,7 @@ import weka.core.Instances;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -136,9 +137,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         if (network.getLearningAlgorithm() instanceof BackPropagation) {
             String[] algorithmOptions = network().getLearningAlgorithm().getOptions();
-            for (int i = 0; i < algorithmOptions.length; i++) {
-                options.add(algorithmOptions[i]);
-            }
+            options.addAll(Arrays.asList(algorithmOptions));
         }
 
         return options;

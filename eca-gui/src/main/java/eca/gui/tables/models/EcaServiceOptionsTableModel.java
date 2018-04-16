@@ -1,6 +1,8 @@
 package eca.gui.tables.models;
 
-import eca.config.EcaServiceProperties;
+import eca.config.ApplicationConfigService;
+import eca.config.EcaServiceConfig;
+import eca.gui.dictionary.CommonDictionary;
 import eca.util.Entry;
 
 import javax.swing.table.AbstractTableModel;
@@ -10,12 +12,17 @@ import java.util.Iterator;
 /**
  * @author Roman Batygin
  */
-
 public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     private static final String[] TITLE = {"Параметр", "Значение"};
 
-    private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
+    private static EcaServiceConfig ecaServiceConfig;
+
+    static {
+        ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+    }
 
     private ArrayList<Entry> options = new ArrayList<>();
 
@@ -61,8 +68,8 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     }
 
     private void init() {
-        for (String key : PROPERTIES.getNames()) {
-            options.add(new Entry(key, PROPERTIES.getValue(key)));
-        }
+        options.add(new Entry(CommonDictionary.ECA_SERVICE_ENABLED, ecaServiceConfig.getEnabled().toString()));
+        options.add(new Entry(CommonDictionary.ECA_SERVICE_URL, ecaServiceConfig.getEvaluationUrl()));
+        options.add(new Entry(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL, ecaServiceConfig.getExperimentUrl()));
     }
 }

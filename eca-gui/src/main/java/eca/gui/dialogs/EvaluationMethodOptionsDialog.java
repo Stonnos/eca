@@ -5,12 +5,12 @@
  */
 package eca.gui.dialogs;
 
-import eca.config.ApplicationProperties;
+import eca.config.ApplicationConfigService;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
-import eca.util.EvaluationMethodConstraints;
+import eca.gui.dictionary.CommonDictionary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,12 +26,14 @@ import java.awt.event.ItemListener;
  */
 public class EvaluationMethodOptionsDialog extends JDialog {
 
-    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     public static final String METHOD_TITLE = "Метод оценки точности";
     public static final String BLOCKS_NUM_TITLE = "Количество блоков:";
     public static final String TESTS_NUM_TITLE = "Количество проверок:";
-    public static final String OPTIONS_TITLE = "Настройки";
+
+    private static final String OPTIONS_TITLE = "Настройки";
 
     private JRadioButton useTrainingSetRadioButton;
     private JRadioButton useTestingSetRadioButton;
@@ -40,19 +42,19 @@ public class EvaluationMethodOptionsDialog extends JDialog {
 
     private boolean dialogResult;
     private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
-    private int numFolds = APPLICATION_PROPERTIES.getNumFolds();
-    private int numTests = APPLICATION_PROPERTIES.getNumTests();
+    private int numFolds = CONFIG_SERVICE.getApplicationConfig().getCrossValidationConfig().getNumFolds();
+    private int numTests = CONFIG_SERVICE.getApplicationConfig().getCrossValidationConfig().getNumTests();
 
     public EvaluationMethodOptionsDialog(Window parent) {
         super(parent, OPTIONS_TITLE);
         this.setModal(true);
         this.setResizable(false);
-        this.makeGUI();
+        this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
     }
 
-    public final void setEvaluationMethod(EvaluationMethod evaluationMethod) {
+    public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
         evaluationMethod.accept(new EvaluationMethodVisitor<Void>() {
             @Override
             public Void evaluateModel() {
@@ -68,7 +70,7 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         });
     }
 
-    public final void setParams() {
+    private void setParams() {
         evaluationMethod = useTrainingSetRadioButton.isSelected() ?
                 EvaluationMethod.TRAINING_DATA : EvaluationMethod.CROSS_VALIDATION;
         if (useTestingSetRadioButton.isSelected()) {
@@ -84,7 +86,7 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         this.setVisible(true);
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(METHOD_TITLE));
@@ -94,10 +96,10 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         group.add(useTrainingSetRadioButton);
         group.add(useTestingSetRadioButton);
         //---------------------------------
-        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
-                EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
-        testsSpinner.setModel(new SpinnerNumberModel(numTests, EvaluationMethodConstraints.MINIMUM_NUMBER_OF_TESTS,
-                EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_TESTS, 1));
+        foldsSpinner.setModel(new SpinnerNumberModel(numFolds, CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
+        testsSpinner.setModel(new SpinnerNumberModel(numTests, CommonDictionary.MINIMUM_NUMBER_OF_TESTS,
+                CommonDictionary.MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
         testsSpinner.setEnabled(false);
         //--------------------------------
@@ -152,19 +154,19 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         this.getRootPane().setDefaultButton(okButton);
     }
 
-    public final EvaluationMethod getEvaluationMethod() {
+    public EvaluationMethod getEvaluationMethod() {
         return evaluationMethod;
     }
 
-    public final int numFolds() {
+    public int numFolds() {
         return numFolds;
     }
 
-    public final int numTests() {
+    public int numTests() {
         return numTests;
     }
 
-    public final boolean dialogResult() {
+    public boolean dialogResult() {
         return dialogResult;
     }
 

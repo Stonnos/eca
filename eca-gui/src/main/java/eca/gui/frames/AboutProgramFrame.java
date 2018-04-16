@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.config.ApplicationProperties;
+import eca.config.ApplicationConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.service.AboutProgramService;
 
@@ -19,7 +19,8 @@ import java.awt.event.ActionListener;
  */
 public class AboutProgramFrame extends JFrame {
 
-    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
     private static final String ABOUT_PROGRAM_TITLE = "О программе";
 
     public AboutProgramFrame(JFrame parent) {
@@ -35,8 +36,8 @@ public class AboutProgramFrame extends JFrame {
 
         JPanel infoPanel = new JPanel();
         JLabel info = new JLabel(AboutProgramService.getAboutProgramHtmlString());
-        ImageIcon icon =
-                new ImageIcon(getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getLogotypeUrl()));
+        ImageIcon icon = new ImageIcon(
+                getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getLogotypeUrl()));
         info.setIcon(icon);
         infoPanel.add(info);
         JButton okButton = ButtonUtils.createCloseButton();

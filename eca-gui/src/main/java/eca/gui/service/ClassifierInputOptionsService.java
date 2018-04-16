@@ -5,7 +5,7 @@
  */
 package eca.gui.service;
 
-import eca.config.VelocityConfiguration;
+import eca.config.VelocityConfigService;
 import eca.converters.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.core.evaluation.EvaluationResults;
@@ -37,8 +37,8 @@ public class ClassifierInputOptionsService {
     /**
      * Velocity configuration
      */
-    private static final VelocityConfiguration VELOCITY_CONFIGURATION =
-            VelocityConfiguration.getVelocityConfiguration();
+    private static final VelocityConfigService VELOCITY_CONFIGURATION =
+            VelocityConfigService.getVelocityConfigService();
 
     private static final String ATTRIBUTE_STATISTICS_VM = "vm-templates/attributeStatistics.vm";
     private static final String CLASSIFIER_INPUT_OPTIONS_VM = "vm-templates/classifierInputOptions.vm";

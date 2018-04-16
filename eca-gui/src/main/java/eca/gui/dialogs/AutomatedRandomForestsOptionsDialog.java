@@ -1,7 +1,8 @@
 package eca.gui.dialogs;
 
+import eca.config.ApplicationConfigService;
 import eca.gui.ButtonUtils;
-import eca.util.ThreadsUtils;
+import eca.gui.dictionary.CommonDictionary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,9 @@ import java.awt.event.ActionListener;
  * @author Roman Batygin
  */
 public class AutomatedRandomForestsOptionsDialog extends JDialog {
+
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     private static final String OPTIONS_TITLE = "Настройки параметров";
     private static final String NUM_ITERATIONS_TITLE = "Число итераций:";
@@ -64,7 +68,8 @@ public class AutomatedRandomForestsOptionsDialog extends JDialog {
         //-------------------------------------------------------
         iterationsSpinner.setModel(new SpinnerNumberModel(numIterations, MIN_ITERATIONS, MAX_ITERATIONS, 1));
         threadsSpinner.setModel(
-                new SpinnerNumberModel(numThreads, ThreadsUtils.MIN_NUM_THREADS, ThreadsUtils.getMaxNumThreads(), 1));
+                new SpinnerNumberModel(numThreads, CommonDictionary.MIN_THREADS_NUM, CONFIG_SERVICE
+                        .getApplicationConfig().getMaxThreads().intValue(), 1));
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 

@@ -5,6 +5,7 @@
  */
 package eca.gui.dialogs;
 
+import eca.config.ApplicationConfigService;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.forests.DecisionTreeType;
 import eca.ensemble.forests.ExtraTreesClassifier;
@@ -12,9 +13,9 @@ import eca.ensemble.forests.RandomForests;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
-import eca.util.ThreadsUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -26,6 +27,9 @@ import java.awt.event.ActionListener;
  * Random forests algorithm options dialog frame.
  */
 public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
+
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     private static final String OPTIONS_TITLE = "Параметры леса";
     private static final String TREES_NUM_TITLE = "Количество деревьев:";
@@ -237,8 +241,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
             numRandomAttrTextField.setText(String.valueOf(classifier.getNumRandomAttr()));
             treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
             threadsSpinner.setModel(
-                    new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
-                            ThreadsUtils.getMaxNumThreads(), 1));
+                    new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                            CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
         }
 
         void setClassifierOptions() {

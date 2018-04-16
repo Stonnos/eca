@@ -5,7 +5,6 @@ package eca.util;
  *
  * @author Roman Batygin
  */
-
 public class FileUtils {
 
     /**

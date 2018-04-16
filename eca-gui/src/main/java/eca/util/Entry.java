@@ -7,6 +7,7 @@ package eca.util;
 
 /**
  * Class for storage pairs (key, value).
+ *
  * @author Roman Batygin
  */
 public class Entry implements java.io.Serializable {
@@ -23,7 +24,8 @@ public class Entry implements java.io.Serializable {
 
     /**
      * Creates entry with specified key and value
-     * @param key key
+     *
+     * @param key   key
      * @param value value
      */
     public Entry(String key, String value) {
@@ -33,6 +35,7 @@ public class Entry implements java.io.Serializable {
 
     /**
      * Returns key value.
+     *
      * @return key value
      */
     public String getKey() {
@@ -41,6 +44,7 @@ public class Entry implements java.io.Serializable {
 
     /**
      * Sets key value.
+     *
      * @param key key value
      */
     public void setKey(String key) {
@@ -49,6 +53,7 @@ public class Entry implements java.io.Serializable {
 
     /**
      * Returns value.
+     *
      * @return value
      */
     public String getValue() {
@@ -57,6 +62,7 @@ public class Entry implements java.io.Serializable {
 
     /**
      * Sets value.
+     *
      * @param value value
      */
     public void setValue(String value) {

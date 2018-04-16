@@ -1,15 +1,16 @@
 package eca.gui.dialogs;
 
+import eca.config.ApplicationConfigService;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.RandomNetworks;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.text.EstimateDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.text.NumericFormatFactory;
-import eca.util.ThreadsUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -22,6 +23,9 @@ import java.text.DecimalFormat;
  * @author Roman Batygin
  */
 public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks> {
+
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     private static final int FIELD_LENGTH = 5;
 
@@ -69,8 +73,8 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
         useBootstrapSamplesCheckBox.setSelected(classifier.isUseBootstrapSamples());
         threadsSpinner.setModel(
-                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), ThreadsUtils.MIN_NUM_THREADS,
-                        ThreadsUtils.getMaxNumThreads(), 1));
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                        CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
     }
 
     private void createGUI() {

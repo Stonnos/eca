@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.config.ApplicationProperties;
+import eca.config.ApplicationConfigService;
 import eca.converters.ModelConverter;
 import eca.converters.model.EvaluationParams;
 import eca.converters.model.ExperimentHistory;
@@ -20,12 +20,12 @@ import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
 import eca.gui.dialogs.LoadDialog;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
-import eca.util.EvaluationMethodConstraints;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -51,7 +51,8 @@ import java.util.TimeZone;
 public abstract class ExperimentFrame extends JFrame {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
-    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
@@ -130,7 +131,7 @@ public abstract class ExperimentFrame extends JFrame {
         return digits;
     }
 
-    public final void setStateForButtons(boolean flag) {
+    private void setStateForButtons(boolean flag) {
         startButton.setEnabled(flag);
         optionsButton.setEnabled(flag);
         loadButton.setEnabled(flag);
@@ -138,7 +139,7 @@ public abstract class ExperimentFrame extends JFrame {
         stopButton.setEnabled(!flag);
     }
 
-    public final void setStateForOptions(boolean flag) {
+    private void setStateForOptions(boolean flag) {
         for (Component c : left.getComponents()) {
             c.setEnabled(flag);
         }
@@ -148,9 +149,9 @@ public abstract class ExperimentFrame extends JFrame {
         }
     }
 
-    public final void setResults(ExperimentHistory experimentHistory) {
-        text.setText(
-                ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory, APPLICATION_PROPERTIES.getNumBestResults()));
+    private void setResults(ExperimentHistory experimentHistory) {
+        text.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
+                CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
         text.setCaretPosition(0);
     }
 
@@ -189,11 +190,11 @@ public abstract class ExperimentFrame extends JFrame {
         group.add(useTestingSet);
         //---------------------------------
         foldsSpinner.setModel(
-                new SpinnerNumberModel(experiment.getNumFolds(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
-                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
+                new SpinnerNumberModel(experiment.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                        CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
         validationsSpinner.setModel(
-                new SpinnerNumberModel(experiment.getNumTests(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_TESTS,
-                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_TESTS, 1));
+                new SpinnerNumberModel(experiment.getNumTests(), CommonDictionary.MINIMUM_NUMBER_OF_TESTS,
+                        CommonDictionary.MAXIMUM_NUMBER_OF_TESTS, 1));
         foldsSpinner.setEnabled(false);
         validationsSpinner.setEnabled(false);
 

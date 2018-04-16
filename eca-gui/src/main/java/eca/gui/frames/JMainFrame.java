@@ -11,8 +11,8 @@ import eca.client.EcaServiceClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
-import eca.config.ApplicationProperties;
-import eca.config.EcaServiceProperties;
+import eca.config.ApplicationConfigService;
+import eca.config.EcaServiceConfig;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
@@ -21,21 +21,58 @@ import eca.core.evaluation.EvaluationService;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
 import eca.data.net.UrlDataLoader;
-import eca.dataminer.*;
+import eca.dataminer.AutomatedHeterogeneousEnsemble;
+import eca.dataminer.AutomatedKNearestNeighbours;
+import eca.dataminer.AutomatedNeuralNetwork;
+import eca.dataminer.AutomatedRandomForests;
+import eca.dataminer.AutomatedStacking;
+import eca.dataminer.ExperimentUtil;
 import eca.db.DataBaseQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
-import eca.ensemble.*;
+import eca.ensemble.AbstractHeterogeneousClassifier;
+import eca.ensemble.AdaBoostClassifier;
+import eca.ensemble.CVIterativeBuilder;
+import eca.ensemble.ConcurrentClassifier;
+import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
+import eca.ensemble.IterativeBuilder;
+import eca.ensemble.ModifiedHeterogeneousClassifier;
+import eca.ensemble.RandomNetworks;
+import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.*;
+import eca.gui.actions.CallbackAction;
+import eca.gui.actions.DataBaseConnectionAction;
+import eca.gui.actions.DataGeneratorCallback;
+import eca.gui.actions.ExperimentRequestSender;
+import eca.gui.actions.InstancesLoader;
+import eca.gui.actions.ModelLoader;
+import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.*;
+import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.ClassifierBuilderDialog;
+import eca.gui.dialogs.DataGeneratorDialog;
+import eca.gui.dialogs.DatabaseConnectionDialog;
+import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.EcaServiceOptionsDialog;
+import eca.gui.dialogs.EnsembleOptionsDialog;
+import eca.gui.dialogs.EvaluationMethodOptionsDialog;
+import eca.gui.dialogs.ExecutorDialog;
+import eca.gui.dialogs.ExperimentRequestDialog;
+import eca.gui.dialogs.J48OptionsDialog;
+import eca.gui.dialogs.KNNOptionDialog;
+import eca.gui.dialogs.LoadDialog;
+import eca.gui.dialogs.LogisticOptionsDialogBase;
+import eca.gui.dialogs.NetworkOptionsDialog;
+import eca.gui.dialogs.RandomForestsOptionDialog;
+import eca.gui.dialogs.RandomNetworkOptionsDialog;
+import eca.gui.dialogs.SpinnerDialog;
+import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
@@ -47,7 +84,12 @@ import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.text.DateFormat;
-import eca.trees.*;
+import eca.trees.C45;
+import eca.trees.CART;
+import eca.trees.CHAID;
+import eca.trees.DecisionTreeClassifier;
+import eca.trees.ID3;
+import eca.trees.J48;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -65,8 +107,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Implements the main application frame.
@@ -76,9 +122,9 @@ import java.util.List;
 @Slf4j
 public class JMainFrame extends JFrame {
 
-    private static final ApplicationProperties APPLICATION_PROPERTIES = ApplicationProperties.getInstance();
-
-    private static final EcaServiceProperties ECA_SERVICE_PROPERTIES = EcaServiceProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
+    private static EcaServiceConfig ecaServiceConfig;
 
     private static final Color FRAME_COLOR = new Color(198, 226, 255);
 
@@ -174,19 +220,21 @@ public class JMainFrame extends JFrame {
 
     private void init() {
         try {
-            this.setTitle(APPLICATION_PROPERTIES.getTitle());
-            if (APPLICATION_PROPERTIES.getDefaultFractionDigits() != null) {
-                this.maximumFractionDigits = APPLICATION_PROPERTIES.getDefaultFractionDigits();
+            this.setTitle(CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getTitle());
+            if (CONFIG_SERVICE.getApplicationConfig().getFractionDigits() != null) {
+                this.maximumFractionDigits = CONFIG_SERVICE.getApplicationConfig().getFractionDigits();
             } else {
                 this.maximumFractionDigits = CommonDictionary.MAXIMUM_FRACTION_DIGITS;
             }
-            URL iconUrl = getClass().getClassLoader().getResource(APPLICATION_PROPERTIES.getIconUrl());
+            URL iconUrl = getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getIconUrl());
             if (iconUrl != null) {
                 this.setIconImage(ImageIO.read(iconUrl));
             }
-            if (APPLICATION_PROPERTIES.getTooltipDismissTime() != null) {
-                ToolTipManager.sharedInstance().setDismissDelay(APPLICATION_PROPERTIES.getTooltipDismissTime());
+            if (CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime() != null) {
+                ToolTipManager.sharedInstance().setDismissDelay(
+                        CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime());
             }
+            ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -554,9 +602,9 @@ public class JMainFrame extends JFrame {
 
         EcaServiceClientImpl restClient = new EcaServiceClientImpl();
         restClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        restClient.setEvaluationUrl(ECA_SERVICE_PROPERTIES.getEcaServiceUrl());
+        restClient.setEvaluationUrl(ecaServiceConfig.getEvaluationUrl());
 
-        if (restClient.getEvaluationMethod() == EvaluationMethod.CROSS_VALIDATION) {
+        if (EvaluationMethod.CROSS_VALIDATION.equals(restClient.getEvaluationMethod())) {
             restClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             restClient.setNumTests(evaluationMethodOptionsDialog.numTests());
         }
@@ -593,13 +641,11 @@ public class JMainFrame extends JFrame {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
-
-            if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
+            if (ecaServiceConfig.getEnabled()) {
                 executeWithEcaService(frame);
             } else {
                 processSimpleBuilding(frame);
             }
-
         }
         frame.dispose();
     }
@@ -639,9 +685,9 @@ public class JMainFrame extends JFrame {
     }
 
     private void createDataFrame(Instances data, int digits) throws Exception {
-        if (dataPanels.getComponentCount() >= APPLICATION_PROPERTIES.getMaximumListSizeOfData()) {
+        if (dataPanels.getComponentCount() >= CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()) {
             throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
-                    APPLICATION_PROPERTIES.getMaximumListSizeOfData()));
+                    CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()));
         }
         final DataInternalFrame dataInternalFrame =
                 new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()), digits);
@@ -767,8 +813,8 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
                         NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits,
-                        APPLICATION_PROPERTIES.getMinimumFractionDigits(),
-                        APPLICATION_PROPERTIES.getMaximumFractionDigits());
+                        CONFIG_SERVICE.getApplicationConfig().getMinFractionDigits(),
+                        CONFIG_SERVICE.getApplicationConfig().getMaxFractionDigits());
                 dialog.setVisible(true);
                 if (dialog.dialogResult()) {
                     maximumFractionDigits = dialog.getValue();
@@ -1555,7 +1601,7 @@ public class JMainFrame extends JFrame {
                         if (ecaServiceClient == null) {
                             ecaServiceClient = new EcaServiceClientImpl();
                         }
-                        ecaServiceClient.setExperimentUrl(ECA_SERVICE_PROPERTIES.getEcaServiceExperimentUrl());
+                        ecaServiceClient.setExperimentUrl(ecaServiceConfig.getExperimentUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, new CallbackAction() {
                             @Override
@@ -1596,7 +1642,8 @@ public class JMainFrame extends JFrame {
                                                 @Override
                                                 public Void caseTimeoutStatus() {
                                                     JOptionPane.showMessageDialog(JMainFrame.this,
-                                                            EXPERIMENT_TIMEOUT_MESSAGE, null, JOptionPane.ERROR_MESSAGE);
+                                                            EXPERIMENT_TIMEOUT_MESSAGE, null,
+                                                            JOptionPane.ERROR_MESSAGE);
                                                     return null;
                                                 }
                                             });
@@ -1684,7 +1731,7 @@ public class JMainFrame extends JFrame {
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
             try {
-                if (ECA_SERVICE_PROPERTIES.getEcaServiceEnabled()) {
+                if (ecaServiceConfig.getEnabled()) {
                     executeWithEcaService(frame);
                 } else {
                     if (isParallelClassifier(frame.classifier())) {

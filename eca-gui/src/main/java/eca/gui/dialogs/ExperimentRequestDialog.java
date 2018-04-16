@@ -51,7 +51,7 @@ public class ExperimentRequestDialog extends JDialog {
         super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        this.makeGUI();
+        this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
         firstNameTextField.requestFocusInWindow();
@@ -69,7 +69,7 @@ public class ExperimentRequestDialog extends JDialog {
         setVisible(true);
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         JPanel mainOptionPanel = new JPanel(new GridBagLayout());
         mainOptionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
 

@@ -12,6 +12,7 @@ import eca.ensemble.StackingClassifier;
 import eca.gui.BaseClassifiersListModel;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.listeners.BaseClassifiersListMouseListener;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
@@ -21,7 +22,6 @@ import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
 import eca.trees.J48;
-import eca.util.EvaluationMethodConstraints;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -107,8 +107,8 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         group.add(useTrainingSet);
         group.add(useTestingSet);
         foldsSpinner.setModel(
-                new SpinnerNumberModel(classifier.getNumFolds(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
-                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
+                new SpinnerNumberModel(classifier.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                        CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
         foldsSpinner.setEnabled(false);
         panel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));

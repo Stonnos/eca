@@ -1,0 +1,25 @@
+{
+  "projectInfo": {
+    "title": "ECA",
+    "titleDescription": "Ensemble Classification Algorithms",
+    "version": "${project.version}",
+    "releaseDate": "10.04.2018",
+    "author": "Roman Batygin",
+    "authorEmail": "roman.batygin@mail.ru"
+  },
+  "fractionDigits": 4,
+  "minFractionDigits": 1,
+  "maxFractionDigits": 7,
+  "maxDataListSize": 25,
+  "iconUrl": "images/Icon.png",
+  "logotypeUrl": "images/Logotype.jpg",
+  "tooltipDismissTime": 60000,
+  "maxThreads": 10,
+  "crossValidationConfig": {
+    "numFolds": 10,
+    "numTests": 10
+  },
+  "experimentConfig": {
+    "numBestResults": 10
+  }
+}

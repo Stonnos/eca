@@ -12,9 +12,9 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
  * @author Roman Batygin
  */
 @Slf4j
-public class VelocityConfiguration {
+public class VelocityConfigService {
 
-    private static VelocityConfiguration velocityConfiguration;
+    private static VelocityConfigService velocityConfiguration;
     private static VelocityEngine velocityEngine;
 
     static {
@@ -29,13 +29,13 @@ public class VelocityConfiguration {
     }
 
     /**
-     * Returns {@link VelocityConfiguration} instance.
+     * Returns {@link VelocityConfigService} instance.
      *
-     * @return {@link VelocityConfiguration} instance
+     * @return {@link VelocityConfigService} instance
      */
-    public static VelocityConfiguration getVelocityConfiguration() {
+    public static VelocityConfigService getVelocityConfigService() {
         if (velocityConfiguration == null) {
-            velocityConfiguration = new VelocityConfiguration();
+            velocityConfiguration = new VelocityConfigService();
         }
         return velocityConfiguration;
     }

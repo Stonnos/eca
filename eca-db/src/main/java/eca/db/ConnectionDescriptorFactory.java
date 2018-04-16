@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ConnectionDescriptorFactory {
 
+    private static final String LOCALHOST = "localhost";
     private static MySQLConnectionDescriptor MY_SQL_CONNECTION_DESCRIPTOR;
     private static OracleConnectionDescriptor ORACLE_CONNECTION_DESCRIPTOR;
     private static PostgreSQLConnectionDescriptor POSTGRESQL_CONNECTION_DESCRIPTOR;
@@ -27,7 +28,7 @@ public class ConnectionDescriptorFactory {
     public static MySQLConnectionDescriptor getMySqlConnectionDescriptor() {
         if (MY_SQL_CONNECTION_DESCRIPTOR == null) {
             MY_SQL_CONNECTION_DESCRIPTOR =
-                    new MySQLConnectionDescriptor("localhost", 3306, StringUtils.EMPTY, StringUtils.EMPTY,
+                    new MySQLConnectionDescriptor(LOCALHOST, 3306, StringUtils.EMPTY, StringUtils.EMPTY,
                             StringUtils.EMPTY);
         }
         return MY_SQL_CONNECTION_DESCRIPTOR;
@@ -41,7 +42,7 @@ public class ConnectionDescriptorFactory {
     public static OracleConnectionDescriptor getOracleConnectionDescriptor() {
         if (ORACLE_CONNECTION_DESCRIPTOR == null) {
             ORACLE_CONNECTION_DESCRIPTOR =
-                    new OracleConnectionDescriptor("localhost", 1521, "XE",
+                    new OracleConnectionDescriptor(LOCALHOST, 1521, "XE",
                             StringUtils.EMPTY, StringUtils.EMPTY);
         }
         return ORACLE_CONNECTION_DESCRIPTOR;
@@ -55,7 +56,7 @@ public class ConnectionDescriptorFactory {
     public static PostgreSQLConnectionDescriptor getPostgreSQLConnectionDescriptor() {
         if (POSTGRESQL_CONNECTION_DESCRIPTOR == null) {
             POSTGRESQL_CONNECTION_DESCRIPTOR =
-                    new PostgreSQLConnectionDescriptor("localhost", 5432, StringUtils.EMPTY, StringUtils.EMPTY,
+                    new PostgreSQLConnectionDescriptor(LOCALHOST, 5432, StringUtils.EMPTY, StringUtils.EMPTY,
                             StringUtils.EMPTY);
         }
         return POSTGRESQL_CONNECTION_DESCRIPTOR;
@@ -69,7 +70,7 @@ public class ConnectionDescriptorFactory {
     public static MSSQLConnectionDescriptor getMSSqlConnectionDescriptor() {
         if (MSSQL_CONNECTION_DESCRIPTOR == null) {
             MSSQL_CONNECTION_DESCRIPTOR =
-                    new MSSQLConnectionDescriptor("localhost", 1433, StringUtils.EMPTY, StringUtils.EMPTY,
+                    new MSSQLConnectionDescriptor(LOCALHOST, 1433, StringUtils.EMPTY, StringUtils.EMPTY,
                             StringUtils.EMPTY);
         }
         return MSSQL_CONNECTION_DESCRIPTOR;

@@ -37,6 +37,8 @@ import java.util.StringTokenizer;
  */
 public class MultilayerPerceptron implements java.io.Serializable {
 
+    private static final String LAYER_REGEX = "^[0-9]*$";
+
     public static final int MINIMUM_NUMBER_OF_NEURONS_IN_LAYER = 1;
 
     /**
@@ -151,7 +153,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
         }
         while (tokenizer.hasMoreTokens()) {
             String str = tokenizer.nextToken();
-            if (!str.matches("^[0-9]*$")) {
+            if (!str.matches(LAYER_REGEX)) {
                 throw new IllegalArgumentException(NeuralNetworkDictionary.BAD_HIDDEN_LAYER_STRUCTURE);
             }
             if (Integer.valueOf(str).equals(0)) {

@@ -1,7 +1,9 @@
 package eca.gui.dialogs;
 
-import eca.config.EcaServiceProperties;
+import eca.config.ApplicationConfigService;
+import eca.config.EcaServiceConfig;
 import eca.gui.ButtonUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.tables.EcaServicePropertiesTable;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;
 import eca.util.Entry;
@@ -11,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -18,14 +21,20 @@ import java.util.Iterator;
  */
 public class EcaServiceOptionsDialog extends JDialog {
 
-    private static final EcaServiceProperties PROPERTIES = EcaServiceProperties.getInstance();
+    private static final ApplicationConfigService CONFIG_SERVICE =
+            ApplicationConfigService.getApplicationConfigService();
+    private static EcaServiceConfig ecaServiceConfig;
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
     private static final String INVALID_PROPERTY_ERROR_FORMAT = "Недопустимое значение свойства '%s'";
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
 
-    private final EcaServiceOptionsTableModel model = new EcaServiceOptionsTableModel();
+    private final EcaServiceOptionsTableModel ecaServiceOptionsTableModel = new EcaServiceOptionsTableModel();
+
+    static {
+        ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+    }
 
     public EcaServiceOptionsDialog(Window parent) {
         super(parent, TITLE_TEXT);
@@ -33,7 +42,7 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
 
-        JScrollPane scrollPanel = new JScrollPane(new EcaServicePropertiesTable(model));
+        JScrollPane scrollPanel = new JScrollPane(new EcaServicePropertiesTable(ecaServiceOptionsTableModel));
         scrollPanel.setPreferredSize(SCROLL_PANE_PREFERRED_SIZE);
 
         JButton okButton = ButtonUtils.createOkButton();
@@ -44,22 +53,7 @@ public class EcaServiceOptionsDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    for (Iterator<Entry> iterator = model.getOptions(); iterator.hasNext(); ) {
-                        Entry entry = iterator.next();
-                        if (StringUtils.isEmpty(entry.getValue())) {
-                            throw new Exception(String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
-                        }
-
-                        if (entry.getKey().equals(EcaServiceProperties.ECA_SERVICE_ENABLED)) {
-                            if (!entry.getValue().equalsIgnoreCase("false") &&
-                                    !entry.getValue().equalsIgnoreCase("true")) {
-                                throw new Exception(String.format(INVALID_PROPERTY_ERROR_FORMAT, entry.getKey()));
-                            }
-                        }
-
-                        PROPERTIES.put(entry.getKey(), entry.getValue());
-                    }
-                    PROPERTIES.save();
+                    saveEcaServiceOptions();
                     setVisible(false);
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
@@ -88,6 +82,41 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);
+    }
+
+    private void saveEcaServiceOptions() throws IOException {
+        for (Iterator<Entry> iterator = ecaServiceOptionsTableModel.getOptions(); iterator.hasNext(); ) {
+            Entry entry = iterator.next();
+            if (StringUtils.isEmpty(entry.getValue())) {
+                throw new IllegalArgumentException(
+                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
+            }
+
+            if (entry.getKey().equals(CommonDictionary.ECA_SERVICE_ENABLED) &&
+                    !entry.getValue().equalsIgnoreCase(Boolean.FALSE.toString().toLowerCase()) &&
+                    !entry.getValue().equalsIgnoreCase(Boolean.TRUE.toString().toLowerCase())) {
+                throw new IllegalArgumentException(
+                        String.format(INVALID_PROPERTY_ERROR_FORMAT, entry.getKey()));
+            }
+            setOptions(entry);
+            CONFIG_SERVICE.saveEcaServiceConfig();
+        }
+    }
+
+    private void setOptions(Entry entry) {
+        switch (entry.getKey()) {
+            case CommonDictionary.ECA_SERVICE_ENABLED:
+                ecaServiceConfig.setEnabled(Boolean.valueOf(entry.getValue()));
+                break;
+            case CommonDictionary.ECA_SERVICE_URL:
+                ecaServiceConfig.setEvaluationUrl(entry.getValue());
+                break;
+            case CommonDictionary.ECA_SERVICE_EXPERIMENT_URL:
+                ecaServiceConfig.setExperimentUrl(entry.getValue());
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));
+        }
     }
 
 }

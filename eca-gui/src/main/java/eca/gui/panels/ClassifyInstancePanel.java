@@ -5,7 +5,7 @@
  */
 package eca.gui.panels;
 
-import eca.config.VelocityConfiguration;
+import eca.config.VelocityConfigService;
 import eca.gui.PanelBorderUtils;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.ClassifyInstanceTable;
@@ -32,8 +32,8 @@ public class ClassifyInstancePanel extends JPanel {
     /**
      * Velocity configuration
      */
-    private static final VelocityConfiguration VELOCITY_CONFIGURATION =
-            VelocityConfiguration.getVelocityConfiguration();
+    private static final VelocityConfigService VELOCITY_CONFIGURATION =
+            VelocityConfigService.getVelocityConfigService();
 
     private static final String VM_TEMPLATES_CLASSIFY_OBJECT_VM = "vm-templates/classifyObject.vm";
 

@@ -3,9 +3,9 @@ package eca.gui.dialogs;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
-import eca.util.EvaluationMethodConstraints;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 
@@ -52,8 +52,8 @@ public class J48OptionsDialog extends BaseOptionsDialog<J48> {
 
         foldsSpinner = new JSpinner();
         foldsSpinner.setModel(
-                new SpinnerNumberModel(classifier.getNumFolds(), EvaluationMethodConstraints.MINIMUM_NUMBER_OF_FOLDS,
-                        EvaluationMethodConstraints.MAXIMUM_NUMBER_OF_FOLDS, 1));
+                new SpinnerNumberModel(classifier.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                        CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
 
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
