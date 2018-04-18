@@ -21,10 +21,6 @@ import java.util.Enumeration;
 @Service
 public class InstancesService {
 
-    private static final String VARCHAR_TYPE_FORMAT = "VARCHAR(%d)";
-    private static final String NUMERIC_TYPE = "NUMERIC";
-    private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
-
     private static final String CREATE_TABLE_QUERY_FORMAT = "CREATE TABLE %s (%s);";
     private static final String COLUMN_FORMAT = "%s %s, ";
     private static final String LAST_COLUMN_FORMAT = "%s %s";
@@ -81,23 +77,9 @@ public class InstancesService {
         StringBuilder queryString = new StringBuilder();
         for (Enumeration<Attribute> attributeEnumeration = instances.enumerateAttributes();
              attributeEnumeration.hasMoreElements(); ) {
-            queryString.append(formatAttribute(attributeEnumeration.nextElement(), COLUMN_FORMAT));
+            queryString.append(Utils.formatAttribute(attributeEnumeration.nextElement(), COLUMN_FORMAT));
         }
-        queryString.append(formatAttribute(instances.classAttribute(), LAST_COLUMN_FORMAT));
+        queryString.append(Utils.formatAttribute(instances.classAttribute(), LAST_COLUMN_FORMAT));
         return String.format(CREATE_TABLE_QUERY_FORMAT, tableName, queryString);
-    }
-
-    private String formatAttribute(Attribute attribute, String columnFormat) {
-        String attributeName = Utils.normalizeName(attribute.name());
-        if (attribute.isNominal()) {
-            return String.format(columnFormat, attributeName, String.format(VARCHAR_TYPE_FORMAT, Utils.VARCHAR_LENGTH));
-        } else if (attribute.isDate()) {
-            return String.format(columnFormat, attributeName, TIMESTAMP_FORMAT);
-        } else if (attribute.isNumeric()) {
-            return String.format(columnFormat, attributeName, NUMERIC_TYPE);
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected attribute '%s' type!", attribute.name()));
-        }
     }
 }

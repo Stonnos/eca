@@ -24,10 +24,7 @@ import java.util.Enumeration;
 public class TransactionalService {
 
     private static final String INSERT_QUERY_FORMAT = "INSERT INTO %s VALUES(%s);";
-    private static final String STRING_VALUE_FORMAT = "'%s'";
     private static final String VALUE_DELIMITER_FORMAT = "%s, ";
-
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -61,23 +58,9 @@ public class TransactionalService {
         for (Enumeration<Attribute> attributeEnumeration = instances.enumerateAttributes();
              attributeEnumeration.hasMoreElements(); ) {
             queryString.append(
-                    String.format(VALUE_DELIMITER_FORMAT, formatValue(instance, attributeEnumeration.nextElement())));
+                    String.format(VALUE_DELIMITER_FORMAT, Utils.formatValue(instance, attributeEnumeration.nextElement())));
         }
-        queryString.append(formatValue(instance, instances.classAttribute()));
+        queryString.append(Utils.formatValue(instance, instances.classAttribute()));
         return String.format(INSERT_QUERY_FORMAT, tableName, queryString);
-    }
-
-    private String formatValue(Instance instance, Attribute attribute) {
-        if (attribute.isNominal()) {
-            return String.format(STRING_VALUE_FORMAT, Utils.truncateStringValue(instance.stringValue(attribute)));
-        } else if (attribute.isDate()) {
-            return String.format(STRING_VALUE_FORMAT,
-                    simpleDateFormat.format(new Date((long) instance.value(attribute))));
-        } else if (attribute.isNumeric()) {
-            return String.valueOf(instance.value(attribute));
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Unexpected attribute '%s' type!", attribute.name()));
-        }
     }
 }

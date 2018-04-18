@@ -1,5 +1,11 @@
 package eca.data.migration.util;
 
+import weka.core.Attribute;
+import weka.core.Instance;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Utility class.
  *
@@ -7,9 +13,15 @@ package eca.data.migration.util;
  */
 public class Utils {
 
-    private static final String DELIMITER = "_";
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static final int VARCHAR_LENGTH = 255;
+    private static final String DELIMITER = "_";
+    private static final String STRING_VALUE_FORMAT = "'%s'";
+    private static final int VARCHAR_LENGTH = 255;
+
+    private static final String VARCHAR_TYPE_FORMAT = "VARCHAR(%d)";
+    private static final String NUMERIC_TYPE = "NUMERIC";
+    private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
 
     /**
      * Normalizes name for data base. Normalization includes:
@@ -34,5 +46,47 @@ public class Utils {
      */
     public static String truncateStringValue(String value) {
         return value.length() > VARCHAR_LENGTH ? value.substring(0, VARCHAR_LENGTH) : value;
+    }
+
+    /**
+     * Formats attribute name to database column format for create table query.
+     *
+     * @param attribute    - attribute
+     * @param columnFormat - column format
+     * @return column string
+     */
+    public static String formatAttribute(Attribute attribute, String columnFormat) {
+        String attributeName = normalizeName(attribute.name());
+        if (attribute.isNominal()) {
+            return String.format(columnFormat, attributeName, String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH));
+        } else if (attribute.isDate()) {
+            return String.format(columnFormat, attributeName, TIMESTAMP_FORMAT);
+        } else if (attribute.isNumeric()) {
+            return String.format(columnFormat, attributeName, NUMERIC_TYPE);
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unexpected attribute '%s' type!", attribute.name()));
+        }
+    }
+
+    /**
+     * Formats attribute value of specified instance for sql insert query.
+     *
+     * @param instance  - training data instance
+     * @param attribute - attribute
+     * @return formatted value
+     */
+    public static String formatValue(Instance instance, Attribute attribute) {
+        if (attribute.isNominal()) {
+            return String.format(STRING_VALUE_FORMAT, truncateStringValue(instance.stringValue(attribute)));
+        } else if (attribute.isDate()) {
+            return String.format(STRING_VALUE_FORMAT,
+                    SIMPLE_DATE_FORMAT.format(new Date((long) instance.value(attribute))));
+        } else if (attribute.isNumeric()) {
+            return String.valueOf(instance.value(attribute));
+        } else {
+            throw new IllegalArgumentException(
+                    String.format("Unexpected attribute '%s' type!", attribute.name()));
+        }
     }
 }

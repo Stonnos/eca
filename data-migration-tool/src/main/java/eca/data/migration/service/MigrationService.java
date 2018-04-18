@@ -1,10 +1,12 @@
 package eca.data.migration.service;
 
 import eca.data.file.FileDataLoader;
+import eca.data.migration.exception.MigrationException;
 import eca.data.migration.model.MigrationLog;
 import eca.data.migration.model.MigrationLogSource;
 import eca.data.migration.model.MigrationStatus;
 import eca.data.migration.repository.MigrationLogRepository;
+import eca.data.migration.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import weka.core.Instances;
@@ -49,21 +51,21 @@ public class MigrationService {
     public void migrateData(File file) {
         dataLoader.setSource(file);
         log.info("Starting to migrate file '{}'.", file.getAbsolutePath());
+        String tableName = String.format(TABLE_NAME_FORMAT, Utils.normalizeName(file.getName()), System.currentTimeMillis());
         MigrationLog migrationLog = new MigrationLog();
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
-        migrationLog.setMigrationLogSource(MigrationLogSource.SYSTEM);
+        migrationLog.setMigrationLogSource(MigrationLogSource.JOB);
         migrationLog.setStartDate(LocalDateTime.now());
         migrationLogRepository.save(migrationLog);
         try {
             Instances instances = dataLoader.loadInstances();
             log.info("Data has been loaded from file '{}'", file.getAbsolutePath());
-            String tableName = String.format(TABLE_NAME_FORMAT, instances.relationName(), System.currentTimeMillis());
             instancesService.migrateInstances(tableName, instances);
             migrationLog.setMigrationStatus(MigrationStatus.SUCCESS);
         } catch (Exception ex) {
-            log.error("There was an error while migration file '{}': {}", file.getAbsolutePath(), ex.getMessage());
             migrationLog.setMigrationStatus(MigrationStatus.ERROR);
             migrationLog.setDetails(ex.getMessage());
+            throw new MigrationException(ex.getMessage());
         } finally {
             migrationLog.setFinishDate(LocalDateTime.now());
             migrationLogRepository.save(migrationLog);

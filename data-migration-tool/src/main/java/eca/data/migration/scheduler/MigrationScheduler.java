@@ -49,10 +49,14 @@ public class MigrationScheduler {
                 FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()), DataFileExtension.getExtensions(),
                         true);
         log.trace("Fetching {} new data files.", listFiles.size());
-        listFiles.forEach(file -> {
-            migrationService.migrateData(file);
-            FileUtils.deleteQuietly(file);
-        });
+        for (File file : listFiles) {
+            try {
+                migrationService.migrateData(file);
+                FileUtils.forceDelete(file);
+            } catch (Exception ex) {
+                log.error("There was an error while migration file '{}': {}", file.getAbsolutePath(), ex.getMessage());
+            }
+        }
         log.info("Files migration has been completed.");
     }
 }

@@ -8,7 +8,7 @@ package eca.data.migration.model;
 public enum MigrationLogSource {
 
     /**
-     * Data has been received from direcory specified in configs
+     * Data has been received by job from directory specified in configs
      */
-    SYSTEM
+    JOB
 }
