@@ -3,6 +3,7 @@ package eca.config;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eca.data.db.DataBaseType;
+import eca.exception.ConfigException;
 import eca.util.FileUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,8 @@ import java.util.Map;
  */
 @Slf4j
 public class ConfigurationService {
+
+    private static final String ERROR_FORMAT = "There was an error while loading config from '%s': %s";
 
     private static final String APPLICATION_CONFIG_PATH = "application-config.json";
     private static final String ECA_SERVICE_CONFIG_PATH = "eca-service-config.json";
@@ -93,35 +96,32 @@ public class ConfigurationService {
     }
 
     private <T> T loadConfig(String fileName, Class<T> configType) {
-        T config = null;
         try (InputStream inputStream = ConfigurationService.class.getClassLoader().getResourceAsStream(
                 fileName)) {
-            config = OBJECT_MAPPER.readValue(inputStream, configType);
+            return OBJECT_MAPPER.readValue(inputStream, configType);
         } catch (IOException ex) {
-            log.error("There was an error while loading config from '{}': {}", fileName, ex.getMessage());
+            log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
+            throw new ConfigException(ex);
         }
-        return config;
     }
 
     private <T> T loadConfig(File file, Class<T> configType) {
-        T config = null;
         try {
-            config = OBJECT_MAPPER.readValue(file, configType);
+            return OBJECT_MAPPER.readValue(file, configType);
         } catch (IOException ex) {
-            log.error("There was an error while loading config from '{}': {}", file.getAbsolutePath(), ex.getMessage());
+            log.error(String.format(ERROR_FORMAT, file.getAbsolutePath(), ex.getMessage()));
+            throw new ConfigException(ex);
         }
-        return config;
     }
 
     private <T> T loadConfig(String fileName, TypeReference<T> tTypeReference) {
-        T config = null;
         try (InputStream inputStream = ConfigurationService.class.getClassLoader().getResourceAsStream(
                 fileName)) {
-            config = OBJECT_MAPPER.readValue(inputStream, tTypeReference);
+            return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
         } catch (IOException ex) {
-            log.error("There was an error while loading config from '{}': {}", fileName, ex.getMessage());
+            log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
+            throw new ConfigException(ex);
         }
-        return config;
     }
 
     private static File getEcaServiceConfigFile() {
