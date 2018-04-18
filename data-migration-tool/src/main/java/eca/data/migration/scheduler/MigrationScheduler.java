@@ -46,7 +46,8 @@ public class MigrationScheduler {
     public void migrate() {
         log.info("Starting to migrate files.");
         Collection<File> listFiles =
-                FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()), null, true);
+                FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()), DataFileExtension.getExtensions(),
+                        true);
         log.trace("Fetching {} new data files.", listFiles.size());
         listFiles.forEach(file -> {
             migrationService.migrateData(file);

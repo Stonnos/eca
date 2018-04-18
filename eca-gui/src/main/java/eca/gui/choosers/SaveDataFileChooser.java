@@ -5,6 +5,8 @@
  */
 package eca.gui.choosers;
 
+import eca.data.DataFileExtension;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -14,15 +16,15 @@ public class SaveDataFileChooser extends SaveFileChooser {
 
     public SaveDataFileChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xls)", "xls"));
+                new FileNameExtensionFilter("Xls data files (*.xls)", DataFileExtension.XLS.getExtension()));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xlsx)", "xlsx"));
+                new FileNameExtensionFilter("Xls data files (*.xlsx)", DataFileExtension.XLSX.getExtension()));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Csv data files (*.csv)", "csv"));
+                new FileNameExtensionFilter("Csv data files (*.csv)", DataFileExtension.CSV.getExtension()));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Arff data files (*.arff)", "arff"));
+                new FileNameExtensionFilter("Arff data files (*.arff)", DataFileExtension.ARFF.getExtension()));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Json data files (*.json)", "json"));
+                new FileNameExtensionFilter("Json data files (*.json)", DataFileExtension.JSON.getExtension()));
     }
 
 }

@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.db.DataBaseQueryExecutor;
+import eca.data.db.JdbcQueryExecutor;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
@@ -48,7 +48,7 @@ public class QueryFrame extends JFrame {
     private static final int QUERY_TEXT_ROWS = 10;
     private static final int QUERY_TEXT_COLUMNS = 20;
 
-    private final DataBaseQueryExecutor connection;
+    private final JdbcQueryExecutor connection;
 
     private JTextArea queryArea;
     private JProgressBar progress;
@@ -61,7 +61,7 @@ public class QueryFrame extends JFrame {
 
     private JMainFrame parentFrame;
 
-    public QueryFrame(JMainFrame parentFrame, DataBaseQueryExecutor connection) {
+    public QueryFrame(JMainFrame parentFrame, JdbcQueryExecutor connection) {
         this.parentFrame = parentFrame;
         this.connection = connection;
         this.setLayout(new GridBagLayout());
@@ -259,7 +259,8 @@ public class QueryFrame extends JFrame {
         protected Void doInBackground() {
             try {
                 execute.setEnabled(false);
-                data = connection.executeQuery(query);
+                connection.setSource(query);
+                data = connection.loadInstances();
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 errorMessage = e.getMessage();

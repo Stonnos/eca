@@ -28,7 +28,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class UrlDataLoader extends AbstractDataLoader {
+public class UrlDataLoader extends AbstractDataLoader<URL> {
 
     /**
      * Available files extensions
@@ -41,26 +41,21 @@ public class UrlDataLoader extends AbstractDataLoader {
     private static final String[] PROTOCOLS = {"http", "ftp", "https", "ftps"};
 
     /**
-     * Source url
-     **/
-    private URL url;
-
-    /**
      * Creates object with given <tt>URL</tt>
      *
      * @param url source url
      * @throws IllegalArgumentException if given url contains incorrect protocol or file extension
      */
     public UrlDataLoader(URL url) {
-        this.setURL(url);
+        this.setSource(url);
     }
 
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        URLConnection connection = url.openConnection();
+        URLConnection connection = getSource().openConnection();
         try (InputStream inputStream = connection.getInputStream()) {
-            if (FileUtil.isXlsExtension(url.getFile())) {
+            if (FileUtil.isXlsExtension(getSource().getFile())) {
                 XLSLoader loader = new XLSLoader();
                 loader.setInputStream(inputStream);
                 loader.setDateFormat(getDateFormat());
@@ -74,14 +69,8 @@ public class UrlDataLoader extends AbstractDataLoader {
         return data;
     }
 
-    /**
-     * Sets source url.
-     *
-     * @param url source url
-     * @throws IllegalArgumentException if given url contains incorrect protocol or file extension
-     */
-    public final void setURL(URL url) {
-        Objects.requireNonNull(url, "URL is not specified!");
+    @Override
+    protected void validateSource(URL url) {
         if (!Utils.contains(PROTOCOLS, url.getProtocol(), (x, y) -> x.equals(y))) {
             throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_PROTOCOL_ERROR_FORMAT,
                     Arrays.asList(PROTOCOLS)));
@@ -90,18 +79,18 @@ public class UrlDataLoader extends AbstractDataLoader {
             throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
-        this.url = url;
     }
 
+
     private AbstractFileLoader createFileLoaderByUrl() {
-        if (url.getFile().endsWith(DataFileExtension.CSV.getExtension())) {
+        if (getSource().getFile().endsWith(DataFileExtension.CSV.getExtension())) {
             return new CSVLoader();
-        } else if (url.getFile().endsWith(DataFileExtension.ARFF.getExtension())) {
+        } else if (getSource().getFile().endsWith(DataFileExtension.ARFF.getExtension())) {
             return new ArffLoader();
-        } else if (url.getFile().endsWith(DataFileExtension.JSON.getExtension())) {
+        } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtension())) {
             return new JSONLoader();
         } else {
-            throw new IllegalArgumentException(String.format("Unexpected file format: %s", url.getFile()));
+            throw new IllegalArgumentException(String.format("Unexpected file format: %s", getSource().getFile()));
         }
     }
 

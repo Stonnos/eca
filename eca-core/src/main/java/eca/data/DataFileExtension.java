@@ -8,15 +8,15 @@ package eca.data;
 
 public enum DataFileExtension {
 
-    XLS(".xls"),
+    XLS("xls"),
 
-    XLSX(".xlsx"),
+    XLSX("xlsx"),
 
-    ARFF(".arff"),
+    ARFF("arff"),
 
-    CSV(".csv"),
+    CSV("csv"),
 
-    JSON(".json");
+    JSON("json");
 
     private String extension;
 

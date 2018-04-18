@@ -27,7 +27,7 @@ import eca.dataminer.AutomatedNeuralNetwork;
 import eca.dataminer.AutomatedRandomForests;
 import eca.dataminer.AutomatedStacking;
 import eca.dataminer.ExperimentUtil;
-import eca.db.DataBaseQueryExecutor;
+import eca.data.db.JdbcQueryExecutor;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
@@ -778,7 +778,7 @@ public class JMainFrame extends JFrame {
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
                         dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
-                        dataLoader.setFile(file);
+                        dataLoader.setSource(file);
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
@@ -887,7 +887,7 @@ public class JMainFrame extends JFrame {
                 conn.setVisible(true);
                 if (conn.dialogResult()) {
                     try {
-                        DataBaseQueryExecutor connection = new DataBaseQueryExecutor();
+                        JdbcQueryExecutor connection = new JdbcQueryExecutor();
                         connection.setConnectionDescriptor(conn.getConnectionDescriptor());
                         connection.setDateFormat(DateFormat.DATE_FORMAT);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,

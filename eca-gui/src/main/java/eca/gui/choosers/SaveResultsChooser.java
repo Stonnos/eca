@@ -5,6 +5,8 @@
  */
 package eca.gui.choosers;
 
+import eca.data.DataFileExtension;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -14,9 +16,9 @@ public class SaveResultsChooser extends SaveFileChooser {
 
     public SaveResultsChooser() {
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xls)", "xls"));
+                new FileNameExtensionFilter("Xls data files (*.xls)", DataFileExtension.XLS.getExtension()));
         chooser.addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xlsx)", "xlsx"));
+                new FileNameExtensionFilter("Xls data files (*.xlsx)", DataFileExtension.XLSX.getExtension()));
     }
 
 }

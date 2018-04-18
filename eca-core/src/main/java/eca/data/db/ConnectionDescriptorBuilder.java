@@ -1,4 +1,4 @@
-package eca.db;
+package eca.data.db;
 
 /**
  * Class for creation {@link ConnectionDescriptor} objects.

@@ -1,4 +1,4 @@
-package eca.db;
+package eca.data.db;
 
 /**
  * Implements Microsoft Access datasource descriptor.

@@ -47,7 +47,7 @@ public class MigrationService {
      * @param file - training data file
      */
     public void migrateData(File file) {
-        dataLoader.setFile(file);
+        dataLoader.setSource(file);
         log.info("Starting to migrate file '{}'.", file.getAbsolutePath());
         MigrationLog migrationLog = new MigrationLog();
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);

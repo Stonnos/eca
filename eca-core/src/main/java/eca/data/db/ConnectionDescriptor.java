@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.db;
+package eca.data.db;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;

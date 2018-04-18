@@ -17,54 +17,39 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class FileDataLoader extends AbstractDataLoader {
+public class FileDataLoader extends AbstractDataLoader<File> {
 
     private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
-
-    private File file;
-
-    /**
-     * Sets the file object.
-     *
-     * @param file file object
-     * @throws IllegalArgumentException if a file object is null or has invalid extension
-     */
-    public void setFile(File file) {
-        Objects.requireNonNull(file, "File is not specified!");
-        if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
-            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
-                    Arrays.asList(FILE_EXTENSIONS)));
-        }
-        this.file = file;
-    }
-
-    /**
-     * Returns file object.
-     *
-     * @return file object
-     */
-    public File getFile() {
-        return file;
-    }
 
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        if (FileUtil.isWekaExtension(file.getName())) {
-            ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
+        if (FileUtil.isWekaExtension(getSource().getName())) {
+            ConverterUtils.DataSource source = new ConverterUtils.DataSource(getSource().getAbsolutePath());
             data = source.getDataSet();
-        } else if (FileUtil.isXlsExtension(file.getName())) {
+        } else if (FileUtil.isXlsExtension(getSource().getName())) {
             XLSLoader loader = new XLSLoader();
-            loader.setFile(file);
+            loader.setFile(getSource());
             loader.setDateFormat(getDateFormat());
             data = loader.getDataSet();
         } else {
-            throw new IllegalArgumentException(String.format("Can't load data from file '%s'", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(
+                    String.format("Can't load data from file '%s'", getSource().getAbsoluteFile()));
         }
         if (Objects.isNull(data)) {
-            throw new IllegalArgumentException(String.format("Can't load data from file '%s'. Data is null!", file.getAbsoluteFile()));
+            throw new IllegalArgumentException(
+                    String.format("Can't load data from file '%s'. Data is null!", getSource().getAbsoluteFile()));
         }
         data.setClassIndex(data.numAttributes() - 1);
         return data;
+    }
+
+    @Override
+    protected void validateSource(File file) {
+        super.validateSource(file);
+        if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
+            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+                    Arrays.asList(FILE_EXTENSIONS)));
+        }
     }
 }

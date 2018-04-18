@@ -1,7 +1,8 @@
-package eca.db;
+package eca.data.db;
 
 /**
  * Data base type enum.
+ *
  * @author Roman Batygin
  */
 
@@ -70,6 +71,12 @@ public enum DataBaseType {
     private String description;
     private boolean embedded;
 
+    /**
+     * Database type constructor.
+     *
+     * @param description - database description
+     * @param embedded    - is database embedded?
+     */
     DataBaseType(String description, boolean embedded) {
         this.description = description;
         this.embedded = embedded;
@@ -95,6 +102,7 @@ public enum DataBaseType {
 
     /**
      * Returns data bases description.
+     *
      * @return data bases description
      */
     public static String[] getDescriptions() {
@@ -126,7 +134,7 @@ public enum DataBaseType {
      * Visitor pattern common method
      *
      * @param dataBaseTypeVisitor visitor class
-     * @param <T> generic class
+     * @param <T>                 generic class
      * @return generic class
      */
     public abstract <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor);

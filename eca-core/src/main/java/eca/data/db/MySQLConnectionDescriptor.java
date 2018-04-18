@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.db;
+package eca.data.db;
+
+import eca.data.db.ConnectionDescriptor;
+import eca.data.db.DataBaseType;
 
 /**
  * Implements MySQL datasource descriptor.

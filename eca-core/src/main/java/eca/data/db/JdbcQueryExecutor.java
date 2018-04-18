@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.db;
+package eca.data.db;
 
+import eca.data.AbstractDataLoader;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -27,7 +28,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
+public class JdbcQueryExecutor extends AbstractDataLoader<String> implements AutoCloseable {
 
     /**
      * Default relation name
@@ -69,11 +70,6 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
     private ConnectionDescriptor connectionDescriptor;
 
     /**
-     * Date format
-     */
-    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
-    /**
      * Opens connection with database.
      *
      * @throws SQLException
@@ -112,30 +108,11 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
         this.connectionDescriptor = connectionDescriptor;
     }
 
-    /**
-     * Returns date format.
-     *
-     * @return date format
-     */
-    public String getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Sets date format.
-     *
-     * @param dateFormat date format
-     */
-    public void setDateFormat(String dateFormat) {
-        Objects.requireNonNull(dateFormat, "Date format is not specified!");
-        this.dateFormat = dateFormat;
-    }
-
     @Override
-    public Instances executeQuery(String query) throws Exception {
+    public Instances loadInstances() throws Exception {
         Instances data;
         try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY); ResultSet result = statement.executeQuery(query)) {
+                ResultSet.CONCUR_READ_ONLY); ResultSet result = statement.executeQuery(getSource())) {
             checkColumnsTypes(result);
             ResultSetMetaData meta = result.getMetaData();
             String tableName = meta.getTableName(RELATION_NAME_INDEX);
@@ -212,7 +189,7 @@ public class DataBaseQueryExecutor implements QueryExecutor, AutoCloseable {
             if (isNumeric(meta.getColumnType(i))) {
                 attr.add(new Attribute(meta.getColumnName(i)));
             } else if (isDate(meta.getColumnType(i))) {
-                attr.add(new Attribute(meta.getColumnName(i), dateFormat));
+                attr.add(new Attribute(meta.getColumnName(i), getDateFormat()));
             } else {
                 attr.add(new Attribute(meta.getColumnName(i), createNominalAttribute(result, i)));
             }

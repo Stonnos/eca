@@ -7,9 +7,9 @@ package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
 import eca.config.DatabaseConfig;
-import eca.db.ConnectionDescriptor;
-import eca.db.ConnectionDescriptorBuilder;
-import eca.db.DataBaseType;
+import eca.data.db.ConnectionDescriptor;
+import eca.data.db.ConnectionDescriptorBuilder;
+import eca.data.db.DataBaseType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
