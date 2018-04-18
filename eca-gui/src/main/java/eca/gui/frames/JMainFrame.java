@@ -124,7 +124,6 @@ public class JMainFrame extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    private static EcaServiceConfig ecaServiceConfig;
 
     private static final Color FRAME_COLOR = new Color(198, 226, 255);
 
@@ -234,7 +233,6 @@ public class JMainFrame extends JFrame {
                 ToolTipManager.sharedInstance().setDismissDelay(
                         CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime());
             }
-            ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -602,7 +600,7 @@ public class JMainFrame extends JFrame {
 
         EcaServiceClientImpl restClient = new EcaServiceClientImpl();
         restClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        restClient.setEvaluationUrl(ecaServiceConfig.getEvaluationUrl());
+        restClient.setEvaluationUrl(CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl());
 
         if (EvaluationMethod.CROSS_VALIDATION.equals(restClient.getEvaluationMethod())) {
             restClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
@@ -641,7 +639,7 @@ public class JMainFrame extends JFrame {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
-            if (ecaServiceConfig.getEnabled()) {
+            if (CONFIG_SERVICE.getEcaServiceConfig().getEnabled()) {
                 executeWithEcaService(frame);
             } else {
                 processSimpleBuilding(frame);
@@ -1601,7 +1599,7 @@ public class JMainFrame extends JFrame {
                         if (ecaServiceClient == null) {
                             ecaServiceClient = new EcaServiceClientImpl();
                         }
-                        ecaServiceClient.setExperimentUrl(ecaServiceConfig.getExperimentUrl());
+                        ecaServiceClient.setExperimentUrl(CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, new CallbackAction() {
                             @Override
@@ -1731,7 +1729,7 @@ public class JMainFrame extends JFrame {
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
             try {
-                if (ecaServiceConfig.getEnabled()) {
+                if (CONFIG_SERVICE.getEcaServiceConfig().getEnabled()) {
                     executeWithEcaService(frame);
                 } else {
                     if (isParallelClassifier(frame.classifier())) {
