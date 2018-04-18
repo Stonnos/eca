@@ -218,7 +218,8 @@ public class XLSLoader {
     }
 
     private void validateData(Sheet sheet) {
-        if (sheet.getRow(0).getLastCellNum() > sheet.getRow(0).getPhysicalNumberOfCells()) {
+        int numHeaders = sheet.getRow(0).getLastCellNum();
+        if (numHeaders > sheet.getRow(0).getPhysicalNumberOfCells()) {
             throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
         for (int i = 0; i < getColNum(sheet); i++) {
@@ -227,6 +228,9 @@ public class XLSLoader {
                 Row row = sheet.getRow(j);
                 if (row == null) {
                     throw new IllegalArgumentException(FileDataDictionary.BAD_DATA_FORMAT);
+                }
+                if (row.getPhysicalNumberOfCells() > numHeaders) {
+                    throw new IllegalArgumentException(FileDataDictionary.HEADER_ERROR);
                 }
                 Cell cell = row.getCell(i);
                 if (cell != null) {
@@ -243,6 +247,5 @@ public class XLSLoader {
                 }
             }
         }
-
     }
 }
