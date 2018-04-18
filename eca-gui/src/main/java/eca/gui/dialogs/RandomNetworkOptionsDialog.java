@@ -1,6 +1,6 @@
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.RandomNetworks;
 import eca.gui.ButtonUtils;
@@ -24,8 +24,8 @@ import java.text.DecimalFormat;
  */
 public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks> {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final int FIELD_LENGTH = 5;
 

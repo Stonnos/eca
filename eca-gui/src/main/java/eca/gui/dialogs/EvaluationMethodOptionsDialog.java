@@ -5,7 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
@@ -26,8 +26,8 @@ import java.awt.event.ItemListener;
  */
 public class EvaluationMethodOptionsDialog extends JDialog {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     public static final String METHOD_TITLE = "Метод оценки точности";
     public static final String BLOCKS_NUM_TITLE = "Количество блоков:";

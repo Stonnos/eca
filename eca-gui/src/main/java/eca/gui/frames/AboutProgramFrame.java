@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
 import eca.gui.service.AboutProgramService;
 
@@ -19,8 +19,8 @@ import java.awt.event.ActionListener;
  */
 public class AboutProgramFrame extends JFrame {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private static final String ABOUT_PROGRAM_TITLE = "О программе";
 
     public AboutProgramFrame(JFrame parent) {

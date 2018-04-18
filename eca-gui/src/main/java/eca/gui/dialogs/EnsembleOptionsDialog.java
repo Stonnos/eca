@@ -5,7 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
@@ -42,8 +42,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private static final int FIELD_LENGTH = 5;
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String ITS_NUM_TITLE = "Число итераций:";
     private static final String MAX_ERROR_TITLE = "Макс. допустимая ошибка классификатора:";

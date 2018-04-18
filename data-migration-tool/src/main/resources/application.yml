@@ -1,0 +1,20 @@
+spring:
+  ## Datasource properties
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/data_storage
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+
+migration:
+  dateFormat: yyyy-MM-dd HH:mm:ss
+  dataStoragePath: /home/roman/dataStorage/
+  batchSize: 100
+  durationInSeconds: 30
+
+server:
+  port: 8091

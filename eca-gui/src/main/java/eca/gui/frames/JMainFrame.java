@@ -11,7 +11,7 @@ import eca.client.EcaServiceClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -122,8 +122,8 @@ import java.util.Random;
 @Slf4j
 public class JMainFrame extends JFrame {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private static EcaServiceConfig ecaServiceConfig;
 
     private static final Color FRAME_COLOR = new Color(198, 226, 255);

@@ -20,6 +20,12 @@
         <exe.file.name>ECA</exe.file.name>
         <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
         <jre.version>1.8.0</jre.version>
+        <mysql.version>5.1.40</mysql.version>
+        <oracle.version>12.1.0.2</oracle.version>
+        <postresql.version>9.4.1212</postresql.version>
+        <mssql.version>6.1.0.jre8</mssql.version>
+        <unaccess.version>4.0.1</unaccess.version>
+        <sqllite.version>3.16.1</sqllite.version>
     </properties>
 
     <dependencies>
@@ -54,6 +60,46 @@
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>${jfreechart.version}</version>
+        </dependency>
+
+        <!-- Databases jdbc drivers -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.noraui</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <version>${oracle.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postresql.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.sf.ucanaccess/ucanaccess -->
+        <dependency>
+            <groupId>net.sf.ucanaccess</groupId>
+            <artifactId>ucanaccess</artifactId>
+            <version>${unaccess.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqllite.version}</version>
         </dependency>
 
     </dependencies>
@@ -101,6 +147,7 @@
                                     <directory>src/main/resources</directory>
                                     <excludes>
                                         <exclude>application-config.json</exclude>
+                                        <exclude>db-config.json</exclude>
                                         <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
                                     </excludes>

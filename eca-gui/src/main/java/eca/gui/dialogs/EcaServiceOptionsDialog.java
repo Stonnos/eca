@@ -1,6 +1,6 @@
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.gui.ButtonUtils;
 import eca.gui.dictionary.CommonDictionary;
@@ -21,8 +21,8 @@ import java.util.Iterator;
  */
 public class EcaServiceOptionsDialog extends JDialog {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private static EcaServiceConfig ecaServiceConfig;
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";

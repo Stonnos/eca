@@ -1,6 +1,6 @@
 package eca.gui.service;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.config.ProjectInfo;
 import eca.config.VelocityConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,8 @@ public class AboutProgramService {
     private static final String VERSION = "version";
     private static final String LAST_UPDATE_DATE = "lastUpdateDate";
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final VelocityConfigService VELOCITY_CONFIGURATION =
             VelocityConfigService.getVelocityConfigService();

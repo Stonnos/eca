@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.converters.ModelConverter;
 import eca.converters.model.EvaluationParams;
 import eca.converters.model.ExperimentHistory;
@@ -51,8 +51,8 @@ import java.util.TimeZone;
 public abstract class ExperimentFrame extends JFrame {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";

@@ -5,11 +5,11 @@
  */
 package eca.gui.dialogs;
 
+import eca.config.ConfigurationService;
+import eca.config.DatabaseConfig;
 import eca.db.ConnectionDescriptor;
 import eca.db.ConnectionDescriptorBuilder;
-import eca.db.ConnectionDescriptorFactory;
 import eca.db.DataBaseType;
-import eca.db.DataBaseTypeVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
@@ -24,12 +24,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * Database connection dialog.
+ *
  * @author Roman Batygin
  */
 public class DatabaseConnectionDialog extends JDialog {
 
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
+
+    private static final ConnectionDescriptorBuilder CONNECTION_DESCRIPTOR_BUILDER = new ConnectionDescriptorBuilder();
+
+    private static final int PORT_LENGTH = 8;
     private static final int FIELD_LENGTH = 255;
     private static final int TEXT_LENGTH = 20;
     private static final String TITLE_TEXT = "Подключение к базе данных";
@@ -39,7 +49,7 @@ public class DatabaseConnectionDialog extends JDialog {
     private static final String PORT_TEXT = "Порт:";
     private static final String DB_NAME_TEXT = "Имя базы данных:";
     private static final String LOGIN_TEXT = "Логин:";
-    private static final String PASSWORD_TEXT = "Пароль:";
+    private static final String PASS_TEXT = "Пароль:";
 
     private static final DataBaseType DEFAULT_DATA_BASE_TYPE = DataBaseType.POSTGRESQL;
 
@@ -50,9 +60,9 @@ public class DatabaseConnectionDialog extends JDialog {
     private JTextField userField;
     private JPasswordField passwordField;
 
-    private boolean dialogResult;
+    private Map<DataBaseType, ConnectionDescriptor> connectionDescriptorMap = new HashMap<>();
 
-    private final ConnectionDescriptorBuilder connectionDescriptorBuilder = new ConnectionDescriptorBuilder();
+    private boolean dialogResult;
 
     public DatabaseConnectionDialog(Frame parent) {
         super(parent, TITLE_TEXT, true);
@@ -72,7 +82,7 @@ public class DatabaseConnectionDialog extends JDialog {
         hostField.setDocument(new LengthDocument(FIELD_LENGTH));
         hostField.setInputVerifier(new TextFieldInputVerifier());
         portField = new JTextField(TEXT_LENGTH);
-        portField.setDocument(new IntegerDocument(8));
+        portField.setDocument(new IntegerDocument(PORT_LENGTH));
         portField.setInputVerifier(new TextFieldInputVerifier());
         dataBaseField = new JTextField(TEXT_LENGTH);
         dataBaseField.setDocument(new LengthDocument(FIELD_LENGTH));
@@ -86,38 +96,7 @@ public class DatabaseConnectionDialog extends JDialog {
             @Override
             public void itemStateChanged(ItemEvent evt) {
                 DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
-
-                setOptions(dataBaseType.handle(new DataBaseTypeVisitor<ConnectionDescriptor>() {
-                    @Override
-                    public ConnectionDescriptor caseMySql() {
-                        return ConnectionDescriptorFactory.getMySqlConnectionDescriptor();
-                    }
-
-                    @Override
-                    public ConnectionDescriptor casePostgreSQL() {
-                        return ConnectionDescriptorFactory.getPostgreSQLConnectionDescriptor();
-                    }
-
-                    @Override
-                    public ConnectionDescriptor caseOracle() {
-                        return ConnectionDescriptorFactory.getOracleConnectionDescriptor();
-                    }
-
-                    @Override
-                    public ConnectionDescriptor caseMSAccess() {
-                        return ConnectionDescriptorFactory.getMSAccessConnectionDescriptor();
-                    }
-
-                    @Override
-                    public ConnectionDescriptor caseMSSQL() {
-                        return ConnectionDescriptorFactory.getMSSqlConnectionDescriptor();
-                    }
-
-                    @Override
-                    public ConnectionDescriptor caseSQLite() {
-                        return ConnectionDescriptorFactory.getSqliteConnectionDescriptor();
-                    }
-                }));
+                setConnectionDescriptor(dataBaseType);
             }
         });
         dataBases.setSelectedItem(DEFAULT_DATA_BASE_TYPE.getDescription());
@@ -143,7 +122,7 @@ public class DatabaseConnectionDialog extends JDialog {
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(userField, new GridBagConstraints(1, 4, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        optionPanel.add(new JLabel(PASSWORD_TEXT), new GridBagConstraints(0, 5, 1, 1, 1, 1,
+        optionPanel.add(new JLabel(PASS_TEXT), new GridBagConstraints(0, 5, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
         optionPanel.add(passwordField, new GridBagConstraints(1, 5, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
@@ -199,8 +178,8 @@ public class DatabaseConnectionDialog extends JDialog {
     }
 
     public ConnectionDescriptor getConnectionDescriptor() {
-        ConnectionDescriptor connectionDescriptor = DataBaseType.findByDescription(dataBases
-                .getSelectedItem().toString()).handle(connectionDescriptorBuilder);
+        DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
+        ConnectionDescriptor connectionDescriptor = dataBaseType.handle(CONNECTION_DESCRIPTOR_BUILDER);
         connectionDescriptor.setHost(hostField.getText().trim());
         if (!connectionDescriptor.getDataBaseType().isEmbedded()) {
             connectionDescriptor.setPort(Integer.valueOf(portField.getText().trim()));
@@ -208,6 +187,7 @@ public class DatabaseConnectionDialog extends JDialog {
         connectionDescriptor.setDataBaseName(dataBaseField.getText().trim());
         connectionDescriptor.setLogin(userField.getText().trim());
         connectionDescriptor.setPassword(String.valueOf(passwordField.getPassword()));
+        connectionDescriptor.setDriver(CONFIG_SERVICE.getDatabaseConfig(dataBaseType).getDriver());
         return connectionDescriptor;
     }
 
@@ -220,6 +200,23 @@ public class DatabaseConnectionDialog extends JDialog {
         userField.setText(connectionDescriptor.getLogin());
         passwordField.setText(connectionDescriptor.getPassword());
         hostField.requestFocusInWindow();
+    }
+
+    private void setConnectionDescriptor(DataBaseType dataBaseType) {
+        if (!connectionDescriptorMap.containsKey(dataBaseType)) {
+            DatabaseConfig databaseConfig = CONFIG_SERVICE.getDatabaseConfig(dataBaseType);
+            ConnectionDescriptor connectionDescriptor = dataBaseType.handle(CONNECTION_DESCRIPTOR_BUILDER);
+            connectionDescriptor.setDriver(databaseConfig.getDriver());
+            connectionDescriptor.setDataBaseName(databaseConfig.getDataBaseName());
+            connectionDescriptor.setHost(databaseConfig.getHost());
+            connectionDescriptor.setLogin(databaseConfig.getLogin());
+            connectionDescriptor.setPassword(databaseConfig.getPassword());
+            if (databaseConfig.getPort() != null) {
+                connectionDescriptor.setPort(databaseConfig.getPort());
+            }
+            connectionDescriptorMap.put(dataBaseType, connectionDescriptor);
+        }
+        setOptions(connectionDescriptorMap.get(dataBaseType));
     }
 
 }

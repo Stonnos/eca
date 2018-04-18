@@ -1,6 +1,6 @@
 package eca.gui.tables.models;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.gui.dictionary.CommonDictionary;
 import eca.util.Entry;
@@ -16,8 +16,8 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     private static final String[] TITLE = {"Параметр", "Значение"};
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private static EcaServiceConfig ecaServiceConfig;
 
     static {

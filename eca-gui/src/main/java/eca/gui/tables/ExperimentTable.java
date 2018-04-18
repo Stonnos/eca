@@ -5,7 +5,7 @@
  */
 package eca.gui.tables;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
@@ -34,8 +34,8 @@ import java.util.List;
 @Slf4j
 public class ExperimentTable extends JDataTableBase {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private final JFrame parentFrame;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 

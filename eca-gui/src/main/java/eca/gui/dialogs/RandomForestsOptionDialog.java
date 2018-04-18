@@ -5,7 +5,7 @@
  */
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.forests.DecisionTreeType;
 import eca.ensemble.forests.ExtraTreesClassifier;
@@ -28,8 +28,8 @@ import java.awt.event.ActionListener;
  */
 public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String OPTIONS_TITLE = "Параметры леса";
     private static final String TREES_NUM_TITLE = "Количество деревьев:";

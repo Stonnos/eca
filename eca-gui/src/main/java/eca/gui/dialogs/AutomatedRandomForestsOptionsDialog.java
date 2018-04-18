@@ -1,6 +1,6 @@
 package eca.gui.dialogs;
 
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
 import eca.gui.dictionary.CommonDictionary;
 
@@ -16,8 +16,8 @@ import java.awt.event.ActionListener;
  */
 public class AutomatedRandomForestsOptionsDialog extends JDialog {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String OPTIONS_TITLE = "Настройки параметров";
     private static final String NUM_ITERATIONS_TITLE = "Число итераций:";

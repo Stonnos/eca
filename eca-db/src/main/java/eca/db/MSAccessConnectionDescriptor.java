@@ -1,7 +1,5 @@
 package eca.db;
 
-import net.ucanaccess.jdbc.UcanaccessDriver;
-
 /**
  * Implements Microsoft Access datasource descriptor.
  *
@@ -35,6 +33,6 @@ public class MSAccessConnectionDescriptor extends ConnectionDescriptor {
 
     @Override
     public String getProtocol() {
-        return UcanaccessDriver.URL_PREFIX;
+        return "jdbc:ucanaccess://";
     }
 }

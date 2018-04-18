@@ -1,0 +1,50 @@
+{
+  "MYSQL": {
+    "driver": "com.mysql.jdbc.Driver",
+    "host": "localhost",
+    "port": 3306,
+    "dataBaseName": "",
+    "login": "",
+    "password": ""
+  },
+  "POSTGRESQL": {
+    "driver": "org.postgresql.Driver",
+    "host": "localhost",
+    "port": 5432,
+    "dataBaseName": "data_storage",
+    "login": "",
+    "password": ""
+  },
+  "ORACLE": {
+    "driver": "oracle.jdbc.driver.OracleDriver",
+    "host": "localhost",
+    "port": 1521,
+    "dataBaseName": "XE",
+    "login": "",
+    "password": ""
+  },
+  "MS_ACCESS": {
+    "driver": "net.ucanaccess.jdbc.UcanaccessDriver",
+    "host": "D:/",
+    "port": 0,
+    "dataBaseName": "db.accdb",
+    "login": "",
+    "password": ""
+  },
+  "MSSQL": {
+    "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "host": "localhost",
+    "port": 1433,
+    "dataBaseName": "",
+    "login": "",
+    "password": ""
+  },
+  "SQLITE": {
+    "driver": "org.sqlite.JDBC",
+    "host": "c:/",
+    "port": 0,
+    "dataBaseName": "",
+    "login": "",
+    "password": ""
+  }
+}

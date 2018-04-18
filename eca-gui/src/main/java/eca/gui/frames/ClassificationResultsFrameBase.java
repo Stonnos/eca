@@ -7,7 +7,7 @@ package eca.gui.frames;
 
 import eca.Reference;
 import eca.config.ApplicationConfig;
-import eca.config.ApplicationConfigService;
+import eca.config.ConfigurationService;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -82,8 +82,8 @@ import java.util.List;
 @Slf4j
 public class ClassificationResultsFrameBase extends JFrame {
 
-    private static final ApplicationConfigService CONFIG_SERVICE =
-            ApplicationConfigService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
     private static final ApplicationConfig APPLICATION_CONFIG = CONFIG_SERVICE.getApplicationConfig();
 
     private static final String RESULTS_TEXT = "Результаты классификации";
