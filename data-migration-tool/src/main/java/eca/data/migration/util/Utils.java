@@ -7,7 +7,6 @@ package eca.data.migration.util;
  */
 public class Utils {
 
-    private static final String REPLACE_REGEX = "[^\\w]";
     private static final String DELIMITER = "_";
 
     public static final int VARCHAR_LENGTH = 255;
@@ -20,7 +19,11 @@ public class Utils {
      * @return normalized name
      */
     public static String normalizeName(String name) {
-        return name.replaceAll(REPLACE_REGEX, DELIMITER);
+        StringBuilder resultString = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            resultString.append(Character.isLetterOrDigit(name.charAt(i)) ? name.charAt(i) : DELIMITER);
+        }
+        return resultString.toString();
     }
 
     /**
