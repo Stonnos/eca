@@ -1,7 +1,6 @@
 package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
-import eca.config.EcaServiceConfig;
 import eca.gui.ButtonUtils;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.tables.EcaServicePropertiesTable;
@@ -23,7 +22,6 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    private static EcaServiceConfig ecaServiceConfig;
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
@@ -31,10 +29,6 @@ public class EcaServiceOptionsDialog extends JDialog {
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
 
     private final EcaServiceOptionsTableModel ecaServiceOptionsTableModel = new EcaServiceOptionsTableModel();
-
-    static {
-        ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
-    }
 
     public EcaServiceOptionsDialog(Window parent) {
         super(parent, TITLE_TEXT);
@@ -106,13 +100,13 @@ public class EcaServiceOptionsDialog extends JDialog {
     private void setOptions(Entry entry) {
         switch (entry.getKey()) {
             case CommonDictionary.ECA_SERVICE_ENABLED:
-                ecaServiceConfig.setEnabled(Boolean.valueOf(entry.getValue()));
+                CONFIG_SERVICE.getEcaServiceConfig().setEnabled(Boolean.valueOf(entry.getValue()));
                 break;
             case CommonDictionary.ECA_SERVICE_URL:
-                ecaServiceConfig.setEvaluationUrl(entry.getValue());
+                CONFIG_SERVICE.getEcaServiceConfig().setEvaluationUrl(entry.getValue());
                 break;
             case CommonDictionary.ECA_SERVICE_EXPERIMENT_URL:
-                ecaServiceConfig.setExperimentUrl(entry.getValue());
+                CONFIG_SERVICE.getEcaServiceConfig().setExperimentUrl(entry.getValue());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));

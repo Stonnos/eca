@@ -1,7 +1,6 @@
 package eca.gui.tables.models;
 
 import eca.config.ConfigurationService;
-import eca.config.EcaServiceConfig;
 import eca.gui.dictionary.CommonDictionary;
 import eca.util.Entry;
 
@@ -18,11 +17,6 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    private static EcaServiceConfig ecaServiceConfig;
-
-    static {
-        ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
-    }
 
     private ArrayList<Entry> options = new ArrayList<>();
 
@@ -68,8 +62,11 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     }
 
     private void init() {
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_ENABLED, ecaServiceConfig.getEnabled().toString()));
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_URL, ecaServiceConfig.getEvaluationUrl()));
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL, ecaServiceConfig.getExperimentUrl()));
+        options.add(new Entry(CommonDictionary.ECA_SERVICE_ENABLED,
+                CONFIG_SERVICE.getEcaServiceConfig().getEnabled().toString()));
+        options.add(
+                new Entry(CommonDictionary.ECA_SERVICE_URL, CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl()));
+        options.add(new Entry(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL,
+                CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl()));
     }
 }
