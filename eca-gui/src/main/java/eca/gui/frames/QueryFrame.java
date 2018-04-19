@@ -212,7 +212,7 @@ public class QueryFrame extends JFrame {
                             parentFrame.createDataFrame(instances);
                         }
                         dispose();
-                    } catch (Throwable ex) {
+                    } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
                                 null, JOptionPane.WARNING_MESSAGE);

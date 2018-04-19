@@ -52,7 +52,7 @@ public class JFontChooser extends JDialog {
     static {
         try {
             FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             LoggerUtils.error(log, ex);
         }
     }

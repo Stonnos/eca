@@ -118,7 +118,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 if (evaluation != null) {
                     evaluation.setTotalTimeMillis(stopWatch.getTotalTimeMillis());
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 isSuccess = false;
                 errorMessage = e.getMessage();

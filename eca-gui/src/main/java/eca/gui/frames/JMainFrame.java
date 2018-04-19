@@ -899,7 +899,7 @@ public class JMainFrame extends JFrame {
                             }
                         });
 
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -1022,7 +1022,7 @@ public class JMainFrame extends JFrame {
                             }
                         });
 
-                    } catch (Throwable ex) {
+                    } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                                 null, JOptionPane.ERROR_MESSAGE);
@@ -1071,7 +1071,7 @@ public class JMainFrame extends JFrame {
                         ref = new Reference();
                     }
                     ref.openReference();
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
@@ -1329,7 +1329,7 @@ public class JMainFrame extends JFrame {
                                 executeSimpleBuilding(frame);
                             }
                         });
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -1360,7 +1360,7 @@ public class JMainFrame extends JFrame {
                                 executeSimpleBuilding(frame);
                             }
                         });
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -1534,7 +1534,7 @@ public class JMainFrame extends JFrame {
                                 executeSimpleBuilding(frame);
                             }
                         });
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -1677,7 +1677,7 @@ public class JMainFrame extends JFrame {
                                 frame.setVisible(true);
                             }
                         });
-                    } catch (Throwable ex) {
+                    } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
@@ -1737,7 +1737,7 @@ public class JMainFrame extends JFrame {
                         processIterativeBuilding(frame, progressMessage);
                     }
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(JMainFrame.this,
                         e.getMessage(), null, JOptionPane.WARNING_MESSAGE);

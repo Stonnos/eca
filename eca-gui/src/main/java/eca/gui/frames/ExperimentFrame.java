@@ -359,7 +359,7 @@ public abstract class ExperimentFrame extends JFrame {
                             }
                         });
 
-                    } catch (Throwable e) {
+                    } catch (Exception e) {
                         LoggerUtils.error(log, e);
                         JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 e.getMessage(), null, JOptionPane.ERROR_MESSAGE);

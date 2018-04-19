@@ -99,7 +99,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
                 stopWatch.start();
                 action.apply();
                 stopWatch.stop();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 isSuccess = false;
                 errorMessage = e.getMessage();
