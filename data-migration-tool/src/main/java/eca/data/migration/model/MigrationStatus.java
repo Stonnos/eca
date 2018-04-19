@@ -2,6 +2,7 @@ package eca.data.migration.model;
 
 /**
  * Migration status enum.
+ *
  * @author Roman Batygin
  */
 public enum MigrationStatus {

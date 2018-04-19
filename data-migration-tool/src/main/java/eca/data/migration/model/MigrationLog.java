@@ -25,25 +25,46 @@ public class MigrationLog {
     @GeneratedValue
     private Long id;
 
+    /**
+     * Data file name
+     */
     @Column(name = "source_file_name")
     private String sourceFileName;
 
+    /**
+     * Table name in database
+     */
     @Column(name = "table_name")
     private String tableName;
 
+    /**
+     * Migration start date
+     */
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
+    /**
+     * Migration end date
+     */
     @Column(name = "finish_date")
     private LocalDateTime finishDate;
 
+    /**
+     * Migration status
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "migration_status")
     private MigrationStatus migrationStatus;
 
+    /**
+     * Detail message
+     */
     @Column(columnDefinition = "text")
     private String details;
 
+    /**
+     * Migration log source
+     */
     @Enumerated(EnumType.STRING)
     @Column(name = "migration_log_source")
     private MigrationLogSource migrationLogSource;

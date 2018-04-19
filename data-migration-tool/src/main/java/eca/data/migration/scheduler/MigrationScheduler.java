@@ -45,7 +45,7 @@ public class MigrationScheduler {
      */
     @Scheduled(fixedDelayString = "${migration.durationInSeconds}000")
     public void migrate() {
-        log.info("Starting to migrate files.");
+        log.trace("Starting to migrate files.");
         Collection<File> listFiles =
                 FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()), DataFileExtension.getExtensions(),
                         true);
@@ -58,6 +58,6 @@ public class MigrationScheduler {
                 log.error("There was an error while migration file '{}': {}", file.getAbsolutePath(), ex.getMessage());
             }
         }
-        log.info("Files migration has been completed.");
+        log.trace("Files migration has been completed.");
     }
 }
