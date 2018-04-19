@@ -26,6 +26,7 @@ public class UtilsTest {
     private static final String NUMERIC_TYPE = "NUMERIC";
     private static final String VARCHAR_TYPE = "VARCHAR(255)";
     private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
+    private static final String NULL_VALUE = "NULL";
 
     @Test
     public void testNormalizeName() {
@@ -79,6 +80,7 @@ public class UtilsTest {
      * Case 1: Tests numeric attribute
      * Case 2: Tests date attribute
      * Case 3: Tests nominal attribute
+     * Case 4: Tests missing value
      */
     @Test
     public void testFormatValue() {
@@ -105,5 +107,8 @@ public class UtilsTest {
         //Case 3
         Assertions.assertThat(Utils.formatValue(instance, nominalAttribute)).isEqualTo(
                 String.format(STRING_VALUE_FORMAT, instance.stringValue(nominalAttribute)));
+        //Case 4
+        instance.setValue(numericAttribute, weka.core.Utils.missingValue());
+        Assertions.assertThat(Utils.formatValue(instance, numericAttribute)).isEqualTo(NULL_VALUE);
     }
 }

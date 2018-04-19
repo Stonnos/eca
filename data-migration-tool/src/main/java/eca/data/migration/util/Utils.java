@@ -22,6 +22,7 @@ public class Utils {
     private static final String VARCHAR_TYPE_FORMAT = "VARCHAR(%d)";
     private static final String NUMERIC_TYPE = "NUMERIC";
     private static final String TIMESTAMP_TYPE = "TIMESTAMP";
+    private static final String NULL_VALUE = "NULL";
 
     /**
      * Normalizes name for data base. Normalization includes:
@@ -77,7 +78,10 @@ public class Utils {
      * @return formatted value
      */
     public static String formatValue(Instance instance, Attribute attribute) {
-        if (attribute.isNominal()) {
+        if (instance.isMissing(attribute)) {
+            return NULL_VALUE;
+        }
+        else if (attribute.isNominal()) {
             return String.format(STRING_VALUE_FORMAT, truncateStringValue(instance.stringValue(attribute)));
         } else if (attribute.isDate()) {
             return String.format(STRING_VALUE_FORMAT,
