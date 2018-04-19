@@ -16,7 +16,7 @@
     <properties>
         <weka.version>3.9.1</weka.version>
         <apache.poi.version>3.16-beta2</apache.poi.version>
-        <org-apache-commons.version>3.6</org-apache-commons.version>
+        <org-apache-commons.version>3.7</org-apache-commons.version>
     </properties>
 
     <dependencies>

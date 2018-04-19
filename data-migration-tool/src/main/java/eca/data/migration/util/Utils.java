@@ -21,7 +21,7 @@ public class Utils {
 
     private static final String VARCHAR_TYPE_FORMAT = "VARCHAR(%d)";
     private static final String NUMERIC_TYPE = "NUMERIC";
-    private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
+    private static final String TIMESTAMP_TYPE = "TIMESTAMP";
 
     /**
      * Normalizes name for data base. Normalization includes:
@@ -60,7 +60,7 @@ public class Utils {
         if (attribute.isNominal()) {
             return String.format(columnFormat, attributeName, String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH));
         } else if (attribute.isDate()) {
-            return String.format(columnFormat, attributeName, TIMESTAMP_FORMAT);
+            return String.format(columnFormat, attributeName, TIMESTAMP_TYPE);
         } else if (attribute.isNumeric()) {
             return String.format(columnFormat, attributeName, NUMERIC_TYPE);
         } else {

@@ -52,10 +52,7 @@ public class MigrationService {
         dataLoader.setSource(file);
         log.info("Starting to migrate file '{}'.", file.getAbsolutePath());
         String tableName = String.format(TABLE_NAME_FORMAT, Utils.normalizeName(file.getName()), System.currentTimeMillis());
-        MigrationLog migrationLog = new MigrationLog();
-        migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
-        migrationLog.setMigrationLogSource(MigrationLogSource.JOB);
-        migrationLog.setStartDate(LocalDateTime.now());
+        MigrationLog migrationLog = createMigrationLog(file, tableName);
         migrationLogRepository.save(migrationLog);
         try {
             Instances instances = dataLoader.loadInstances();
@@ -70,5 +67,15 @@ public class MigrationService {
             migrationLog.setFinishDate(LocalDateTime.now());
             migrationLogRepository.save(migrationLog);
         }
+    }
+
+    private MigrationLog createMigrationLog(File file, String tableName) {
+        MigrationLog migrationLog = new MigrationLog();
+        migrationLog.setSourceFileName(file.getName());
+        migrationLog.setTableName(tableName);
+        migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
+        migrationLog.setMigrationLogSource(MigrationLogSource.JOB);
+        migrationLog.setStartDate(LocalDateTime.now());
+        return migrationLog;
     }
 }

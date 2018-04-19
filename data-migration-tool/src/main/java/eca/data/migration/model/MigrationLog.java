@@ -25,6 +25,9 @@ public class MigrationLog {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "source_file_name")
+    private String sourceFileName;
+
     @Column(name = "table_name")
     private String tableName;
 
