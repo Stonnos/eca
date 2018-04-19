@@ -10,8 +10,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 
 /**

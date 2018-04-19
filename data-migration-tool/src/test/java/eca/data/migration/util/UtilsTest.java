@@ -92,7 +92,7 @@ public class UtilsTest {
         Instances instances = new Instances("Relation", attributes, 10);
         instances.setClassIndex(instances.numAttributes() - 1);
         Instance instance = new DenseInstance(instances.numAttributes());
-        instance.setValue(numericAttribute, 56);
+        instance.setValue(numericAttribute, 1);
         instance.setValue(nominalAttribute, "B");
         Date dateValue = new Date();
         instance.setValue(dateAttribute, dateValue.getTime());
