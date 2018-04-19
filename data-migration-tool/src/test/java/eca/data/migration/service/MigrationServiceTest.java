@@ -25,7 +25,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for checking {@link InstancesService} functionality.
+ * Unit tests for checking {@link MigrationService} functionality.
  *
  * @author Roman Batygin
  */
