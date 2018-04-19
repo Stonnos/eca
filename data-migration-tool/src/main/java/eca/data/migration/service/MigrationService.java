@@ -47,12 +47,13 @@ public class MigrationService {
      * Migrates training data file into database.
      *
      * @param file - training data file
+     * @param migrationLogSource - migration log source
      */
-    public void migrateData(File file) {
+    public void migrateData(File file, MigrationLogSource migrationLogSource) {
         dataLoader.setSource(file);
         log.info("Starting to migrate file '{}'.", file.getAbsolutePath());
         String tableName = String.format(TABLE_NAME_FORMAT, Utils.normalizeName(file.getName()), System.currentTimeMillis());
-        MigrationLog migrationLog = createMigrationLog(file, tableName);
+        MigrationLog migrationLog = createMigrationLog(file, tableName, migrationLogSource);
         migrationLogRepository.save(migrationLog);
         try {
             Instances instances = dataLoader.loadInstances();
@@ -69,12 +70,12 @@ public class MigrationService {
         }
     }
 
-    private MigrationLog createMigrationLog(File file, String tableName) {
+    private MigrationLog createMigrationLog(File file, String tableName, MigrationLogSource migrationLogSource) {
         MigrationLog migrationLog = new MigrationLog();
         migrationLog.setSourceFileName(file.getName());
         migrationLog.setTableName(tableName);
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
-        migrationLog.setMigrationLogSource(MigrationLogSource.JOB);
+        migrationLog.setMigrationLogSource(migrationLogSource);
         migrationLog.setStartDate(LocalDateTime.now());
         return migrationLog;
     }
