@@ -130,7 +130,22 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
                     } else if (isNumeric(meta.getColumnType(i))) {
                         obj.setValue(attribute, result.getDouble(i));
                     } else if (isDate(meta.getColumnType(i))) {
-                        obj.setValue(attribute, result.getDate(i).getTime());
+
+                        switch (meta.getColumnType(i)) {
+                            case Types.DATE:
+                                obj.setValue(attribute, result.getDate(i).getTime());
+                                break;
+                            case Types.TIME:
+                                obj.setValue(attribute, result.getTime(i).getTime());
+                                break;
+                            case Types.TIMESTAMP:
+                                obj.setValue(attribute, result.getTimestamp(i).getTime());
+                                break;
+                            default:
+                                throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
+                                        meta.getColumnTypeName(i)));
+                        }
+
                     } else {
                         String stringValue = result.getObject(i).toString().trim();
                         if (!StringUtils.isEmpty(stringValue)) {
