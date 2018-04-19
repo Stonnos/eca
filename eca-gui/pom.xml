@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>5.0.5</version>
+        <version>5.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>5.0.5</version>
+    <version>5.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>eca</groupId>
-            <artifactId>eca-db</artifactId>
+            <artifactId>eca-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
