@@ -8,6 +8,7 @@ import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
+import eca.trees.J48;
 import eca.util.MathUtils;
 import weka.core.Instances;
 
@@ -48,6 +49,7 @@ public class ExperimentUtil {
         set.addClassifier(new C45());
         set.addClassifier(new CHAID());
         set.addClassifier(new Logistic());
+        set.addClassifier(new J48());
         NeuralNetwork neuralNetwork = new NeuralNetwork(data);
         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
         set.addClassifier(neuralNetwork);
