@@ -14,14 +14,18 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 @Slf4j
 public class VelocityConfigService {
 
+    private static final String CLASSPATH_PROPERTY = "classpath";
+    private static final String CLASSPATH_RESOURCE_LOADER_PROPERTY = "classpath.resource.loader.class";
+    private static final String UTF_8 = "UTF-8";
+
     private static VelocityConfigService velocityConfiguration;
     private static VelocityEngine velocityEngine;
 
     static {
         try {
             velocityEngine = new VelocityEngine();
-            velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-            velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+            velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, CLASSPATH_PROPERTY);
+            velocityEngine.setProperty(CLASSPATH_RESOURCE_LOADER_PROPERTY, ClasspathResourceLoader.class.getName());
             velocityEngine.init();
         } catch (Exception ex) {
             log.error("Error in init velocity engine: ", ex);
@@ -47,6 +51,6 @@ public class VelocityConfigService {
      * @return {@link Template} object
      */
     public Template getTemplate(String name) {
-        return velocityEngine.getTemplate(name, "UTF-8");
+        return velocityEngine.getTemplate(name, UTF_8);
     }
 }

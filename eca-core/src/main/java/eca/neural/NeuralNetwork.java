@@ -37,6 +37,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         ListOptionsHandler, DecimalFormatHandler {
 
     private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
+    private static final double DEFAULT_COEFFICIENT = 1.0;
 
     /**
      * Initial training set
@@ -194,7 +195,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     private void fillActivationFunctionOptions(ActivationFunction activationFunction, List<String> options) {
         AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
-        if (abstractFunction.getCoefficient() != 1.0) {
+        if (abstractFunction.getCoefficient() != DEFAULT_COEFFICIENT) {
             options.add(String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
                     getDecimalFormat().format(abstractFunction.getCoefficient())));
         } else {

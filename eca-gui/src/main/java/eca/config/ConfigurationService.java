@@ -29,6 +29,7 @@ public class ConfigurationService {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static ConfigurationService applicationConfigService;
+
     private ApplicationConfig applicationConfig;
     private EcaServiceConfig ecaServiceConfig;
     private Map<DataBaseType, DatabaseConfig> databaseConfigMap;

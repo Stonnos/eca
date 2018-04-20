@@ -9,6 +9,9 @@ import java.util.Random;
  */
 public class NumberGenerator {
 
+    private static final double NOISE_LOWER_BOUND = -0.5;
+    private static final double NOISE_UPPER_BOUND = 0.5;
+
     /**
      * Returns the number uniformly distributed in defined interval {@code [a, b)}.
      *
@@ -45,7 +48,7 @@ public class NumberGenerator {
      * @return the number normally distributed with defined mean and standard deviation.
      */
     public static double nextGaussianWithNoise(Random random, double mean, double variance) {
-        double noise = random(-0.5, 0.5);
+        double noise = random(NOISE_LOWER_BOUND, NOISE_UPPER_BOUND);
         return nextGaussian(random, mean, variance) + noise;
     }
 

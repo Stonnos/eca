@@ -51,6 +51,7 @@ public class NetworkVisualizer extends JPanel {
     private static final String SEPARATOR = System.getProperty("line.separator");
     private static final int SCREEN_WIDTH_MARGIN = 400;
     private static final int SCREEN_HEIGHT_MARGIN = 200;
+    private static final String ARIAL = "Arial";
 
     private double neuronDiam = 25.0;
 
@@ -69,8 +70,8 @@ public class NetworkVisualizer extends JPanel {
     private Color classColor = Color.RED;
 
     private final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
-    private Font nodeFont = new Font("Arial", Font.BOLD, 12);
-    private Font attrFont = new Font("Arial", Font.BOLD, 11);
+    private Font nodeFont = new Font(ARIAL, Font.BOLD, 12);
+    private Font attrFont = new Font(ARIAL, Font.BOLD, 11);
 
     public NetworkVisualizer(NeuralNetwork net, JFrame frame, int digits) {
         this.net = net;
@@ -263,7 +264,7 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
             textInfo.setEditable(false);
-            textInfo.setFont(new Font("Arial", Font.BOLD, 12));
+            textInfo.setFont(new Font(ARIAL, Font.BOLD, 12));
             //----------------------------------------           
             textInfo.setText(getNeuralNetworkStructureAsText());
             textInfo.setCaretPosition(0);
@@ -316,7 +317,7 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
             textInfo.setEditable(false);
-            textInfo.setFont(new Font("Arial", Font.BOLD, 10));
+            textInfo.setFont(new Font(ARIAL, Font.BOLD, 10));
             //----------------------------------------           
             textInfo.setText(neuron.getInfo().toString());
             textInfo.setCaretPosition(0);

@@ -67,6 +67,7 @@ public class TreeVisualizer extends JPanel {
     private static final int MAX_STEP_BETWEEN_LEVELS = 180;
     private static final int MIN_STEP_BETWEEN_LEVELS = 100;
     private static final int SCREEN_WIDTH_MARGIN = 100;
+    private static final String ARIAL = "Arial";
 
     private double nodeWidth = 25.0;
     private double nodeHeight = 25.0;
@@ -85,8 +86,8 @@ public class TreeVisualizer extends JPanel {
     private int stroke = 2;
     private Stroke nodeStroke = new BasicStroke(stroke, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
     private Stroke linkStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
-    private Font nodeFont = new Font("Arial", Font.BOLD, 12);
-    private Font ruleFont = new Font("Arial", Font.BOLD, 11);
+    private Font nodeFont = new Font(ARIAL, Font.BOLD, 12);
+    private Font ruleFont = new Font(ARIAL, Font.BOLD, 11);
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private double screenWidth = 100.0;
@@ -111,7 +112,7 @@ public class TreeVisualizer extends JPanel {
 
     public void setStroke(int stroke) {
         if (stroke < MIN_STROKE || stroke > MAX_STROKE) {
-            throw new IllegalArgumentException("Illegal value of stroke!");
+            throw new IllegalArgumentException(String.format("Unexpected stoke value: %d", stroke));
         }
         nodeStroke = new BasicStroke(stroke, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
         this.stroke = stroke;

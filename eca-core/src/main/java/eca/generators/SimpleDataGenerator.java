@@ -177,17 +177,15 @@ public class SimpleDataGenerator implements DataGenerator {
     }
 
     private Attribute generateAttribute(String name, int type) {
-        Attribute attribute = null;
+        Attribute attribute;
         switch (type) {
-            case Attribute.NUMERIC: {
+            case Attribute.NUMERIC:
                 attribute = new Attribute(name);
                 break;
-            }
-            case Attribute.NOMINAL: {
+            case Attribute.NOMINAL:
                 attribute = createNominalAttribute(name, ATTRIBUTE_VALUE,
                         random.nextInt(MAXIMUM_NUMBER_OF_CATEGORIES - 1) + 2);
                 break;
-            }
 
             default:
                 throw new IllegalArgumentException(String.format("Unexpected attribute type: %d", type));
