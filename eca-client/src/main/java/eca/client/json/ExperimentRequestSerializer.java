@@ -9,6 +9,12 @@ import org.springframework.util.SerializationUtils;
 import java.io.IOException;
 import java.util.Base64;
 
+import static eca.client.dictionary.JsonFieldsDictionary.DATA;
+import static eca.client.dictionary.JsonFieldsDictionary.EMAIL;
+import static eca.client.dictionary.JsonFieldsDictionary.EVALUATION_METHOD;
+import static eca.client.dictionary.JsonFieldsDictionary.EXPERIMENT_TYPE;
+import static eca.client.dictionary.JsonFieldsDictionary.FIRST_NAME;
+
 /**
  * Experiment request serializer.
  *
@@ -21,12 +27,12 @@ public class ExperimentRequestSerializer extends JsonSerializer<ExperimentReques
                           JsonGenerator jsonGenerator,
                           SerializerProvider provider) throws IOException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("firstName", experimentRequestDto.getFirstName());
-        jsonGenerator.writeStringField("email", experimentRequestDto.getEmail());
-        jsonGenerator.writeStringField("experimentType", experimentRequestDto.getExperimentType().name());
+        jsonGenerator.writeStringField(FIRST_NAME, experimentRequestDto.getFirstName());
+        jsonGenerator.writeStringField(EMAIL, experimentRequestDto.getEmail());
+        jsonGenerator.writeStringField(EXPERIMENT_TYPE, experimentRequestDto.getExperimentType().name());
         byte[] dataBytes = SerializationUtils.serialize(experimentRequestDto.getData());
-        jsonGenerator.writeStringField("data", Base64.getEncoder().encodeToString(dataBytes));
-        jsonGenerator.writeStringField("evaluationMethod", experimentRequestDto.getEvaluationMethod().name());
+        jsonGenerator.writeStringField(DATA, Base64.getEncoder().encodeToString(dataBytes));
+        jsonGenerator.writeStringField(EVALUATION_METHOD, experimentRequestDto.getEvaluationMethod().name());
         jsonGenerator.writeEndObject();
     }
 }

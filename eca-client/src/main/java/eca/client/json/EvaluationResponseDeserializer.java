@@ -12,6 +12,10 @@ import org.springframework.util.SerializationUtils;
 import java.io.IOException;
 import java.util.Base64;
 
+import static eca.client.dictionary.JsonFieldsDictionary.ERROR_MESSAGE;
+import static eca.client.dictionary.JsonFieldsDictionary.EVALUATION_RESULTS;
+import static eca.client.dictionary.JsonFieldsDictionary.STATUS;
+
 /**
  * Evaluation response json deserializer.
  *
@@ -24,14 +28,14 @@ public class EvaluationResponseDeserializer extends JsonDeserializer<EvaluationR
                                           DeserializationContext context) throws IOException {
         JsonNode jsonNode = parser.getCodec().readTree(parser);
         EvaluationResponse classificationResultsDto = new EvaluationResponse();
-        JsonNode classifierNode = jsonNode.get("evaluationResults");
+        JsonNode classifierNode = jsonNode.get(EVALUATION_RESULTS);
         if (!classifierNode.isNull()) {
             byte[] bytes = Base64.getDecoder().decode(classifierNode.textValue());
             EvaluationResults evaluationResults = (EvaluationResults) SerializationUtils.deserialize(bytes);
             classificationResultsDto.setEvaluationResults(evaluationResults);
         }
-        classificationResultsDto.setStatus(TechnicalStatus.valueOf(jsonNode.get("status").textValue()));
-        classificationResultsDto.setErrorMessage(jsonNode.get("errorMessage").textValue());
+        classificationResultsDto.setStatus(TechnicalStatus.valueOf(jsonNode.get(STATUS).textValue()));
+        classificationResultsDto.setErrorMessage(jsonNode.get(ERROR_MESSAGE).textValue());
         return classificationResultsDto;
     }
 }

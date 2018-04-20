@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * Eca - service response basic model.
+ *
  * @author Roman Batygin
  */
 @Data
