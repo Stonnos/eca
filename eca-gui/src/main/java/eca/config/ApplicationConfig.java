@@ -51,6 +51,10 @@ public class ApplicationConfig {
      */
     private Double aucThresholdValue;
     /**
+     * Date format for date attributes
+     */
+    private String dateFormat;
+    /**
      * Cross - validation config
      */
     private CrossValidationConfig crossValidationConfig;

@@ -82,7 +82,6 @@ import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
-import eca.text.DateFormat;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
@@ -106,6 +105,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -204,6 +204,9 @@ public class JMainFrame extends JFrame {
     private ClassificationResultHistoryFrame resultHistoryFrame;
 
     private List<AbstractButton> disabledMenuElementList = new ArrayList<>();
+
+    private final SimpleDateFormat simpleDateFormat =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -584,8 +587,7 @@ public class JMainFrame extends JFrame {
 
         public void add(ClassificationResultsFrameBase resultsFrameBase) {
             resultsFrameBases.add(resultsFrameBase);
-            addElement(String.format(HISTORY_FORMAT,
-                    DateFormat.SIMPLE_DATE_FORMAT.format(resultsFrameBase.getCreationDate()),
+            addElement(String.format(HISTORY_FORMAT, simpleDateFormat.format(resultsFrameBase.getCreationDate()),
                     resultsFrameBase.classifier().getClass().getSimpleName()));
         }
 
@@ -774,7 +776,7 @@ public class JMainFrame extends JFrame {
                     }
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
-                        dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
+                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                         dataLoader.setSource(file);
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
@@ -859,7 +861,7 @@ public class JMainFrame extends JFrame {
                                 fileChooser.setSelectedFile(new File(dataBuilder.getData().relationName()));
                                 File file = fileChooser.getSelectedFile(JMainFrame.this);
                                 if (file != null) {
-                                    dataSaver.setDateFormat(DateFormat.DATE_FORMAT);
+                                    dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                                     dataSaver.saveData(file, dataBuilder.getData());
                                 }
                             }
@@ -886,7 +888,7 @@ public class JMainFrame extends JFrame {
                     try {
                         JdbcQueryExecutor connection = new JdbcQueryExecutor();
                         connection.setConnectionDescriptor(conn.getConnectionDescriptor());
-                        connection.setDateFormat(DateFormat.DATE_FORMAT);
+                        connection.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 new DataBaseConnectionAction(connection),
                                 DB_CONNECTION_WAITING_MESSAGE);
@@ -924,7 +926,7 @@ public class JMainFrame extends JFrame {
                 if (dataUrl != null) {
                     try {
                         UrlDataLoader dataLoader = new UrlDataLoader(new URL(dataUrl.trim()));
-                        dataLoader.setDateFormat(DateFormat.DATE_FORMAT);
+                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                         UrlLoader loader = new UrlLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);

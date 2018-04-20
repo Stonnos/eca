@@ -16,6 +16,7 @@
   "tooltipDismissTime": 60000,
   "maxThreads": 10,
   "aucThresholdValue": 0.6,
+  "dateFormat": "yyyy-MM-dd HH:mm:ss",
   "crossValidationConfig": {
     "numFolds": 10,
     "numTests": 10

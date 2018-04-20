@@ -5,13 +5,14 @@
  */
 package eca.gui.tables.models;
 
-import eca.text.DateFormat;
+import eca.config.ConfigurationService;
 import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -21,6 +22,12 @@ import java.util.Objects;
  * @author Roman Batygin
  */
 public class InstancesTableModel extends AbstractTableModel {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
+
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final String NUMBER = "№";
 
@@ -33,7 +40,7 @@ public class InstancesTableModel extends AbstractTableModel {
     public InstancesTableModel(Instances data, int digits) {
         this.data = data;
         this.format.setMaximumFractionDigits(digits);
-        this.values = InstancesConverter.toArray(data, format, DateFormat.SIMPLE_DATE_FORMAT);
+        this.values = InstancesConverter.toArray(data, format, SIMPLE_DATE_FORMAT);
     }
 
     public int getModificationCount() {

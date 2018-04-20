@@ -5,6 +5,7 @@
  */
 package eca.gui.tables;
 
+import eca.config.ConfigurationService;
 import eca.gui.GuiUtils;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
@@ -12,7 +13,6 @@ import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
 import eca.statistics.AttributeStatistics;
-import eca.text.DateFormat;
 import eca.text.NumericFormatFactory;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -37,6 +38,12 @@ import java.util.Enumeration;
  * @author Roman Batygin
  */
 public class ClassifyInstanceTable extends JDataTableBase {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
+
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final int DOUBLE_FIELD_LENGTH = 12;
     private static final int INT_FIELD_LENGTH = 8;
@@ -115,7 +122,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             }
             if (a.isDate()) {
                 try {
-                    Date date = DateFormat.SIMPLE_DATE_FORMAT.parse(strValue);
+                    Date date = SIMPLE_DATE_FORMAT.parse(strValue);
                     instance.setValue(a, date.getTime());
                 } catch (ParseException e) {
                     throw new IllegalArgumentException(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));

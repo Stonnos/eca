@@ -5,8 +5,8 @@
  */
 package eca.gui.tables.models;
 
+import eca.config.ConfigurationService;
 import eca.dictionary.AttributesTypesDictionary;
-import eca.text.DateFormat;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -16,6 +16,9 @@ import javax.swing.table.AbstractTableModel;
  * @author Roman Batygin
  */
 public class ClassifyInstanceTableModel extends AbstractTableModel {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String[] TITLES = {"№", "Атрибут", "Тип", "Диапазон значений", "Значение"};
 
@@ -71,7 +74,7 @@ public class ClassifyInstanceTableModel extends AbstractTableModel {
                 }
             case ADDITIONAL_INFO_COLUMN_INDEX:
                 if (a.isDate()) {
-                    return String.format(DATE_ATTR_FORMAT, DateFormat.DATE_FORMAT);
+                    return String.format(DATE_ATTR_FORMAT, CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                 }
                 else if (a.isNumeric()) {
                     return ANY_NUMBER_TEXT;

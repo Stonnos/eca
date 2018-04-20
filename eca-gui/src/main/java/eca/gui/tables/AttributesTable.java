@@ -5,13 +5,13 @@
  */
 package eca.gui.tables;
 
+import eca.config.ConfigurationService;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.filter.ConstantAttributesFilter;
 import eca.gui.GuiUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DoubleDocument;
-import eca.text.DateFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -36,6 +37,12 @@ import java.util.ArrayList;
  */
 @Slf4j
 public class AttributesTable extends JDataTableBase {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
+
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final String RENAME_ATTR_MENU_TEXT = "Переименовать атрибут";
     private static final String ATTR_NAME_TEXT = "Имя:";
@@ -239,14 +246,15 @@ public class AttributesTable extends JDataTableBase {
                     String str = (String) instancesTable.getValueAt(k, j);
                     if (str != null) {
                         if (isNumeric(attrIndex) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                            throw new IllegalArgumentException(String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                            throw new IllegalArgumentException(
+                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
                         }
                         if (isDate(attrIndex)) {
                             try {
-                                DateFormat.SIMPLE_DATE_FORMAT.parse(str);
+                                SIMPLE_DATE_FORMAT.parse(str);
                             } catch (Exception e) {
                                 throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                                        attribute, DateFormat.DATE_FORMAT));
+                                        attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                             }
                         }
                     }
@@ -264,7 +272,7 @@ public class AttributesTable extends JDataTableBase {
                 if (isNumeric(attrIndex)) {
                     attr.add(new Attribute(attribute));
                 } else if (isDate(attrIndex)) {
-                    attr.add(new Attribute(attribute, DateFormat.DATE_FORMAT));
+                    attr.add(new Attribute(attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                 } else {
                     attr.add(createNominalAttribute(attribute));
                 }
