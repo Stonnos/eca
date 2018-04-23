@@ -8,10 +8,10 @@
 </head>
 <body>
 <table>
-    #foreach($nodeParam in $nodeParams.entrySet())
+    #foreach($param in $params.entrySet())
         <tr>
-            <td class = "attr">$nodeParam.key</td>
-            <td>$nodeParam.value</td>
+            <td class = "attr">$param.key</td>
+            <td>$param.value</td>
         </tr>
     #end
 </table>

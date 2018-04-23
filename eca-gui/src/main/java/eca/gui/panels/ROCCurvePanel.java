@@ -5,13 +5,20 @@
  */
 package eca.gui.panels;
 
+import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.tables.ROCThresholdTable;
 import eca.roc.RocCurve;
+import eca.text.NumericFormatFactory;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import weka.core.Attribute;
@@ -26,12 +33,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Roman Batygin
  */
 public class ROCCurvePanel extends JPanel {
+
+    /**
+     * Velocity configuration
+     */
+    private static final VelocityConfigService VELOCITY_CONFIGURATION =
+            VelocityConfigService.getVelocityConfigService();
+
+    private static final String VM_TEMPLATES_ROC_CURVE_VM = "vm-templates/optionsTable.vm";
 
     private static final String TITLE = "График ROC кривой";
     private static final String X_AXIS_TITLE = "100 - Специфичность (Specificity), %";
@@ -43,7 +62,10 @@ public class ROCCurvePanel extends JPanel {
     private static final int IMAGE_WIDTH = 650;
     private static final int IMAGE_HEIGHT = 500;
     private static final Dimension PLOT_BOX_DIM = new Dimension(300, 25);
+    private static final int SPECIFICITY_INDEX = 4;
+    private static final int SENSITIVITY_INDEX = 5;
 
+    private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final RocCurve rocCurve;
     private ChartPanel chartPanel;
     private JFreeChart[] plots;
@@ -54,6 +76,7 @@ public class ROCCurvePanel extends JPanel {
     public ROCCurvePanel(RocCurve rocCurve, JFrame parentFrame, final int digits) {
         this.rocCurve = rocCurve;
         this.parentFrame = parentFrame;
+        this.format.setMaximumFractionDigits(digits);
         this.createPlots();
         this.createFrames();
         this.setLayout(new GridBagLayout());
@@ -130,28 +153,59 @@ public class ROCCurvePanel extends JPanel {
     private void createPlots() {
         plots = new JFreeChart[rocCurve.getData().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
-
+        RocCurveTooltipGenerator tooltipGenerator = new RocCurveTooltipGenerator();
         for (int i = 0; i < rocCurve.getData().numClasses(); i++) {
             Instances rocSet = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
             XYSeries points = new XYSeries(rocCurve.getData().classAttribute().value(i));
             for (int j = 0; j < rocSet.numInstances(); j++) {
                 Instance obj = rocSet.instance(j);
-                points.add(obj.value(4) * 100, obj.value(5) * 100);
+                points.add(obj.value(SPECIFICITY_INDEX) * 100, obj.value(SENSITIVITY_INDEX) * 100);
             }
             plot.addSeries(points);
             allPlots.addSeries(points);
             plots[i] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                     plot, PlotOrientation.VERTICAL, true, true, false);
+            XYPlot xyPlot = (XYPlot) plots[i].getPlot();
+            xyPlot.getRenderer().setBaseToolTipGenerator(tooltipGenerator);
         }
         plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                         allPlots, PlotOrientation.VERTICAL, true, true, false);
+        XYPlot xyPlot = (XYPlot) plots[plots.length - 1].getPlot();
+        xyPlot.getRenderer().setBaseToolTipGenerator(tooltipGenerator);
         chartPanel = new ChartPanel(plots[plots.length - 1]);
     }
 
     public Image createImage() {
         JFreeChart chart = chartPanel.getChart();
         return chart.createBufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT);
+    }
+
+    /**
+     * Roc - curve plot tool tip generator.
+     */
+    private class RocCurveTooltipGenerator implements XYToolTipGenerator {
+
+        static final String PARAMS = "params";
+        static final String SPECIFICITY = "Специфичность:";
+        static final String SENSITIVITY = "Чувствительность:";
+
+        @Override
+        public String generateToolTip(XYDataset xyDataset, int series, int item) {
+            Template template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_ROC_CURVE_VM);
+            VelocityContext context = new VelocityContext();
+            context.put(PARAMS, fillDataSetMap(xyDataset, series, item));
+            StringWriter stringWriter = new StringWriter();
+            template.merge(context, stringWriter);
+            return stringWriter.toString();
+        }
+
+        private Map<String, String> fillDataSetMap(XYDataset dataset, int series, int item) {
+            Map<String, String> params = new HashMap<>();
+            params.put(SPECIFICITY, format.format(100.0 - dataset.getXValue(series, item)));
+            params.put(SENSITIVITY, format.format(dataset.getYValue(series, item)));
+            return params;
+        }
     }
 
     /**

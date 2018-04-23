@@ -50,7 +50,7 @@ public class TreeVisualizer extends JPanel {
     private static final VelocityConfigService VELOCITY_CONFIGURATION =
             VelocityConfigService.getVelocityConfigService();
 
-    private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/decisionTreeNode.vm";
+    private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/optionsTable.vm";
 
     private static final double MIN_SIZE = 15;
     private static final double MAX_SIZE = 100;
@@ -321,7 +321,7 @@ public class TreeVisualizer extends JPanel {
         static final String LEAF_TEXT = "Лист";
         static final String INNER_NODE_TEXT = "Внутренний";
         static final String CLASS_FORMAT = "%d (%s)";
-        static final String NODE_PARAMS = "nodeParams";
+        static final String NODE_PARAMS = "params";
 
         TreeNode node;
         Rectangle2D.Double rect;
