@@ -68,6 +68,7 @@ public class ROCCurvePanel extends JPanel {
     private static final String OPTIMAL_THRESHOLD_POINT = "Показать точку оптимального порога";
     private static final String OPTIMAL_THRESHOLD = "Оптимальный порог";
 
+    private final RocCurveTooltipGenerator tooltipGenerator = new RocCurveTooltipGenerator();
     private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final RocCurve rocCurve;
     private ChartPanel chartPanel;
@@ -93,25 +94,17 @@ public class ROCCurvePanel extends JPanel {
         }
         plotBox.addItem(ALL_CLASSES_TEXT);
         plotBox.setSelectedIndex(plots.length - 1);
-        plotBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                chartPanel.setChart(plots[plotBox.getSelectedIndex()]);
-            }
-        });
+        plotBox.addActionListener(evt -> chartPanel.setChart(plots[plotBox.getSelectedIndex()]));
 
         JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
-        dataMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int i = plotBox.getSelectedIndex();
-                if (i < plots.length - 1) {
-                    if (dataFrames[i] == null) {
-                        dataFrames[i] = new RocCurveDataFrame(rocCurve.getROCCurve(i), digits,
-                                rocCurve.getData().classAttribute().value(i));
-                    }
-                    dataFrames[i].setVisible(true);
+        dataMenu.addActionListener(evt -> {
+            int i = plotBox.getSelectedIndex();
+            if (i < plots.length - 1) {
+                if (dataFrames[i] == null) {
+                    dataFrames[i] = new RocCurveDataFrame(rocCurve.getROCCurve(i), digits,
+                            rocCurve.getData().classAttribute().value(i));
                 }
+                dataFrames[i].setVisible(true);
             }
         });
 
@@ -123,6 +116,13 @@ public class ROCCurvePanel extends JPanel {
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
                 renderer.setSeriesShapesVisible(0, optThresholdMenu.getState());
                 renderer.setSeriesVisibleInLegend(0, optThresholdMenu.getState());
+                if (optThresholdMenu.getState()) {
+                    renderer.setSeriesToolTipGenerator(0, tooltipGenerator);
+                    renderer.setSeriesToolTipGenerator(1, null);
+                } else {
+                    renderer.setSeriesToolTipGenerator(0, null);
+                    renderer.setSeriesToolTipGenerator(1, tooltipGenerator);
+                }
                 xyPlot.setRenderer(renderer);
             }
         });
@@ -171,7 +171,6 @@ public class ROCCurvePanel extends JPanel {
     private void createPlots() {
         plots = new JFreeChart[rocCurve.getData().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
-        RocCurveTooltipGenerator tooltipGenerator = new RocCurveTooltipGenerator();
         for (int i = 0; i < rocCurve.getData().numClasses(); i++) {
             Instances rocSet = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
@@ -181,7 +180,7 @@ public class ROCCurvePanel extends JPanel {
             calculateOptimalThreshold(plot, i);
             plot.addSeries(points);
             allPlots.addSeries(points);
-            createChart(plot, i, tooltipGenerator);
+            createChart(plot, i);
         }
         plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                 allPlots, PlotOrientation.VERTICAL, true, true, false);
@@ -195,7 +194,7 @@ public class ROCCurvePanel extends JPanel {
         return chart.createBufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT);
     }
 
-    private void createChart(XYSeriesCollection plot, int i, RocCurveTooltipGenerator tooltipGenerator) {
+    private void createChart(XYSeriesCollection plot, int i) {
         plots[i] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                 plot, PlotOrientation.VERTICAL, true, true, false);
         XYPlot xyPlot = (XYPlot) plots[i].getPlot();
@@ -204,7 +203,7 @@ public class ROCCurvePanel extends JPanel {
         renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesLinesVisible(0, false);
         renderer.setSeriesVisibleInLegend(0, false);
-        renderer.setBaseToolTipGenerator(tooltipGenerator);
+        renderer.setSeriesToolTipGenerator(1, tooltipGenerator);
         xyPlot.setRenderer(renderer);
     }
 
@@ -255,12 +254,7 @@ public class ROCCurvePanel extends JPanel {
             JScrollPane scrollPanel = new JScrollPane(table);
             JButton okButton = ButtonUtils.createOkButton();
 
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    setVisible(false);
-                }
-            });
+            okButton.addActionListener(evt -> setVisible(false));
             //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
