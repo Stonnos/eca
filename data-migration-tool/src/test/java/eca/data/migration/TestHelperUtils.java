@@ -1,6 +1,7 @@
 package eca.data.migration;
 
 import eca.data.file.xls.XLSLoader;
+import eca.data.file.xls.resource.InputStreamResource;
 import weka.core.Instances;
 
 import java.io.InputStream;
@@ -23,7 +24,7 @@ public class TestHelperUtils {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(DATA_PATH)) {
             XLSLoader xlsLoader = new XLSLoader();
-            xlsLoader.setInputStream(inputStream);
+            xlsLoader.setResource(new InputStreamResource(inputStream));
             return xlsLoader.getDataSet();
         }
     }
