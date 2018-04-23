@@ -8,7 +8,10 @@ package eca.roc;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.evaluation.ThresholdCurve;
+import weka.core.Instance;
 import weka.core.Instances;
+
+import java.util.Comparator;
 
 /**
  * Class for providing ROC - curve results.
@@ -16,6 +19,10 @@ import weka.core.Instances;
  * @author Roman Batygin
  */
 public class RocCurve implements InstancesHandler {
+
+    public static final int SPECIFICITY_INDEX = 4;
+    public static final int SENSITIVITY_INDEX = 5;
+    public static final int THRESHOLD_INDEX = 12;
 
     private final ThresholdCurve curve = new ThresholdCurve();
     private final Evaluation evaluation;
@@ -56,6 +63,25 @@ public class RocCurve implements InstancesHandler {
      */
     public Instances getROCCurve(int classIndex) {
         return curve.getCurve(evaluation.predictions(), classIndex);
+    }
+
+    /**
+     * Finds optimal threshold value for specified class.
+     *
+     * @param classIndex - class index
+     * @return optimal threshold value
+     */
+    public ThresholdModel findOptimalThreshold(int classIndex) {
+        Instance instance = getROCCurve(classIndex).stream().max(((o1, o2) -> {
+            double x = 1.0 - o1.value(SPECIFICITY_INDEX) + o1.value(SENSITIVITY_INDEX);
+            double y = 1.0 - o2.value(SPECIFICITY_INDEX) + o2.value(SENSITIVITY_INDEX);
+            return Double.compare(x, y);
+        })).get();
+        ThresholdModel thresholdModel = new ThresholdModel();
+        thresholdModel.setSpecificity(instance.value(SPECIFICITY_INDEX));
+        thresholdModel.setSensitivity(instance.value(SENSITIVITY_INDEX));
+        thresholdModel.setThresholdValue(instance.value(THRESHOLD_INDEX));
+        return thresholdModel;
     }
 
 }

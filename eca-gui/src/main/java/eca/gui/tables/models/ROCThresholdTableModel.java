@@ -5,6 +5,7 @@
  */
 package eca.gui.tables.models;
 
+import eca.roc.RocCurve;
 import eca.text.NumericFormatFactory;
 import weka.core.Instances;
 
@@ -22,9 +23,6 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     private static final int THRESHOLD_COLUMN_INDEX = 0;
     private static final int SPECIFICITY_COLUMN_INDEX = 1;
     private static final int SENSITIVITY_COLUMN_INDEX = 2;
-    private static final int THRESHOLD_ID = 12;
-    private static final int SPECIFICITY_ID = 4;
-    private static final int SENSITIVITY_ID = 5;
     private String[] titles;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final Instances data;
@@ -51,11 +49,11 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     public Object getValueAt(int row, int column) {
         switch (column) {
             case THRESHOLD_COLUMN_INDEX:
-                return format.format(data.instance(row).value(THRESHOLD_ID));
+                return format.format(data.instance(row).value(RocCurve.THRESHOLD_INDEX));
             case SPECIFICITY_COLUMN_INDEX:
-                return format.format(data.instance(row).value(SPECIFICITY_ID) * 100);
+                return format.format(data.instance(row).value(RocCurve.SPECIFICITY_INDEX) * 100);
             case SENSITIVITY_COLUMN_INDEX:
-                return format.format(data.instance(row).value(SENSITIVITY_ID) * 100);
+                return format.format(data.instance(row).value(RocCurve.SENSITIVITY_INDEX) * 100);
             default:
                 return null;
         }

@@ -9,7 +9,9 @@ import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.tables.ROCThresholdTable;
 import eca.roc.RocCurve;
+import eca.roc.ThresholdModel;
 import eca.text.NumericFormatFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.jfree.chart.ChartFactory;
@@ -18,6 +20,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -62,8 +65,8 @@ public class ROCCurvePanel extends JPanel {
     private static final int IMAGE_WIDTH = 650;
     private static final int IMAGE_HEIGHT = 500;
     private static final Dimension PLOT_BOX_DIM = new Dimension(300, 25);
-    private static final int SPECIFICITY_INDEX = 4;
-    private static final int SENSITIVITY_INDEX = 5;
+    private static final String OPTIMAL_THRESHOLD_POINT = "Показать точку оптимального порога";
+    private static final String OPTIMAL_THRESHOLD = "Оптимальный порог";
 
     private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final RocCurve rocCurve;
@@ -104,7 +107,7 @@ public class ROCCurvePanel extends JPanel {
                 int i = plotBox.getSelectedIndex();
                 if (i < plots.length - 1) {
                     if (dataFrames[i] == null) {
-                        dataFrames[i] = new DataFrame(rocCurve.getROCCurve(i), digits,
+                        dataFrames[i] = new RocCurveDataFrame(rocCurve.getROCCurve(i), digits,
                                 rocCurve.getData().classAttribute().value(i));
                     }
                     dataFrames[i].setVisible(true);
@@ -112,11 +115,25 @@ public class ROCCurvePanel extends JPanel {
             }
         });
 
+        JCheckBoxMenuItem optThresholdMenu = new JCheckBoxMenuItem(OPTIMAL_THRESHOLD_POINT);
+        optThresholdMenu.addActionListener(evt -> {
+            int i = plotBox.getSelectedIndex();
+            if (i < plots.length - 1) {
+                XYPlot xyPlot = (XYPlot) plots[i].getPlot();
+                XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
+                renderer.setSeriesShapesVisible(0, optThresholdMenu.getState());
+                renderer.setSeriesVisibleInLegend(0, optThresholdMenu.getState());
+                xyPlot.setRenderer(renderer);
+            }
+        });
+
         chartPanel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
 
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                dataMenu.setEnabled(plotBox.getSelectedIndex() < plots.length - 1);
+                boolean enabled = plotBox.getSelectedIndex() < plots.length - 1;
+                dataMenu.setEnabled(enabled);
+                optThresholdMenu.setEnabled(enabled);
             }
 
             @Override
@@ -130,6 +147,7 @@ public class ROCCurvePanel extends JPanel {
             }
         });
         chartPanel.getPopupMenu().add(dataMenu);
+        chartPanel.getPopupMenu().add(optThresholdMenu);
         parentFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -147,7 +165,7 @@ public class ROCCurvePanel extends JPanel {
     }
 
     private void createFrames() {
-        dataFrames = new DataFrame[rocCurve.getData().numClasses()];
+        dataFrames = new RocCurveDataFrame[rocCurve.getData().numClasses()];
     }
 
     private void createPlots() {
@@ -158,19 +176,15 @@ public class ROCCurvePanel extends JPanel {
             Instances rocSet = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
             XYSeries points = new XYSeries(rocCurve.getData().classAttribute().value(i));
-            for (int j = 0; j < rocSet.numInstances(); j++) {
-                Instance obj = rocSet.instance(j);
-                points.add(obj.value(SPECIFICITY_INDEX) * 100, obj.value(SENSITIVITY_INDEX) * 100);
-            }
+            rocSet.forEach(obj -> points.add(obj.value(RocCurve.SPECIFICITY_INDEX) * 100,
+                    obj.value(RocCurve.SENSITIVITY_INDEX) * 100));
+            calculateOptimalThreshold(plot, i);
             plot.addSeries(points);
             allPlots.addSeries(points);
-            plots[i] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
-                    plot, PlotOrientation.VERTICAL, true, true, false);
-            XYPlot xyPlot = (XYPlot) plots[i].getPlot();
-            xyPlot.getRenderer().setBaseToolTipGenerator(tooltipGenerator);
+            createChart(plot, i, tooltipGenerator);
         }
         plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
-                        allPlots, PlotOrientation.VERTICAL, true, true, false);
+                allPlots, PlotOrientation.VERTICAL, true, true, false);
         XYPlot xyPlot = (XYPlot) plots[plots.length - 1].getPlot();
         xyPlot.getRenderer().setBaseToolTipGenerator(tooltipGenerator);
         chartPanel = new ChartPanel(plots[plots.length - 1]);
@@ -179,6 +193,26 @@ public class ROCCurvePanel extends JPanel {
     public Image createImage() {
         JFreeChart chart = chartPanel.getChart();
         return chart.createBufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT);
+    }
+
+    private void createChart(XYSeriesCollection plot, int i, RocCurveTooltipGenerator tooltipGenerator) {
+        plots[i] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
+                plot, PlotOrientation.VERTICAL, true, true, false);
+        XYPlot xyPlot = (XYPlot) plots[i].getPlot();
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.setSeriesShapesVisible(1, false);
+        renderer.setSeriesShapesVisible(0, false);
+        renderer.setSeriesLinesVisible(0, false);
+        renderer.setSeriesVisibleInLegend(0, false);
+        renderer.setBaseToolTipGenerator(tooltipGenerator);
+        xyPlot.setRenderer(renderer);
+    }
+
+    private void calculateOptimalThreshold(XYSeriesCollection xySeriesCollection, int classIndex) {
+        ThresholdModel thresholdModel = rocCurve.findOptimalThreshold(classIndex);
+        XYSeries points = new XYSeries(OPTIMAL_THRESHOLD);
+        points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100);
+        xySeriesCollection.addSeries(points);
     }
 
     /**
@@ -200,10 +234,10 @@ public class ROCCurvePanel extends JPanel {
             return stringWriter.toString();
         }
 
-        private Map<String, String> fillDataSetMap(XYDataset dataset, int series, int item) {
+        private Map<String, String> fillDataSetMap(XYDataset xyDataset, int series, int item) {
             Map<String, String> params = new HashMap<>();
-            params.put(SPECIFICITY, format.format(100.0 - dataset.getXValue(series, item)));
-            params.put(SENSITIVITY, format.format(dataset.getYValue(series, item)));
+            params.put(SPECIFICITY, format.format(100.0 - xyDataset.getXValue(series, item)));
+            params.put(SENSITIVITY, format.format(xyDataset.getYValue(series, item)));
             return params;
         }
     }
@@ -211,9 +245,9 @@ public class ROCCurvePanel extends JPanel {
     /**
      * Roc - curve data frame.
      */
-    private class DataFrame extends JFrame {
+    private class RocCurveDataFrame extends JFrame {
 
-        DataFrame(Instances data, int digits, String className) {
+        RocCurveDataFrame(Instances data, int digits, String className) {
             this.setTitle(ROC_CURVE_DATA_TITLE);
             this.setLayout(new GridBagLayout());
             this.setIconImage(parentFrame.getIconImage());

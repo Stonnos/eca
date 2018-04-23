@@ -13,10 +13,9 @@ public class ClassifierComparator implements Comparator<EvaluationResults> {
 
     @Override
     public int compare(EvaluationResults c1, EvaluationResults c2) {
-        int compare = -Double.valueOf(c1.getEvaluation().pctCorrect()).compareTo(c2.getEvaluation().pctCorrect());
+        int compare = -Double.compare(c1.getEvaluation().pctCorrect(), c2.getEvaluation().pctCorrect());
         if (compare == 0) {
-            return -Double.valueOf(c1.getEvaluation().maxAreaUnderROC()).compareTo(
-                    c2.getEvaluation().maxAreaUnderROC());
+            return -Double.compare(c1.getEvaluation().maxAreaUnderROC(), c2.getEvaluation().maxAreaUnderROC());
         } else {
             return compare;
         }

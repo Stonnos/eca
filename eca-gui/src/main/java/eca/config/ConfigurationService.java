@@ -68,8 +68,10 @@ public class ConfigurationService {
      */
     public EcaServiceConfig getEcaServiceConfig() {
         if (ecaServiceConfig == null) {
-            ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
+            //ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
         }
+        EcaServiceConfig ecaServiceConfig = new EcaServiceConfig();
+        ecaServiceConfig.setEnabled(false);
         return ecaServiceConfig;
     }
 
