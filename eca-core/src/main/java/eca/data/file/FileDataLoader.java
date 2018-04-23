@@ -2,7 +2,8 @@ package eca.data.file;
 
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
-import eca.data.FileUtil;
+import eca.data.FileUtils;
+import eca.data.file.resource.FileResource;
 import eca.data.net.UrlDataLoaderDictionary;
 import eca.util.Utils;
 import weka.core.Instances;
@@ -24,12 +25,12 @@ public class FileDataLoader extends AbstractDataLoader<File> {
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        if (FileUtil.isWekaExtension(getSource().getName())) {
+        if (FileUtils.isWekaExtension(getSource().getName())) {
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(getSource().getAbsolutePath());
             data = source.getDataSet();
-        } else if (FileUtil.isXlsExtension(getSource().getName())) {
+        } else if (FileUtils.isXlsExtension(getSource().getName())) {
             XLSLoader loader = new XLSLoader();
-            loader.setFile(getSource());
+            loader.setResource(new FileResource(getSource()));
             loader.setDateFormat(getDateFormat());
             data = loader.getDataSet();
         } else {

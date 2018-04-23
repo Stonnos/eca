@@ -3,7 +3,7 @@ package eca.data;
 /**
  * File utility class.
  */
-public class FileUtil {
+public class FileUtils {
 
     /**
      * Returns true if specified file extension belongs to weka formats (csv, arff, json).

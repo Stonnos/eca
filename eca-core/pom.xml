@@ -17,6 +17,7 @@
         <weka.version>3.9.1</weka.version>
         <apache.poi.version>3.16-beta2</apache.poi.version>
         <org-apache-commons.version>3.7</org-apache-commons.version>
+        <commons.io.version>2.5</commons.io.version>
     </properties>
 
     <dependencies>
@@ -43,6 +44,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${org-apache-commons.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
         </dependency>
 
     </dependencies>

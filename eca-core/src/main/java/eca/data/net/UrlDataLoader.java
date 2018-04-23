@@ -7,8 +7,9 @@ package eca.data.net;
 
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
-import eca.data.FileUtil;
+import eca.data.FileUtils;
 import eca.data.file.XLSLoader;
+import eca.data.file.resource.InputStreamResource;
 import eca.util.Utils;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
@@ -20,7 +21,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Objects;
 
 
 /**
@@ -55,9 +55,9 @@ public class UrlDataLoader extends AbstractDataLoader<URL> {
         Instances data;
         URLConnection connection = getSource().openConnection();
         try (InputStream inputStream = connection.getInputStream()) {
-            if (FileUtil.isXlsExtension(getSource().getFile())) {
+            if (FileUtils.isXlsExtension(getSource().getFile())) {
                 XLSLoader loader = new XLSLoader();
-                loader.setInputStream(inputStream);
+                loader.setResource(new InputStreamResource(inputStream));
                 loader.setDateFormat(getDateFormat());
                 data = loader.getDataSet();
             } else {

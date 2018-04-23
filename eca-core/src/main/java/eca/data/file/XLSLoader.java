@@ -5,7 +5,7 @@
  */
 package eca.data.file;
 
-import eca.data.DataFileExtension;
+import eca.data.file.resource.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -20,7 +20,6 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -42,53 +41,27 @@ public class XLSLoader {
     private static final Set<CellType> AVAILABLE_CELL_TYPES =
             EnumSet.of(CellType.STRING, CellType.NUMERIC, CellType.BLANK, CellType.BOOLEAN);
 
-    private InputStream inputStream;
-
-    private File file;
+    private Resource resource;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * Sets the file object.
+     * Returns data file resource.
      *
-     * @param file file object
-     * @throws IllegalArgumentException if a file object is null or has invalid extension
+     * @return data file resource
      */
-    public void setFile(File file) {
-        Objects.requireNonNull(file, "File is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
-                !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
-            throw new IllegalArgumentException("Unexpected file extension!");
-        }
-        this.file = file;
+    public Resource getResource() {
+        return resource;
     }
 
     /**
-     * Returns file object.
+     * Sets data file resource
      *
-     * @return file object
+     * @param resource - data file resource
      */
-    public File getFile() {
-        return file;
-    }
-
-    /**
-     * Sets <tt>InputStream</tt> object.
-     *
-     * @param inputStream <tt>InputStream</tt> object
-     */
-    public void setInputStream(InputStream inputStream) {
-        Objects.requireNonNull(inputStream, "InputStream is not specified!");
-        this.inputStream = inputStream;
-    }
-
-    /**
-     * Returns <tt>InputStream</tt> object.
-     *
-     * @return <tt>InputStream</tt> object
-     */
-    public InputStream getInputStream() {
-        return inputStream;
+    public void setResource(Resource resource) {
+        Objects.requireNonNull(resource, "Resource is not specified!");
+        this.resource = resource;
     }
 
     /**
@@ -118,8 +91,7 @@ public class XLSLoader {
      */
     public Instances getDataSet() throws Exception {
         Instances data;
-        try (Workbook book = WorkbookFactory.create(Objects.isNull(inputStream) ?
-                new FileInputStream(file) : inputStream)) {
+        try (Workbook book = WorkbookFactory.create(getResource().openInputStream())) {
             Sheet sheet = book.getSheetAt(0);
             validateData(sheet);
             data = new Instances(sheet.getSheetName(), createAttributes(sheet),

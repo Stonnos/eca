@@ -1,7 +1,7 @@
 package eca.data.file;
 
 import eca.data.DataFileExtension;
-import eca.data.FileUtil;
+import eca.data.FileUtils;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
@@ -51,7 +51,7 @@ public class FileDataSaver {
     public void saveData(File file, Instances data) throws IOException {
         Objects.requireNonNull(file, "File is not specified!");
         Objects.requireNonNull(data, "Data is not specified!");
-        if (FileUtil.isXlsExtension(file.getName())) {
+        if (FileUtils.isXlsExtension(file.getName())) {
             XLSSaver xlsSaver = new XLSSaver();
             xlsSaver.setFile(file);
             xlsSaver.setDateFormat(dateFormat);
