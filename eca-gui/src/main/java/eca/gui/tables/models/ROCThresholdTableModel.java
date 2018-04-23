@@ -19,6 +19,12 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     private static final String SPECIFICITY_TEXT = "100 - Специфичность";
     private static final String SENSITIVITY_TEXT = "Чувствительность";
     private static final String CLASS_THRESHOLD_TEXT = "Порог для класса (%s)";
+    private static final int THRESHOLD_COLUMN_INDEX = 0;
+    private static final int SPECIFITY_COLUMN_INDEX = 1;
+    private static final int SENSIVITY_COLUMN_INDEX = 2;
+    private static final int THRESHOLD_ID = 12;
+    private static final int SPECIFITY_ID = 4;
+    private static final int SENSIVITY_ID = 5;
     private String[] titles;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
     private final Instances data;
@@ -44,12 +50,12 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int column) {
         switch (column) {
-            case 0:
-                return format.format(data.instance(row).value(12));
-            case 1:
-                return format.format(data.instance(row).value(4) * 100);
-            case 2:
-                return format.format(data.instance(row).value(5) * 100);
+            case THRESHOLD_COLUMN_INDEX:
+                return format.format(data.instance(row).value(THRESHOLD_ID));
+            case SPECIFITY_COLUMN_INDEX:
+                return format.format(data.instance(row).value(SPECIFITY_ID) * 100);
+            case SENSIVITY_COLUMN_INDEX:
+                return format.format(data.instance(row).value(SENSIVITY_ID) * 100);
             default:
                 return null;
         }
@@ -62,8 +68,8 @@ public class ROCThresholdTableModel extends AbstractTableModel {
 
     private void createNames() {
         titles = new String[3];
-        titles[0] = String.format(CLASS_THRESHOLD_TEXT, className);
-        titles[1] = SPECIFICITY_TEXT;
-        titles[2] = SENSITIVITY_TEXT;
+        titles[THRESHOLD_COLUMN_INDEX] = String.format(CLASS_THRESHOLD_TEXT, className);
+        titles[SPECIFITY_COLUMN_INDEX] = SPECIFICITY_TEXT;
+        titles[SENSIVITY_COLUMN_INDEX] = SENSITIVITY_TEXT;
     }
 }

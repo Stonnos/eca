@@ -23,7 +23,7 @@ public class FileResource extends AbstractResource<File> {
         super(file);
         if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
                 !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
-            throw new IllegalArgumentException("Unexpected file extension!");
+            throw new IllegalArgumentException(String.format("Unexpected file '%s' extension!", file.getName()));
         }
     }
 
