@@ -11,7 +11,6 @@ import eca.gui.tables.ROCThresholdTable;
 import eca.roc.RocCurve;
 import eca.roc.ThresholdModel;
 import eca.text.NumericFormatFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.jfree.chart.ChartFactory;
@@ -25,15 +24,12 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.Instances;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.StringWriter;
@@ -250,6 +246,10 @@ public class ROCCurvePanel extends JPanel {
             add(x, y);
             thresholdValues.add(threshold);
         }
+
+        double getThreshold(int i) {
+            return thresholdValues.get(i);
+        }
     }
 
     /**
@@ -262,24 +262,34 @@ public class ROCCurvePanel extends JPanel {
         static final String SENSITIVITY = "Чувствительность:";
         static final String THRESHOLD = "Порог";
 
+        Template template;
+        VelocityContext context;
+        Map<String, String> params;
+
         @Override
         public String generateToolTip(XYDataset xyDataset, int series, int item) {
-            Template template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_ROC_CURVE_VM);
-            VelocityContext context = new VelocityContext();
-            context.put(PARAMS, fillDataSetMap(xyDataset, series, item));
+            if (template == null) {
+                template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_ROC_CURVE_VM);
+            }
+            if (context == null) {
+                context = new VelocityContext();
+            }
+            fillDataSetMap(xyDataset, series, item);
+            context.put(PARAMS, params);
             StringWriter stringWriter = new StringWriter();
             template.merge(context, stringWriter);
             return stringWriter.toString();
         }
 
-        private Map<String, String> fillDataSetMap(XYDataset xyDataset, int series, int item) {
+        private void fillDataSetMap(XYDataset xyDataset, int series, int item) {
             XYSeriesCollection xySeriesCollection = (XYSeriesCollection) xyDataset;
             RocCurveSeries rocCurveSeries = (RocCurveSeries) xySeriesCollection.getSeries(series);
-            Map<String, String> params = new HashMap<>();
+            if (params == null) {
+                params = new LinkedHashMap<>();
+            }
             params.put(SPECIFICITY, format.format(100.0 - xySeriesCollection.getXValue(series, item)));
             params.put(SENSITIVITY, format.format(xySeriesCollection.getYValue(series, item)));
-            params.put(THRESHOLD, format.format(rocCurveSeries.thresholdValues.get(item)));
-            return params;
+            params.put(THRESHOLD, format.format(rocCurveSeries.getThreshold(item)));
         }
     }
 
