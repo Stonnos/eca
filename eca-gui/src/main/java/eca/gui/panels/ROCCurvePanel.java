@@ -38,9 +38,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * Roc - curve panel.
@@ -69,6 +68,8 @@ public class ROCCurvePanel extends JPanel {
     private static final Dimension PLOT_BOX_DIM = new Dimension(300, 25);
     private static final String OPTIMAL_THRESHOLD_POINT = "Показать точку оптимального порога";
     private static final String OPTIMAL_THRESHOLD = "Оптимальный порог";
+    private static final int THRESHOLD_SERIES_INDEX = 0;
+    private static final int ROC_CURVE_SERIES_INDEX = 1;
 
     private final RocCurveTooltipGenerator tooltipGenerator = new RocCurveTooltipGenerator();
     private final DecimalFormat format = NumericFormatFactory.getInstance();
@@ -103,7 +104,6 @@ public class ROCCurvePanel extends JPanel {
         }
         plotBox.addItem(ALL_CLASSES_TEXT);
         plotBox.setSelectedIndex(plots.length - 1);
-        plotBox.addActionListener(evt -> chartPanel.setChart(plots[plotBox.getSelectedIndex()]));
 
         JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
         dataMenu.addActionListener(evt -> {
@@ -123,17 +123,29 @@ public class ROCCurvePanel extends JPanel {
             if (i < plots.length - 1) {
                 XYPlot xyPlot = (XYPlot) plots[i].getPlot();
                 XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
-                renderer.setSeriesShapesVisible(0, optThresholdMenu.getState());
-                renderer.setSeriesVisibleInLegend(0, optThresholdMenu.getState());
+                renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, optThresholdMenu.getState());
+                renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, optThresholdMenu.getState());
                 if (optThresholdMenu.getState()) {
-                    renderer.setSeriesToolTipGenerator(0, tooltipGenerator);
-                    renderer.setSeriesToolTipGenerator(1, null);
+                    renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, tooltipGenerator);
+                    renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, null);
                 } else {
-                    renderer.setSeriesToolTipGenerator(0, null);
-                    renderer.setSeriesToolTipGenerator(1, tooltipGenerator);
+                    renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, null);
+                    renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
                 }
                 xyPlot.setRenderer(renderer);
             }
+        });
+
+        plotBox.addActionListener(evt -> {
+            JFreeChart chart = plots[plotBox.getSelectedIndex()];
+            XYPlot xyPlot = (XYPlot) chart.getPlot();
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
+            renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, false);
+            renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, false);
+            renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, null);
+            renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
+            chartPanel.setChart(chart);
+            optThresholdMenu.setState(false);
         });
 
         chartPanel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
@@ -183,9 +195,9 @@ public class ROCCurvePanel extends JPanel {
         for (int i = 0; i < rocCurve.getData().numClasses(); i++) {
             Instances rocSet = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
-            XYSeries points = new XYSeries(rocCurve.getData().classAttribute().value(i));
+            RocCurveSeries points = new RocCurveSeries(rocCurve.getData().classAttribute().value(i));
             rocSet.forEach(obj -> points.add(obj.value(RocCurve.SPECIFICITY_INDEX) * 100,
-                    obj.value(RocCurve.SENSITIVITY_INDEX) * 100));
+                    obj.value(RocCurve.SENSITIVITY_INDEX) * 100, obj.value(RocCurve.THRESHOLD_INDEX)));
             calculateOptimalThreshold(plot, i);
             plot.addSeries(points);
             allPlots.addSeries(points);
@@ -208,19 +220,36 @@ public class ROCCurvePanel extends JPanel {
                 plot, PlotOrientation.VERTICAL, true, true, false);
         XYPlot xyPlot = (XYPlot) plots[i].getPlot();
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesShapesVisible(1, false);
-        renderer.setSeriesShapesVisible(0, false);
-        renderer.setSeriesLinesVisible(0, false);
-        renderer.setSeriesVisibleInLegend(0, false);
-        renderer.setSeriesToolTipGenerator(1, tooltipGenerator);
+        renderer.setSeriesShapesVisible(ROC_CURVE_SERIES_INDEX, false);
+        renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
+        renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, false);
+        renderer.setSeriesLinesVisible(THRESHOLD_SERIES_INDEX, false);
+        renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, false);
         xyPlot.setRenderer(renderer);
     }
 
     private void calculateOptimalThreshold(XYSeriesCollection xySeriesCollection, int classIndex) {
         ThresholdModel thresholdModel = rocCurve.findOptimalThreshold(classIndex);
-        XYSeries points = new XYSeries(OPTIMAL_THRESHOLD);
-        points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100);
+        RocCurveSeries points = new RocCurveSeries(OPTIMAL_THRESHOLD);
+        points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100, thresholdModel.getThresholdValue());
         xySeriesCollection.addSeries(points);
+    }
+
+    /**
+     * Roc - curve series.
+     */
+    private static class RocCurveSeries extends XYSeries {
+
+        List<Double> thresholdValues = new ArrayList<>();
+
+        RocCurveSeries(Comparable key) {
+            super(key);
+        }
+
+        void add(double x, double y, double threshold) {
+            add(x, y);
+            thresholdValues.add(threshold);
+        }
     }
 
     /**
@@ -231,6 +260,7 @@ public class ROCCurvePanel extends JPanel {
         static final String PARAMS = "params";
         static final String SPECIFICITY = "Специфичность:";
         static final String SENSITIVITY = "Чувствительность:";
+        static final String THRESHOLD = "Порог";
 
         @Override
         public String generateToolTip(XYDataset xyDataset, int series, int item) {
@@ -243,9 +273,12 @@ public class ROCCurvePanel extends JPanel {
         }
 
         private Map<String, String> fillDataSetMap(XYDataset xyDataset, int series, int item) {
+            XYSeriesCollection xySeriesCollection = (XYSeriesCollection) xyDataset;
+            RocCurveSeries rocCurveSeries = (RocCurveSeries) xySeriesCollection.getSeries(series);
             Map<String, String> params = new HashMap<>();
-            params.put(SPECIFICITY, format.format(100.0 - xyDataset.getXValue(series, item)));
-            params.put(SENSITIVITY, format.format(xyDataset.getYValue(series, item)));
+            params.put(SPECIFICITY, format.format(100.0 - xySeriesCollection.getXValue(series, item)));
+            params.put(SENSITIVITY, format.format(xySeriesCollection.getYValue(series, item)));
+            params.put(THRESHOLD, format.format(rocCurveSeries.thresholdValues.get(item)));
             return params;
         }
     }
