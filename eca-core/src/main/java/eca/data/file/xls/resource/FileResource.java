@@ -1,4 +1,4 @@
-package eca.data.file.resource;
+package eca.data.file.xls.resource;
 
 import eca.data.DataFileExtension;
 import org.apache.commons.io.FileUtils;

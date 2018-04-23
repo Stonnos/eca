@@ -1,6 +1,6 @@
 package eca.data.migration;
 
-import eca.data.file.XLSLoader;
+import eca.data.file.xls.XLSLoader;
 import weka.core.Instances;
 
 import java.io.InputStream;

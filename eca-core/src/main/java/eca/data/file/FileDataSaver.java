@@ -2,6 +2,7 @@ package eca.data.file;
 
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
+import eca.data.file.xls.XLSSaver;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;

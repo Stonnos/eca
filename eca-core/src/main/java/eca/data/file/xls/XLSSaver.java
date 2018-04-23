@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.data.file;
+package eca.data.file.xls;
 
 import eca.data.DataFileExtension;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

@@ -1,4 +1,4 @@
-package eca.data.file.resource;
+package eca.data.file.xls.resource;
 
 import java.io.IOException;
 import java.io.InputStream;

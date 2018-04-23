@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.data.file;
+package eca.data.file.xls;
 
-import eca.data.file.resource.Resource;
+import eca.data.file.FileDataDictionary;
+import eca.data.file.xls.resource.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -19,8 +20,6 @@ import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.Utils;
 
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Objects;
