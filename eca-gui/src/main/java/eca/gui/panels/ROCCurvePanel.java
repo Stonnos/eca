@@ -266,7 +266,7 @@ public class ROCCurvePanel extends JPanel {
 
         Template template;
         VelocityContext context;
-        Map<String, String> params;
+        Map<String, String> tooltipParams;
 
         @Override
         public String generateToolTip(XYDataset xyDataset, int series, int item) {
@@ -277,7 +277,7 @@ public class ROCCurvePanel extends JPanel {
                 context = new VelocityContext();
             }
             fillDataSetMap(xyDataset, series, item);
-            context.put(PARAMS, params);
+            context.put(PARAMS, tooltipParams);
             StringWriter stringWriter = new StringWriter();
             template.merge(context, stringWriter);
             return stringWriter.toString();
@@ -286,12 +286,12 @@ public class ROCCurvePanel extends JPanel {
         private void fillDataSetMap(XYDataset xyDataset, int series, int item) {
             XYSeriesCollection xySeriesCollection = (XYSeriesCollection) xyDataset;
             RocCurveSeries rocCurveSeries = (RocCurveSeries) xySeriesCollection.getSeries(series);
-            if (params == null) {
-                params = new LinkedHashMap<>();
+            if (tooltipParams == null) {
+                tooltipParams = new LinkedHashMap<>();
             }
-            params.put(SPECIFICITY, format.format(100.0 - xySeriesCollection.getXValue(series, item)));
-            params.put(SENSITIVITY, format.format(xySeriesCollection.getYValue(series, item)));
-            params.put(THRESHOLD, format.format(rocCurveSeries.getThreshold(item)));
+            tooltipParams.put(SPECIFICITY, format.format(100.0 - xySeriesCollection.getXValue(series, item)));
+            tooltipParams.put(SENSITIVITY, format.format(xySeriesCollection.getYValue(series, item)));
+            tooltipParams.put(THRESHOLD, format.format(rocCurveSeries.getThreshold(item)));
         }
     }
 
