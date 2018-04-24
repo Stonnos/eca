@@ -11,8 +11,6 @@ import eca.gui.service.AboutProgramService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -42,12 +40,7 @@ public class AboutProgramFrame extends JFrame {
         infoPanel.add(info);
         JButton okButton = ButtonUtils.createCloseButton();
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> setVisible(false));
         add(infoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,

@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -43,25 +41,17 @@ public class EcaServiceOptionsDialog extends JDialog {
 
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    saveEcaServiceOptions();
-                    setVisible(false);
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
+        okButton.addActionListener(evt -> {
+            try {
+                saveEcaServiceOptions();
+                setVisible(false);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
+                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        cancelButton.addActionListener(e -> setVisible(false));
 
         this.add(scrollPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,

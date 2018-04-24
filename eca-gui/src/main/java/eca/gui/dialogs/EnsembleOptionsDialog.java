@@ -26,13 +26,7 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.text.DecimalFormat;
 
 /**
@@ -200,33 +194,15 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         final JButton removeButton = new JButton(DELETE_BUTTON_TEXT);
         removeButton.setEnabled(false);
         //-------------------------------------------------------------
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.addElement(algorithms.getSelectedValue());
-            }
+        addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithms.getSelectedValue()));
+        //-------------------------------------------------------------
+        removeButton.addActionListener(evt -> {
+            baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
+            removeButton.setEnabled(false);
         });
         //-------------------------------------------------------------
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
-                removeButton.setEnabled(false);
-            }
-        });
-        //-------------------------------------------------------------
-        algorithms.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                addButton.setEnabled(true);
-            }
-        });
-        selectedAlgorithms.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                removeButton.setEnabled(!baseClassifiersListModel.isEmpty());
-            }
-        });
+        algorithms.addListSelectionListener(e -> addButton.setEnabled(true));
+        selectedAlgorithms.addListSelectionListener(e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
         //-------------------------------------------------------------
         selectedAlgorithms.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithms,
                 baseClassifiersListModel));
@@ -249,26 +225,20 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
         //--------------------------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
-                        classifierMinErrorTextField, classifierMaxErrorTextField);
-                if (text != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
-                } else if (isValidate()) {
-                    createClassifiersSet();
-                    dialogResult = true;
-                    setVisible(false);
-                }
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
+        okButton.addActionListener(e -> {
+            JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
+                    classifierMinErrorTextField, classifierMaxErrorTextField);
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
+            } else if (isValidate()) {
+                createClassifiersSet();
+                dialogResult = true;
                 setVisible(false);
             }
+        });
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //--------------------------------------------------------------
         pane.add(firstPanel, MAIN_OPTIONS_TAB_TITLE);
@@ -287,36 +257,24 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         group.add(randomRadioButton);
         group.add(randomBaggingRadioButton);
         //--------------------------------
-        initialRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.INITIAL);
-                }
+        initialRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.INITIAL);
             }
         });
-        baggingRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.BAGGING);
-                }
+        baggingRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.BAGGING);
             }
         });
-        randomRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM);
-                }
+        randomRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM);
             }
         });
-        randomBaggingRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
-                }
+        randomBaggingRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
             }
         });
         initialRadioButton.setSelected(true);
@@ -340,20 +298,15 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         clsGroup.add(randomClsRadioButton);
         clsGroup.add(optimalClsRadioButton);
         //--------------------------------
-        randomClsRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setUseRandomClassifier(true);
-                }
+        randomClsRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(true);
             }
         });
-        optimalClsRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setUseRandomClassifier(false);
-                }
+
+        optimalClsRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(false);
             }
         });
         randomClsRadioButton.setSelected(true);
@@ -372,20 +325,14 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         votesGroup.add(majorityRadioButton);
         votesGroup.add(weightedRadioButton);
         //--------------------------------
-        majorityRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(false);
-                }
+        majorityRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(false);
             }
         });
-        weightedRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                if (classifier instanceof HeterogeneousClassifier) {
-                    ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(true);
-                }
+        weightedRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(true);
             }
         });
         majorityRadioButton.setSelected(true);

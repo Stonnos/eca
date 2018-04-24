@@ -15,8 +15,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -31,6 +29,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
     private static final String OPT_METHOD_MESSAGE = "Метод поиска минимума";
 
     private static final String[] OPT_METHODS = {"Квазиньютоновкий метод", "Метод сопряженных градиентов"};
+    private static final Font OPTIMIZATION_METHOD_LABEL_FONT = new Font("Arial", Font.BOLD, 13);
 
 
     private JTextField numItsTextField;
@@ -63,7 +62,7 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         optionPanel.add(numItsTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         JLabel methodLabel = new JLabel(OPT_METHOD_MESSAGE);
-        methodLabel.setFont(new Font("Arial", 1, 13));
+        methodLabel.setFont(OPTIMIZATION_METHOD_LABEL_FONT);
         //-----------------------------------------------------------
         optionPanel.add(methodLabel,
                 new GridBagConstraints(0, 1, 2, 1, 1, 1,
@@ -76,25 +75,19 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (GuiUtils.isEmpty(numItsTextField)) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(LogisticOptionsDialogBase.this, numItsTextField);
-                } else {
-                    classifier.setMaxIts(Integer.parseInt(numItsTextField.getText().trim()));
-                    classifier.setUseConjugateGradientDescent(gradientRadioButton.isSelected());
-                    dialogResult = true;
-                    setVisible(false);
-                }
+        okButton.addActionListener(e -> {
+            if (GuiUtils.isEmpty(numItsTextField)) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(LogisticOptionsDialogBase.this, numItsTextField);
+            } else {
+                classifier.setMaxIts(Integer.parseInt(numItsTextField.getText().trim()));
+                classifier.setUseConjugateGradientDescent(gradientRadioButton.isSelected());
+                dialogResult = true;
+                setVisible(false);
             }
         });
         //------------------------------------
@@ -104,8 +97,6 @@ public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------
-        //-----------------------------------------------
         this.getRootPane().setDefaultButton(okButton);
         this.pack();
         this.setLocationRelativeTo(parent);

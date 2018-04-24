@@ -17,10 +17,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author Roman Batygin
@@ -73,12 +69,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         numRandomAttrTextField = new JTextField(TEXT_FIELD_LENGTH);
         numRandomAttrTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
-        randomTreeBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                numRandomAttrTextField.setEditable(randomTreeBox.isSelected());
-            }
-        });
+        randomTreeBox.addItemListener(evt -> numRandomAttrTextField.setEditable(randomTreeBox.isSelected()));
 
         binaryTreeBox = new JCheckBox(BINARY_TREE_TYPE_TEXT);
 
@@ -87,12 +78,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         numRandomSplitsTextField = new JTextField(TEXT_FIELD_LENGTH);
         numRandomSplitsTextField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
 
-        randomSplitsBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected());
-            }
-        });
+        randomSplitsBox.addItemListener(e -> numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected()));
 
         if (classifier instanceof CART) {
             binaryTreeBox.setEnabled(false);
@@ -127,37 +113,31 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField text = findFirstEmptyField();
-                if (text != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
-                } else if (randomTreeBox.isSelected()
-                        && Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
+        okButton.addActionListener(e -> {
+            JTextField text = findFirstEmptyField();
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
+            } else if (randomTreeBox.isSelected()
+                    && Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
 
+                JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
+                        String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
+                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+
+                numRandomAttrTextField.requestFocusInWindow();
+            } else {
+                try {
+                    optionsSetter.setClassifierOptions();
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                            String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
-                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-
-                    numRandomAttrTextField.requestFocusInWindow();
-                } else {
-                    try {
-                        optionsSetter.setClassifierOptions();
-                        dialogResult = true;
-                        setVisible(false);
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                                ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    }
+                            ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -253,7 +233,7 @@ public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeCla
                     classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText().trim()));
                 } catch (Exception e) {
                     numRandomSplitsTextField.requestFocusInWindow();
-                    throw new RuntimeException(e);
+                    throw new IllegalArgumentException(e);
                 }
             }
         }

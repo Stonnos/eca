@@ -143,64 +143,52 @@ public class TreeVisualizer extends JPanel {
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
         //-----------------------------------
-        options.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                TreeOptions frame = new TreeOptions(null);
-                frame.setVisible(true);
-                if (frame.dialogResult()) {
-                    nodeWidth = frame.getNodeWidth();
-                    nodeHeight = frame.getNodeHeight();
-                    setStroke(frame.getStroke());
-                    nodeFont = frame.getSelectedNodeFont();
-                    ruleFont = frame.getSelectedRuleFont();
-                    ruleColor = frame.getSelectedRuleColor();
-                    textColor = frame.getSelectedTextColor();
-                    linkColor = frame.getSelectedLinkColor();
-                    nodeColor = frame.getSelectedNodeColor();
-                    leafColor = frame.getSelectedLeafColor();
-                    classColor = frame.getSelectedClassColor();
-                    borderColor = frame.getSelectedBorderColor();
-                    TreeVisualizer.this.setBackground(frame.getBackgroundColor());
-                    resizeTree();
-                }
-                frame.dispose();
-            }
-        });
-        //-----------------------------------
-        increase.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                nodeWidth += STEP_SIZE;
-                nodeHeight += STEP_SIZE;
-                if (nodeWidth > MAX_SIZE) {
-                    nodeWidth = MAX_SIZE;
-                }
-                if (nodeHeight > MAX_SIZE) {
-                    nodeHeight = MAX_SIZE;
-                }
-                nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
+        options.addActionListener(evt -> {
+            TreeOptions frame = new TreeOptions(null);
+            frame.setVisible(true);
+            if (frame.dialogResult()) {
+                nodeWidth = frame.getNodeWidth();
+                nodeHeight = frame.getNodeHeight();
+                setStroke(frame.getStroke());
+                nodeFont = frame.getSelectedNodeFont();
+                ruleFont = frame.getSelectedRuleFont();
+                ruleColor = frame.getSelectedRuleColor();
+                textColor = frame.getSelectedTextColor();
+                linkColor = frame.getSelectedLinkColor();
+                nodeColor = frame.getSelectedNodeColor();
+                leafColor = frame.getSelectedLeafColor();
+                classColor = frame.getSelectedClassColor();
+                borderColor = frame.getSelectedBorderColor();
+                TreeVisualizer.this.setBackground(frame.getBackgroundColor());
                 resizeTree();
             }
+            frame.dispose();
         });
         //-----------------------------------
-        decrease.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                nodeWidth -= STEP_SIZE;
-                nodeHeight -= STEP_SIZE;
-                if (nodeWidth < MIN_SIZE) {
-                    nodeWidth = MIN_SIZE;
-                }
-                if (nodeHeight < MIN_SIZE) {
-                    nodeHeight = MIN_SIZE;
-                }
-                nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
-                resizeTree();
+        increase.addActionListener(evt -> {
+            nodeWidth += STEP_SIZE;
+            nodeHeight += STEP_SIZE;
+            if (nodeWidth > MAX_SIZE) {
+                nodeWidth = MAX_SIZE;
             }
+            if (nodeHeight > MAX_SIZE) {
+                nodeHeight = MAX_SIZE;
+            }
+            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
+            resizeTree();
+        });
+        //-----------------------------------
+        decrease.addActionListener(evt -> {
+            nodeWidth -= STEP_SIZE;
+            nodeHeight -= STEP_SIZE;
+            if (nodeWidth < MIN_SIZE) {
+                nodeWidth = MIN_SIZE;
+            }
+            if (nodeHeight < MIN_SIZE) {
+                nodeHeight = MIN_SIZE;
+            }
+            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
+            resizeTree();
         });
         //-----------------------------------
         copyImage.addActionListener(new ActionListener() {
@@ -572,122 +560,92 @@ public class TreeVisualizer extends JPanel {
             panel.add(strokeSpinner);
             //------------------------------------
             JButton nodeButton = new JButton(CHOOSE_BUTTON_TEXT);
-            nodeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, selectedNodeFont);
-                    nodeFontChooser.setVisible(true);
-                    if (nodeFontChooser.dialogResult()) {
-                        selectedNodeFont = nodeFontChooser.getSelectedFont();
-                    }
+            nodeButton.addActionListener(evt -> {
+                JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, selectedNodeFont);
+                nodeFontChooser.setVisible(true);
+                if (nodeFontChooser.dialogResult()) {
+                    selectedNodeFont = nodeFontChooser.getSelectedFont();
                 }
             });
             JButton ruleButton = new JButton(CHOOSE_BUTTON_TEXT);
             //----------------------------------------------
-            ruleButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, selectedRuleFont);
-                    ruleFontChooser.setVisible(true);
-                    if (ruleFontChooser.dialogResult()) {
-                        selectedRuleFont = ruleFontChooser.getSelectedFont();
-                    }
+            ruleButton.addActionListener(evt -> {
+                JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, selectedRuleFont);
+                ruleFontChooser.setVisible(true);
+                if (ruleFontChooser.dialogResult()) {
+                    selectedRuleFont = ruleFontChooser.getSelectedFont();
                 }
             });
             //--------------------------------------------------
             JButton ruleColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            ruleColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
-                            selectedRuleColor);
-                    if (newRuleColor != null) {
-                        selectedRuleColor = newRuleColor;
-                    }
+            ruleColorButton.addActionListener(evt -> {
+                Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
+                        selectedRuleColor);
+                if (newRuleColor != null) {
+                    selectedRuleColor = newRuleColor;
                 }
             });
             //--------------------------------------------------
             JButton textColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            textColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
-                            selectedTextColor);
-                    if (newTextColor != null) {
-                        selectedTextColor = newTextColor;
-                    }
+            textColorButton.addActionListener(evt -> {
+                Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
+                        selectedTextColor);
+                if (newTextColor != null) {
+                    selectedTextColor = newTextColor;
                 }
             });
             //--------------------------------------------------
             JButton linkColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            linkColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
-                            selectedLinkColor);
-                    if (newLinkColor != null) {
-                        selectedLinkColor = newLinkColor;
-                    }
+            linkColorButton.addActionListener(evt -> {
+                Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
+                        selectedLinkColor);
+                if (newLinkColor != null) {
+                    selectedLinkColor = newLinkColor;
                 }
             });
             //--------------------------------------------------
             JButton nodeColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            nodeColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
-                            selectedNodeColor);
-                    if (newLeafColor != null) {
-                        selectedNodeColor = newLeafColor;
-                    }
+            nodeColorButton.addActionListener(evt -> {
+                Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
+                        selectedNodeColor);
+                if (newLeafColor != null) {
+                    selectedNodeColor = newLeafColor;
                 }
             });
             //--------------------------------------------------
             JButton leafColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            leafColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
-                            selectedLeafColor);
-                    if (obj != null) {
-                        selectedLeafColor = obj;
-                    }
+            leafColorButton.addActionListener(evt -> {
+                Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
+                        selectedLeafColor);
+                if (obj != null) {
+                    selectedLeafColor = obj;
                 }
             });
             //--------------------------------------------------
             JButton classColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            classColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
-                            selectedClassColor);
-                    if (newClassColor != null) {
-                        selectedClassColor = newClassColor;
-                    }
+            classColorButton.addActionListener(evt -> {
+                Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
+                        selectedClassColor);
+                if (newClassColor != null) {
+                    selectedClassColor = newClassColor;
                 }
             });
             //--------------------------------------------------
             JButton borderColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            borderColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
-                            selectedBorderColor);
-                    if (newBorderColor != null) {
-                        selectedBorderColor = newBorderColor;
-                    }
+            borderColorButton.addActionListener(evt -> {
+                Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
+                        selectedBorderColor);
+                if (newBorderColor != null) {
+                    selectedBorderColor = newBorderColor;
                 }
             });
             //--------------------------------------------------
             JButton backgroundColorButton = new JButton(CHOOSE_BUTTON_TEXT);
-            backgroundColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
-                            backgroundColor);
-                    if (newBackgroundColor != null) {
-                        backgroundColor = newBackgroundColor;
-                    }
+            backgroundColorButton.addActionListener(evt -> {
+                Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
+                        backgroundColor);
+                if (newBackgroundColor != null) {
+                    backgroundColor = newBackgroundColor;
                 }
             });
             //------------------------------------
@@ -715,19 +673,13 @@ public class TreeVisualizer extends JPanel {
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    dialogResult = true;
-                    setVisible(false);
-                }
+            okButton.addActionListener(evt -> {
+                dialogResult = true;
+                setVisible(false);
             });
-            cancelButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    dialogResult = false;
-                    setVisible(false);
-                }
+            cancelButton.addActionListener(evt -> {
+                dialogResult = false;
+                setVisible(false);
             });
             //---------------------------------------------------------
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,

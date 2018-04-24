@@ -9,8 +9,6 @@ import eca.gui.ButtonUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Dialog frame for setting spinner data.
@@ -53,20 +51,14 @@ public class SpinnerDialog extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = true;
-                setVisible(false);
-            }
+        okButton.addActionListener(e -> {
+            dialogResult = true;
+            setVisible(false);
         });
         //------------------------------------
         this.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,

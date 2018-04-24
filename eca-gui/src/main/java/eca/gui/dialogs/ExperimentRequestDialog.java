@@ -14,11 +14,10 @@ import eca.gui.validators.Validator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Experiment request dialog.
+ *
  * @author Roman Batygin
  */
 public class ExperimentRequestDialog extends JDialog {
@@ -96,30 +95,24 @@ public class ExperimentRequestDialog extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(evt -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField field =
-                        GuiUtils.searchFirstEmptyField(firstNameTextField, emailTextField);
-                if (field != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(ExperimentRequestDialog.this, field);
-                } else {
-                    try {
-                        validateFields();
-                        dialogResult = true;
-                        setVisible(false);
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(ExperimentRequestDialog.this,
-                                ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    }
+        okButton.addActionListener(e -> {
+            JTextField field =
+                    GuiUtils.searchFirstEmptyField(firstNameTextField, emailTextField);
+            if (field != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(ExperimentRequestDialog.this, field);
+            } else {
+                try {
+                    validateFields();
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(ExperimentRequestDialog.this,
+                            ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -170,12 +163,12 @@ public class ExperimentRequestDialog extends JDialog {
         return experimentRequestDto;
     }
 
-    private void validateFields() throws Exception {
+    private void validateFields() {
         if (!firstNameValidator.validate(firstNameTextField.getText().trim())) {
-            throw new Exception(NOT_SAME_ALPHABETIC_ERROR);
+            throw new IllegalArgumentException(NOT_SAME_ALPHABETIC_ERROR);
         }
         if (!emailValidator.validate(emailTextField.getText().trim())) {
-            throw new Exception(INVALID_EMAIL_FORMAT_ERROR);
+            throw new IllegalArgumentException(INVALID_EMAIL_FORMAT_ERROR);
         }
     }
 }

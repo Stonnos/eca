@@ -15,8 +15,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 /**
@@ -119,42 +117,36 @@ public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField textField = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
-                        classifierMinErrorTextField,
-                        classifierMaxErrorTextField);
-                if (textField != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(RandomNetworkOptionsDialog.this, textField);
-                } else {
-                    try {
-                        textField = numClassifiersTextField;
-                        classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
-                        textField = classifierMinErrorTextField;
-                        classifier.setMinError(estimateFormat
-                                .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
-                        textField = classifierMaxErrorTextField;
-                        classifier.setMaxError(estimateFormat
-                                .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
-                        classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
-                        classifier.setNumThreads(
-                                ((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
-                        dialogResult = true;
-                        setVisible(false);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(RandomNetworkOptionsDialog.this,
-                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                        textField.requestFocusInWindow();
-                    }
+        okButton.addActionListener(event -> {
+            JTextField textField = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
+                    classifierMinErrorTextField,
+                    classifierMaxErrorTextField);
+            if (textField != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(RandomNetworkOptionsDialog.this, textField);
+            } else {
+                try {
+                    textField = numClassifiersTextField;
+                    classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+                    textField = classifierMinErrorTextField;
+                    classifier.setMinError(estimateFormat
+                            .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
+                    textField = classifierMaxErrorTextField;
+                    classifier.setMaxError(estimateFormat
+                            .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
+                    classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
+                    classifier.setNumThreads(
+                            ((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(RandomNetworkOptionsDialog.this,
+                            e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                    textField.requestFocusInWindow();
                 }
             }
         });

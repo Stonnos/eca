@@ -32,8 +32,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
@@ -115,24 +113,21 @@ public class AttributesStatisticsFrame extends JFrame {
             attributesBox.addItem(data.attribute(i).name());
         }
 
-        attributesBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int i = attributesBox.getSelectedIndex();
-                Attribute a = data.attribute(i);
-                if (attributesStatisticsTableModels[i] == null) {
-                    if (a.isNominal()) {
-                        attributesStatisticsTableModels[i]
-                                = new NominalAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
-                    } else {
-                        attributesStatisticsTableModels[i] =
-                                new NumericAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
-                    }
+        attributesBox.addActionListener(e -> {
+            int i = attributesBox.getSelectedIndex();
+            Attribute a = data.attribute(i);
+            if (attributesStatisticsTableModels[i] == null) {
+                if (a.isNominal()) {
+                    attributesStatisticsTableModels[i]
+                            = new NominalAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
+                } else {
+                    attributesStatisticsTableModels[i] =
+                            new NumericAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
                 }
-                statisticsTable.setModel(attributesStatisticsTableModels[i]);
-                attributeTypeLabel.setText(AttributesTypesDictionary.getType(a));
-                showFrequencyDiagramPlot(i);
             }
+            statisticsTable.setModel(attributesStatisticsTableModels[i]);
+            attributeTypeLabel.setText(AttributesTypesDictionary.getType(a));
+            showFrequencyDiagramPlot(i);
         });
 
         attributeTypeLabel = new JLabel();
@@ -153,12 +148,7 @@ public class AttributesStatisticsFrame extends JFrame {
 
         JButton okButton = ButtonUtils.createOkButton();
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> setVisible(false));
 
         attributesBox.setSelectedIndex(0);
         showFrequencyDiagramPlot(0);
@@ -220,17 +210,14 @@ public class AttributesStatisticsFrame extends JFrame {
             attributeChartPanel.setMinimumSize(FREQUENCY_DIAGRAM_DIMENSION);
 
             JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
-            dataMenu.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    int selectedIndex = attributesBox.getSelectedIndex();
-                    if (dataFrames[selectedIndex] == null) {
-                        dataFrames[selectedIndex] = new DataFrame(frequencyDiagramModels[selectedIndex]
-                                .getFrequencyDataList(), frequencyDiagramBuilder.getAttributeStatistics()
-                                .getDecimalFormat().getMaximumFractionDigits());
-                    }
-                    dataFrames[selectedIndex].setVisible(true);
+            dataMenu.addActionListener(e -> {
+                int selectedIndex = attributesBox.getSelectedIndex();
+                if (dataFrames[selectedIndex] == null) {
+                    dataFrames[selectedIndex] = new DataFrame(frequencyDiagramModels[selectedIndex]
+                            .getFrequencyDataList(), frequencyDiagramBuilder.getAttributeStatistics()
+                            .getDecimalFormat().getMaximumFractionDigits());
                 }
+                dataFrames[selectedIndex].setVisible(true);
             });
 
             attributeChartPanel.getPopupMenu().add(dataMenu);
@@ -298,12 +285,7 @@ public class AttributesStatisticsFrame extends JFrame {
             JScrollPane scrollPanel = new JScrollPane(table);
             JButton okButton = ButtonUtils.createOkButton();
 
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    setVisible(false);
-                }
-            });
+            okButton.addActionListener(e -> setVisible(false));
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));

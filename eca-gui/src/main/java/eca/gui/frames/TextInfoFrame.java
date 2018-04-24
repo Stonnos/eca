@@ -23,6 +23,7 @@ public class TextInfoFrame extends JFrame {
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
     private static final Dimension OPTIONS_PANE_PREFERRED_SIZE = new Dimension(475, 200);
+    private static final String CONTENT_TYPE = "text/html";
     private JTextPane inputOptionsPane = new JTextPane();
 
     public TextInfoFrame(String title, String text, JFrame parent) {
@@ -33,18 +34,13 @@ public class TextInfoFrame extends JFrame {
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
-        inputOptionsPane.setContentType("text/html");
+        inputOptionsPane.setContentType(CONTENT_TYPE);
         inputOptionsPane.setEditable(false);
         inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
         JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
         JButton okButton = ButtonUtils.createOkButton();
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> setVisible(false));
         //----------------------------------------
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,

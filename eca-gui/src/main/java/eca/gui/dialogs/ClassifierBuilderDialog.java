@@ -16,8 +16,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * Implements classifier iterative building dialog.
@@ -93,12 +91,9 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
     private class SwingWorkerConstruction extends SwingWorker<Void, Void> {
 
         SwingWorkerConstruction() {
-            this.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if ("progress".equals(evt.getPropertyName())) {
-                        progress.setValue((Integer) evt.getNewValue());
-                    }
+            this.addPropertyChangeListener(evt -> {
+                if ("progress".equals(evt.getPropertyName())) {
+                    progress.setValue((Integer) evt.getNewValue());
                 }
             });
 

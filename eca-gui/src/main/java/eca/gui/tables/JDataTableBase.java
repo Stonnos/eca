@@ -15,8 +15,6 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author Roman Batygin
@@ -87,25 +85,17 @@ public class JDataTableBase extends JTable {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem fontMenu = new JMenuItem(FONT_SELECTION_MENU_TEXT);
 
-        fontMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JFontChooser chooser = new JFontChooser(null, JDataTableBase.this.getFont());
-                chooser.setVisible(true);
-                if (chooser.dialogResult()) {
-                    Font font = chooser.getSelectedFont();
-                    JDataTableBase.this.font(font);
-                }
-                chooser.dispose();
+        fontMenu.addActionListener(e -> {
+            JFontChooser chooser = new JFontChooser(null, JDataTableBase.this.getFont());
+            chooser.setVisible(true);
+            if (chooser.dialogResult()) {
+                Font font = chooser.getSelectedFont();
+                JDataTableBase.this.font(font);
             }
+            chooser.dispose();
         });
         resizeMenu = new JCheckBoxMenuItem(AUTO_SIZE_MENU_TEXT);
-        resizeMenu.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                setAutoResizeOffMode(!resizeMenu.getState());
-            }
-        });
+        resizeMenu.addItemListener(e -> setAutoResizeOffMode(!resizeMenu.getState()));
         //-----------------------------------
         JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
         JMenuItem copyWithHeaderMenu = new JMenuItem(ALL_DATA_COPY_MENU_TEXT);

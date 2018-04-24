@@ -17,8 +17,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -87,7 +85,7 @@ public class QueryFrame extends JFrame {
         this.setLocationRelativeTo(parentFrame);
     }
 
-    public java.util.ArrayList<Instances> getSelectedInstances() {
+    public ArrayList<Instances> getSelectedInstances() {
         int[] selectedRows = instancesSetTable.getSelectedRows();
         ArrayList<Instances> result = new ArrayList<>(selectedRows.length);
         for (int i : selectedRows) {
@@ -103,14 +101,11 @@ public class QueryFrame extends JFrame {
     }
 
     private void closeConnection() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    connection.close();
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                connection.close();
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
             }
         });
     }
@@ -144,34 +139,20 @@ public class QueryFrame extends JFrame {
         interrupt = new JButton(INTERRUPT_BUTTON_TEXT);
         interrupt.setEnabled(false);
         //-----------------------------------------
-        execute.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (queryArea.getText() == null || StringUtils.isEmpty(queryArea.getText().trim())) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(QueryFrame.this, queryArea);
-                    queryArea.setText(StringUtils.EMPTY);
-                } else {
-                    progress.setIndeterminate(true);
-                    worker = new QueryWorker(queryArea.getText().trim());
-                    interrupt.setEnabled(true);
-                    worker.execute();
-                }
-            }
-        });
-
-        interrupt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                interruptWorker();
-            }
-        });
-
-        clear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
+        execute.addActionListener(e -> {
+            if (queryArea.getText() == null || StringUtils.isEmpty(queryArea.getText().trim())) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(QueryFrame.this, queryArea);
                 queryArea.setText(StringUtils.EMPTY);
+            } else {
+                progress.setIndeterminate(true);
+                worker = new QueryWorker(queryArea.getText().trim());
+                interrupt.setEnabled(true);
+                worker.execute();
             }
         });
+
+        interrupt.addActionListener(e -> interruptWorker());
+        clear.addActionListener(e -> queryArea.setText(StringUtils.EMPTY));
         //-----------------------------------------
         execute.setPreferredSize(QUERY_BUTTON_DIM);
         clear.setPreferredSize(QUERY_BUTTON_DIM);
@@ -195,34 +176,26 @@ public class QueryFrame extends JFrame {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        cancelButton.addActionListener(e -> setVisible(false));
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                interruptWorker();
-                if (instancesSetTable.getSelectedRows().length != 0) {
-                    try {
-                        for (Instances instances : getSelectedInstances()) {
-                            parentFrame.createDataFrame(instances);
-                        }
-                        dispose();
-                    } catch (Exception ex) {
-                        LoggerUtils.error(log, ex);
-                        JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
-                                null, JOptionPane.WARNING_MESSAGE);
+        okButton.addActionListener(e -> {
+            interruptWorker();
+            if (instancesSetTable.getSelectedRows().length != 0) {
+                try {
+                    for (Instances instances : getSelectedInstances()) {
+                        parentFrame.createDataFrame(instances);
                     }
-
-                } else {
-                    JOptionPane.showMessageDialog(QueryFrame.this,
-                            CREATE_SAMPLE_ERROR_MESSAGE,
+                    dispose();
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
                             null, JOptionPane.WARNING_MESSAGE);
                 }
+
+            } else {
+                JOptionPane.showMessageDialog(QueryFrame.this,
+                        CREATE_SAMPLE_ERROR_MESSAGE,
+                        null, JOptionPane.WARNING_MESSAGE);
             }
         });
         //-----------------------------------------------------

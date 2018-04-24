@@ -20,8 +20,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Random forests algorithm options dialog frame.
@@ -117,35 +115,29 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField text = emptyTextFieldSearch.findFirstEmptyField();
-                if (text != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
-                } else if (Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
-                    JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
-                            String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
-                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    numRandomAttrTextField.requestFocusInWindow();
-                } else {
-                    try {
-                        optionsSetter.setClassifierOptions();
-                        dialogResult = true;
-                        setVisible(false);
+        okButton.addActionListener(event -> {
+            JTextField text = emptyTextFieldSearch.findFirstEmptyField();
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
+            } else if (Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
+                JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
+                        String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
+                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                numRandomAttrTextField.requestFocusInWindow();
+            } else {
+                try {
+                    optionsSetter.setClassifierOptions();
+                    dialogResult = true;
+                    setVisible(false);
 
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
-                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
+                            e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
@@ -197,19 +189,14 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
                                 Integer.parseInt(numRandomSplitsField.getText().trim()));
                     } catch (Exception ex) {
                         numRandomSplitsField.requestFocusInWindow();
-                        throw new RuntimeException(ex);
+                        throw new IllegalArgumentException(ex);
                     }
                     extraTreesClassifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
                 }
             };
 
-            emptyTextFieldSearch = new EmptyTextFieldSearch() {
-                @Override
-                public JTextField findFirstEmptyField() {
-                    return GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
-                            maxDepthTextField, numRandomAttrTextField, numRandomSplitsField);
-                }
-            };
+            emptyTextFieldSearch = () -> GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
+                    maxDepthTextField, numRandomAttrTextField, numRandomSplitsField);
 
             optionPanel.add(new JLabel(NUM_RANDOM_SPLITS_TEXT), new GridBagConstraints(0, 6, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -221,14 +208,8 @@ public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> 
 
         } else {
             optionsSetter = new OptionsSetter();
-
-            emptyTextFieldSearch = new EmptyTextFieldSearch() {
-                @Override
-                public JTextField findFirstEmptyField() {
-                    return GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
-                            maxDepthTextField, numRandomAttrTextField);
-                }
-            };
+            emptyTextFieldSearch = () -> GuiUtils.searchFirstEmptyField(numClassifiersTextField, minObjTextField,
+                    maxDepthTextField, numRandomAttrTextField);
         }
     }
 

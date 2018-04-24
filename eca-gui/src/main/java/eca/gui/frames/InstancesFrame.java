@@ -6,8 +6,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -25,13 +23,7 @@ public class InstancesFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
         JButton okButton = ButtonUtils.createOkButton();
-
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> setVisible(false));
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));

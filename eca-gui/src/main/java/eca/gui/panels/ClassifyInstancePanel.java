@@ -19,8 +19,6 @@ import weka.core.Instance;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.StringWriter;
 
 /**
@@ -47,6 +45,7 @@ public class ClassifyInstancePanel extends JPanel {
     private static final String CLASS_INDEX = "classIndex";
     private static final String CLASS_VALUE = "classValue";
     private static final String CLASS_PROBABILITY = "classProbability";
+    private static final String CONTENT_TYPE = "text/html";
 
     private Classifier classifier;
     private final ClassifyInstanceTable classifyInstanceTable;
@@ -82,7 +81,7 @@ public class ClassifyInstancePanel extends JPanel {
         classField = new JTextPane();
         classField.setPreferredSize(new Dimension(300,100));
         classField.setEditable(false);
-        classField.setContentType("text/html");
+        classField.setContentType(CONTENT_TYPE);
         JScrollPane bottom = new JScrollPane(classField);
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, classifyInstanceTable.data().classAttribute().name())));
@@ -92,26 +91,20 @@ public class ClassifyInstancePanel extends JPanel {
 
         JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);
         classifyButton.setToolTipText(CLASSIFY_INFO);
-        classifyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    classField.setText(buildClassificationResult());
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(ClassifyInstancePanel.this.getParent(),
-                            e.getMessage(), null,
-                            JOptionPane.WARNING_MESSAGE);
-                }
+        classifyButton.addActionListener(event -> {
+            try {
+                classField.setText(buildClassificationResult());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(ClassifyInstancePanel.this.getParent(),
+                        e.getMessage(), null,
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
         JButton resetButton = new JButton(RESET_BUTTON_TEXT);
         resetButton.setToolTipText(RESET_INFO);
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                classifyInstanceTable.reset();
-                classField.setText(StringUtils.EMPTY);
-            }
+        resetButton.addActionListener(e -> {
+            classifyInstanceTable.reset();
+            classField.setText(StringUtils.EMPTY);
         });
         //-----------------------------------------------------
         top.add(pane, new GridBagConstraints(0, 0, 2, 1, 1, 1,

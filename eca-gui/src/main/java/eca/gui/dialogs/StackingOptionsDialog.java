@@ -22,17 +22,12 @@ import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
 import eca.trees.J48;
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * @author Roman Batygin
@@ -74,7 +69,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         super(parent, title, stackingClassifier, data);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        this.makeGUI(digits);
+        this.createGUI(digits);
         this.setParam();
         this.pack();
         this.setLocationRelativeTo(parent);
@@ -97,7 +92,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         foldsSpinner.getModel().setValue(classifier.getNumFolds());
     }
 
-    private void makeGUI(final int digits) {
+    private void createGUI(final int digits) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(PanelBorderUtils.createTitledBorder(META_SET_TITLE));
         ButtonGroup group = new ButtonGroup();
@@ -122,12 +117,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
 
-        useTestingSet.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                foldsSpinner.setEnabled(useTestingSet.isSelected());
-            }
-        });
+        useTestingSet.addItemListener(e -> foldsSpinner.setEnabled(useTestingSet.isSelected()));
 
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
         algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
@@ -152,33 +142,16 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         final JButton removeButton = new JButton(DELETE_CLASSIFIER_BUTTON_TEXT);
         removeButton.setEnabled(false);
         //-------------------------------------------------------------
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.addElement(algorithmsList.getSelectedValue());
-            }
+        addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithmsList.getSelectedValue()));
+        //-------------------------------------------------------------
+        removeButton.addActionListener(e -> {
+            baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());
+            removeButton.setEnabled(false);
         });
         //-------------------------------------------------------------
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());
-                removeButton.setEnabled(false);
-            }
-        });
-        //-------------------------------------------------------------
-        algorithmsList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                addButton.setEnabled(true);
-            }
-        });
-        selectedAlgorithmsList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                removeButton.setEnabled(!baseClassifiersListModel.isEmpty());
-            }
-        });
+        algorithmsList.addListSelectionListener(e -> addButton.setEnabled(true));
+        selectedAlgorithmsList.addListSelectionListener(
+                e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
         //-------------------------------------------------------------
         selectedAlgorithmsList.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithmsList,
                 baseClassifiersListModel));
@@ -199,68 +172,68 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
         //-------------------------------------------------------------
         metaClassifierBox = new JComboBox<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
-        metaClassifierBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                try {
-                    switch ((String) metaClassifierBox.getSelectedItem()) {
-                        case ClassifiersNamesDictionary.ID3:
-                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.ID3, new ID3(), data);
-                            break;
-
-                        case ClassifiersNamesDictionary.C45:
-                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.C45, new C45(), data);
-                            break;
-
-                        case ClassifiersNamesDictionary.CART:
-                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.CART, new CART(), data);
-                            break;
-
-                        case ClassifiersNamesDictionary.CHAID:
-                            metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.CHAID, new CHAID(), data);
-                            break;
-
-                        case ClassifiersNamesDictionary.NEURAL_NETWORK:
-                            NeuralNetwork neuralNetwork = new NeuralNetwork(data);
-                            neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
-                            metaClsOptionsDialog = new NetworkOptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data);
-                            break;
-
-                        case ClassifiersNamesDictionary.LOGISTIC:
-                            metaClsOptionsDialog = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data);
-                            break;
-
-                        case ClassifiersNamesDictionary.KNN:
-                            KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
-                            kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
-                            metaClsOptionsDialog = new KNNOptionDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.KNN, kNearestNeighbours, data);
-                            break;
-                        case ClassifiersNamesDictionary.J48:
-                            metaClsOptionsDialog = new J48OptionsDialog(StackingOptionsDialog.this,
-                                    ClassifiersNamesDictionary.J48, new J48(), data);
-                            break;
-                    }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(StackingOptionsDialog.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        metaClassifierBox.addItemListener(event -> {
+            try {
+                String selectedClassifier = (String) metaClassifierBox.getSelectedItem();
+                if (StringUtils.isEmpty(selectedClassifier)) {
+                    throw new IllegalArgumentException(EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE);
                 }
+                switch (selectedClassifier) {
+                    case ClassifiersNamesDictionary.ID3:
+                        metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.ID3, new ID3(), data);
+                        break;
+
+                    case ClassifiersNamesDictionary.C45:
+                        metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.C45, new C45(), data);
+                        break;
+
+                    case ClassifiersNamesDictionary.CART:
+                        metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.CART, new CART(), data);
+                        break;
+
+                    case ClassifiersNamesDictionary.CHAID:
+                        metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.CHAID, new CHAID(), data);
+                        break;
+
+                    case ClassifiersNamesDictionary.NEURAL_NETWORK:
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
+                        metaClsOptionsDialog = new NetworkOptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data);
+                        break;
+
+                    case ClassifiersNamesDictionary.LOGISTIC:
+                        metaClsOptionsDialog = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data);
+                        break;
+
+                    case ClassifiersNamesDictionary.KNN:
+                        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
+                        metaClsOptionsDialog = new KNNOptionDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, data);
+                        break;
+                    case ClassifiersNamesDictionary.J48:
+                        metaClsOptionsDialog = new J48OptionsDialog(StackingOptionsDialog.this,
+                                ClassifiersNamesDictionary.J48, new J48(), data);
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException(
+                                String.format("Unexpected classifier: %s", selectedClassifier));
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(StackingOptionsDialog.this,
+                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
             }
         });
         metaClassifierBox.setSelectedIndex(1);
         metaOptionsButton = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
-        metaOptionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                metaClsOptionsDialog.showDialog();
-            }
-        });
+        metaOptionsButton.addActionListener(e -> metaClsOptionsDialog.showDialog());
         //----------------------------------------------------------------
         JPanel metaPanel = new JPanel(new GridBagLayout());
         metaPanel.setBorder(PanelBorderUtils.createTitledBorder(META_CLASSIFIER_TITLE));
@@ -274,35 +247,29 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (baseClassifiersListModel.isEmpty()) {
-                    JOptionPane.showMessageDialog(StackingOptionsDialog.this,
-                            EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
-                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                } else {
-                    if (useTestingSet.isSelected()) {
-                        classifier.setUseCrossValidation(true);
-                        classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                    }
-                    ClassifiersSet set = new ClassifiersSet();
-                    for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
-                        set.addClassifier(frame.classifier());
-                    }
-                    classifier.setClassifiers(set);
-                    classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
-                    dialogResult = true;
-                    setVisible(false);
+        okButton.addActionListener(e -> {
+            if (baseClassifiersListModel.isEmpty()) {
+                JOptionPane.showMessageDialog(StackingOptionsDialog.this,
+                        EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
+                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+            } else {
+                if (useTestingSet.isSelected()) {
+                    classifier.setUseCrossValidation(true);
+                    classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
                 }
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
+                ClassifiersSet set = new ClassifiersSet();
+                for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
+                    set.addClassifier(frame.classifier());
+                }
+                classifier.setClassifiers(set);
+                classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
+                dialogResult = true;
                 setVisible(false);
             }
+        });
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //--------------------------------------------------------------
         this.add(okButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,

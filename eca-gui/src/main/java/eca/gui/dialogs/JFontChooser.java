@@ -12,9 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 /**
@@ -173,12 +170,7 @@ public class JFontChooser extends JDialog {
                 break;
         }
         //----------------------------------
-        ItemListener listener = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                setExample();
-            }
-        };
+        ItemListener listener = event -> setExample();
         fontTypeBox.addItemListener(listener);
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
@@ -210,20 +202,14 @@ public class JFontChooser extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = true;
-                setVisible(false);
-            }
+        okButton.addActionListener(e -> {
+            dialogResult = true;
+            setVisible(false);
         });
         //--------------------------------------------------------------------
         this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,

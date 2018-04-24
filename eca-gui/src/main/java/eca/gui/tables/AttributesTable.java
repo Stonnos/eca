@@ -26,8 +26,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,31 +106,28 @@ public class AttributesTable extends JDataTableBase {
             }
         });
 
-        renameMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int i = getSelectedRow();
-                if (i != -1) {
-                    String attrNewName = (String) JOptionPane.showInputDialog(AttributesTable.this.getRootPane(),
-                            ATTR_NAME_TEXT,
-                            String.format(NEW_ATTR_NAME_FORMAT, instancesTable.data().attribute(i).name()),
-                            JOptionPane.INFORMATION_MESSAGE, null,
-                            null, null);
-                    if (attrNewName != null) {
-                        String trimName = attrNewName.trim();
-                        if (!StringUtils.isEmpty(trimName)) {
-                            try {
-                                getAttributesTableModel().renameAttribute(i, trimName);
-                                instancesTable.getColumnModel().getColumn(i + 1).setHeaderValue(trimName);
-                                instancesTable.getRootPane().repaint();
-                                classBox.insertItemAt(trimName, i);
-                                classBox.removeItemAt(i + 1);
-                            } catch (Exception e) {
-                                LoggerUtils.error(log, e);
-                                JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
-                                        String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
-                                        null, JOptionPane.WARNING_MESSAGE);
-                            }
+        renameMenu.addActionListener(evt -> {
+            int i = getSelectedRow();
+            if (i != -1) {
+                String attrNewName = (String) JOptionPane.showInputDialog(AttributesTable.this.getRootPane(),
+                        ATTR_NAME_TEXT,
+                        String.format(NEW_ATTR_NAME_FORMAT, instancesTable.data().attribute(i).name()),
+                        JOptionPane.INFORMATION_MESSAGE, null,
+                        null, null);
+                if (attrNewName != null) {
+                    String trimName = attrNewName.trim();
+                    if (!StringUtils.isEmpty(trimName)) {
+                        try {
+                            getAttributesTableModel().renameAttribute(i, trimName);
+                            instancesTable.getColumnModel().getColumn(i + 1).setHeaderValue(trimName);
+                            instancesTable.getRootPane().repaint();
+                            classBox.insertItemAt(trimName, i);
+                            classBox.removeItemAt(i + 1);
+                        } catch (Exception e) {
+                            LoggerUtils.error(log, e);
+                            JOptionPane.showMessageDialog(AttributesTable.this.getRootPane(),
+                                    String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, trimName),
+                                    null, JOptionPane.WARNING_MESSAGE);
                         }
                     }
                 }

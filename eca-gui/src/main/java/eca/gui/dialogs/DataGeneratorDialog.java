@@ -10,8 +10,6 @@ import eca.gui.validators.TextFieldInputVerifier;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -41,7 +39,7 @@ public class DataGeneratorDialog extends JDialog {
         super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        this.makeGUI();
+        this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
         numAttributesField.requestFocusInWindow();
@@ -58,7 +56,7 @@ public class DataGeneratorDialog extends JDialog {
         return simpleDataGenerator;
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(GENERATOR_PARAMS_TEXT));
 
@@ -90,25 +88,19 @@ public class DataGeneratorDialog extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(evt -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField field =
-                        GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
-                if (field != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(DataGeneratorDialog.this, field);
-                } else {
-                    dialogResult = true;
-                    setVisible(false);
-                }
+        okButton.addActionListener(evt -> {
+            JTextField field =
+                    GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
+            if (field != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(DataGeneratorDialog.this, field);
+            } else {
+                dialogResult = true;
+                setVisible(false);
             }
         });
         //------------------------------------

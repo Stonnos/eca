@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -38,12 +36,7 @@ public class ConsoleFrame extends JFrame {
         JScrollPane scrollPanel = new JScrollPane(this.textArea);
         JButton closeButton = ButtonUtils.createCloseButton();
 
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setVisible(false);
-            }
-        });
+        closeButton.addActionListener(e -> setVisible(false));
         //----------------------------------------
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -68,40 +61,28 @@ public class ConsoleFrame extends JFrame {
         fileMenu.add(backgroundColorMenu);
         menu.add(fileMenu);
         //--------------------------------------------
-        fontMenu.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JFontChooser chooser = new JFontChooser(ConsoleFrame.this,
-                        textArea.getFont());
-                chooser.setVisible(true);
-                if (chooser.dialogResult()) {
-                    Font selectedFont = chooser.getSelectedFont();
-                    textArea.setFont(selectedFont);
-                }
-                chooser.dispose();
+        fontMenu.addActionListener(e -> {
+            JFontChooser chooser = new JFontChooser(ConsoleFrame.this,
+                    textArea.getFont());
+            chooser.setVisible(true);
+            if (chooser.dialogResult()) {
+                Font selectedFont = chooser.getSelectedFont();
+                textArea.setFont(selectedFont);
+            }
+            chooser.dispose();
+        });
+        fontColorMenu.addActionListener(e -> {
+            Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, FONT_COLOR_MENU_TEXT,
+                    textArea.getForeground());
+            if (selectedColor != null) {
+                textArea.setForeground(selectedColor);
             }
         });
-        fontColorMenu.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, FONT_COLOR_MENU_TEXT,
-                        textArea.getForeground());
-                if (selectedColor != null) {
-                    textArea.setForeground(selectedColor);
-                }
-            }
-        });
-        backgroundColorMenu.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, BACKGROUND_COLOR_MENU_TEXT,
-                        textArea.getForeground());
-                if (selectedColor != null) {
-                    textArea.setBackground(selectedColor);
-                }
+        backgroundColorMenu.addActionListener(e -> {
+            Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, BACKGROUND_COLOR_MENU_TEXT,
+                    textArea.getForeground());
+            if (selectedColor != null) {
+                textArea.setBackground(selectedColor);
             }
         });
         this.setJMenuBar(menu);

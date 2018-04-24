@@ -14,8 +14,6 @@ import weka.core.Instances;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -72,79 +70,61 @@ public class InstancesTable extends JDataTableBase {
             }
         });
 
-        deleteMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int i = getSelectedRow();
-                if (i != -1) {
-                    model().remove(i);
-                }
+        deleteMenu.addActionListener(e -> {
+            int i = getSelectedRow();
+            if (i != -1) {
+                model().remove(i);
+            }
+            numInstances.setText(String.valueOf(model().getRowCount()));
+        });
+
+        deleteAllMenu.addActionListener(e -> {
+            int[] i = getSelectedRows();
+            if (i.length != 0) {
+                model().remove(i);
+            }
+            numInstances.setText(String.valueOf(model().getRowCount()));
+        });
+
+        insertMenu.addActionListener(e -> {
+            String newVal = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
+                    INSTANCE_VALUE_TEXT,
+                    ADD_INSTANCE_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, null);
+            if (newVal != null) {
+                String obj = newVal.trim();
+                model().add(obj.isEmpty() ? null : obj);
                 numInstances.setText(String.valueOf(model().getRowCount()));
             }
         });
 
-        deleteAllMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int[] i = getSelectedRows();
-                if (i.length != 0) {
-                    model().remove(i);
-                }
+        clearMenu.addActionListener(e -> {
+            int result = JOptionPane.showConfirmDialog(InstancesTable.this.getRootPane(),
+                    ARE_YOU_SURE_TEXT, null,
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                model().clear();
                 numInstances.setText(String.valueOf(model().getRowCount()));
             }
         });
 
-        insertMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                String newVal = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
-                        INSTANCE_VALUE_TEXT,
-                        ADD_INSTANCE_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
-                        null, null);
-                if (newVal != null) {
-                    String obj = newVal.trim();
-                    model().add(obj.isEmpty() ? null : obj);
-                    numInstances.setText(String.valueOf(model().getRowCount()));
-                }
-            }
+        missMenu.addActionListener(e -> {
+            model().removeMissing();
+            numInstances.setText(String.valueOf(model().getRowCount()));
         });
 
-        clearMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int result = JOptionPane.showConfirmDialog(InstancesTable.this.getRootPane(),
-                        ARE_YOU_SURE_TEXT, null,
-                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                if (result == JOptionPane.YES_OPTION) {
-                    model().clear();
-                    numInstances.setText(String.valueOf(model().getRowCount()));
-                }
-            }
-        });
-
-        missMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                model().removeMissing();
-                numInstances.setText(String.valueOf(model().getRowCount()));
-            }
-        });
-
-        reValueMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                int i = getSelectedColumn();
-                if (i > 0) {
-                    int j = getSelectedRow();
-                    String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
-                    String[] labels = {OLD_VALUE_TEXT, NEW_VALUE_TEXT};
-                    String[] values = {value, StringUtils.EMPTY};
-                    JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null, REPLACE_VALUE_TEXT,
-                            labels, values, ROWS, TEXT_FIELD_LENGTH);
-                    frame.setVisible(true);
-                    if (frame.dialogResult()) {
-                        model().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
-                    }
+        reValueMenu.addActionListener(e -> {
+            int i = getSelectedColumn();
+            if (i > 0) {
+                int j = getSelectedRow();
+                String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
+                String[] labels = {OLD_VALUE_TEXT, NEW_VALUE_TEXT};
+                String[] values = {value, StringUtils.EMPTY};
+                JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null, REPLACE_VALUE_TEXT,
+                        labels, values, ROWS, TEXT_FIELD_LENGTH);
+                frame.setVisible(true);
+                if (frame.dialogResult()) {
+                    model().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
                 }
             }
         });

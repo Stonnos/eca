@@ -19,8 +19,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 /**
@@ -49,10 +47,8 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         super(parent, title, knn, data);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        //-------------------------------------------
         estimateFormat.setMaximumFractionDigits(INT_FIELD_LENGTH);
         estimateFormat.setGroupingUsed(false);
-        //-------------------------------------------
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_MESSAGE));
         numNeighboursTextField = new JTextField(TEXT_FIELD_LENGTH);
@@ -62,7 +58,7 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         weightTextField.setDocument(new DoubleDocument(INT_FIELD_LENGTH));
         weightTextField.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------
-        metricBox = new JComboBox(DistanceType.getDescriptions());
+        metricBox = new JComboBox<>(DistanceType.getDescriptions());
         optionPanel.add(new JLabel(NUM_NEIGHBOURS_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -80,44 +76,38 @@ public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(numNeighboursTextField, weightTextField);
-                if (text != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(KNNOptionDialog.this, text);
-                } else if (Integer.parseInt(numNeighboursTextField.getText()) > data.numInstances()) {
+        okButton.addActionListener(event -> {
+            JTextField text = GuiUtils.searchFirstEmptyField(numNeighboursTextField, weightTextField);
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(KNNOptionDialog.this, text);
+            } else if (Integer.parseInt(numNeighboursTextField.getText()) > data.numInstances()) {
+                JOptionPane.showMessageDialog(KNNOptionDialog.this,
+                        String.format(NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT, data.numInstances()),
+                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                numNeighboursTextField.requestFocusInWindow();
+            } else {
+                JTextField focus = weightTextField;
+                try {
+                    classifier.setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
+                    focus = numNeighboursTextField;
+                    classifier.setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
+
+                    DistanceType distanceType =
+                            DistanceType.findByDescription(metricBox.getSelectedItem().toString());
+
+                    classifier.setDistance(distanceType.handle(distanceBuilder));
+
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                            String.format(NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT, data.numInstances()),
-                            INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                    numNeighboursTextField.requestFocusInWindow();
-                } else {
-                    JTextField focus = weightTextField;
-                    try {
-                        classifier.setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
-                        focus = numNeighboursTextField;
-                        classifier.setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
-
-                        DistanceType distanceType =
-                                DistanceType.findByDescription(metricBox.getSelectedItem().toString());
-
-                        classifier.setDistance(distanceType.handle(distanceBuilder));
-
-                        dialogResult = true;
-                        setVisible(false);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                        focus.requestFocusInWindow();
-                    }
+                            e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                    focus.requestFocusInWindow();
                 }
             }
         });

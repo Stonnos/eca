@@ -19,7 +19,12 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -132,53 +137,41 @@ public class NetworkVisualizer extends JPanel {
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
 
-        increase.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                neuronDiam += STEP_SIZE;
-                if (neuronDiam > MAX_SIZE) {
-                    neuronDiam = MAX_SIZE;
-                }
-                nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
-                resizeNetwork();
+        increase.addActionListener(evt -> {
+            neuronDiam += STEP_SIZE;
+            if (neuronDiam > MAX_SIZE) {
+                neuronDiam = MAX_SIZE;
             }
+            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
+            resizeNetwork();
         });
         //-----------------------------------
-        decrease.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                neuronDiam -= STEP_SIZE;
-                if (neuronDiam < MIN_SIZE) {
-                    neuronDiam = MIN_SIZE;
-                }
-                nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
+        decrease.addActionListener(evt -> {
+            neuronDiam -= STEP_SIZE;
+            if (neuronDiam < MIN_SIZE) {
+                neuronDiam = MIN_SIZE;
+            }
+            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
+            resizeNetwork();
+        });
+        options.addActionListener(evt -> {
+            NeuronOptions dialog = new NeuronOptions(frame);
+            dialog.setVisible(true);
+            if (dialog.dialogResult()) {
+                neuronDiam = dialog.getNodeDiameter();
+                nodeFont = dialog.getSelectedNodeFont();
+                attrFont = dialog.getSelectedAttributeFont();
+                linkColor = dialog.getSelectedLinkColor();
+                classColor = dialog.getSelectedClassColor();
+                attrColor = dialog.getSelectedAttributeColor();
+                inLayerColor = dialog.getSelectedInNeuronColor();
+                outLayerColor = dialog.getSelectedOutNeuronColor();
+                hidLayerColor = dialog.getSelectedHidNeuronColor();
+                textColor = dialog.getSelectedTextColor();
+                NetworkVisualizer.this.setBackground(dialog.getSelectedBackgroundColor());
                 resizeNetwork();
             }
-        });
-        options.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                NeuronOptions dialog = new NeuronOptions(frame);
-                dialog.setVisible(true);
-                if (dialog.dialogResult()) {
-                    neuronDiam = dialog.getNodeDiameter();
-                    nodeFont = dialog.getSelectedNodeFont();
-                    attrFont = dialog.getSelectedAttributeFont();
-                    linkColor = dialog.getSelectedLinkColor();
-                    classColor = dialog.getSelectedClassColor();
-                    attrColor = dialog.getSelectedAttributeColor();
-                    inLayerColor = dialog.getSelectedInNeuronColor();
-                    outLayerColor = dialog.getSelectedOutNeuronColor();
-                    hidLayerColor = dialog.getSelectedHidNeuronColor();
-                    textColor = dialog.getSelectedTextColor();
-                    NetworkVisualizer.this.setBackground(dialog.getSelectedBackgroundColor());
-                    resizeNetwork();
-                }
-                dialog.dispose();
-            }
+            dialog.dispose();
         });
         //-----------------------------------
         copyImage.addActionListener(new ActionListener() {
@@ -272,12 +265,7 @@ public class NetworkVisualizer extends JPanel {
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton okButton = ButtonUtils.createOkButton();
             //-----------------------------------
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    setVisible(false);
-                }
-            });
+            okButton.addActionListener(evt -> setVisible(false));
             //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -325,12 +313,7 @@ public class NetworkVisualizer extends JPanel {
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton okButton = ButtonUtils.createOkButton();
             //-----------------------------------
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    setVisible(false);
-                }
-            });
+            okButton.addActionListener(evt -> setVisible(false));
             //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -719,122 +702,92 @@ public class NetworkVisualizer extends JPanel {
             panel.add(diamSpinner);
             //------------------------------------
             JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
-            nodeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
-                    nodeFontChooser.setVisible(true);
-                    if (nodeFontChooser.dialogResult()) {
-                        selectedNodeFont = nodeFontChooser.getSelectedFont();
-                    }
+            nodeButton.addActionListener(evt -> {
+                JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
+                nodeFontChooser.setVisible(true);
+                if (nodeFontChooser.dialogResult()) {
+                    selectedNodeFont = nodeFontChooser.getSelectedFont();
                 }
             });
             JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
             //----------------------------------------------
-            attrButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
-                    ruleFontChooser.setVisible(true);
-                    if (ruleFontChooser.dialogResult()) {
-                        selectedAttrFont = ruleFontChooser.getSelectedFont();
-                    }
+            attrButton.addActionListener(evt -> {
+                JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
+                ruleFontChooser.setVisible(true);
+                if (ruleFontChooser.dialogResult()) {
+                    selectedAttrFont = ruleFontChooser.getSelectedFont();
                 }
             });
             //--------------------------------------------------
             JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
-            inColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
-                            SELECT_IN_LAYER_COLOR_TEXT, selectedInLayerColor);
-                    if (newInLayerColor != null) {
-                        selectedInLayerColor = newInLayerColor;
-                    }
+            inColorButton.addActionListener(evt -> {
+                Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
+                        SELECT_IN_LAYER_COLOR_TEXT, selectedInLayerColor);
+                if (newInLayerColor != null) {
+                    selectedInLayerColor = newInLayerColor;
                 }
             });
             //--------------------------------------------------
             JButton outColorButton = new JButton(SELECT_BUTTON_TEXT);
-            outColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
-                            SELECT_OUT_LAYER_COLOR_TEXT, selectedOutLayerColor);
-                    if (newOutLayerColor != null) {
-                        selectedOutLayerColor = newOutLayerColor;
-                    }
+            outColorButton.addActionListener(evt -> {
+                Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
+                        SELECT_OUT_LAYER_COLOR_TEXT, selectedOutLayerColor);
+                if (newOutLayerColor != null) {
+                    selectedOutLayerColor = newOutLayerColor;
                 }
             });
             //--------------------------------------------------
             JButton linkColorButton = new JButton(SELECT_BUTTON_TEXT);
-            linkColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
-                            SELECT_LINK_COLOR_TEXT, selectedLinkColor);
-                    if (newLinkColor != null) {
-                        selectedLinkColor = newLinkColor;
-                    }
+            linkColorButton.addActionListener(evt -> {
+                Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
+                        SELECT_LINK_COLOR_TEXT, selectedLinkColor);
+                if (newLinkColor != null) {
+                    selectedLinkColor = newLinkColor;
                 }
             });
             //--------------------------------------------------
             JButton hidColorButton = new JButton(SELECT_BUTTON_TEXT);
-            hidColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
-                            SELECT_HIDDEN_LAYER_COLOR_TEXT, selectedHiddenLayerColor);
-                    if (newHiddenLayerColor != null) {
-                        selectedHiddenLayerColor = newHiddenLayerColor;
-                    }
+            hidColorButton.addActionListener(evt -> {
+                Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
+                        SELECT_HIDDEN_LAYER_COLOR_TEXT, selectedHiddenLayerColor);
+                if (newHiddenLayerColor != null) {
+                    selectedHiddenLayerColor = newHiddenLayerColor;
                 }
             });
             //--------------------------------------------------
             JButton attrColorButton = new JButton(SELECT_BUTTON_TEXT);
-            attrColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
-                            selectedAttrColor);
-                    if (newAttrColor != null) {
-                        selectedAttrColor = newAttrColor;
-                    }
+            attrColorButton.addActionListener(evt -> {
+                Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
+                        selectedAttrColor);
+                if (newAttrColor != null) {
+                    selectedAttrColor = newAttrColor;
                 }
             });
             //--------------------------------------------------
             JButton classColorButton = new JButton(SELECT_BUTTON_TEXT);
-            classColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
-                            selectedClassColor);
-                    if (newClassColor != null) {
-                        selectedClassColor = newClassColor;
-                    }
+            classColorButton.addActionListener(evt -> {
+                Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
+                        selectedClassColor);
+                if (newClassColor != null) {
+                    selectedClassColor = newClassColor;
                 }
             });
             //--------------------------------------------------
             JButton textColorButton = new JButton(SELECT_BUTTON_TEXT);
-            textColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
-                            selectedTextColor);
-                    if (newTextColor != null) {
-                        selectedTextColor = newTextColor;
-                    }
+            textColorButton.addActionListener(evt -> {
+                Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
+                        selectedTextColor);
+                if (newTextColor != null) {
+                    selectedTextColor = newTextColor;
                 }
             });
             //--------------------------------------------------
             JButton backgroundColorButton = new JButton(SELECT_BUTTON_TEXT);
-            backgroundColorButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
-                            selectedBackgroundColor);
-                    if (newBackgroundColor != null) {
-                        selectedBackgroundColor = newBackgroundColor;
-                    }
+            backgroundColorButton.addActionListener(evt -> {
+                Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
+                        selectedBackgroundColor);
+                if (newBackgroundColor != null) {
+                    selectedBackgroundColor = newBackgroundColor;
                 }
             });
             //------------------------------------
@@ -862,19 +815,13 @@ public class NetworkVisualizer extends JPanel {
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
-            okButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    dialogResult = true;
-                    setVisible(false);
-                }
+            okButton.addActionListener(evt -> {
+                dialogResult = true;
+                setVisible(false);
             });
-            cancelButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    dialogResult = false;
-                    setVisible(false);
-                }
+            cancelButton.addActionListener(evt -> {
+                dialogResult = false;
+                setVisible(false);
             });
             //---------------------------------------------------------
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,

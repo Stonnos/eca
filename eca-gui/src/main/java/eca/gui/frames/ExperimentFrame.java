@@ -32,12 +32,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +72,7 @@ public abstract class ExperimentFrame extends JFrame {
     private static final Dimension RESULTS_PANE_PREFERRED_SIZE = new Dimension(1000, 325);
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
+    private static final String TEXT_HTML = "text/html";
 
     private final long experimentId = System.currentTimeMillis();
 
@@ -171,7 +168,7 @@ public abstract class ExperimentFrame extends JFrame {
         text = new JTextPane();
         text.setEditable(false);
         text.setFont(TEXT_AREA_FONT);
-        text.setContentType("text/html");
+        text.setContentType(TEXT_HTML);
         text.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
         JScrollPane bottom = new JScrollPane(text);
         bottom.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
@@ -213,12 +210,9 @@ public abstract class ExperimentFrame extends JFrame {
             }
         });
 
-        useTestingSet.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                foldsSpinner.setEnabled(useTestingSet.isSelected());
-                validationsSpinner.setEnabled(useTestingSet.isSelected());
-            }
+        useTestingSet.addItemListener(e -> {
+            foldsSpinner.setEnabled(useTestingSet.isSelected());
+            validationsSpinner.setEnabled(useTestingSet.isSelected());
         });
         //------------------------------------------------------
         left.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
@@ -260,43 +254,29 @@ public abstract class ExperimentFrame extends JFrame {
                 dataFrame.setVisible(true);
             }
         });
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                experiment.setEvaluationMethod(useTestingSet.isSelected()
-                        ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
-                if (useTestingSet.isSelected()) {
-                    experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                    experiment.setNumTests(
-                            ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
-                }
-                text.setText(
-                        String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
-                setStateForButtons(false);
-                setStateForOptions(false);
-                experimentTable.setRenderer(Color.BLACK);
-                experimentTable.clear();
-                doBegin();
-                worker.execute();
-                timer.execute();
-                log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
-                        experiment.getClassifier().getClass().getSimpleName());
+        startButton.addActionListener(e -> {
+            experiment.setEvaluationMethod(useTestingSet.isSelected()
+                    ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
+            if (useTestingSet.isSelected()) {
+                experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
+                experiment.setNumTests(
+                        ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
             }
+            text.setText(
+                    String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
+            setStateForButtons(false);
+            setStateForOptions(false);
+            experimentTable.setRenderer(Color.BLACK);
+            experimentTable.clear();
+            doBegin();
+            worker.execute();
+            timer.execute();
+            log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
+                    experiment.getClassifier().getClass().getSimpleName());
         });
         //---------------------------------------------------------------
-        stopButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                worker.cancel(true);
-            }
-        });
-        //---------------------------------------------------------------
-        optionsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setOptions();
-            }
-        });
+        stopButton.addActionListener(e -> worker.cancel(true));
+        optionsButton.addActionListener(e -> setOptions());
         //---------------------------------------------------------------
         saveButton.addActionListener(new ActionListener() {
 
@@ -350,14 +330,9 @@ public abstract class ExperimentFrame extends JFrame {
                                 experimentTable.setExperiment(history.getExperiment());
                                 setResults(history);
                             }
-                        }, new CallbackAction() {
-                            @Override
-                            public void apply() throws Exception {
-                                JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                        loadDialog.getErrorMessageText(),
-                                        null, JOptionPane.WARNING_MESSAGE);
-                            }
-                        });
+                        }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
+                                loadDialog.getErrorMessageText(),
+                                null, JOptionPane.WARNING_MESSAGE));
 
                     } catch (Exception e) {
                         LoggerUtils.error(log, e);
@@ -451,17 +426,16 @@ public abstract class ExperimentFrame extends JFrame {
      */
     private class ExperimentWorker extends SwingWorker<Void, Void> {
 
+        static final String PROGRESS_PROPERTY = "progress";
+
         IterativeExperiment object;
         boolean error;
 
         ExperimentWorker() {
             object = getExperiment().getIterativeExperiment();
-            this.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if ("progress".equals(evt.getPropertyName())) {
-                        progress.setValue((Integer) evt.getNewValue());
-                    }
+            this.addPropertyChangeListener(evt -> {
+                if (PROGRESS_PROPERTY.equals(evt.getPropertyName())) {
+                    progress.setValue((Integer) evt.getNewValue());
                 }
             });
 

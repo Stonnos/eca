@@ -27,8 +27,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
 /**
@@ -149,7 +147,7 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         hiddenLayerPanel.setToolTipText(recommendText);
 
-        activationFunctionsBox = new JComboBox(ActivationFunctionType.getDescriptions());
+        activationFunctionsBox = new JComboBox<>(ActivationFunctionType.getDescriptions());
 
         JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
         coefficientLabel.setPreferredSize(LABEL_DIM);
@@ -213,45 +211,39 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField text = GuiUtils.searchFirstEmptyField(hidLayersTextField, afCoefficientTextField,
-                        estimateTextField, numItsTextField, learnSpeedTextField, momentumTextField);
-                if (text != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(NetworkOptionsDialog.this, text);
-                } else {
-                    text = hidLayersTextField;
-                    try {
-                        network().setHiddenLayer(hidLayersTextField.getText().trim());
-                        network().setActivationFunction(getSelectedActivationFunction());
-                        network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
-                        text = afCoefficientTextField;
-                        getActivationFunction().setCoefficient(doubleFormat.
-                                parse(afCoefficientTextField.getText().trim()).doubleValue());
-                        text = estimateTextField;
-                        network().setMinError(estimateFormat.
-                                parse(estimateTextField.getText().trim()).doubleValue());
-                        text = learnSpeedTextField;
-                        learningAlgorithm().setLearningRate(estimateFormat.
-                                parse(learnSpeedTextField.getText().trim()).doubleValue());
-                        learningAlgorithm().setMomentum(estimateFormat.
-                                parse(momentumTextField.getText().trim()).doubleValue());
-                        dialogResult = true;
-                        setVisible(false);
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(NetworkOptionsDialog.this,
-                                e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                        text.requestFocusInWindow();
-                    }
+        okButton.addActionListener(event -> {
+            JTextField text = GuiUtils.searchFirstEmptyField(hidLayersTextField, afCoefficientTextField,
+                    estimateTextField, numItsTextField, learnSpeedTextField, momentumTextField);
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(NetworkOptionsDialog.this, text);
+            } else {
+                text = hidLayersTextField;
+                try {
+                    network().setHiddenLayer(hidLayersTextField.getText().trim());
+                    network().setActivationFunction(getSelectedActivationFunction());
+                    network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
+                    text = afCoefficientTextField;
+                    getActivationFunction().setCoefficient(doubleFormat.
+                            parse(afCoefficientTextField.getText().trim()).doubleValue());
+                    text = estimateTextField;
+                    network().setMinError(estimateFormat.
+                            parse(estimateTextField.getText().trim()).doubleValue());
+                    text = learnSpeedTextField;
+                    learningAlgorithm().setLearningRate(estimateFormat.
+                            parse(learnSpeedTextField.getText().trim()).doubleValue());
+                    learningAlgorithm().setMomentum(estimateFormat.
+                            parse(momentumTextField.getText().trim()).doubleValue());
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(NetworkOptionsDialog.this,
+                            e.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                    text.requestFocusInWindow();
                 }
             }
         });

@@ -14,10 +14,6 @@ import eca.gui.dictionary.CommonDictionary;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * Evaluation method options dialog.
@@ -103,32 +99,23 @@ public class EvaluationMethodOptionsDialog extends JDialog {
         foldsSpinner.setEnabled(false);
         testsSpinner.setEnabled(false);
         //--------------------------------
-        useTestingSetRadioButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                foldsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
-                testsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
-            }
+        useTestingSetRadioButton.addItemListener(e -> {
+            foldsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
+            testsSpinner.setEnabled(useTestingSetRadioButton.isSelected());
         });
         //---------------------------------
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                setParams();
-                dialogResult = true;
-                setVisible(false);
-            }
+        okButton.addActionListener(e -> {
+            setParams();
+            dialogResult = true;
+            setVisible(false);
         });
         //-----------------------------------------------
         panel.add(useTrainingSetRadioButton, new GridBagConstraints(0, 0, 2, 1, 1, 1,

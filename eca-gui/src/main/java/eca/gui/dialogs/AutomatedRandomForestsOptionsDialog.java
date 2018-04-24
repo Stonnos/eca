@@ -6,8 +6,6 @@ import eca.gui.dictionary.CommonDictionary;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Implements dialog for setting options for automated random forests algorithm.
@@ -73,20 +71,14 @@ public class AutomatedRandomForestsOptionsDialog extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(evt -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = true;
-                setVisible(false);
-            }
+        okButton.addActionListener(evt -> {
+            dialogResult = true;
+            setVisible(false);
         });
         //------------------------------------
         this.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,

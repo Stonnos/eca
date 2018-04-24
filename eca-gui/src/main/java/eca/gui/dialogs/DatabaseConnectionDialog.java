@@ -20,10 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,13 +64,13 @@ public class DatabaseConnectionDialog extends JDialog {
         super(parent, TITLE_TEXT, true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        this.makeGUI();
+        this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
         hostField.requestFocusInWindow();
     }
 
-    private void makeGUI() {
+    private void createGUI() {
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(CONNECTION_PARAMS_TITLE));
         dataBases = new JComboBox<>(DataBaseType.getDescriptions());
@@ -92,12 +88,9 @@ public class DatabaseConnectionDialog extends JDialog {
         passwordField = new JPasswordField(TEXT_LENGTH);
         passwordField.setDocument(new LengthDocument(FIELD_LENGTH));
         //-------------------------------------------------------
-        dataBases.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent evt) {
-                DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
-                setConnectionDescriptor(dataBaseType);
-            }
+        dataBases.addItemListener(evt -> {
+            DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
+            setConnectionDescriptor(dataBaseType);
         });
         dataBases.setSelectedItem(DEFAULT_DATA_BASE_TYPE.getDescription());
         //-------------------------------------------------------
@@ -130,24 +123,18 @@ public class DatabaseConnectionDialog extends JDialog {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
         //-----------------------------------------------
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                dialogResult = false;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(evt -> {
+            dialogResult = false;
+            setVisible(false);
         });
         //-----------------------------------------------
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                JTextField field = emptyField();
-                if (field != null) {
-                    GuiUtils.showErrorMessageAndRequestFocusOn(DatabaseConnectionDialog.this, field);
-                } else {
-                    dialogResult = true;
-                    setVisible(false);
-                }
+        okButton.addActionListener(evt -> {
+            JTextField field = emptyField();
+            if (field != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(DatabaseConnectionDialog.this, field);
+            } else {
+                dialogResult = true;
+                setVisible(false);
             }
         });
         //------------------------------------
