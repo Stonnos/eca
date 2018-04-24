@@ -15,6 +15,7 @@ migration:
   dataStoragePath: /home/roman/dataStorage
   batchSize: 100
   durationInSeconds: 30
+  jobEnabled: true
 
 server:
   port: 8091

@@ -1,6 +1,5 @@
 package eca.data.migration.controller;
 
-import eca.data.migration.exception.MigrationException;
 import eca.data.migration.model.MultipartFileResource;
 import eca.data.migration.model.entity.MigrationLogSource;
 import eca.data.migration.service.MigrationService;
@@ -46,7 +45,7 @@ public class MigrationController {
     public ResponseEntity migrate(@RequestParam("dataFile") MultipartFile dataFile) {
         try {
             migrationService.migrateData(new MultipartFileResource(dataFile), MigrationLogSource.MANUAL);
-        } catch (MigrationException ex) {
+        } catch (Exception ex) {
             log.error("There was an error while migration file '{}': {}", dataFile.getOriginalFilename(),
                     ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());

@@ -44,19 +44,25 @@ public class MigrationScheduler {
      */
     @Scheduled(fixedDelayString = "${migration.durationInSeconds}000")
     public void migrate() {
-        log.trace("Starting to migrate files.");
-        Collection<File> listFiles =
-                FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()), DataFileExtension.getExtensions(),
-                        true);
-        log.trace("Fetching {} new data files.", listFiles.size());
-        for (File file : listFiles) {
-            try {
-                migrationService.migrateData(new FileResource(file), MigrationLogSource.JOB);
-                FileUtils.forceDelete(file);
-            } catch (Exception ex) {
-                log.error("There was an error while migration file '{}': {}", file.getAbsolutePath(), ex.getMessage());
+        if (!Boolean.TRUE.equals(migrationConfig.getJobEnabled())) {
+            log.trace("Migration job is disabled.");
+        } else {
+            log.trace("Starting to migrate files.");
+            Collection<File> listFiles =
+                    FileUtils.listFiles(new File(migrationConfig.getDataStoragePath()),
+                            DataFileExtension.getExtensions(),
+                            true);
+            log.trace("Fetching {} new data files.", listFiles.size());
+            for (File file : listFiles) {
+                try {
+                    migrationService.migrateData(new FileResource(file), MigrationLogSource.JOB);
+                    FileUtils.forceDelete(file);
+                } catch (Exception ex) {
+                    log.error("There was an error while migration file '{}': {}", file.getAbsolutePath(),
+                            ex.getMessage());
+                }
             }
+            log.trace("Files migration has been completed.");
         }
-        log.trace("Files migration has been completed.");
     }
 }

@@ -26,4 +26,9 @@ public class MigrationConfig {
      * Batch size for data migration
      */
     private Integer batchSize;
+
+    /**
+     * Is data migration job enabled?
+     */
+    private Boolean jobEnabled;
 }
