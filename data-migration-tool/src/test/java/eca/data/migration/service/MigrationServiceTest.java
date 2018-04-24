@@ -1,11 +1,12 @@
 package eca.data.migration.service;
 
 import eca.data.file.FileDataLoader;
+import eca.data.file.resource.FileResource;
 import eca.data.migration.TestHelperUtils;
 import eca.data.migration.exception.MigrationException;
-import eca.data.migration.model.MigrationLog;
-import eca.data.migration.model.MigrationLogSource;
-import eca.data.migration.model.MigrationStatus;
+import eca.data.migration.model.entity.MigrationLog;
+import eca.data.migration.model.entity.MigrationLogSource;
+import eca.data.migration.model.entity.MigrationStatus;
 import eca.data.migration.repository.MigrationLogRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class MigrationServiceTest {
     public void testSuccessMigration() throws Exception {
         when(dataLoader.loadInstances()).thenReturn(instances);
         doNothing().when(instancesService).migrateInstances(anyString(), any(Instances.class));
-        migrationService.migrateData(new File(TestHelperUtils.DATA_PATH), MigrationLogSource.JOB);
+        migrationService.migrateData(new FileResource(new File(TestHelperUtils.DATA_PATH)), MigrationLogSource.JOB);
         MigrationLog migrationLog = migrationLogRepository.findAll().stream().findFirst().orElse(null);
         Assertions.assertThat(migrationLog).isNotNull();
         Assertions.assertThat(migrationLog.getMigrationStatus()).isEqualTo(MigrationStatus.SUCCESS);
@@ -66,6 +67,6 @@ public class MigrationServiceTest {
     @Test(expected = MigrationException.class)
     public void testErrorMigration() throws Exception {
         when(dataLoader.loadInstances()).thenThrow(new MigrationException("There was as error!"));
-        migrationService.migrateData(new File(TestHelperUtils.DATA_PATH), MigrationLogSource.JOB);
+        migrationService.migrateData(new FileResource(new File(TestHelperUtils.DATA_PATH)), MigrationLogSource.JOB);
     }
 }

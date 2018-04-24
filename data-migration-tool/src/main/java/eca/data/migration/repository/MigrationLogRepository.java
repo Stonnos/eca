@@ -1,6 +1,6 @@
 package eca.data.migration.repository;
 
-import eca.data.migration.model.MigrationLog;
+import eca.data.migration.model.entity.MigrationLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

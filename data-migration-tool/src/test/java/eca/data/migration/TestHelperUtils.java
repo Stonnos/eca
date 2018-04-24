@@ -1,10 +1,10 @@
 package eca.data.migration;
 
+import eca.data.file.resource.FileResource;
 import eca.data.file.xls.XLSLoader;
-import eca.data.file.resource.UrlResource;
 import weka.core.Instances;
 
-import java.io.InputStream;
+import java.io.File;
 
 /**
  * Test helper utility class.
@@ -22,10 +22,8 @@ public class TestHelperUtils {
      */
     public static Instances loadInstances() throws Exception {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(DATA_PATH)) {
-            XLSLoader xlsLoader = new XLSLoader();
-            //xlsLoader.setResource(new UrlResource(inputStream));
-            return xlsLoader.getDataSet();
-        }
+        XLSLoader dataLoader = new XLSLoader();
+        dataLoader.setResource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
+        return dataLoader.getDataSet();
     }
 }

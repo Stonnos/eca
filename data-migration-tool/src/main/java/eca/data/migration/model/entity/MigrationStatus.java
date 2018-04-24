@@ -1,4 +1,4 @@
-package eca.data.migration.model;
+package eca.data.migration.model.entity;
 
 /**
  * Migration status enum.

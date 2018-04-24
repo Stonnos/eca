@@ -1,17 +1,17 @@
 package eca.data.migration.service;
 
 import eca.data.file.FileDataLoader;
+import eca.data.file.resource.DataResource;
 import eca.data.migration.exception.MigrationException;
-import eca.data.migration.model.MigrationLog;
-import eca.data.migration.model.MigrationLogSource;
-import eca.data.migration.model.MigrationStatus;
+import eca.data.migration.model.entity.MigrationLog;
+import eca.data.migration.model.entity.MigrationLogSource;
+import eca.data.migration.model.entity.MigrationStatus;
 import eca.data.migration.repository.MigrationLogRepository;
 import eca.data.migration.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import weka.core.Instances;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
 /**
@@ -46,18 +46,19 @@ public class MigrationService {
     /**
      * Migrates training data file into database.
      *
-     * @param file - training data file
+     * @param dataResource       - training data resource
      * @param migrationLogSource - migration log source
      */
-    public void migrateData(File file, MigrationLogSource migrationLogSource) {
-        dataLoader.setSource(file);
-        log.info("Starting to migrate file '{}'.", file.getAbsolutePath());
-        String tableName = String.format(TABLE_NAME_FORMAT, Utils.normalizeName(file.getName()), System.currentTimeMillis());
-        MigrationLog migrationLog = createMigrationLog(file, tableName, migrationLogSource);
+    public synchronized void migrateData(DataResource dataResource, MigrationLogSource migrationLogSource) {
+        dataLoader.setSource(dataResource);
+        log.info("Starting to migrate file '{}'.", dataResource.getFile());
+        String tableName = String.format(TABLE_NAME_FORMAT, Utils.normalizeName(dataResource.getFile()),
+                System.currentTimeMillis());
+        MigrationLog migrationLog = createMigrationLog(dataResource, tableName, migrationLogSource);
         migrationLogRepository.save(migrationLog);
         try {
             Instances instances = dataLoader.loadInstances();
-            log.info("Data has been loaded from file '{}'", file.getAbsolutePath());
+            log.info("Data has been loaded from file '{}'", dataResource.getFile());
             instancesService.migrateInstances(tableName, instances);
             migrationLog.setMigrationStatus(MigrationStatus.SUCCESS);
         } catch (Exception ex) {
@@ -70,9 +71,10 @@ public class MigrationService {
         }
     }
 
-    private MigrationLog createMigrationLog(File file, String tableName, MigrationLogSource migrationLogSource) {
+    private MigrationLog createMigrationLog(DataResource dataResource, String tableName,
+                                            MigrationLogSource migrationLogSource) {
         MigrationLog migrationLog = new MigrationLog();
-        migrationLog.setSourceFileName(file.getName());
+        migrationLog.setSourceFileName(dataResource.getFile());
         migrationLog.setTableName(tableName);
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
         migrationLog.setMigrationLogSource(migrationLogSource);
