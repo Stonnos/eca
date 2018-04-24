@@ -36,6 +36,10 @@ public class JFontChooser extends JDialog {
     private static final String DEFAULT_FONT_NAME = "Arial";
     private static final int EXAMPLE_FIELD_ROWS = 3;
     private static final int EXAMPLE_FIELD_COLUMNS = 5;
+    private static final int PLAIN_ID = 0;
+    private static final int BOLD_ID = 1;
+    private static final int ITALIC_ID = 2;
+    private static final int BOLD_AND_ITALIC_ID = 3;
 
     private JComboBox<String> fontTypeBox;
     private JComboBox<String> fontSize;
@@ -77,20 +81,23 @@ public class JFontChooser extends JDialog {
 
     public int getFontTracing() {
         int index = fontStyle.getSelectedIndex();
-        int style = 0;
+        int style;
         switch (index) {
-            case 0:
+            case PLAIN_ID:
                 style = Font.PLAIN;
                 break;
-            case 1:
+            case BOLD_ID:
                 style = Font.BOLD;
                 break;
-            case 2:
+            case ITALIC_ID:
                 style = Font.ITALIC;
                 break;
-            case 3:
+            case BOLD_AND_ITALIC_ID:
                 style = Font.BOLD | Font.ITALIC;
                 break;
+
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected font style: %d", index));
         }
         return style;
     }
@@ -130,16 +137,16 @@ public class JFontChooser extends JDialog {
                 JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
                 if (i >= 0) {
                     switch (i) {
-                        case 0:
+                        case PLAIN_ID:
                             label.setFont(new Font(DEFAULT_FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE));
                             break;
-                        case 1:
+                        case BOLD_ID:
                             label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD, DEFAULT_FONT_SIZE));
                             break;
-                        case 2:
+                        case ITALIC_ID:
                             label.setFont(new Font(DEFAULT_FONT_NAME, Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
-                        case 3:
+                        case BOLD_AND_ITALIC_ID:
                             label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
                     }
@@ -157,16 +164,16 @@ public class JFontChooser extends JDialog {
         fontTypeBox.setSelectedItem(font.getName());
         switch (font.getStyle()) {
             case Font.PLAIN:
-                fontStyle.setSelectedIndex(0);
+                fontStyle.setSelectedIndex(PLAIN_ID);
                 break;
             case Font.BOLD:
-                fontStyle.setSelectedIndex(1);
+                fontStyle.setSelectedIndex(BOLD_ID);
                 break;
             case Font.ITALIC:
-                fontStyle.setSelectedIndex(2);
+                fontStyle.setSelectedIndex(ITALIC_ID);
                 break;
             case Font.ITALIC | Font.BOLD:
-                fontStyle.setSelectedIndex(3);
+                fontStyle.setSelectedIndex(BOLD_AND_ITALIC_ID);
                 break;
         }
         //----------------------------------
