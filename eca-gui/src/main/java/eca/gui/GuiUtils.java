@@ -1,10 +1,14 @@
 package eca.gui;
 
+import eca.gui.logging.LoggerUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Optional;
 
@@ -60,7 +64,16 @@ public class GuiUtils {
         target.requestFocusInWindow();
     }
 
-
+    public static void setIcon(Window window, String iconPath, Logger log) {
+        try {
+            URL iconUrl = GuiUtils.class.getClassLoader().getResource(iconPath);
+            if (iconUrl != null) {
+                window.setIconImage(ImageIO.read(iconUrl));
+            }
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+        }
+    }
 
     public static void setUIFont(FontUIResource f) {
         java.util.Enumeration keys = UIManager.getLookAndFeelDefaults().keys();

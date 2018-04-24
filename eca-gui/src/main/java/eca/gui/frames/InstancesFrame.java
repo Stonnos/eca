@@ -2,15 +2,13 @@ package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
-import eca.gui.logging.LoggerUtils;
+import eca.gui.GuiUtils;
 import eca.gui.tables.ResultInstancesTable;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 
 /**
  * @author Roman Batygin
@@ -29,7 +27,7 @@ public class InstancesFrame extends JFrame {
         this.data = data;
         this.setTitle(String.format(DATA_FORMAT, data.relationName()));
         this.setLayout(new GridBagLayout());
-        this.setIcon();
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getApplicationConfig().getIconUrl(), log);
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
         JButton okButton = ButtonUtils.createOkButton();
         okButton.addActionListener(e -> setVisible(false));
@@ -46,16 +44,5 @@ public class InstancesFrame extends JFrame {
 
     public Instances getData() {
         return data;
-    }
-
-    private void setIcon() {
-        try {
-            URL iconUrl = getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getIconUrl());
-            if (iconUrl != null) {
-                this.setIconImage(ImageIO.read(iconUrl));
-            }
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-        }
     }
 }
