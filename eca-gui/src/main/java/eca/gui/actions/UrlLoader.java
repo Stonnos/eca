@@ -5,7 +5,7 @@
  */
 package eca.gui.actions;
 
-import eca.data.net.UrlDataLoader;
+import eca.data.file.FileDataLoader;
 import weka.core.Instances;
 
 /**
@@ -14,9 +14,9 @@ import weka.core.Instances;
 public class UrlLoader implements CallbackAction {
 
     private Instances data;
-    private final UrlDataLoader loader;
+    private final FileDataLoader loader;
 
-    public UrlLoader(UrlDataLoader loader) {
+    public UrlLoader(FileDataLoader loader) {
         this.loader = loader;
     }
 

@@ -3,14 +3,13 @@ package eca.data.file;
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
-import eca.data.file.xls.resource.FileResource;
+import eca.data.file.resource.DataResource;
 import eca.data.file.xls.XLSLoader;
-import eca.data.net.UrlDataLoaderDictionary;
 import eca.util.Utils;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -19,38 +18,42 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class FileDataLoader extends AbstractDataLoader<File> {
+public class FileDataLoader extends AbstractDataLoader<DataResource> {
 
     private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
+    private static final String FILE_EXTENSION_FORMAT = ".%s";
 
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        if (FileUtils.isWekaExtension(getSource().getName())) {
-            ConverterUtils.DataSource source = new ConverterUtils.DataSource(getSource().getAbsolutePath());
-            data = source.getDataSet();
-        } else if (FileUtils.isXlsExtension(getSource().getName())) {
-            XLSLoader loader = new XLSLoader();
-            loader.setResource(new FileResource(getSource()));
-            loader.setDateFormat(getDateFormat());
-            data = loader.getDataSet();
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Can't load data from file '%s'", getSource().getAbsoluteFile()));
-        }
-        if (Objects.isNull(data)) {
-            throw new IllegalArgumentException(
-                    String.format("Can't load data from file '%s'. Data is null!", getSource().getAbsoluteFile()));
+        try (InputStream inputStream = getSource().openInputStream()) {
+            if (FileUtils.isWekaExtension(getSource().getFile())) {
+                ConverterUtils.DataSource source = new ConverterUtils.DataSource(inputStream);
+                data = source.getDataSet();
+                if (Objects.isNull(data)) {
+                    throw new IllegalArgumentException(
+                            String.format("Can't load data from file '%s'. Data is null!", getSource().getFile()));
+                }
+            } else if (FileUtils.isXlsExtension(getSource().getFile())) {
+                XLSLoader loader = new XLSLoader();
+                loader.setResource(getSource());
+                loader.setDateFormat(getDateFormat());
+                data = loader.getDataSet();
+            } else {
+                throw new IllegalArgumentException(
+                        String.format("Can't load data from file '%s'", getSource().getFile()));
+            }
         }
         data.setClassIndex(data.numAttributes() - 1);
         return data;
     }
 
     @Override
-    protected void validateSource(File file) {
-        super.validateSource(file);
-        if (!Utils.contains(FILE_EXTENSIONS, file.getName(), (x, y) -> x.endsWith(y))) {
-            throw new IllegalArgumentException(String.format(UrlDataLoaderDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
+    protected void validateSource(DataResource dataResource) {
+        super.validateSource(dataResource);
+        if (!Utils.contains(FILE_EXTENSIONS, dataResource.getFile(),
+                (x, y) -> x.endsWith(String.format(FILE_EXTENSION_FORMAT, y)))) {
+            throw new IllegalArgumentException(String.format(FileDataDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
     }

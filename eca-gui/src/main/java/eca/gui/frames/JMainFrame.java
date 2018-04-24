@@ -20,7 +20,8 @@ import eca.core.evaluation.EvaluationService;
 import eca.data.db.JdbcQueryExecutor;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
-import eca.data.net.UrlDataLoader;
+import eca.data.file.resource.FileResource;
+import eca.data.file.resource.UrlResource;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedKNearestNeighbours;
 import eca.dataminer.AutomatedNeuralNetwork;
@@ -777,7 +778,7 @@ public class JMainFrame extends JFrame {
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
                         dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                        dataLoader.setSource(file);
+                        dataLoader.setSource(new FileResource(file));
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
@@ -925,7 +926,9 @@ public class JMainFrame extends JFrame {
 
                 if (dataUrl != null) {
                     try {
-                        UrlDataLoader dataLoader = new UrlDataLoader(new URL(dataUrl.trim()));
+                        FileDataLoader dataLoader = new FileDataLoader();
+                        dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
+                        System.out.println("!!!!!!!!!!!!!!!!");
                         dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
                         UrlLoader loader = new UrlLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,

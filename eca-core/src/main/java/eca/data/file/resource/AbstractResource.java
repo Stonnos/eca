@@ -1,4 +1,4 @@
-package eca.data.file.xls.resource;
+package eca.data.file.resource;
 
 import java.util.Objects;
 
@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public abstract class AbstractResource<S> implements Resource<S> {
+public abstract class AbstractResource<S> implements DataResource<S> {
 
     private final S resource;
 

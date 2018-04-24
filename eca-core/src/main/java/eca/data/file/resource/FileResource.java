@@ -1,6 +1,5 @@
-package eca.data.file.xls.resource;
+package eca.data.file.resource;
 
-import eca.data.DataFileExtension;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -21,14 +20,15 @@ public class FileResource extends AbstractResource<File> {
      */
     public FileResource(File file) {
         super(file);
-        if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
-                !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
-            throw new IllegalArgumentException(String.format("Unexpected file '%s' extension!", file.getName()));
-        }
     }
 
     @Override
     public InputStream openInputStream() throws IOException {
         return FileUtils.openInputStream(getResource());
+    }
+
+    @Override
+    public String getFile() {
+        return getResource().getName();
     }
 }

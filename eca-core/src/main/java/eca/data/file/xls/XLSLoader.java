@@ -5,8 +5,9 @@
  */
 package eca.data.file.xls;
 
+import eca.data.DataFileExtension;
 import eca.data.file.FileDataDictionary;
-import eca.data.file.xls.resource.Resource;
+import eca.data.file.resource.DataResource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -40,7 +41,7 @@ public class XLSLoader {
     private static final Set<CellType> AVAILABLE_CELL_TYPES =
             EnumSet.of(CellType.STRING, CellType.NUMERIC, CellType.BLANK, CellType.BOOLEAN);
 
-    private Resource resource;
+    private DataResource resource;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -49,7 +50,7 @@ public class XLSLoader {
      *
      * @return data file resource
      */
-    public Resource getResource() {
+    public DataResource getResource() {
         return resource;
     }
 
@@ -58,8 +59,12 @@ public class XLSLoader {
      *
      * @param resource - data file resource
      */
-    public void setResource(Resource resource) {
+    public void setResource(DataResource resource) {
         Objects.requireNonNull(resource, "Resource is not specified!");
+        if (!resource.getFile().endsWith(DataFileExtension.XLS.getExtension()) &&
+                !resource.getFile().endsWith(DataFileExtension.XLSX.getExtension())) {
+            throw new IllegalArgumentException(String.format("Unexpected file '%s' extension!", resource.getFile()));
+        }
         this.resource = resource;
     }
 
@@ -105,16 +110,15 @@ public class XLSLoader {
                         o.setValue(j, Utils.missingValue());
                     } else {
                         switch (cell.getCellTypeEnum()) {
-                            case NUMERIC: {
+                            case NUMERIC:
                                 if (data.attribute(j).isDate()) {
                                     o.setValue(j, cell.getDateCellValue().getTime());
                                 } else {
                                     o.setValue(j, cell.getNumericCellValue());
                                 }
                                 break;
-                            }
 
-                            case STRING: {
+                            case STRING:
                                 String stringValue = cell.getStringCellValue().trim();
                                 if (StringUtils.isEmpty(stringValue)) {
                                     o.setValue(j, Utils.missingValue());
@@ -122,13 +126,11 @@ public class XLSLoader {
                                     o.setValue(j, stringValue);
                                 }
                                 break;
-                            }
 
-                            case BOOLEAN: {
+                            case BOOLEAN:
                                 String val = String.valueOf(cell.getBooleanCellValue());
                                 o.setValue(j, val);
                                 break;
-                            }
 
                             default:
                                 throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);

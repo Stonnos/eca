@@ -1,4 +1,4 @@
-package eca.data.file.xls.resource;
+package eca.data.file.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +8,7 @@ import java.io.InputStream;
  *
  * @author Roman Batygin
  */
-public interface Resource<S> {
+public interface DataResource<S> {
 
     /**
      * Returns resource object.
@@ -23,4 +23,11 @@ public interface Resource<S> {
      * @return input stream
      */
     InputStream openInputStream() throws IOException;
+
+    /**
+     * Returns resource file name.
+     *
+     * @return resource file name
+     */
+    String getFile();
 }
