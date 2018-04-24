@@ -31,7 +31,7 @@ public class JDataTableBase extends JTable {
 
     public JDataTableBase(Object[][] data, Object[] title) {
         super(data, title);
-        makeView();
+        createView();
     }
 
     public final void setAutoResizeOff(boolean flag) {
@@ -41,11 +41,11 @@ public class JDataTableBase extends JTable {
 
     public JDataTableBase(TableModel model) {
         super(model);
-        this.makeView();
+        this.createView();
     }
 
     public JDataTableBase() {
-        this.makeView();
+        this.createView();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class JDataTableBase extends JTable {
         this.setComponentPopupMenu(popMenu);
     }
 
-    private void makeView() {
+    private void createView() {
         if (getColumnCount() > 0) {
             this.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
                 @Override

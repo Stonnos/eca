@@ -5,20 +5,26 @@
  */
 package eca.gui.dialogs;
 
+import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
+import java.net.URL;
 
 /**
  * @author Roman Batygin
  */
 @Slf4j
 public class JFontChooser extends JDialog {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final int MIN_FONT_SIZE = 8;
     private static final int MAX_FONT_SIZE = 50;
@@ -109,6 +115,7 @@ public class JFontChooser extends JDialog {
     private void createGUI(Font font) {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
+        this.setIcon();
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
         //---------------------------------
         fontTypeBox = new JComboBox<>(FONTS);
@@ -227,6 +234,17 @@ public class JFontChooser extends JDialog {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
         //-----------------------------------------------
         this.getRootPane().setDefaultButton(okButton);
+    }
+
+    private void setIcon() {
+        try {
+            URL iconUrl = getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getIconUrl());
+            if (iconUrl != null) {
+                this.setIconImage(ImageIO.read(iconUrl));
+            }
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+        }
     }
 
     private void setExample() {

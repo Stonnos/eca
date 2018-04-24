@@ -5,18 +5,27 @@
  */
 package eca.gui.dialogs;
 
+import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.text.LengthDocument;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 /**
  * Implements dialog with text fields matrix.
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class JTextFieldMatrixDialog extends JDialog {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final int MAX_FIELD_LENGTH = 255;
 
@@ -31,6 +40,7 @@ public class JTextFieldMatrixDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setModal(true);
         this.setResizable(false);
+        this.setIcon();
         labels = new JLabel[rows];
         texts = new JTextField[rows];
         JPanel panel = new JPanel(new GridLayout(rows, 2, 0, 10));
@@ -74,6 +84,17 @@ public class JTextFieldMatrixDialog extends JDialog {
 
     public boolean dialogResult() {
         return dialogResult;
+    }
+
+    private void setIcon() {
+        try {
+            URL iconUrl = getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getIconUrl());
+            if (iconUrl != null) {
+                this.setIconImage(ImageIO.read(iconUrl));
+            }
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+        }
     }
 
 }

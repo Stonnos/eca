@@ -19,12 +19,7 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -37,6 +32,7 @@ import java.util.Iterator;
 
 /**
  * Neural network visualization panel.
+ *
  * @author Roman Batygin
  */
 public class NetworkVisualizer extends JPanel {
@@ -253,6 +249,7 @@ public class NetworkVisualizer extends JPanel {
         NetworkInfo() {
             this.setLayout(new GridBagLayout());
             this.setTitle(INFO_TITLE);
+            this.setIconImage(frame.getIconImage());
             JTextArea textInfo = new JTextArea(20, 50);
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
@@ -301,6 +298,7 @@ public class NetworkVisualizer extends JPanel {
             this.neuron = neuron;
             this.setTitle(String.format(NODE_INDEX_FORMAT, neuron.neuron().index()));
             this.setLayout(new GridBagLayout());
+            this.setIconImage(frame.getIconImage());
             JTextArea textInfo = new JTextArea(8, 26);
             textInfo.setWrapStyleWord(true);
             textInfo.setLineWrap(true);
