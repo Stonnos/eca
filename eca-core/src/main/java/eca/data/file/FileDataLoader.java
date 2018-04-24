@@ -7,7 +7,10 @@ import eca.data.file.resource.DataResource;
 import eca.data.file.xls.XLSLoader;
 import eca.util.Utils;
 import weka.core.Instances;
-import weka.core.converters.ConverterUtils;
+import weka.core.converters.AbstractFileLoader;
+import weka.core.converters.ArffLoader;
+import weka.core.converters.CSVLoader;
+import weka.core.converters.JSONLoader;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -28,8 +31,9 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
         Instances data;
         try (InputStream inputStream = getSource().openInputStream()) {
             if (FileUtils.isWekaExtension(getSource().getFile())) {
-                ConverterUtils.DataSource source = new ConverterUtils.DataSource(inputStream);
-                data = source.getDataSet();
+                AbstractFileLoader fileLoader = createWekaDataLoader();
+                fileLoader.setSource(inputStream);
+                data = fileLoader.getDataSet();
                 if (Objects.isNull(data)) {
                     throw new IllegalArgumentException(
                             String.format("Can't load data from file '%s'. Data is null!", getSource().getFile()));
@@ -55,6 +59,18 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 (x, y) -> x.endsWith(String.format(FILE_EXTENSION_FORMAT, y)))) {
             throw new IllegalArgumentException(String.format(FileDataDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
+        }
+    }
+
+    private AbstractFileLoader createWekaDataLoader() {
+        if (getSource().getFile().endsWith(DataFileExtension.CSV.getExtension())) {
+            return new CSVLoader();
+        } else if (getSource().getFile().endsWith(DataFileExtension.ARFF.getExtension())) {
+            return new ArffLoader();
+        } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtension())) {
+            return new JSONLoader();
+        } else {
+            throw new IllegalArgumentException(String.format("Unexpected file format: %s", getSource().getFile()));
         }
     }
 }
