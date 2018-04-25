@@ -13,13 +13,14 @@ import java.util.Enumeration;
 import java.util.Optional;
 
 /**
+ * GUI utility class.
+ *
  * @author Roman Batygin
  */
-
 public class GuiUtils {
 
-    public static final String INPUT_ERROR_TEXT = "Ошибка ввода";
-    public static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
+    private static final String INPUT_ERROR_TEXT = "Ошибка ввода";
+    private static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
 
     public static JTextField searchFirstEmptyField(JTextField... fields) {
         if (fields != null) {
