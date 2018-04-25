@@ -364,7 +364,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         if (resultsFrameBase != null) {
             if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
                 JScrollPane pane
-                        = new JScrollPane(new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(), digits));
+                        = new JScrollPane(
+                        new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(), digits));
                 resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
                 JScrollBar bar = pane.getHorizontalScrollBar();
                 bar.setValue(bar.getMaximum());
@@ -374,7 +375,8 @@ public class ClassificationResultsFrameBase extends JFrame {
                 resultsFrameBase.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
             } else if (resultsFrameBase.classifier() instanceof Logistic) {
                 LogisticCoefficientsTable table
-                        = new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
+                        =
+                        new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
                                 digits);
                 JScrollPane pane = new JScrollPane(table);
                 resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
@@ -412,33 +414,35 @@ public class ClassificationResultsFrameBase extends JFrame {
         static final String META_CLASSIFIER_INPUT_OPTIONS = "Входные параметры мета-классификатора";
         static final String META_CLASSIFIER_TEXT = "Мета-классификатор:";
         static final String INDIVIDUAL_CLASSIFIER_TEXT = "Базовый классификатор:";
+        static final String PNG = "PNG";
+        static final int FONT_SIZE = 12;
+        static final int PICTURE_ANCHOR_COL1 = 5;
+        static final int PICTURE_ANCHOR_ROW1 = 5;
 
         void save(File file) throws Exception {
-            try (FileOutputStream stream = new FileOutputStream(file);
-                 Workbook book = file.getName().endsWith(DataFileExtension.XLS.getExtension()) ?
-                         new HSSFWorkbook() : new XSSFWorkbook()) {
-
+            try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
                 Font font = book.createFont();
                 font.setBold(true);
-                font.setFontHeightInPoints((short) 12);
+                font.setFontHeightInPoints((short) FONT_SIZE);
                 CellStyle style = book.createCellStyle();
                 style.setFont(font);
-
                 createXlsInputParamSheet(book, style);
                 createXlsResultsSheet(book, style);
-                writePicture(file, book, (BufferedImage) rocCurvePanel.createImage(), ROC_CURVES_TEXT, 5, 5);
-
+                writePicture(file, book, (BufferedImage) rocCurvePanel.createImage(), ROC_CURVES_TEXT);
                 book.write(stream);
             }
+        }
+
+        Workbook createWorkbook(File file) {
+            return file.getName().endsWith(DataFileExtension.XLS.getExtension()) ? new HSSFWorkbook() :
+                    new XSSFWorkbook();
         }
 
         void createXlsInputParamSheet(Workbook book, CellStyle style) {
             Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
             AbstractClassifier cls = (AbstractClassifier) classifier;
-
             createTitle(sheet, style, INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS);
             createPair(sheet, style, INDIVIDUAL_CLASSIFIER, cls.getClass().getSimpleName());
-
             String[] options = cls.getOptions();
             setXlsClassifierOptions(sheet, options);
             if (cls instanceof AbstractHeterogeneousClassifier) {
@@ -563,27 +567,22 @@ public class ClassificationResultsFrameBase extends JFrame {
             }
         }
 
-        void writePicture(File file, Workbook book, BufferedImage bImage, String title, int col, int row)
+        void writePicture(File file, Workbook book, BufferedImage bImage, String title)
                 throws Exception {
             Sheet sheet = book.createSheet(title);
             ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream();
-            ImageIO.write(bImage, "PNG", byteArrayImg);
-            int pictureIdx = sheet.getWorkbook().addPicture(
-                    byteArrayImg.toByteArray(),
-                    sheet.getWorkbook().PICTURE_TYPE_PNG);
-
-            short col1 = 0, col2 = 0;
+            ImageIO.write(bImage, PNG, byteArrayImg);
+            int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
+            short col1 = 0;
+            short col2 = 0;
             ClientAnchor anchor;
-
             if (file.getName().endsWith(DataFileExtension.XLS.getExtension())) {
                 anchor = new HSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
             } else {
                 anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
             }
-
-            anchor.setCol1(col);
-            anchor.setRow1(row);
-
+            anchor.setCol1(PICTURE_ANCHOR_COL1);
+            anchor.setRow1(PICTURE_ANCHOR_ROW1);
             Drawing drawing = sheet.createDrawingPatriarch();
             Picture pict = drawing.createPicture(anchor, pictureIdx);
             pict.resize();
