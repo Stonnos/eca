@@ -20,10 +20,13 @@ import java.util.List;
  */
 public class ExperimentTableModel extends AbstractTableModel {
 
+    public static final int INDEX = 0;
+    public static final int CLASSIFIER_INDEX = 1;
+    public static final int ACCURACY_INDEX = 2;
+    public static final int RESULTS_INDEX = 3;
     public static final String RESULT_TITLE = "Посмотреть";
 
     private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
-
     private static final String[] TITLES = {"№", "Классификатор", "Точность, %", "Результаты"};
 
     private List<EvaluationResults> experiment;
@@ -79,14 +82,16 @@ public class ExperimentTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int row, int column) {
         switch (column) {
-            case 0:
+            case INDEX:
                 return row;
-            case 1:
+            case CLASSIFIER_INDEX:
                 return experiment.get(row).getClassifier().getClass().getSimpleName();
-            case 2:
+            case ACCURACY_INDEX:
                 return format.format(experiment.get(row).getEvaluation().pctCorrect());
-            default:
+            case RESULTS_INDEX:
                 return RESULT_TITLE;
+            default:
+                return null;
         }
     }
 
@@ -98,14 +103,14 @@ public class ExperimentTableModel extends AbstractTableModel {
     @Override
     public Class<?> getColumnClass(int column) {
         switch (column) {
-            case 0:
+            case INDEX:
                 return Integer.class;
-            case 1:
+            case CLASSIFIER_INDEX:
                 return JTextField.class;
-            case 2:
-                return JButton.class;
-            case 3:
+            case ACCURACY_INDEX:
                 return String.class;
+            case RESULTS_INDEX:
+                return JButton.class;
             default:
                 return String.class;
         }
@@ -113,7 +118,7 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return column == 3;
+        return column == RESULTS_INDEX;
     }
 
 }

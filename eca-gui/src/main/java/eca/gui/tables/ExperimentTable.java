@@ -36,16 +36,20 @@ public class ExperimentTable extends JDataTableBase {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
+    private static final int INDEX_COLUMN_MAX_WIDTH = 50;
+
     private final JFrame parentFrame;
     private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
 
     public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
-        this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
-        this.getColumnModel().getColumn(3)
+        this.getColumnModel().getColumn(ExperimentTableModel.CLASSIFIER_INDEX).setCellRenderer(
+                new ClassifierRenderer());
+        this.getColumnModel().getColumn(ExperimentTableModel.RESULTS_INDEX)
                 .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
-        this.getColumnModel().getColumn(3).setCellEditor(new JButtonExperimentEditor());
+        this.getColumnModel().getColumn(ExperimentTableModel.RESULTS_INDEX).setCellEditor(
+                new JButtonExperimentEditor());
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent evt) {
@@ -55,7 +59,7 @@ public class ExperimentTable extends JDataTableBase {
                 ExperimentTable.this.changeSelection(i, j, false, false);
             }
         });
-        this.getColumnModel().getColumn(0).setMaxWidth(50);
+        this.getColumnModel().getColumn(ExperimentTableModel.INDEX).setMaxWidth(INDEX_COLUMN_MAX_WIDTH);
         this.setAutoResizeOff(false);
     }
 
@@ -95,7 +99,7 @@ public class ExperimentTable extends JDataTableBase {
                 return cell;
             }
         };
-        this.getColumnModel().getColumn(2).setCellRenderer(renderer);
+        this.getColumnModel().getColumn(ExperimentTableModel.ACCURACY_INDEX).setCellRenderer(renderer);
     }
 
     public void sort() {
@@ -103,10 +107,9 @@ public class ExperimentTable extends JDataTableBase {
     }
 
     /**
-     *
+     * Classifier renderer.
      */
-    private class ClassifierRenderer extends JTextField
-            implements TableCellRenderer {
+    private class ClassifierRenderer extends JTextField implements TableCellRenderer {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -119,10 +122,10 @@ public class ExperimentTable extends JDataTableBase {
             this.setFont(ExperimentTable.this.getTableHeader().getFont());
             return this;
         }
-    } //End of class ClassifierRenderer
+    }
 
     /**
-     *
+     * Experiment results editor.
      */
     private class JButtonExperimentEditor extends JButtonEditor {
 

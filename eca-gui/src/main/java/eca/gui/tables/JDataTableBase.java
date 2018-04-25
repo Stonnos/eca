@@ -17,6 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * Basic class for all tables.
+ *
  * @author Roman Batygin
  */
 public class JDataTableBase extends JTable {
@@ -26,6 +28,13 @@ public class JDataTableBase extends JTable {
     private static final String DATA_COPY_MENU_TEXT = "Копировать данные";
     private static final String ALL_DATA_COPY_MENU_TEXT = "Копировать данные вместе с заголовком";
     private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 12);
+    private static final int WIDTH_SHIFT = 10;
+    private static final int COLUMN_MIN_WIDTH = 15;
+    private static final int INDEX_COLUMN = 0;
+    private static final int ROW_HEIGHT_SHIFT = 6;
+    private static final Color BORDER_COLOR = new Color(133, 133, 133);
+    private static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
+    private static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
 
     private JCheckBoxMenuItem resizeMenu;
 
@@ -57,7 +66,7 @@ public class JDataTableBase extends JTable {
                 getColumnModel().getColumn(i).setMinWidth(getPreferredWidth(i, metric));
 
             } else {
-                getColumnModel().getColumn(i).setMinWidth(15);
+                getColumnModel().getColumn(i).setMinWidth(COLUMN_MIN_WIDTH);
             }
         }
     }
@@ -71,11 +80,11 @@ public class JDataTableBase extends JTable {
     }
 
     private int getPreferredWidth(int column, FontMetrics metric) {
-        int max = metric.stringWidth(this.getColumnName(column)) + 10;
+        int max = metric.stringWidth(this.getColumnName(column)) + WIDTH_SHIFT;
         for (int i = 0; i < this.getRowCount(); i++) {
             Object val = this.getValueAt(i, column);
             if (val != null) {
-                max = Integer.max(max, metric.stringWidth(val.toString()) + 10);
+                max = Integer.max(max, metric.stringWidth(val.toString()) + WIDTH_SHIFT);
             }
         }
         return max;
@@ -129,22 +138,22 @@ public class JDataTableBase extends JTable {
 
     private void createView() {
         if (getColumnCount() > 0) {
-            this.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+            this.getColumnModel().getColumn(INDEX_COLUMN).setCellRenderer(new DefaultTableCellRenderer() {
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value,
                                                                boolean isSelected, boolean hasFocus, int row,
                                                                int column) {
                     Component comp = super.getTableCellRendererComponent(table, value,
                             isSelected, hasFocus, row, column);
-                    comp.setBackground(new Color(224, 224, 224));
+                    comp.setBackground(BACKGROUND_COLOR);
                     return comp;
                 }
             });
         }
         this.getTableHeader().setReorderingAllowed(false);
-        this.getTableHeader().setBackground(new Color(192, 192, 192));
+        this.getTableHeader().setBackground(HEADER_BACKGROUND_COLOR);
         this.getTableHeader().setBorder(BorderFactory.
-                createEtchedBorder(new Color(133, 133, 133), null));
+                createEtchedBorder(BORDER_COLOR, null));
         this.createPopupMenu();
         this.font(DEFAULT_FONT);
         this.setAutoResizeOff(true);
@@ -152,7 +161,7 @@ public class JDataTableBase extends JTable {
 
     private void font(Font font) {
         this.setFont(font);
-        this.setRowHeight(this.getFont().getSize() + 6);
+        this.setRowHeight(this.getFont().getSize() + ROW_HEIGHT_SHIFT);
         this.getTableHeader().setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 2));
     }
 

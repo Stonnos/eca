@@ -26,11 +26,14 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
 /**
+ * Implements ensemble table.
+ *
  * @author Roman Batygin
  */
 @Slf4j
 public class EnsembleTable extends JDataTableBase {
 
+    private static final int INDEX_COLUMN_MAX_WIDTH = 50;
     private final JFrame parentFrame;
     private final int digits;
     private ClassificationResultsFrameBase[] classificationResultsFrameBases;
@@ -40,10 +43,10 @@ public class EnsembleTable extends JDataTableBase {
         this.parentFrame = parent;
         this.digits = digits;
         this.classificationResultsFrameBases = new ClassificationResultsFrameBase[classifierArrayList.size()];
-        this.getColumnModel().getColumn(1).setCellRenderer(new ClassifierRenderer());
-        this.getColumnModel().getColumn(2)
+        this.getColumnModel().getColumn(EnsembleTableModel.CLASSIFIER_INDEX).setCellRenderer(new ClassifierRenderer());
+        this.getColumnModel().getColumn(EnsembleTableModel.RESULTS_INDEX)
                 .setCellRenderer(new JButtonRenderer(EnsembleTableModel.RESULT_TITLE));
-        this.getColumnModel().getColumn(2).setCellEditor(new JButtonEnsembleEditor());
+        this.getColumnModel().getColumn(EnsembleTableModel.RESULTS_INDEX).setCellEditor(new JButtonEnsembleEditor());
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent evt) {
@@ -53,7 +56,7 @@ public class EnsembleTable extends JDataTableBase {
                 EnsembleTable.this.changeSelection(i, j, false, false);
             }
         });
-        this.getColumnModel().getColumn(0).setMaxWidth(50);
+        this.getColumnModel().getColumn(EnsembleTableModel.INDEX).setMaxWidth(INDEX_COLUMN_MAX_WIDTH);
         this.setAutoResizeOff(false);
     }
 
@@ -62,7 +65,7 @@ public class EnsembleTable extends JDataTableBase {
     }
 
     /**
-     *
+     * Classifier renderer.
      */
     private class ClassifierRenderer extends JTextField
             implements TableCellRenderer {
@@ -71,16 +74,17 @@ public class EnsembleTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(ensembleModel().get(row), false));
+            this.setToolTipText(
+                    ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(ensembleModel().get(row), false));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());
             return this;
         }
-    } //End of class ClassifierRenderer
+    }
 
     /**
-     *
+     * Ensemble results editor.
      */
     private class JButtonEnsembleEditor extends JButtonEditor {
 
