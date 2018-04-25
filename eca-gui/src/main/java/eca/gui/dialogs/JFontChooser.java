@@ -17,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ItemListener;
 
 /**
+ * Font options dialog.
+ *
  * @author Roman Batygin
  */
 @Slf4j
@@ -46,23 +48,29 @@ public class JFontChooser extends JDialog {
     private static final int ITALIC_ID = 2;
     private static final int BOLD_AND_ITALIC_ID = 3;
 
-    private JComboBox<String> fontTypeBox;
-    private JComboBox<String> fontSize;
-    private JComboBox<String> fontStyle;
-    private JTextArea exampleField;
-
-    private static String[] FONTS;
-
-    private boolean dialogResult;
+    private static String[] AVAILABLE_FONT_NAMES;
 
     static {
         try {
-            FONTS = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            AVAILABLE_FONT_NAMES = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
         }
     }
 
+    private JComboBox<String> fontNameBox;
+    private JComboBox<String> fontSize;
+    private JComboBox<String> fontStyle;
+    private JTextArea exampleField;
+
+    private boolean dialogResult;
+
+    /**
+     * Creates font chooser dialog.
+     *
+     * @param parent - parent window
+     * @param font   - font
+     */
     public JFontChooser(Window parent, Font font) {
         super(parent, TITLE_TEXT);
         this.setModal(true);
@@ -76,39 +84,53 @@ public class JFontChooser extends JDialog {
         return dialogResult;
     }
 
-    public String getFontType() {
-        return fontTypeBox.getSelectedItem().toString();
+    /**
+     * Returns selected font name.
+     *
+     * @return selected font name
+     */
+    public String getFontName() {
+        return fontNameBox.getSelectedItem().toString();
     }
 
+    /**
+     * Returns selected font size.
+     *
+     * @return selected font size
+     */
     public int getFontSize() {
         return Integer.parseInt(fontSize.getSelectedItem().toString());
     }
 
-    public int getFontTracing() {
+    /**
+     * Returns selected font style.
+     *
+     * @return selected font style
+     */
+    public int getFontStyle() {
         int index = fontStyle.getSelectedIndex();
-        int style;
         switch (index) {
             case PLAIN_ID:
-                style = Font.PLAIN;
-                break;
+                return Font.PLAIN;
             case BOLD_ID:
-                style = Font.BOLD;
-                break;
+                return Font.BOLD;
             case ITALIC_ID:
-                style = Font.ITALIC;
-                break;
+                return Font.ITALIC;
             case BOLD_AND_ITALIC_ID:
-                style = Font.BOLD | Font.ITALIC;
-                break;
+                return Font.BOLD | Font.ITALIC;
 
             default:
-                throw new IllegalArgumentException(String.format("Unexpected font style: %d", index));
+                throw new IllegalArgumentException(String.format("Unexpected font index: %d", index));
         }
-        return style;
     }
 
+    /**
+     * Returns selected font.
+     *
+     * @return selected font
+     */
     public Font getSelectedFont() {
-        return new Font(getFontType(), getFontTracing(), getFontSize());
+        return new Font(getFontName(), getFontStyle(), getFontSize());
     }
 
     private void createGUI(Font font) {
@@ -117,74 +139,11 @@ public class JFontChooser extends JDialog {
         GuiUtils.setIcon(this, CONFIG_SERVICE.getApplicationConfig().getIconUrl(), log);
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
         //---------------------------------
-        fontTypeBox = new JComboBox<>(FONTS);
-        fontSize = new JComboBox<>();
-        fontStyle = new JComboBox<>(STYLES);
-        fontTypeBox.setPreferredSize(COMBO_BOX_DIM);
-        fontSize.setPreferredSize(COMBO_BOX_DIM);
-        fontStyle.setPreferredSize(COMBO_BOX_DIM);
-        fontTypeBox.setRenderer(new DefaultListCellRenderer() {
-
-            @Override
-            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
-                if (i >= 0) {
-                    label.setFont(new Font(FONTS[i], Font.PLAIN, DEFAULT_FONT_SIZE));
-                    label.setText(FONTS[i]);
-                }
-                return label;
-            }
-        });
-
-        fontStyle.setRenderer(new DefaultListCellRenderer() {
-
-            @Override
-            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
-                if (i >= 0) {
-                    switch (i) {
-                        case PLAIN_ID:
-                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE));
-                            break;
-                        case BOLD_ID:
-                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD, DEFAULT_FONT_SIZE));
-                            break;
-                        case ITALIC_ID:
-                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.ITALIC, DEFAULT_FONT_SIZE));
-                            break;
-                        case BOLD_AND_ITALIC_ID:
-                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
-                            break;
-                    }
-                    label.setText(STYLES[i]);
-                }
-                return label;
-            }
-        });
-
-        //---------------------------------
-        for (int i = MIN_FONT_SIZE; i <= MAX_FONT_SIZE; i++) {
-            fontSize.addItem(String.valueOf(i));
-        }
-        fontSize.setSelectedItem(String.valueOf(font.getSize()));
-        fontTypeBox.setSelectedItem(font.getName());
-        switch (font.getStyle()) {
-            case Font.PLAIN:
-                fontStyle.setSelectedIndex(PLAIN_ID);
-                break;
-            case Font.BOLD:
-                fontStyle.setSelectedIndex(BOLD_ID);
-                break;
-            case Font.ITALIC:
-                fontStyle.setSelectedIndex(ITALIC_ID);
-                break;
-            case Font.ITALIC | Font.BOLD:
-                fontStyle.setSelectedIndex(BOLD_AND_ITALIC_ID);
-                break;
-        }
-        //----------------------------------
+        createFontSizeComponent(font);
+        createFontStyleComponent(font);
+        createFontTypeComponent(font);
         ItemListener listener = event -> setExample();
-        fontTypeBox.addItemListener(listener);
+        fontNameBox.addItemListener(listener);
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
         //----------------------------------
@@ -199,7 +158,7 @@ public class JFontChooser extends JDialog {
         panel.add(new JLabel(FONT_TYPE_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        panel.add(fontTypeBox, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+        panel.add(fontNameBox, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         panel.add(new JLabel(FONT_SIZE_TITLE), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -238,6 +197,85 @@ public class JFontChooser extends JDialog {
     private void setExample() {
         exampleField.setFont(getSelectedFont());
         exampleField.setText(FONT_EXAMPLE);
+    }
+
+    private void createFontSizeComponent(Font font) {
+        fontNameBox = new JComboBox<>(AVAILABLE_FONT_NAMES);
+        fontSize = new JComboBox<>();
+        fontSize.setPreferredSize(COMBO_BOX_DIM);
+        for (int i = MIN_FONT_SIZE; i <= MAX_FONT_SIZE; i++) {
+            fontSize.addItem(String.valueOf(i));
+        }
+        fontSize.setSelectedItem(String.valueOf(font.getSize()));
+    }
+
+    private void createFontTypeComponent(Font font) {
+        fontNameBox = new JComboBox<>(AVAILABLE_FONT_NAMES);
+        fontNameBox.setPreferredSize(COMBO_BOX_DIM);
+        fontNameBox.setRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
+                if (i >= 0) {
+                    label.setFont(new Font(AVAILABLE_FONT_NAMES[i], Font.PLAIN, DEFAULT_FONT_SIZE));
+                    label.setText(AVAILABLE_FONT_NAMES[i]);
+                }
+                return label;
+            }
+        });
+        fontNameBox.setSelectedItem(font.getName());
+    }
+
+    private void createFontStyleComponent(Font font) {
+        fontStyle = new JComboBox<>(STYLES);
+        fontStyle.setPreferredSize(COMBO_BOX_DIM);
+        fontStyle.setRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
+                if (i >= 0) {
+                    switch (i) {
+                        case PLAIN_ID:
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.PLAIN, DEFAULT_FONT_SIZE));
+                            break;
+                        case BOLD_ID:
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD, DEFAULT_FONT_SIZE));
+                            break;
+                        case ITALIC_ID:
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.ITALIC, DEFAULT_FONT_SIZE));
+                            break;
+                        case BOLD_AND_ITALIC_ID:
+                            label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
+                            break;
+                    }
+                    label.setText(STYLES[i]);
+                }
+                return label;
+            }
+        });
+        setFontStyle(font);
+    }
+
+    private void setFontStyle(Font font) {
+        switch (font.getStyle()) {
+            case Font.PLAIN:
+                fontStyle.setSelectedIndex(PLAIN_ID);
+                break;
+            case Font.BOLD:
+                fontStyle.setSelectedIndex(BOLD_ID);
+                break;
+            case Font.ITALIC:
+                fontStyle.setSelectedIndex(ITALIC_ID);
+                break;
+            case Font.ITALIC | Font.BOLD:
+                fontStyle.setSelectedIndex(BOLD_AND_ITALIC_ID);
+                break;
+
+            default:
+                throw new IllegalArgumentException(String.format("Unexpected font style: %d", font.getStyle()));
+        }
     }
 
 }
