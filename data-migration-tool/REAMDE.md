@@ -13,7 +13,7 @@ Data migration tool v5.1
 
 2. Каждый специальный символ в имени таблицы преобразуется в символ '_'.
 
-3. Если длина строкового значения номинального атрибута превышает 255 символов, то оно обрезается
+3. Если длина значения номинального атрибута превышает 255 символов, то оно обрезается
 до соответствующей длины.
 
 
@@ -33,6 +33,7 @@ Data migration tool v5.1
    migration.dataStoragePath - путь к директории с файлами данных на диске
    migration.batchSize - размер блока для транзакционного сохранения данных в базу данных
    migration.durationInSeconds - интервал между запусками scheduler для миграции данных
+   migration.jobEnabled - выключатель для миграции данных с помощью scheduler
 
 Инструкция по развертыванию
 ----------------------------------------
@@ -49,3 +50,9 @@ Data migration tool v5.1
 4. Запустить проект из командной строки с помощью команды:
 
    java -jar data-migration-tool-5.1.jar
+  
+5. End point для миграции данных доступен по адресу http://[host]:[port]/migration-tool/migrate. Где host и port -
+   адрес хоста и номер порта, на котором развернуто приложение. Ниже приведен пример команды через утилиту curl
+   для миграции данных через end point:
+   
+   curl -i -X POST -H "Content-Type: multipart/form-data" -F "dataFile=@/home/roman/IrisEX.csv" http://localhost:8091/migration-tool/migrate
