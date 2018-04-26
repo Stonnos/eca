@@ -70,12 +70,12 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.createGUI(digits);
-        this.setParam();
+        this.setMetaDataSelectionMethod();
         this.pack();
         this.setLocationRelativeTo(parent);
     }
 
-    public void setMetaEnabled(boolean flag) {
+    public void setMetaClassifierSelectionEnabled(boolean flag) {
         metaClassifierBox.setEnabled(flag);
         metaOptionsButton.setEnabled(flag);
     }
@@ -87,14 +87,130 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
         }
     }
 
-    private void setParam() {
+    private void setMetaDataSelectionMethod() {
         useTestingSet.setSelected(classifier.getUseCrossValidation());
         foldsSpinner.getModel().setValue(classifier.getNumFolds());
     }
 
     private void createGUI(final int digits) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(PanelBorderUtils.createTitledBorder(META_SET_TITLE));
+        this.add(createMetaDataSetSelectionPanel(), new GridBagConstraints(0, 0, 2, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
+        useTestingSet.addItemListener(e -> foldsSpinner.setEnabled(useTestingSet.isSelected()));
+        //-------------------------------------------------------------
+        this.add(createAlgorithmsSelectionPanel(), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
+        this.add(createSelectedAlgorithmsPanel(digits), new GridBagConstraints(1, 1, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
+        //-------------------------------------------------------------
+        createMetaClassifierComboBox(digits);
+        createMetaClassifierOptionsButton();
+        //----------------------------------------------------------------
+        JPanel metaPanel = new JPanel(new GridBagLayout());
+        metaPanel.setBorder(PanelBorderUtils.createTitledBorder(META_CLASSIFIER_TITLE));
+        metaPanel.add(metaClassifierBox, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        metaPanel.add(metaOptionsButton, new GridBagConstraints(1, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
+        this.add(metaPanel, new GridBagConstraints(0, 2, 2, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
+        //--------------------------------------------------------------
+        JButton okButton = createOkButton();
+        JButton cancelButton = ButtonUtils.createCancelButton();
+
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
+        });
+        //--------------------------------------------------------------
+        this.add(okButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
+        this.add(cancelButton, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
+        //-----------------------------------------------
+        this.getRootPane().setDefaultButton(okButton);
+    }
+
+    private JButton createOkButton() {
+        JButton okButton = ButtonUtils.createOkButton();
+        okButton.addActionListener(e -> {
+            if (baseClassifiersListModel.isEmpty()) {
+                JOptionPane.showMessageDialog(StackingOptionsDialog.this,
+                        EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
+                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+            } else {
+                if (useTestingSet.isSelected()) {
+                    classifier.setUseCrossValidation(true);
+                    classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
+                }
+                ClassifiersSet set = new ClassifiersSet();
+                for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
+                    set.addClassifier(frame.classifier());
+                }
+                classifier.setClassifiers(set);
+                classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
+                dialogResult = true;
+                setVisible(false);
+            }
+        });
+        return okButton;
+    }
+
+    private void createMetaClassifierOptionsButton() {
+        metaOptionsButton = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
+        metaOptionsButton.addActionListener(e -> metaClsOptionsDialog.showDialog());
+    }
+
+    private JPanel createAlgorithmsSelectionPanel() {
+        JPanel algorithmsPanel = new JPanel(new GridBagLayout());
+        algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
+        algorithmsList.setPreferredSize(ALGORITHMS_LIST_DIM);
+        algorithmsList.setMinimumSize(ALGORITHMS_LIST_DIM);
+        algorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //-------------------------------------------------
+        JScrollPane algorithmsPane = new JScrollPane(algorithmsList);
+        algorithmsPane.setPreferredSize(ALGORITHMS_LIST_DIM);
+        algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TEXT));
+        final JButton addButton = new JButton(ADD_CLASSIFIER_BUTTON_TEXT);
+        addButton.setEnabled(false);
+        addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithmsList.getSelectedValue()));
+        algorithmsList.addListSelectionListener(e -> addButton.setEnabled(true));
+        algorithmsPanel.add(algorithmsPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
+        algorithmsPanel.add(addButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        return algorithmsPanel;
+    }
+
+    private JPanel createSelectedAlgorithmsPanel(int digits) {
+        JPanel selectedAlgorithmsPanel = new JPanel(new GridBagLayout());
+        baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
+        selectedAlgorithmsList = new JList<>(baseClassifiersListModel);
+        selectedAlgorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane selectedPane = new JScrollPane(selectedAlgorithmsList);
+        selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        selectedAlgorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TEXT));
+        selectedPane.setPreferredSize(ALGORITHMS_LIST_DIM);
+        //-----------------------------------------------------------------
+        final JButton removeButton = new JButton(DELETE_CLASSIFIER_BUTTON_TEXT);
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(e -> {
+            baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());
+            removeButton.setEnabled(false);
+        });
+        selectedAlgorithmsList.addListSelectionListener(
+                e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
+        selectedAlgorithmsList.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithmsList,
+                baseClassifiersListModel));
+        selectedAlgorithmsPanel.add(selectedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
+        selectedAlgorithmsPanel.add(removeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        return selectedAlgorithmsPanel;
+    }
+
+    private JPanel createMetaDataSetSelectionPanel() {
+        JPanel metaDataSetSelectionMethodPanel = new JPanel(new GridBagLayout());
+        metaDataSetSelectionMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(META_SET_TITLE));
         ButtonGroup group = new ButtonGroup();
         useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
         useTestingSet = new JRadioButton(EvaluationMethod.CROSS_VALIDATION.getDescription());
@@ -105,72 +221,19 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                 new SpinnerNumberModel(classifier.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
                         CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
         foldsSpinner.setEnabled(false);
-        panel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+        metaDataSetSelectionMethodPanel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        panel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
+        metaDataSetSelectionMethodPanel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        panel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
-        panel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        metaDataSetSelectionMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE),
+                new GridBagConstraints(0, 2, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
+        metaDataSetSelectionMethodPanel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        //--------------------------------------------------------------------
-        this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
+        return metaDataSetSelectionMethodPanel;
+    }
 
-        useTestingSet.addItemListener(e -> foldsSpinner.setEnabled(useTestingSet.isSelected()));
-
-        JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
-        algorithmsList.setPreferredSize(ALGORITHMS_LIST_DIM);
-        algorithmsList.setMinimumSize(ALGORITHMS_LIST_DIM);
-        algorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //-------------------------------------------------
-        JScrollPane algorithmsPane = new JScrollPane(algorithmsList);
-        algorithmsPane.setPreferredSize(ALGORITHMS_LIST_DIM);
-        algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TEXT));
-        JPanel selectedPanel = new JPanel(new GridBagLayout());
-        baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
-        selectedAlgorithmsList = new JList<>(baseClassifiersListModel);
-        selectedAlgorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane selectedPane = new JScrollPane(selectedAlgorithmsList);
-        selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        selectedPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TEXT));
-        selectedPane.setPreferredSize(ALGORITHMS_LIST_DIM);
-        //-----------------------------------------------------------------
-        final JButton addButton = new JButton(ADD_CLASSIFIER_BUTTON_TEXT);
-        addButton.setEnabled(false);
-        final JButton removeButton = new JButton(DELETE_CLASSIFIER_BUTTON_TEXT);
-        removeButton.setEnabled(false);
-        //-------------------------------------------------------------
-        addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithmsList.getSelectedValue()));
-        //-------------------------------------------------------------
-        removeButton.addActionListener(e -> {
-            baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());
-            removeButton.setEnabled(false);
-        });
-        //-------------------------------------------------------------
-        algorithmsList.addListSelectionListener(e -> addButton.setEnabled(true));
-        selectedAlgorithmsList.addListSelectionListener(
-                e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
-        //-------------------------------------------------------------
-        selectedAlgorithmsList.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithmsList,
-                baseClassifiersListModel));
-        //-------------------------------------------------------------
-        algorithmsPanel.add(algorithmsPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        algorithmsPanel.add(addButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        //-------------------------------------------------------------
-        selectedPanel.add(selectedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        selectedPanel.add(removeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        //-------------------------------------------------------------
-        this.add(algorithmsPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
-        this.add(selectedPanel, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
-        //-------------------------------------------------------------
+    private void createMetaClassifierComboBox(int digits) {
         metaClassifierBox = new JComboBox<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         metaClassifierBox.addItemListener(event -> {
             try {
@@ -232,52 +295,6 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
             }
         });
         metaClassifierBox.setSelectedIndex(1);
-        metaOptionsButton = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
-        metaOptionsButton.addActionListener(e -> metaClsOptionsDialog.showDialog());
-        //----------------------------------------------------------------
-        JPanel metaPanel = new JPanel(new GridBagLayout());
-        metaPanel.setBorder(PanelBorderUtils.createTitledBorder(META_CLASSIFIER_TITLE));
-        metaPanel.add(metaClassifierBox, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        metaPanel.add(metaOptionsButton, new GridBagConstraints(1, 0, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
-        this.add(metaPanel, new GridBagConstraints(0, 2, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
-        //--------------------------------------------------------------
-        JButton okButton = ButtonUtils.createOkButton();
-        JButton cancelButton = ButtonUtils.createCancelButton();
-
-        okButton.addActionListener(e -> {
-            if (baseClassifiersListModel.isEmpty()) {
-                JOptionPane.showMessageDialog(StackingOptionsDialog.this,
-                        EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE,
-                        INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-            } else {
-                if (useTestingSet.isSelected()) {
-                    classifier.setUseCrossValidation(true);
-                    classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                }
-                ClassifiersSet set = new ClassifiersSet();
-                for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
-                    set.addClassifier(frame.classifier());
-                }
-                classifier.setClassifiers(set);
-                classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
-                dialogResult = true;
-                setVisible(false);
-            }
-        });
-        cancelButton.addActionListener(e -> {
-            dialogResult = false;
-            setVisible(false);
-        });
-        //--------------------------------------------------------------
-        this.add(okButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
-        this.add(cancelButton, new GridBagConstraints(1, 3, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------------------
-        this.getRootPane().setDefaultButton(okButton);
     }
 
 }

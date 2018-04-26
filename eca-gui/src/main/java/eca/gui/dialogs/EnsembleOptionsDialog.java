@@ -76,7 +76,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private final DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
 
-    private JTabbedPane pane;
+    private JTabbedPane ensembleOptionsTabbedPane;
     private JPanel firstPanel;
     private JPanel secondPanel;
     private JTextField numClassifiersTextField;
@@ -119,7 +119,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     }
 
     public void setSampleEnabled(boolean flag) {
-        pane.setEnabledAt(1, flag);
+        ensembleOptionsTabbedPane.setEnabledAt(1, flag);
     }
 
     public void addClassifiers(ClassifiersSet classifiers) {
@@ -130,7 +130,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     }
 
     private void createGUI(final int digits) {
-        pane = new JTabbedPane();
+        ensembleOptionsTabbedPane = new JTabbedPane();
         firstPanel = new JPanel(new GridBagLayout());
         firstPanel.setPreferredSize(TAB_DIMENSION);
         JPanel optionPanel = new JPanel(new GridBagLayout());
@@ -241,7 +241,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
             setVisible(false);
         });
         //--------------------------------------------------------------
-        pane.add(firstPanel, MAIN_OPTIONS_TAB_TITLE);
+        ensembleOptionsTabbedPane.add(firstPanel, MAIN_OPTIONS_TAB_TITLE);
         //--------------------------------------------------------------
         secondPanel = new JPanel(new GridBagLayout());
         secondPanel.setPreferredSize(dim);
@@ -343,9 +343,9 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         secondPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
         //------------------------------------------------------
-        pane.add(secondPanel, ADDITIONAL_OPTIONS_TAB_TITLE);
+        ensembleOptionsTabbedPane.add(secondPanel, ADDITIONAL_OPTIONS_TAB_TITLE);
         //------------------------------------------------------
-        this.add(pane, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+        this.add(ensembleOptionsTabbedPane, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
         this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));

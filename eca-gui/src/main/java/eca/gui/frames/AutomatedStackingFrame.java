@@ -31,7 +31,7 @@ public class AutomatedStackingFrame extends ExperimentFrame {
         StackingOptionsDialog options
                 = new StackingOptionsDialog(this, OPTIONS_TITLE,
                 exp.getClassifier(), exp.getData(), getDigits());
-        options.setMetaEnabled(false);
+        options.setMetaClassifierSelectionEnabled(false);
         try {
             options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiers()));
             options.showDialog();
