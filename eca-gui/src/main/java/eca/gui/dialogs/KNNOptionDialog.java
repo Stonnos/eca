@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 /**
  * @author Roman Batygin
  */
-public class KNNOptionDialog extends BaseOptionsDialog<KNearestNeighbours> {
+public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbours> {
 
     private static final String OPTIONS_MESSAGE = "Параметры алгоритма";
 

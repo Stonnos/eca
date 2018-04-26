@@ -17,7 +17,7 @@ import java.awt.*;
  * @param <T> - classifier generic type
  * @author Roman Batygin
  */
-public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
+public abstract class ClassifierOptionsDialogBase<T extends Classifier> extends JDialog {
 
     public static final int INT_FIELD_LENGTH = 8;
     public static final int TEXT_FIELD_LENGTH = 8;
@@ -27,7 +27,7 @@ public abstract class BaseOptionsDialog<T extends Classifier> extends JDialog {
     protected Instances data;
     protected boolean dialogResult;
 
-    public BaseOptionsDialog(Window parent, String title, T classifier, Instances data) {
+    public ClassifierOptionsDialogBase(Window parent, String title, T classifier, Instances data) {
         super(parent, title);
         this.classifier = classifier;
         this.data = data;

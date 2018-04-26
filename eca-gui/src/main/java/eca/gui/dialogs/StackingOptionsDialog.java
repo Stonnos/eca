@@ -32,7 +32,7 @@ import java.awt.*;
 /**
  * @author Roman Batygin
  */
-public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier> {
+public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingClassifier> {
 
     private static final String META_SET_TITLE = "Формирование мета-данных";
     private static final String META_CLASSIFIER_TITLE = "Выбор мета-классификатора";
@@ -62,7 +62,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
     private JRadioButton useTestingSet;
     private final JSpinner foldsSpinner = new JSpinner();
 
-    private BaseOptionsDialog metaClsOptionsDialog;
+    private ClassifierOptionsDialogBase metaClsOptionsDialog;
 
     public StackingOptionsDialog(Window parent, String title,
                                  StackingClassifier stackingClassifier, Instances data, final int digits) {
@@ -143,7 +143,7 @@ public class StackingOptionsDialog extends BaseOptionsDialog<StackingClassifier>
                     classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
                 }
                 ClassifiersSet set = new ClassifiersSet();
-                for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
+                for (ClassifierOptionsDialogBase frame : baseClassifiersListModel.getFrames()) {
                     set.addClassifier(frame.classifier());
                 }
                 classifier.setClassifiers(set);

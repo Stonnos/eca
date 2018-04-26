@@ -24,7 +24,7 @@ import java.awt.*;
 /**
  * Random forests algorithm options dialog frame.
  */
-public class RandomForestsOptionDialog extends BaseOptionsDialog<RandomForests> {
+public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<RandomForests> {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();

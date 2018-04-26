@@ -20,7 +20,7 @@ import java.text.DecimalFormat;
 /**
  * @author Roman Batygin
  */
-public class RandomNetworkOptionsDialog extends BaseOptionsDialog<RandomNetworks> {
+public class RandomNetworkOptionsDialog extends ClassifierOptionsDialogBase<RandomNetworks> {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();

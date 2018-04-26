@@ -21,7 +21,7 @@ import java.awt.*;
 /**
  * @author Roman Batygin
  */
-public class DecisionTreeOptionsDialog extends BaseOptionsDialog<DecisionTreeClassifier> {
+public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<DecisionTreeClassifier> {
 
     private static final String TREE_OPTIONS_MESSAGE = "Параметры дерева";
     private static final String RANDOM_TREE_MESSAGE = "Случайное дерево";

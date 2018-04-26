@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
 /**
  * @author Roman Batygin
  */
-public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
+public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetwork> {
 
     private static final int DOUBLE_FIELD_LENGTH = 12;
 

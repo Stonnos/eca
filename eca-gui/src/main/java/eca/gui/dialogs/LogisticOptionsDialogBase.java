@@ -19,7 +19,7 @@ import java.awt.*;
 /**
  * @author Roman Batygin
  */
-public class LogisticOptionsDialogBase extends BaseOptionsDialog<Logistic> {
+public class LogisticOptionsDialogBase extends ClassifierOptionsDialogBase<Logistic> {
 
     private static final String OPTIONS_MESSAGE = "Параметры логистической регрессии";
 

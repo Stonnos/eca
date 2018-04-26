@@ -32,7 +32,7 @@ import java.text.DecimalFormat;
 /**
  * @author Roman Batygin
  */
-public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneousClassifier> {
+public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractHeterogeneousClassifier> {
 
     private static final int FIELD_LENGTH = 5;
 
@@ -261,6 +261,71 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private void createAdditionalOptionsPanel(Dimension algorithmsPaneDim) {
         additionalOptionsPanel = new JPanel(new GridBagLayout());
         additionalOptionsPanel.setPreferredSize(algorithmsPaneDim);
+        createSamplingMethodPanel();
+        additionalOptionsPanel.add(samplePanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        createClassifierSelectionMethodPanel();
+        additionalOptionsPanel.add(createClassifierSelectionMethodPanel(), new GridBagConstraints(0, 1, 1, 1, 1, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
+        additionalOptionsPanel.add(createVotingMethodPanel(), new GridBagConstraints(0, 2, 1, 1, 1, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
+    }
+
+    private JPanel createClassifierSelectionMethodPanel() {
+        JPanel classifierSelectionMethodPanel = new JPanel(new GridBagLayout());
+        classifierSelectionMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(CLS_SELECTION_TITLE));
+        ButtonGroup clsGroup = new ButtonGroup();
+        randomClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[0]);
+        optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
+        clsGroup.add(randomClsRadioButton);
+        clsGroup.add(optimalClsRadioButton);
+        //--------------------------------
+        randomClsRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(true);
+            }
+        });
+
+        optimalClsRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(false);
+            }
+        });
+        randomClsRadioButton.setSelected(true);
+        classifierSelectionMethodPanel.add(randomClsRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
+        classifierSelectionMethodPanel.add(optimalClsRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
+        return classifierSelectionMethodPanel;
+    }
+
+    private JPanel createVotingMethodPanel() {
+        JPanel votingPanel = new JPanel(new GridBagLayout());
+        votingPanel.setBorder(PanelBorderUtils.createTitledBorder(VOTES_TITLE));
+        ButtonGroup votesGroup = new ButtonGroup();
+        majorityRadioButton = new JRadioButton(VOTES_METHOD[0]);
+        weightedRadioButton = new JRadioButton(VOTES_METHOD[1]);
+        votesGroup.add(majorityRadioButton);
+        votesGroup.add(weightedRadioButton);
+        majorityRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(false);
+            }
+        });
+        weightedRadioButton.addItemListener(e -> {
+            if (classifier instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(true);
+            }
+        });
+        majorityRadioButton.setSelected(true);
+        votingPanel.add(majorityRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
+        votingPanel.add(weightedRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
+        return votingPanel;
+    }
+
+    private void createSamplingMethodPanel() {
         samplePanel = new JPanel(new GridBagLayout());
         samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
@@ -303,61 +368,6 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         samplePanel.add(randomBaggingRadioButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        additionalOptionsPanel.add(samplePanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        //------------------------------------------------------
-        JPanel clsMethodPanel = new JPanel(new GridBagLayout());
-        clsMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(CLS_SELECTION_TITLE));
-        ButtonGroup clsGroup = new ButtonGroup();
-        randomClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[0]);
-        optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
-        clsGroup.add(randomClsRadioButton);
-        clsGroup.add(optimalClsRadioButton);
-        //--------------------------------
-        randomClsRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(true);
-            }
-        });
-
-        optimalClsRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(false);
-            }
-        });
-        randomClsRadioButton.setSelected(true);
-        clsMethodPanel.add(randomClsRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        clsMethodPanel.add(optimalClsRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        additionalOptionsPanel.add(clsMethodPanel, new GridBagConstraints(0, 1, 1, 1, 1, 0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
-        //------------------------------------------------------------
-        JPanel votesPanel = new JPanel(new GridBagLayout());
-        votesPanel.setBorder(PanelBorderUtils.createTitledBorder(VOTES_TITLE));
-        ButtonGroup votesGroup = new ButtonGroup();
-        majorityRadioButton = new JRadioButton(VOTES_METHOD[0]);
-        weightedRadioButton = new JRadioButton(VOTES_METHOD[1]);
-        votesGroup.add(majorityRadioButton);
-        votesGroup.add(weightedRadioButton);
-        //--------------------------------
-        majorityRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(false);
-            }
-        });
-        weightedRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(true);
-            }
-        });
-        majorityRadioButton.setSelected(true);
-        votesPanel.add(majorityRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        votesPanel.add(weightedRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        additionalOptionsPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
     }
 
     private void createFormat() {
@@ -404,7 +414,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private void createClassifiersSet() {
         ClassifiersSet classifiersSet = new ClassifiersSet();
-        for (BaseOptionsDialog frame : baseClassifiersListModel.getFrames()) {
+        for (ClassifierOptionsDialogBase frame : baseClassifiersListModel.getFrames()) {
             classifiersSet.addClassifier(frame.classifier());
         }
         classifier.setClassifiersSet(classifiersSet);

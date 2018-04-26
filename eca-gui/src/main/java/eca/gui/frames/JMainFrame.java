@@ -54,7 +54,7 @@ import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.DataGeneratorDialog;
 import eca.gui.dialogs.DatabaseConnectionDialog;
@@ -581,7 +581,7 @@ public class JMainFrame extends JFrame {
 
     }
 
-    private void executeWithEcaService(final BaseOptionsDialog frame) throws Exception {
+    private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
 
         EcaServiceClientImpl restClient = new EcaServiceClientImpl();
         restClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
@@ -612,7 +612,7 @@ public class JMainFrame extends JFrame {
                         JOptionPane.WARNING_MESSAGE));
     }
 
-    private void executeSimpleBuilding(BaseOptionsDialog frame) throws Exception {
+    private void executeSimpleBuilding(ClassifierOptionsDialogBase frame) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -627,7 +627,7 @@ public class JMainFrame extends JFrame {
         frame.dispose();
     }
 
-    private void processSimpleBuilding(BaseOptionsDialog frame) throws Exception {
+    private void processSimpleBuilding(ClassifierOptionsDialogBase frame) throws Exception {
         ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
         LoadDialog progress = new LoadDialog(JMainFrame.this,
                 builder, MODEL_BUILDING_MESSAGE);
@@ -1496,11 +1496,11 @@ public class JMainFrame extends JFrame {
     /**
      * Executes iterative classifier building.
      *
-     * @param frame           {@link BaseOptionsDialog} object
+     * @param frame           {@link ClassifierOptionsDialogBase} object
      * @param progressMessage progress message
      * @throws Exception
      */
-    private void executeIterativeBuilding(final BaseOptionsDialog frame, String progressMessage) throws Exception {
+    private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame, String progressMessage) throws Exception {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -1525,7 +1525,7 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    private void processIterativeBuilding(BaseOptionsDialog frame, String progressMessage) throws Exception {
+    private void processIterativeBuilding(ClassifierOptionsDialogBase frame, String progressMessage) throws Exception {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);

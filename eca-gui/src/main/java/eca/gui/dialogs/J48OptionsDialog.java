@@ -17,7 +17,7 @@ import java.awt.*;
  *
  * @author Roman Batygin
  */
-public class J48OptionsDialog extends BaseOptionsDialog<J48> {
+public class J48OptionsDialog extends ClassifierOptionsDialogBase<J48> {
 
     private static final String PRUNING_TREE_TEXT = "Усечение дерева";
     private static final String BINARY_TREE_TEXT = "Бинарное дерево";

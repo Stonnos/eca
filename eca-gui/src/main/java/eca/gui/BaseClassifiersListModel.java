@@ -1,7 +1,7 @@
 package eca.gui;
 
 import eca.dictionary.ClassifiersNamesDictionary;
-import eca.gui.dialogs.BaseOptionsDialog;
+import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
 import eca.gui.dialogs.J48OptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
@@ -29,7 +29,7 @@ import java.util.List;
 
 public class BaseClassifiersListModel extends DefaultListModel<String> {
 
-    private ArrayList<BaseOptionsDialog> frames = new ArrayList<>();
+    private ArrayList<ClassifierOptionsDialogBase> frames = new ArrayList<>();
 
     private Instances data;
 
@@ -43,11 +43,11 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
         this.digits = digits;
     }
 
-    public List<BaseOptionsDialog> getFrames() {
+    public List<ClassifierOptionsDialogBase> getFrames() {
         return frames;
     }
 
-    public BaseOptionsDialog getWindow(int i) {
+    public ClassifierOptionsDialogBase getWindow(int i) {
         return frames.get(i);
     }
 
@@ -147,7 +147,7 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
 
     @Override
     public String remove(int i) {
-        BaseOptionsDialog frame = frames.remove(i);
+        ClassifierOptionsDialogBase frame = frames.remove(i);
         frame.dispose();
         return super.remove(i);
     }
