@@ -13,7 +13,7 @@ import eca.gui.dialogs.JFontChooser;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.text.NumericFormatFactory;
-import eca.util.ImageSaver;
+import eca.util.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 
@@ -217,7 +217,7 @@ public class NetworkVisualizer extends JPanel {
                     fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
                     File file = fileChooser.getSelectedFile(frame);
                     if (file != null) {
-                        ImageSaver.saveImage(file, getImage());
+                        FileUtils.write(file, getImage());
 
                     }
                 } catch (IOException e) {

@@ -16,7 +16,7 @@ import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
-import eca.util.ImageSaver;
+import eca.util.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.springframework.util.Assert;
@@ -31,11 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Decision tree visualization panel.
@@ -219,7 +215,7 @@ public class TreeVisualizer extends JPanel {
                     fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
                     File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
                     if (file != null) {
-                        ImageSaver.saveImage(file, getImage());
+                        FileUtils.write(file, getImage());
                     }
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(TreeVisualizer.this.getParent(), e.getMessage(),

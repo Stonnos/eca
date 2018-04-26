@@ -1,10 +1,10 @@
 package eca.gui.frames;
 
 import eca.gui.ButtonUtils;
-import eca.gui.choosers.SaveModelChooser;
+import eca.gui.choosers.HtmlChooser;
 import eca.gui.logging.LoggerUtils;
-import eca.util.TextSaver;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,15 +18,16 @@ import java.io.File;
  * @author Roman Batygin
  */
 @Slf4j
-public class TextInfoFrame extends JFrame {
+public class HtmlFrame extends JFrame {
 
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
     private static final Dimension OPTIONS_PANE_PREFERRED_SIZE = new Dimension(475, 200);
     private static final String CONTENT_TYPE = "text/html";
+    private static final String UTF_8 = "UTF-8";
     private JTextPane inputOptionsPane = new JTextPane();
 
-    public TextInfoFrame(String title, String text, JFrame parent) {
+    public HtmlFrame(String title, String text, JFrame parent) {
         this.setLayout(new GridBagLayout());
         this.setTitle(title);
         try {
@@ -57,21 +58,21 @@ public class TextInfoFrame extends JFrame {
         //--------------------------------------------
         saveMenu.addActionListener(new ActionListener() {
 
-            SaveModelChooser fileChooser;
+            HtmlChooser fileChooser;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
                     if (fileChooser == null) {
-                        fileChooser = new SaveModelChooser();
+                        fileChooser = new HtmlChooser();
                     }
-                    File file = fileChooser.getSelectedFile(TextInfoFrame.this);
+                    File file = fileChooser.getSelectedFile(HtmlFrame.this);
                     if (file != null) {
-                        TextSaver.saveToFile(file, inputOptionsPane.getText());
+                        FileUtils.write(file, inputOptionsPane.getText(), UTF_8);
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(TextInfoFrame.this, e.getMessage(),
+                    JOptionPane.showMessageDialog(HtmlFrame.this, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
             }

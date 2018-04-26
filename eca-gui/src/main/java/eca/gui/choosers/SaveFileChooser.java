@@ -16,7 +16,7 @@ import java.io.File;
  */
 public abstract class SaveFileChooser {
 
-    protected final JFileChooser chooser = new JFileChooser();
+    private JFileChooser chooser = new JFileChooser();
 
     protected SaveFileChooser() {
         chooser.setCurrentDirectory(new File("."));
@@ -41,5 +41,9 @@ public abstract class SaveFileChooser {
         } else {
             return null;
         }
+    }
+
+    public JFileChooser getChooser() {
+        return chooser;
     }
 }

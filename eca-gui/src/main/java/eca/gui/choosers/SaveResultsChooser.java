@@ -15,9 +15,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class SaveResultsChooser extends SaveFileChooser {
 
     public SaveResultsChooser() {
-        chooser.addChoosableFileFilter(
+        getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter("Xls data files (*.xls)", DataFileExtension.XLS.getExtension()));
-        chooser.addChoosableFileFilter(
+        getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter("Xls data files (*.xlsx)", DataFileExtension.XLSX.getExtension()));
     }
 

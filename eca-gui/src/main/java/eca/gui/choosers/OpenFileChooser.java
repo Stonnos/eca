@@ -14,7 +14,7 @@ import java.io.File;
  */
 public abstract class OpenFileChooser {
 
-    protected final JFileChooser chooser = new JFileChooser();
+    private JFileChooser chooser = new JFileChooser();
 
     protected OpenFileChooser() {
         chooser.setCurrentDirectory(new File("."));
@@ -24,5 +24,9 @@ public abstract class OpenFileChooser {
     public File openFile(Component parent) {
         return (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION
                 ? chooser.getSelectedFile() : null);
+    }
+
+    public JFileChooser getChooser() {
+        return chooser;
     }
 }

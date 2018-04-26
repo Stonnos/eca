@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class SaveImageFileChooser extends SaveFileChooser {
 
     public SaveImageFileChooser() {
-        chooser.addChoosableFileFilter(
+        getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter("PNG data files (*.png)", "png"));
     }
 

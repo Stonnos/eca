@@ -206,12 +206,12 @@ public class ClassificationResultsFrameBase extends JFrame {
         //--------------------------------------------
         inputMenu.addActionListener(new ActionListener() {
 
-            TextInfoFrame inputParamInfo;
+            HtmlFrame inputParamInfo;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
-                    inputParamInfo = new TextInfoFrame(inputMenu.getText(),
+                    inputParamInfo = new HtmlFrame(inputMenu.getText(),
                             ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(classifier, true),
                             ClassificationResultsFrameBase.this);
                     ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {

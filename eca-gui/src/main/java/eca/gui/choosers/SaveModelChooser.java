@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class SaveModelChooser extends SaveFileChooser {
 
     public SaveModelChooser() {
-        chooser.addChoosableFileFilter(
+        getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter("Model files (*.model)", "model"));
     }
 
