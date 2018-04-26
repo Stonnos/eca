@@ -87,13 +87,13 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
         this.createFormats();
-        this.makeOptionGUI();
+        this.createOptionGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
         hidLayersTextField.requestFocusInWindow();
     }
 
-    private void makeOptionGUI() {
+    private void createOptionGUI() {
         JPanel defaultPanel = new JPanel(new GridBagLayout());
         defaultPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         //--------------------------------------------------
@@ -225,11 +225,13 @@ public class NetworkOptionsDialog extends BaseOptionsDialog<NeuralNetwork> {
                 text = hidLayersTextField;
                 try {
                     network().setHiddenLayer(hidLayersTextField.getText().trim());
-                    network().setActivationFunction(getSelectedActivationFunction());
-                    network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
+                    AbstractFunction newActivationFunction = (AbstractFunction) getSelectedActivationFunction();
+                    newActivationFunction.setCoefficient(getActivationFunction().getCoefficient());
+                    network().setActivationFunction(newActivationFunction);
                     text = afCoefficientTextField;
                     getActivationFunction().setCoefficient(doubleFormat.
                             parse(afCoefficientTextField.getText().trim()).doubleValue());
+                    network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
                     text = estimateTextField;
                     network().setMinError(estimateFormat.
                             parse(estimateTextField.getText().trim()).doubleValue());
