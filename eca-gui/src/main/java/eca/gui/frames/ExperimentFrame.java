@@ -78,8 +78,8 @@ public abstract class ExperimentFrame extends JFrame {
 
     private final AbstractExperiment experiment;
 
-    private JProgressBar progress;
-    private JTextPane text;
+    private JProgressBar experimentProgressBar;
+    private JTextPane experimentResultsPane;
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private JSpinner foldsSpinner = new JSpinner();
@@ -91,7 +91,7 @@ public abstract class ExperimentFrame extends JFrame {
     private JButton saveButton;
     private JButton loadButton;
     private JButton stopButton;
-    private JPanel left;
+    private JPanel evaluationMethodPanel;
 
     private JTextField timerField;
 
@@ -137,7 +137,7 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     private void setStateForOptions(boolean flag) {
-        for (Component c : left.getComponents()) {
+        for (Component c : evaluationMethodPanel.getComponents()) {
             c.setEnabled(flag);
         }
         if (flag && useTrainingSet.isSelected()) {
@@ -147,15 +147,15 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     private void setResults(ExperimentHistory experimentHistory) {
-        text.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
+        experimentResultsPane.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
                 CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
-        text.setCaretPosition(0);
+        experimentResultsPane.setCaretPosition(0);
     }
 
     protected abstract void setOptions();
 
     protected void doBegin() {
-        progress.setValue(0);
+        experimentProgressBar.setValue(0);
         worker = new ExperimentWorker();
         timer = new TimeWorker();
     }
@@ -165,20 +165,20 @@ public abstract class ExperimentFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
         JPanel top = new JPanel(new GridBagLayout());
-        text = new JTextPane();
-        text.setEditable(false);
-        text.setFont(TEXT_AREA_FONT);
-        text.setContentType(TEXT_HTML);
-        text.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
-        JScrollPane bottom = new JScrollPane(text);
+        experimentResultsPane = new JTextPane();
+        experimentResultsPane.setEditable(false);
+        experimentResultsPane.setFont(TEXT_AREA_FONT);
+        experimentResultsPane.setContentType(TEXT_HTML);
+        experimentResultsPane.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
+        JScrollPane bottom = new JScrollPane(experimentResultsPane);
         bottom.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
-        progress = new JProgressBar();
-        progress.setStringPainted(true);
+        experimentProgressBar = new JProgressBar();
+        experimentProgressBar.setStringPainted(true);
         //----------------------------------------------
-        left = new JPanel(new GridBagLayout());
-        JScrollPane right = new JScrollPane(experimentTable);
-        JPanel leftBottom = new JPanel(new GridBagLayout());
-        left.setBorder(PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.METHOD_TITLE));
+        evaluationMethodPanel = new JPanel(new GridBagLayout());
+        JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
+        JPanel experimentMenuPanel = new JPanel(new GridBagLayout());
+        evaluationMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.METHOD_TITLE));
         //-------------------------------------------------------------
         ButtonGroup group = new ButtonGroup();
         useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
@@ -215,17 +215,17 @@ public abstract class ExperimentFrame extends JFrame {
             validationsSpinner.setEnabled(useTestingSet.isSelected());
         });
         //------------------------------------------------------
-        left.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+        evaluationMethodPanel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        left.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
+        evaluationMethodPanel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        left.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
+        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
-        left.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
+        evaluationMethodPanel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        left.add(new JLabel(EvaluationMethodOptionsDialog.TESTS_NUM_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
+        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.TESTS_NUM_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
-        left.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
+        evaluationMethodPanel.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
         //--------------------------------------------------------------
         initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
@@ -262,7 +262,7 @@ public abstract class ExperimentFrame extends JFrame {
                 experiment.setNumTests(
                         ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
             }
-            text.setText(
+            experimentResultsPane.setText(
                     String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
             setStateForButtons(false);
             setStateForOptions(false);
@@ -322,14 +322,11 @@ public abstract class ExperimentFrame extends JFrame {
                         LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
                                 loader, LOAD_EXPERIMENT_TITLE);
 
-                        ExecutorService.process(loadDialog, new CallbackAction() {
-                            @Override
-                            public void apply() throws Exception {
-                                experimentTable.setRenderer(Color.RED);
-                                ExperimentHistory history = loader.getExperiment();
-                                experimentTable.setExperiment(history.getExperiment());
-                                setResults(history);
-                            }
+                        ExecutorService.process(loadDialog, () -> {
+                            experimentTable.setRenderer(Color.RED);
+                            ExperimentHistory history = loader.getExperiment();
+                            experimentTable.setExperiment(history.getExperiment());
+                            setResults(history);
                         }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 loadDialog.getErrorMessageText(),
                                 null, JOptionPane.WARNING_MESSAGE));
@@ -349,39 +346,39 @@ public abstract class ExperimentFrame extends JFrame {
         timerField.setBackground(Color.WHITE);
         timerField.setHighlighter(null);
         //---------------------------------------------------------------
-        leftBottom.add(initialDataButton,
+        experimentMenuPanel.add(initialDataButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(optionsButton,
+        experimentMenuPanel.add(optionsButton,
                 new GridBagConstraints(0, 1, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(startButton,
+        experimentMenuPanel.add(startButton,
                 new GridBagConstraints(0, 2, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(stopButton,
+        experimentMenuPanel.add(stopButton,
                 new GridBagConstraints(0, 3, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(loadButton,
+        experimentMenuPanel.add(loadButton,
                 new GridBagConstraints(0, 4, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(saveButton,
+        experimentMenuPanel.add(saveButton,
                 new GridBagConstraints(0, 5, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
-        leftBottom.add(new JLabel(TIMER_LABEL_TEXT),
+        experimentMenuPanel.add(new JLabel(TIMER_LABEL_TEXT),
                 new GridBagConstraints(0, 6, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(25, 5, 5, 5), 0, 0));
-        leftBottom.add(timerField,
+        experimentMenuPanel.add(timerField,
                 new GridBagConstraints(0, 7, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
         //---------------------------------------------------------------
-        right.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
-        top.add(left,
+        experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
+        top.add(evaluationMethodPanel,
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-        top.add(leftBottom,
+        top.add(experimentMenuPanel,
                 new GridBagConstraints(0, 1, 1, 1, 0, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        top.add(right,
+        top.add(experimentHistoryScrollPane,
                 new GridBagConstraints(1, 0, 1, 2, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         //----------------------------------------------
@@ -391,7 +388,7 @@ public abstract class ExperimentFrame extends JFrame {
         this.add(bottom,
                 new GridBagConstraints(0, 1, 1, 1, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
-        this.add(progress,
+        this.add(experimentProgressBar,
                 new GridBagConstraints(0, 2, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
         this.getRootPane().setDefaultButton(startButton);
@@ -435,7 +432,7 @@ public abstract class ExperimentFrame extends JFrame {
             object = getExperiment().getIterativeExperiment();
             this.addPropertyChangeListener(evt -> {
                 if (PROGRESS_PROPERTY.equals(evt.getPropertyName())) {
-                    progress.setValue((Integer) evt.getNewValue());
+                    experimentProgressBar.setValue((Integer) evt.getNewValue());
                 }
             });
 
@@ -466,7 +463,7 @@ public abstract class ExperimentFrame extends JFrame {
             } catch (Throwable e) {
                 LoggerUtils.error(log, e);
                 error = true;
-                text.setText(e.toString());
+                experimentResultsPane.setText(e.toString());
             }
             return null;
         }
