@@ -114,7 +114,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     @Override
     public void showDialog() {
         this.setOptions();
-        threadsSpinner.setEnabled(classifier instanceof HeterogeneousClassifier);
+        threadsSpinner.setEnabled(classifier() instanceof HeterogeneousClassifier);
         super.showDialog();
     }
 
@@ -281,14 +281,14 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         clsGroup.add(optimalClsRadioButton);
         //--------------------------------
         randomClsRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(true);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setUseRandomClassifier(true);
             }
         });
 
         optimalClsRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseRandomClassifier(false);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setUseRandomClassifier(false);
             }
         });
         randomClsRadioButton.setSelected(true);
@@ -308,13 +308,13 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         votesGroup.add(majorityRadioButton);
         votesGroup.add(weightedRadioButton);
         majorityRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(false);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setUseWeightedVotesMethod(false);
             }
         });
         weightedRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setUseWeightedVotesMethod(true);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setUseWeightedVotesMethod(true);
             }
         });
         majorityRadioButton.setSelected(true);
@@ -339,23 +339,23 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         group.add(randomBaggingRadioButton);
         //--------------------------------
         initialRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.INITIAL);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setSamplingMethod(SamplingMethod.INITIAL);
             }
         });
         baggingRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.BAGGING);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setSamplingMethod(SamplingMethod.BAGGING);
             }
         });
         randomRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setSamplingMethod(SamplingMethod.RANDOM);
             }
         });
         randomBaggingRadioButton.addItemListener(e -> {
-            if (classifier instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier).setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
+            if (classifier() instanceof HeterogeneousClassifier) {
+                ((HeterogeneousClassifier) classifier()).setSamplingMethod(SamplingMethod.RANDOM_BAGGING);
             }
         });
         initialRadioButton.setSelected(true);
@@ -376,11 +376,11 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     }
 
     private void setOptions() {
-        numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
-        classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
-        classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
+        numClassifiersTextField.setText(String.valueOf(classifier().getIterationsNum()));
+        classifierMaxErrorTextField.setText(estimateFormat.format(classifier().getMaxError()));
+        classifierMinErrorTextField.setText(estimateFormat.format(classifier().getMinError()));
         threadsSpinner.setModel(
-                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier()), CommonDictionary.MIN_THREADS_NUM,
                         CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
     }
 
@@ -388,14 +388,14 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         JTextField textField = classifierMinErrorTextField;
         try {
             textField = numClassifiersTextField;
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+            classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
             textField = classifierMinErrorTextField;
-            classifier.setMinError(estimateFormat
+            classifier().setMinError(estimateFormat
                     .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
             textField = classifierMaxErrorTextField;
-            classifier.setMaxError(estimateFormat
+            classifier().setMaxError(estimateFormat
                     .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
-            classifier.setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
+            classifier().setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(EnsembleOptionsDialog.this,
                     e.getMessage(),
@@ -417,6 +417,6 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         for (ClassifierOptionsDialogBase frame : baseClassifiersListModel.getFrames()) {
             classifiersSet.addClassifier(frame.classifier());
         }
-        classifier.setClassifiersSet(classifiersSet);
+        classifier().setClassifiersSet(classifiersSet);
     }
 }

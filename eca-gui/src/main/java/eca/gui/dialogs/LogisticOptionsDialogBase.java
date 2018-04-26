@@ -84,8 +84,8 @@ public class LogisticOptionsDialogBase extends ClassifierOptionsDialogBase<Logis
             if (GuiUtils.isEmpty(numItsTextField)) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(LogisticOptionsDialogBase.this, numItsTextField);
             } else {
-                classifier.setMaxIts(Integer.parseInt(numItsTextField.getText().trim()));
-                classifier.setUseConjugateGradientDescent(gradientRadioButton.isSelected());
+                classifier().setMaxIts(Integer.parseInt(numItsTextField.getText().trim()));
+                classifier().setUseConjugateGradientDescent(gradientRadioButton.isSelected());
                 dialogResult = true;
                 setVisible(false);
             }
@@ -111,8 +111,8 @@ public class LogisticOptionsDialogBase extends ClassifierOptionsDialogBase<Logis
     }
 
     private void setOptions() {
-        numItsTextField.setText(String.valueOf(classifier.getMaxIts()));
-        if (classifier.getUseConjugateGradientDescent()) {
+        numItsTextField.setText(String.valueOf(classifier().getMaxIts()));
+        if (classifier().getUseConjugateGradientDescent()) {
             gradientRadioButton.setSelected(true);
         } else {
             newtonRadioButton.setSelected(true);

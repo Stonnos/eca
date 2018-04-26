@@ -124,9 +124,9 @@ public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<Rando
             JTextField text = emptyTextFieldSearch.findFirstEmptyField();
             if (text != null) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(RandomForestsOptionDialog.this, text);
-            } else if (Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
+            } else if (Integer.parseInt(numRandomAttrTextField.getText().trim()) > data().numAttributes() - 1) {
                 JOptionPane.showMessageDialog(RandomForestsOptionDialog.this,
-                        String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data.numAttributes() - 1),
+                        String.format(RANDOM_ATTR_EXCEEDED_ERROR_FORMAT, data().numAttributes() - 1),
                         INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 numRandomAttrTextField.requestFocusInWindow();
             } else {
@@ -162,9 +162,9 @@ public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<Rando
     }
 
     private void addAdditionalFormFields(JPanel optionPanel) {
-        if (classifier instanceof ExtraTreesClassifier) {
+        if (classifier() instanceof ExtraTreesClassifier) {
 
-            ExtraTreesClassifier extraTreesClassifier = (ExtraTreesClassifier) classifier;
+            ExtraTreesClassifier extraTreesClassifier = (ExtraTreesClassifier) classifier();
 
             final JTextField numRandomSplitsField = new JTextField(TEXT_FIELD_LENGTH);
             numRandomSplitsField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
@@ -216,24 +216,24 @@ public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<Rando
     private class OptionsSetter {
 
         void setFormOptions() {
-            numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
-            minObjTextField.setText(String.valueOf(classifier.getMinObj()));
-            maxDepthTextField.setText(String.valueOf(classifier.getMaxDepth()));
-            numRandomAttrTextField.setText(String.valueOf(classifier.getNumRandomAttr()));
-            treeAlgorithmBox.setSelectedItem(classifier.getDecisionTreeType().getDescription());
+            numClassifiersTextField.setText(String.valueOf(classifier().getIterationsNum()));
+            minObjTextField.setText(String.valueOf(classifier().getMinObj()));
+            maxDepthTextField.setText(String.valueOf(classifier().getMaxDepth()));
+            numRandomAttrTextField.setText(String.valueOf(classifier().getNumRandomAttr()));
+            treeAlgorithmBox.setSelectedItem(classifier().getDecisionTreeType().getDescription());
             threadsSpinner.setModel(
-                    new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                    new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier()), CommonDictionary.MIN_THREADS_NUM,
                             CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
         }
 
         void setClassifierOptions() {
-            classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
-            classifier.setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
-            classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
+            classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+            classifier().setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
+            classifier().setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
+            classifier().setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
-            classifier.setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
-            classifier.setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
+            classifier().setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
+            classifier().setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
         }
 
     }

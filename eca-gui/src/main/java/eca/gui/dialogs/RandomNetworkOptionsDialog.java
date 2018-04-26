@@ -66,12 +66,12 @@ public class RandomNetworkOptionsDialog extends ClassifierOptionsDialogBase<Rand
     }
 
     private void setOptions() {
-        numClassifiersTextField.setText(String.valueOf(classifier.getIterationsNum()));
-        classifierMaxErrorTextField.setText(estimateFormat.format(classifier.getMaxError()));
-        classifierMinErrorTextField.setText(estimateFormat.format(classifier.getMinError()));
-        useBootstrapSamplesCheckBox.setSelected(classifier.isUseBootstrapSamples());
+        numClassifiersTextField.setText(String.valueOf(classifier().getIterationsNum()));
+        classifierMaxErrorTextField.setText(estimateFormat.format(classifier().getMaxError()));
+        classifierMinErrorTextField.setText(estimateFormat.format(classifier().getMinError()));
+        useBootstrapSamplesCheckBox.setSelected(classifier().isUseBootstrapSamples());
         threadsSpinner.setModel(
-                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier), CommonDictionary.MIN_THREADS_NUM,
+                new SpinnerNumberModel(EnsembleUtils.getNumThreads(classifier()), CommonDictionary.MIN_THREADS_NUM,
                         CONFIG_SERVICE.getApplicationConfig().getMaxThreads().intValue(), 1));
     }
 
@@ -131,15 +131,15 @@ public class RandomNetworkOptionsDialog extends ClassifierOptionsDialogBase<Rand
             } else {
                 try {
                     textField = numClassifiersTextField;
-                    classifier.setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+                    classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
                     textField = classifierMinErrorTextField;
-                    classifier.setMinError(estimateFormat
+                    classifier().setMinError(estimateFormat
                             .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
                     textField = classifierMaxErrorTextField;
-                    classifier.setMaxError(estimateFormat
+                    classifier().setMaxError(estimateFormat
                             .parse(classifierMaxErrorTextField.getText().trim()).doubleValue());
-                    classifier.setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
-                    classifier.setNumThreads(
+                    classifier().setUseBootstrapSamples(useBootstrapSamplesCheckBox.isSelected());
+                    classifier().setNumThreads(
                             ((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
                     dialogResult = true;
                     setVisible(false);

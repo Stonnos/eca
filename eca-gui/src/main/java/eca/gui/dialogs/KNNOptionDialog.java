@@ -85,22 +85,22 @@ public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbo
             JTextField text = GuiUtils.searchFirstEmptyField(numNeighboursTextField, weightTextField);
             if (text != null) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(KNNOptionDialog.this, text);
-            } else if (Integer.parseInt(numNeighboursTextField.getText()) > data.numInstances()) {
+            } else if (Integer.parseInt(numNeighboursTextField.getText()) > data().numInstances()) {
                 JOptionPane.showMessageDialog(KNNOptionDialog.this,
-                        String.format(NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT, data.numInstances()),
+                        String.format(NUMBER_OF_NEIGHBOURS_EXCEEDED_ERROR_FORMAT, data().numInstances()),
                         INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
                 numNeighboursTextField.requestFocusInWindow();
             } else {
                 JTextField focus = weightTextField;
                 try {
-                    classifier.setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
+                    classifier().setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
                     focus = numNeighboursTextField;
-                    classifier.setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
+                    classifier().setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
 
                     DistanceType distanceType =
                             DistanceType.findByDescription(metricBox.getSelectedItem().toString());
 
-                    classifier.setDistance(distanceType.handle(distanceBuilder));
+                    classifier().setDistance(distanceType.handle(distanceBuilder));
 
                     dialogResult = true;
                     setVisible(false);
@@ -133,9 +133,9 @@ public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbo
     }
 
     private void setOptions() {
-        numNeighboursTextField.setText(String.valueOf(classifier.getNumNeighbours()));
-        weightTextField.setText(estimateFormat.format(classifier.getWeight()));
-        DistanceType distanceType = classifier.distance().getDistanceType();
+        numNeighboursTextField.setText(String.valueOf(classifier().getNumNeighbours()));
+        weightTextField.setText(estimateFormat.format(classifier().getWeight()));
+        DistanceType distanceType = classifier().distance().getDistanceType();
         metricBox.setSelectedItem(distanceType.getDescription());
     }
 

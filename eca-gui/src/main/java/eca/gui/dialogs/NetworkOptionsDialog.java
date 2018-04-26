@@ -304,7 +304,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     }
 
     private MultilayerPerceptron network() {
-        return classifier.network();
+        return classifier().network();
     }
 
     private String getHiddenLayer() {

@@ -80,7 +80,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
 
         randomSplitsBox.addItemListener(e -> numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected()));
 
-        if (classifier instanceof CART) {
+        if (classifier() instanceof CART) {
             binaryTreeBox.setEnabled(false);
         }
 
@@ -123,10 +123,10 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
             if (text != null) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(DecisionTreeOptionsDialog.this, text);
             } else if (randomTreeBox.isSelected()
-                    && Integer.parseInt(numRandomAttrTextField.getText().trim()) > data.numAttributes() - 1) {
+                    && Integer.parseInt(numRandomAttrTextField.getText().trim()) > data().numAttributes() - 1) {
 
                 JOptionPane.showMessageDialog(DecisionTreeOptionsDialog.this,
-                        String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data.numAttributes() - 1),
+                        String.format(RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE, data().numAttributes() - 1),
                         INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
 
                 numRandomAttrTextField.requestFocusInWindow();
@@ -156,7 +156,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
     }
 
     private void addAdditionalFormFields(JPanel optionPanel) {
-        if (classifier instanceof CHAID) {
+        if (classifier() instanceof CHAID) {
             optionPanel.add(new JLabel(HI_SQUARE_TEXT),
                     new GridBagConstraints(0, 7, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -167,13 +167,13 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
                 @Override
                 void setFormOptions() {
                     super.setFormOptions();
-                    values.setSelectedItem(String.valueOf(((CHAID) classifier).getAlpha()));
+                    values.setSelectedItem(String.valueOf(((CHAID) classifier()).getAlpha()));
                 }
 
                 @Override
                 void setClassifierOptions() {
                     super.setClassifierOptions();
-                    ((CHAID) classifier).setAlpha(Double.valueOf(values.getSelectedItem().toString()));
+                    ((CHAID) classifier()).setAlpha(Double.valueOf(values.getSelectedItem().toString()));
                 }
             };
             optionPanel.add(values, new GridBagConstraints(1, 7, 1, 1, 1, 1,
@@ -207,30 +207,30 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
     private class OptionsSetter {
 
         void setFormOptions() {
-            minObjTextField.setText(String.valueOf(classifier.getMinObj()));
-            maxDepthTextField.setText(String.valueOf(classifier.getMaxDepth()));
-            randomTreeBox.setSelected(classifier.isRandomTree());
-            numRandomAttrTextField.setText(String.valueOf(classifier.numRandomAttr()));
+            minObjTextField.setText(String.valueOf(classifier().getMinObj()));
+            maxDepthTextField.setText(String.valueOf(classifier().getMaxDepth()));
+            randomTreeBox.setSelected(classifier().isRandomTree());
+            numRandomAttrTextField.setText(String.valueOf(classifier().numRandomAttr()));
             numRandomAttrTextField.setEditable(randomTreeBox.isSelected());
-            binaryTreeBox.setSelected(classifier.getUseBinarySplits());
-            randomSplitsBox.setSelected(classifier.isUseRandomSplits());
-            numRandomSplitsTextField.setText(String.valueOf(classifier.getNumRandomSplits()));
+            binaryTreeBox.setSelected(classifier().getUseBinarySplits());
+            randomSplitsBox.setSelected(classifier().isUseRandomSplits());
+            numRandomSplitsTextField.setText(String.valueOf(classifier().getNumRandomSplits()));
             numRandomSplitsTextField.setEditable(randomSplitsBox.isSelected());
         }
 
         void setClassifierOptions() {
-            classifier.setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
-            classifier.setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
+            classifier().setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
+            classifier().setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
             if (randomTreeBox.isSelected()) {
-                classifier.setRandomTree(true);
-                classifier.setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
+                classifier().setRandomTree(true);
+                classifier().setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             }
-            classifier.setUseBinarySplits(binaryTreeBox.isSelected());
-            classifier.setUseRandomSplits(randomSplitsBox.isSelected());
+            classifier().setUseBinarySplits(binaryTreeBox.isSelected());
+            classifier().setUseRandomSplits(randomSplitsBox.isSelected());
 
-            if (classifier.isUseRandomSplits()) {
+            if (classifier().isUseRandomSplits()) {
                 try {
-                    classifier.setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText().trim()));
+                    classifier().setNumRandomSplits(Integer.parseInt(numRandomSplitsTextField.getText().trim()));
                 } catch (Exception e) {
                     numRandomSplitsTextField.requestFocusInWindow();
                     throw new IllegalArgumentException(e);

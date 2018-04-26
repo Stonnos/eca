@@ -52,7 +52,7 @@ public class J48OptionsDialog extends ClassifierOptionsDialogBase<J48> {
 
         foldsSpinner = new JSpinner();
         foldsSpinner.setModel(
-                new SpinnerNumberModel(classifier.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                new SpinnerNumberModel(classifier().getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
                         CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
 
         JButton okButton = ButtonUtils.createOkButton();
@@ -67,10 +67,10 @@ public class J48OptionsDialog extends ClassifierOptionsDialogBase<J48> {
             if (GuiUtils.isEmpty(minObjTextField)) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(J48OptionsDialog.this, minObjTextField);
             } else {
-                classifier.setBinarySplits(useBinarySplitsBox.isSelected());
-                classifier.setUnpruned(!usePruningBox.isSelected());
-                if (!classifier.getUnpruned()) {
-                    classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
+                classifier().setBinarySplits(useBinarySplitsBox.isSelected());
+                classifier().setUnpruned(!usePruningBox.isSelected());
+                if (!classifier().getUnpruned()) {
+                    classifier().setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
                 }
                 dialogResult = true;
                 setVisible(false);
@@ -108,9 +108,9 @@ public class J48OptionsDialog extends ClassifierOptionsDialogBase<J48> {
     }
 
     private void setOptions() {
-        minObjTextField.setText(String.valueOf(classifier.getMinNumObj()));
-        useBinarySplitsBox.setSelected(classifier.getBinarySplits());
-        usePruningBox.setSelected(!classifier.getUnpruned());
-        foldsSpinner.setValue(classifier.getNumFolds());
+        minObjTextField.setText(String.valueOf(classifier().getMinNumObj()));
+        useBinarySplitsBox.setSelected(classifier().getBinarySplits());
+        usePruningBox.setSelected(!classifier().getUnpruned());
+        foldsSpinner.setValue(classifier().getNumFolds());
     }
 }

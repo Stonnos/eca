@@ -23,8 +23,8 @@ public abstract class ClassifierOptionsDialogBase<T extends Classifier> extends 
     public static final int TEXT_FIELD_LENGTH = 8;
     public static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
 
-    protected T classifier;
-    protected Instances data;
+    private T classifier;
+    private Instances data;
     protected boolean dialogResult;
 
     public ClassifierOptionsDialogBase(Window parent, String title, T classifier, Instances data) {
@@ -42,11 +42,11 @@ public abstract class ClassifierOptionsDialogBase<T extends Classifier> extends 
         this.setVisible(true);
     }
 
-    public final T classifier() {
+    public T classifier() {
         return classifier;
     }
 
-    public final Instances data() {
+    public Instances data() {
         return data;
     }
 }

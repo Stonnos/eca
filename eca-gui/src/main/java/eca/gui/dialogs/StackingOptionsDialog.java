@@ -88,8 +88,8 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
     }
 
     private void setMetaDataSelectionMethod() {
-        useTestingSet.setSelected(classifier.getUseCrossValidation());
-        foldsSpinner.getModel().setValue(classifier.getNumFolds());
+        useTestingSet.setSelected(classifier().getUseCrossValidation());
+        foldsSpinner.getModel().setValue(classifier().getNumFolds());
     }
 
     private void createGUI(final int digits) {
@@ -139,15 +139,15 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
                         INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
             } else {
                 if (useTestingSet.isSelected()) {
-                    classifier.setUseCrossValidation(true);
-                    classifier.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
+                    classifier().setUseCrossValidation(true);
+                    classifier().setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
                 }
                 ClassifiersSet set = new ClassifiersSet();
                 for (ClassifierOptionsDialogBase frame : baseClassifiersListModel.getFrames()) {
                     set.addClassifier(frame.classifier());
                 }
-                classifier.setClassifiers(set);
-                classifier.setMetaClassifier(metaClsOptionsDialog.classifier());
+                classifier().setClassifiers(set);
+                classifier().setMetaClassifier(metaClsOptionsDialog.classifier());
                 dialogResult = true;
                 setVisible(false);
             }
@@ -218,7 +218,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         group.add(useTrainingSet);
         group.add(useTestingSet);
         foldsSpinner.setModel(
-                new SpinnerNumberModel(classifier.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
+                new SpinnerNumberModel(classifier().getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
                         CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
         foldsSpinner.setEnabled(false);
         metaDataSetSelectionMethodPanel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
@@ -244,45 +244,45 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
                 switch (selectedClassifier) {
                     case ClassifiersNamesDictionary.ID3:
                         metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.ID3, new ID3(), data);
+                                ClassifiersNamesDictionary.ID3, new ID3(), data());
                         break;
 
                     case ClassifiersNamesDictionary.C45:
                         metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.C45, new C45(), data);
+                                ClassifiersNamesDictionary.C45, new C45(), data());
                         break;
 
                     case ClassifiersNamesDictionary.CART:
                         metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.CART, new CART(), data);
+                                ClassifiersNamesDictionary.CART, new CART(), data());
                         break;
 
                     case ClassifiersNamesDictionary.CHAID:
                         metaClsOptionsDialog = new DecisionTreeOptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.CHAID, new CHAID(), data);
+                                ClassifiersNamesDictionary.CHAID, new CHAID(), data());
                         break;
 
                     case ClassifiersNamesDictionary.NEURAL_NETWORK:
-                        NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(data());
                         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
                         metaClsOptionsDialog = new NetworkOptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data);
+                                ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data());
                         break;
 
                     case ClassifiersNamesDictionary.LOGISTIC:
                         metaClsOptionsDialog = new LogisticOptionsDialogBase(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data);
+                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data());
                         break;
 
                     case ClassifiersNamesDictionary.KNN:
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                         kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
                         metaClsOptionsDialog = new KNNOptionDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, data);
+                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, data());
                         break;
                     case ClassifiersNamesDictionary.J48:
                         metaClsOptionsDialog = new J48OptionsDialog(StackingOptionsDialog.this,
-                                ClassifiersNamesDictionary.J48, new J48(), data);
+                                ClassifiersNamesDictionary.J48, new J48(), data());
                         break;
 
                     default:
