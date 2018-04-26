@@ -77,8 +77,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
     private final DecimalFormat estimateFormat = NumericFormatFactory.getInstance();
 
     private JTabbedPane ensembleOptionsTabbedPane;
-    private JPanel firstPanel;
-    private JPanel secondPanel;
+    private JPanel mainOptionsPanel;
+    private JPanel additionalOptionsPanel;
     private JTextField numClassifiersTextField;
     private JTextField classifierMinErrorTextField;
     private JTextField classifierMaxErrorTextField;
@@ -131,8 +131,42 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
 
     private void createGUI(final int digits) {
         ensembleOptionsTabbedPane = new JTabbedPane();
-        firstPanel = new JPanel(new GridBagLayout());
-        firstPanel.setPreferredSize(TAB_DIMENSION);
+        Dimension algorithmsPaneDim = new Dimension(ALGORITHMS_LIST_WIDTH, ALGORITHMS_HEIGHT_HEIGHT);
+        createMainOptionsPanel(algorithmsPaneDim, digits);
+        createAdditionalOptionsPanel(algorithmsPaneDim);
+        //--------------------------------------------------------------
+        JButton okButton = ButtonUtils.createOkButton();
+        JButton cancelButton = ButtonUtils.createCancelButton();
+        //--------------------------------------------------------------
+        okButton.addActionListener(e -> {
+            JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
+                    classifierMinErrorTextField, classifierMaxErrorTextField);
+            if (text != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
+            } else if (isValidate()) {
+                createClassifiersSet();
+                dialogResult = true;
+                setVisible(false);
+            }
+        });
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
+        });
+        ensembleOptionsTabbedPane.add(mainOptionsPanel, MAIN_OPTIONS_TAB_TITLE);
+        ensembleOptionsTabbedPane.add(additionalOptionsPanel, ADDITIONAL_OPTIONS_TAB_TITLE);
+        this.add(ensembleOptionsTabbedPane, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
+        this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
+        this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
+        this.getRootPane().setDefaultButton(okButton);
+    }
+
+    private void createMainOptionsPanel(Dimension algorithmsPaneDim, int digits) {
+        mainOptionsPanel = new JPanel(new GridBagLayout());
+        mainOptionsPanel.setPreferredSize(TAB_DIMENSION);
         JPanel optionPanel = new JPanel(new GridBagLayout());
         optionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
         numClassifiersTextField = new JTextField(TEXT_FIELD_LENGTH);
@@ -146,7 +180,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         classifierMaxErrorTextField.setInputVerifier(new TextFieldInputVerifier());
         threadsSpinner = new JSpinner();
         //----------------------------------------------------
-        firstPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
+        mainOptionsPanel.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
         optionPanel.add(new JLabel(ITS_NUM_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -169,82 +203,64 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
         optionPanel.add(threadsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
-        Dimension dim = new Dimension(ALGORITHMS_LIST_WIDTH, ALGORITHMS_HEIGHT_HEIGHT);
+        mainOptionsPanel.add(createAlgorithmSelectionPanel(algorithmsPaneDim), new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
+        mainOptionsPanel.add(createSelectedAlgorithmsPanel(algorithmsPaneDim, digits),
+                new GridBagConstraints(1, 1, 1, 1, 1, 1,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
+    }
+
+    private JPanel createAlgorithmSelectionPanel(Dimension algorithmsPaneDim) {
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
         algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
-        algorithms.setPreferredSize(dim);
-        algorithms.setMinimumSize(dim);
+        algorithms.setPreferredSize(algorithmsPaneDim);
+        algorithms.setMinimumSize(algorithmsPaneDim);
         algorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //-------------------------------------------------
         JScrollPane algorithmsPane = new JScrollPane(algorithms);
-        algorithmsPane.setPreferredSize(dim);
+        algorithmsPane.setPreferredSize(algorithmsPaneDim);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TITLE));
-        JPanel selectedPanel = new JPanel(new GridBagLayout());
-        baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
-        selectedAlgorithms = new JList<>(baseClassifiersListModel);
-        selectedAlgorithms.setMinimumSize(dim);
-        selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
-        selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        selectedPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TITLE));
-        selectedPane.setPreferredSize(dim);
 
         final JButton addButton = new JButton(ADD_BUTTON_TEXT);
         addButton.setEnabled(false);
-        final JButton removeButton = new JButton(DELETE_BUTTON_TEXT);
-        removeButton.setEnabled(false);
-        //-------------------------------------------------------------
         addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithms.getSelectedValue()));
-        //-------------------------------------------------------------
-        removeButton.addActionListener(evt -> {
-            baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
-            removeButton.setEnabled(false);
-        });
-        //-------------------------------------------------------------
         algorithms.addListSelectionListener(e -> addButton.setEnabled(true));
-        selectedAlgorithms.addListSelectionListener(e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
-        //-------------------------------------------------------------
-        selectedAlgorithms.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithms,
-                baseClassifiersListModel));
-        //-------------------------------------------------------------
         algorithmsPanel.add(algorithmsPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
         algorithmsPanel.add(addButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        //-------------------------------------------------------------
-        selectedPanel.add(selectedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        return algorithmsPanel;
+    }
+
+    private JPanel createSelectedAlgorithmsPanel(Dimension algorithmsPaneDim, int digits) {
+        JPanel selectedAlgorithmsPanel = new JPanel(new GridBagLayout());
+        baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
+        selectedAlgorithms = new JList<>(baseClassifiersListModel);
+        selectedAlgorithms.setMinimumSize(algorithmsPaneDim);
+        selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
+        selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        selectedAlgorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TITLE));
+        selectedPane.setPreferredSize(algorithmsPaneDim);
+        final JButton removeButton = new JButton(DELETE_BUTTON_TEXT);
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(evt -> {
+            baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());
+            removeButton.setEnabled(false);
+        });
+        selectedAlgorithms.addListSelectionListener(e -> removeButton.setEnabled(!baseClassifiersListModel.isEmpty()));
+        selectedAlgorithms.addMouseListener(new BaseClassifiersListMouseListener(selectedAlgorithms,
+                baseClassifiersListModel));
+        selectedAlgorithmsPanel.add(selectedPane, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
-        selectedPanel.add(removeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+        selectedAlgorithmsPanel.add(removeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        //-------------------------------------------------------------
-        firstPanel.add(algorithmsPanel, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
-        firstPanel.add(selectedPanel, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
-        //--------------------------------------------------------------
-        JButton okButton = ButtonUtils.createOkButton();
-        JButton cancelButton = ButtonUtils.createCancelButton();
-        //--------------------------------------------------------------
-        okButton.addActionListener(e -> {
-            JTextField text = GuiUtils.searchFirstEmptyField(numClassifiersTextField,
-                    classifierMinErrorTextField, classifierMaxErrorTextField);
-            if (text != null) {
-                GuiUtils.showErrorMessageAndRequestFocusOn(EnsembleOptionsDialog.this, text);
-            } else if (isValidate()) {
-                createClassifiersSet();
-                dialogResult = true;
-                setVisible(false);
-            }
-        });
-        cancelButton.addActionListener(e -> {
-            dialogResult = false;
-            setVisible(false);
-        });
-        //--------------------------------------------------------------
-        ensembleOptionsTabbedPane.add(firstPanel, MAIN_OPTIONS_TAB_TITLE);
-        //--------------------------------------------------------------
-        secondPanel = new JPanel(new GridBagLayout());
-        secondPanel.setPreferredSize(dim);
+        return selectedAlgorithmsPanel;
+    }
+
+    private void createAdditionalOptionsPanel(Dimension algorithmsPaneDim) {
+        additionalOptionsPanel = new JPanel(new GridBagLayout());
+        additionalOptionsPanel.setPreferredSize(algorithmsPaneDim);
         samplePanel = new JPanel(new GridBagLayout());
         samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
@@ -287,7 +303,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         samplePanel.add(randomBaggingRadioButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        secondPanel.add(samplePanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
+        additionalOptionsPanel.add(samplePanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         //------------------------------------------------------
         JPanel clsMethodPanel = new JPanel(new GridBagLayout());
@@ -314,7 +330,7 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         clsMethodPanel.add(optimalClsRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        secondPanel.add(clsMethodPanel, new GridBagConstraints(0, 1, 1, 1, 1, 0,
+        additionalOptionsPanel.add(clsMethodPanel, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
         //------------------------------------------------------------
         JPanel votesPanel = new JPanel(new GridBagLayout());
@@ -340,19 +356,8 @@ public class EnsembleOptionsDialog extends BaseOptionsDialog<AbstractHeterogeneo
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         votesPanel.add(weightedRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        secondPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
+        additionalOptionsPanel.add(votesPanel, new GridBagConstraints(0, 2, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
-        //------------------------------------------------------
-        ensembleOptionsTabbedPane.add(secondPanel, ADDITIONAL_OPTIONS_TAB_TITLE);
-        //------------------------------------------------------
-        this.add(ensembleOptionsTabbedPane, new GridBagConstraints(0, 0, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
-        this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
-        this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------------------
-        this.getRootPane().setDefaultButton(okButton);
     }
 
     private void createFormat() {
