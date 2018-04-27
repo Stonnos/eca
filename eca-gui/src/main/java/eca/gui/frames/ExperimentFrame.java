@@ -41,12 +41,13 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
+ * Implements basic experiment frame.
+ *
  * @author Roman Batygin
  */
 @Slf4j
 public abstract class ExperimentFrame extends JFrame {
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
@@ -74,6 +75,7 @@ public abstract class ExperimentFrame extends JFrame {
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
 
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
 
     private final AbstractExperiment experiment;
@@ -100,13 +102,10 @@ public abstract class ExperimentFrame extends JFrame {
     private SwingWorker<Void, Void> timer;
     private final int digits;
 
-    static {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-
-    protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
+    protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) {
         this.experiment = experiment;
         this.digits = digits;
+        this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         this.setIconImage(parent.getIconImage());
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -160,32 +159,15 @@ public abstract class ExperimentFrame extends JFrame {
         timer = new TimeWorker();
     }
 
-    private void createGUI() throws Exception {
-        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        this.setLayout(new GridBagLayout());
-        experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
-        JPanel top = new JPanel(new GridBagLayout());
-        experimentResultsPane = new JTextPane();
-        experimentResultsPane.setEditable(false);
-        experimentResultsPane.setFont(TEXT_AREA_FONT);
-        experimentResultsPane.setContentType(TEXT_HTML);
-        experimentResultsPane.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
-        JScrollPane bottom = new JScrollPane(experimentResultsPane);
-        bottom.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
-        experimentProgressBar = new JProgressBar();
-        experimentProgressBar.setStringPainted(true);
-        //----------------------------------------------
+    private void createEvaluationMethodPanel() {
         evaluationMethodPanel = new JPanel(new GridBagLayout());
-        JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
-        JPanel experimentMenuPanel = new JPanel(new GridBagLayout());
-        evaluationMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.METHOD_TITLE));
-        //-------------------------------------------------------------
+        evaluationMethodPanel.setBorder(
+                PanelBorderUtils.createTitledBorder(EvaluationMethodOptionsDialog.METHOD_TITLE));
         ButtonGroup group = new ButtonGroup();
         useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
         useTestingSet = new JRadioButton(EvaluationMethod.CROSS_VALIDATION.getDescription());
         group.add(useTrainingSet);
         group.add(useTestingSet);
-        //---------------------------------
         foldsSpinner.setModel(
                 new SpinnerNumberModel(experiment.getNumFolds(), CommonDictionary.MINIMUM_NUMBER_OF_FOLDS,
                         CommonDictionary.MAXIMUM_NUMBER_OF_FOLDS, 1));
@@ -219,15 +201,39 @@ public abstract class ExperimentFrame extends JFrame {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         evaluationMethodPanel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
-        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE), new GridBagConstraints(0, 2, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
+        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.BLOCKS_NUM_TITLE),
+                new GridBagConstraints(0, 2, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         evaluationMethodPanel.add(foldsSpinner, new GridBagConstraints(1, 2, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.TESTS_NUM_TITLE), new GridBagConstraints(0, 3, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
+        evaluationMethodPanel.add(new JLabel(EvaluationMethodOptionsDialog.TESTS_NUM_TITLE),
+                new GridBagConstraints(0, 3, 1, 1, 1, 1,
+                        GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         evaluationMethodPanel.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
-        //--------------------------------------------------------------
+
+    }
+
+    private JScrollPane createExperimentResultsAsTextPanel() {
+        experimentResultsPane = new JTextPane();
+        experimentResultsPane.setEditable(false);
+        experimentResultsPane.setFont(TEXT_AREA_FONT);
+        experimentResultsPane.setContentType(TEXT_HTML);
+        experimentResultsPane.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
+        JScrollPane experimentResultsPanel = new JScrollPane(experimentResultsPane);
+        experimentResultsPanel.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));
+        return experimentResultsPanel;
+    }
+
+    private JScrollPane createExperimentHistoryScrollPane() {
+        experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
+        JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
+        experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
+        return experimentHistoryScrollPane;
+    }
+
+    private JPanel createExperimentMenuPanel() {
+        JPanel experimentMenuPanel = new JPanel(new GridBagLayout());
         initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
         startButton = new JButton(START_BUTTON_TEXT);
         stopButton = new JButton(STOP_BUTTON_TEXT);
@@ -340,11 +346,7 @@ public abstract class ExperimentFrame extends JFrame {
             }
         });
 
-        timerField = new JTextField(TIMER_FIELD_LENGTH);
-        timerField.setEditable(false);
-        timerField.setText(START_TIME_TEXT);
-        timerField.setBackground(Color.WHITE);
-        timerField.setHighlighter(null);
+        createTimerField();
         //---------------------------------------------------------------
         experimentMenuPanel.add(initialDataButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
@@ -370,28 +372,50 @@ public abstract class ExperimentFrame extends JFrame {
         experimentMenuPanel.add(timerField,
                 new GridBagConstraints(0, 7, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
+        return experimentMenuPanel;
+    }
+
+    private void createTimerField() {
+        timerField = new JTextField(TIMER_FIELD_LENGTH);
+        timerField.setEditable(false);
+        timerField.setText(START_TIME_TEXT);
+        timerField.setBackground(Color.WHITE);
+        timerField.setHighlighter(null);
+    }
+
+    private void createGUI() {
+        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.setLayout(new GridBagLayout());
+        createEvaluationMethodPanel();
+        createExperimentProgressBar();
+        JPanel mainTopPanel = new JPanel(new GridBagLayout());
+
         //---------------------------------------------------------------
-        experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
-        top.add(evaluationMethodPanel,
+        mainTopPanel.add(evaluationMethodPanel,
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
-        top.add(experimentMenuPanel,
+        mainTopPanel.add(createExperimentMenuPanel(),
                 new GridBagConstraints(0, 1, 1, 1, 0, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        top.add(experimentHistoryScrollPane,
+        mainTopPanel.add(createExperimentHistoryScrollPane(),
                 new GridBagConstraints(1, 0, 1, 2, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         //----------------------------------------------
-        this.add(top,
+        this.add(mainTopPanel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
-        this.add(bottom,
+        this.add(createExperimentResultsAsTextPanel(),
                 new GridBagConstraints(0, 1, 1, 1, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 10, 0), 0, 0));
         this.add(experimentProgressBar,
                 new GridBagConstraints(0, 2, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 10, 0), 0, 0));
         this.getRootPane().setDefaultButton(startButton);
+    }
+
+    private void createExperimentProgressBar() {
+        experimentProgressBar = new JProgressBar();
+        experimentProgressBar.setStringPainted(true);
     }
 
     private EvaluationParams createEvaluationParams() {
@@ -408,7 +432,7 @@ public abstract class ExperimentFrame extends JFrame {
                 try {
                     Thread.sleep(TIMER_DELAY_IN_MILLIS);
                     long currentTimeMillis = new Date().getTime() - startTime.getTime();
-                    timerField.setText(DATE_FORMAT.format(new Date(currentTimeMillis)));
+                    timerField.setText(dateFormat.format(new Date(currentTimeMillis)));
                 } catch (InterruptedException ex) {
                     LoggerUtils.error(log, ex);
                 }
