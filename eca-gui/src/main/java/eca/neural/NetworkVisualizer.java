@@ -13,6 +13,7 @@ import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooser;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
+import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
 import org.apache.velocity.Template;
@@ -21,12 +22,7 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -34,11 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Neural network visualization panel.
@@ -426,7 +418,7 @@ public class NetworkVisualizer extends JPanel {
                         neuron.getActivationFunction().getActivationFunctionType().getDescription());
                 if (neuron.getActivationFunction() instanceof AbstractFunction) {
                     AbstractFunction abstractFunction = (AbstractFunction) neuron.getActivationFunction();
-                    if (abstractFunction.getCoefficient() != AbstractFunction.DEFAULT_COEFFICIENT) {
+                    if (abstractFunction.getCoefficient() != ActivationFunctionsDictionary.DEFAULT_COEFFICIENT) {
                         paramsMap.put(ACTIVATION_FUNCTION_FORMULA_TEXT,
                                 String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
                                         decimalFormat.format(abstractFunction.getCoefficient())));

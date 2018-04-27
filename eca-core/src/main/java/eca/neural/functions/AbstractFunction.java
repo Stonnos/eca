@@ -15,8 +15,6 @@ import eca.neural.NeuralNetworkDictionary;
  */
 public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable {
 
-    public static final double DEFAULT_COEFFICIENT = 1.0;
-
     /**
      * Activation function type
      */
@@ -25,7 +23,7 @@ public abstract class AbstractFunction implements ActivationFunction, java.io.Se
     /**
      * Coefficient value
      **/
-    private double coefficient = DEFAULT_COEFFICIENT;
+    private double coefficient = ActivationFunctionsDictionary.DEFAULT_COEFFICIENT;
 
     protected AbstractFunction(ActivationFunctionType activationFunctionType) {
         this.activationFunctionType = activationFunctionType;

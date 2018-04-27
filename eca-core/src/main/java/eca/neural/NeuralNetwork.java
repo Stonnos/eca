@@ -15,6 +15,7 @@ import eca.ensemble.IterativeBuilder;
 import eca.filter.MissingValuesFilter;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunction;
+import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.Utils;
 import weka.classifiers.AbstractClassifier;
@@ -22,11 +23,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Class for generating neural network for classification task.
@@ -194,7 +191,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
     private void fillActivationFunctionOptions(ActivationFunction activationFunction, List<String> options) {
         AbstractFunction abstractFunction = (AbstractFunction) activationFunction;
-        if (abstractFunction.getCoefficient() != AbstractFunction.DEFAULT_COEFFICIENT) {
+        if (abstractFunction.getCoefficient() != ActivationFunctionsDictionary.DEFAULT_COEFFICIENT) {
             options.add(String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
                     getDecimalFormat().format(abstractFunction.getCoefficient())));
         } else {
