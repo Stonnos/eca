@@ -25,24 +25,18 @@ import java.util.Random;
 public class SimpleDataGenerator implements DataGenerator {
 
     private static final String RELATION_NAME_FORMAT = "GeneratedData%d";
-
     private static final String CLASS_NAME = "class";
-
     private static final String CLASS_PREFIX = "c";
-
     private static final String ATTRIBUTE_PREFIX = "a";
-
     private static final String ATTRIBUTE_VALUE = "value";
-
     private static final int MAXIMUM_NUMBER_OF_CATEGORIES = 6;
-
     private static final double MIN_MEAN_THRESHOLD = 0;
-
     private static final double MAX_MEAN_THRESHOLD = 10;
-
     private static final double MIN_VARIANCE_THRESHOLD = 1;
-
     private static final double MAX_VARIANCE_THRESHOLD = 4;
+    private static final int MIN_ATTRIBUTES = 2;
+    private static final int MIN_CLASSES = 2;
+    private static final int MIN_OBJECTS = 10;
 
     private static final int[] ATTRIBUTE_TYPES = {Attribute.NOMINAL, Attribute.NUMERIC};
 
@@ -82,6 +76,10 @@ public class SimpleDataGenerator implements DataGenerator {
      * @param numClasses the number of classes
      */
     public void setNumClasses(int numClasses) {
+        if (numClasses < MIN_CLASSES) {
+            throw new IllegalArgumentException(
+                    String.format(DataGeneratorDictionary.INVALID_CLASSES_FORMAT, MIN_CLASSES));
+        }
         this.numClasses = numClasses;
     }
 
@@ -100,6 +98,10 @@ public class SimpleDataGenerator implements DataGenerator {
      * @param numAttributes the number of attributes
      */
     public void setNumAttributes(int numAttributes) {
+        if (numAttributes < MIN_ATTRIBUTES) {
+            throw new IllegalArgumentException(
+                    String.format(DataGeneratorDictionary.INVALID_ATTRIBUTES_FORMAT, MIN_ATTRIBUTES));
+        }
         this.numAttributes = numAttributes;
     }
 
@@ -118,6 +120,10 @@ public class SimpleDataGenerator implements DataGenerator {
      * @param numInstances the number of instances
      */
     public void setNumInstances(int numInstances) {
+        if (numInstances < MIN_OBJECTS) {
+            throw new IllegalArgumentException(
+                    String.format(DataGeneratorDictionary.INVALID_OBJECTS_FORMAT, MIN_OBJECTS));
+        }
         this.numInstances = numInstances;
     }
 

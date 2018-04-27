@@ -321,8 +321,8 @@ public class NetworkVisualizer extends JPanel {
 
         static final String NODE_INDEX_FORMAT = "Узел %d";
         static final String CONTENT_TYPE = "text/html";
-        static final int PREFERRED_WIDTH = 300;
-        static final int PREFERRED_HEIGHT = 200;
+        static final int PREFERRED_WIDTH = 350;
+        static final int PREFERRED_HEIGHT = 150;
 
         NeuronNode neuron;
 

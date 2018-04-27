@@ -12,9 +12,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Training data generator dialog.
+ *
  * @author Roman Batygin
  */
-
 public class DataGeneratorDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 12;
@@ -26,6 +27,7 @@ public class DataGeneratorDialog extends JDialog {
     private static final int NUM_ATTRS_FIELD_LENGTH = 4;
     private static final int NUM_CLASSES_FIELD_LENGTH = 2;
     private static final int NUM_INSTANCES_FIELD_LENGTH = 8;
+    private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
 
     private JTextField numAttributesField;
     private JTextField numClassesField;
@@ -50,9 +52,6 @@ public class DataGeneratorDialog extends JDialog {
     }
 
     public DataGenerator getDataGenerator() {
-        simpleDataGenerator.setNumAttributes(Integer.valueOf(numAttributesField.getText().trim()));
-        simpleDataGenerator.setNumClasses(Integer.valueOf(numClassesField.getText().trim()));
-        simpleDataGenerator.setNumInstances(Integer.valueOf(numInstancesField.getText().trim()));
         return simpleDataGenerator;
     }
 
@@ -94,13 +93,25 @@ public class DataGeneratorDialog extends JDialog {
         });
         //-----------------------------------------------
         okButton.addActionListener(evt -> {
-            JTextField field =
+            JTextField founded =
                     GuiUtils.searchFirstEmptyField(numAttributesField, numClassesField, numInstancesField);
-            if (field != null) {
-                GuiUtils.showErrorMessageAndRequestFocusOn(DataGeneratorDialog.this, field);
+            if (founded != null) {
+                GuiUtils.showErrorMessageAndRequestFocusOn(DataGeneratorDialog.this, founded);
             } else {
-                dialogResult = true;
-                setVisible(false);
+                try {
+                    founded = numAttributesField;
+                    simpleDataGenerator.setNumAttributes(Integer.valueOf(numAttributesField.getText().trim()));
+                    founded = numClassesField;
+                    simpleDataGenerator.setNumClasses(Integer.valueOf(numClassesField.getText().trim()));
+                    founded = numInstancesField;
+                    simpleDataGenerator.setNumInstances(Integer.valueOf(numInstancesField.getText().trim()));
+                    dialogResult = true;
+                    setVisible(false);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(DataGeneratorDialog.this,
+                            ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+                    founded.requestFocusInWindow();
+                }
             }
         });
         //------------------------------------

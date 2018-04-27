@@ -24,7 +24,7 @@ public class BaseClassifiersListMouseListener extends MouseAdapter {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == CLICK_COUNT) {
+        if (e.getClickCount() == CLICK_COUNT && !baseClassifiersListModel.isEmpty()) {
             int i = list.locationToIndex(e.getPoint());
             if (baseClassifiersListModel.getWindow(i) != null) {
                 baseClassifiersListModel.getWindow(i).showDialog();

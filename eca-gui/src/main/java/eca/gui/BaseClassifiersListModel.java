@@ -57,6 +57,10 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
         super.clear();
     }
 
+    public boolean isEmpty() {
+        return frames.isEmpty();
+    }
+
     public void addClassifier(Classifier classifier) {
         String name = null;
         if (classifier instanceof C45) {
