@@ -21,7 +21,12 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -48,7 +53,8 @@ public class NetworkVisualizer extends JPanel {
     private static final VelocityConfigService VELOCITY_CONFIGURATION =
             VelocityConfigService.getVelocityConfigService();
 
-    private static final String OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
+    private static final String NEURON_OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
+    private static final String NETWORK_MODEL_VM = "vm-templates/neuralNetworkModel.vm";
 
     private static final double MIN_SIZE = 20;
     private static final double MAX_SIZE = 80;
@@ -62,15 +68,14 @@ public class NetworkVisualizer extends JPanel {
     private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
 
-    private static final String SEPARATOR = System.getProperty("line.separator");
     private static final int SCREEN_WIDTH_MARGIN = 400;
     private static final int SCREEN_HEIGHT_MARGIN = 200;
     private static final String ARIAL = "Arial";
 
     private double neuronDiam = 25.0;
 
-    private Template template;
-    private VelocityContext context;
+    private Template nodeTemplate;
+    private VelocityContext nodeContext;
 
     private final NeuralNetwork net;
     private ArrayList<NeuronNode> nodes;
@@ -203,20 +208,20 @@ public class NetworkVisualizer extends JPanel {
         //-----------------------------------
         textView.addActionListener(new ActionListener() {
 
-            NetworkInfo info;
+            NetworkInfo networkModelinfo;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (info == null) {
-                    info = new NetworkInfo();
+                if (networkModelinfo == null) {
+                    networkModelinfo = new NetworkInfo();
                     frame.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
-                            info.dispose();
+                            networkModelinfo.dispose();
                         }
                     });
                 }
-                info.setVisible(true);
+                networkModelinfo.setVisible(true);
             }
         });
         //-----------------------------------
@@ -261,18 +266,21 @@ public class NetworkVisualizer extends JPanel {
     private class NetworkInfo extends JFrame {
 
         static final String INFO_TITLE = "Модель нейронной сети";
+        static final String NEURON_NODES = "neuronNodes";
+        static final String CONTENT_TYPE = "text/html";
+        static final int PREFERRED_WIDTH = 500;
+        static final int PREFERRED_HEIGHT = 350;
 
         NetworkInfo() {
             this.setLayout(new GridBagLayout());
             this.setTitle(INFO_TITLE);
             this.setIconImage(frame.getIconImage());
-            JTextArea textInfo = new JTextArea(20, 50);
-            textInfo.setWrapStyleWord(true);
-            textInfo.setLineWrap(true);
+            JTextPane textInfo = new JTextPane();
             textInfo.setEditable(false);
-            textInfo.setFont(new Font(ARIAL, Font.BOLD, 12));
+            textInfo.setContentType(CONTENT_TYPE);
+            textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
             //----------------------------------------           
-            textInfo.setText(getNeuralNetworkStructureAsText());
+            textInfo.setText(getNeuralNetworkStructureAsHtml());
             textInfo.setCaretPosition(0);
             //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
@@ -292,12 +300,17 @@ public class NetworkVisualizer extends JPanel {
             this.setLocationRelativeTo(frame);
         }
 
-        String getNeuralNetworkStructureAsText() {
-            StringBuilder textStructure = new StringBuilder();
+        String getNeuralNetworkStructureAsHtml() {
+            Template modelTemplate = VELOCITY_CONFIGURATION.getTemplate(NETWORK_MODEL_VM);
+            VelocityContext modelContext = new VelocityContext();
+            Map<String, Map<String, String>> inputOptionsMap = new LinkedHashMap<>();
             for (NeuronNode neuronNode : nodes) {
-                textStructure.append(neuronNode.getNeuronInfoAsHtml()).append(SEPARATOR);
+                inputOptionsMap.put(String.valueOf(neuronNode.neuron().index()), neuronNode.fillNeuronOptionsMap());
             }
-            return textStructure.toString();
+            modelContext.put(NEURON_NODES, inputOptionsMap);
+            StringWriter stringWriter = new StringWriter();
+            modelTemplate.merge(modelContext, stringWriter);
+            return stringWriter.toString();
         }
     }
 
@@ -382,19 +395,19 @@ public class NetworkVisualizer extends JPanel {
         }
 
         String getNeuronInfoAsHtml() {
-            if (template == null) {
-                template = VELOCITY_CONFIGURATION.getTemplate(OPTIONS_TABLE_VM);
+            if (nodeTemplate == null) {
+                nodeTemplate = VELOCITY_CONFIGURATION.getTemplate(NEURON_OPTIONS_TABLE_VM);
             }
-            if (context == null) {
-                context = new VelocityContext();
+            if (nodeContext == null) {
+                nodeContext = new VelocityContext();
             }
-            context.put(NODE_PARAMS, fillNeuronOptionsMap());
+            nodeContext.put(NODE_PARAMS, fillNeuronOptionsMap());
             StringWriter stringWriter = new StringWriter();
-            template.merge(context, stringWriter);
+            nodeTemplate.merge(nodeContext, stringWriter);
             return stringWriter.toString();
         }
 
-        private Map<String, String> fillNeuronOptionsMap() {
+        Map<String, String> fillNeuronOptionsMap() {
             Map<String, String> paramsMap = new LinkedHashMap<>();
             paramsMap.put(NODE_INDEX_TEXT, String.valueOf(neuron.index()));
             switch (neuron.getType()) {

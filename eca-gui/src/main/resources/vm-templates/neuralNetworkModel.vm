@@ -1,0 +1,31 @@
+<html>
+<head>
+    <style>
+        .attr {
+            font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+
+        .val {
+            font-family: 'Arial';
+            font-size: 12
+        }
+    </style>
+</head>
+<body>
+<table>
+    #foreach($inputOptionsMap in $neuronNodes.entrySet())
+        <tr>
+            <th class="attr" colspan="2"> Структура нейрона '$inputOptionsMap.key'</th>
+        </tr>
+        #foreach($optionEntry in $inputOptionsMap.value.entrySet())
+            <tr>
+                <td class="attr">$optionEntry.key</td>
+                <td class="val">$optionEntry.value</td>
+            </tr>
+        #end
+    #end
+</table>
+</body>
+</html>
