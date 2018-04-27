@@ -6,6 +6,7 @@
 package eca.neural;
 
 import eca.buffer.ImageCopier;
+import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -14,7 +15,8 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
 
 import javax.swing.*;
@@ -25,10 +27,13 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Neural network visualization panel.
@@ -36,6 +41,14 @@ import java.util.Iterator;
  * @author Roman Batygin
  */
 public class NetworkVisualizer extends JPanel {
+
+    /**
+     * Velocity configuration
+     */
+    private static final VelocityConfigService VELOCITY_CONFIGURATION =
+            VelocityConfigService.getVelocityConfigService();
+
+    private static final String OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
 
     private static final double MIN_SIZE = 20;
     private static final double MAX_SIZE = 80;
@@ -55,6 +68,9 @@ public class NetworkVisualizer extends JPanel {
     private static final String ARIAL = "Arial";
 
     private double neuronDiam = 25.0;
+
+    private Template template;
+    private VelocityContext context;
 
     private final NeuralNetwork net;
     private ArrayList<NeuronNode> nodes;
@@ -279,7 +295,7 @@ public class NetworkVisualizer extends JPanel {
         String getNeuralNetworkStructureAsText() {
             StringBuilder textStructure = new StringBuilder();
             for (NeuronNode neuronNode : nodes) {
-                textStructure.append(neuronNode.getInfo()).append(SEPARATOR);
+                textStructure.append(neuronNode.getNeuronInfoAsHtml()).append(SEPARATOR);
             }
             return textStructure.toString();
         }
@@ -291,6 +307,9 @@ public class NetworkVisualizer extends JPanel {
     private class NeuronInfo extends JFrame {
 
         static final String NODE_INDEX_FORMAT = "Узел %d";
+        static final String CONTENT_TYPE = "text/html";
+        static final int PREFERRED_WIDTH = 300;
+        static final int PREFERRED_HEIGHT = 200;
 
         NeuronNode neuron;
 
@@ -299,13 +318,12 @@ public class NetworkVisualizer extends JPanel {
             this.setTitle(String.format(NODE_INDEX_FORMAT, neuron.neuron().index()));
             this.setLayout(new GridBagLayout());
             this.setIconImage(frame.getIconImage());
-            JTextArea textInfo = new JTextArea(8, 26);
-            textInfo.setWrapStyleWord(true);
-            textInfo.setLineWrap(true);
+            JTextPane textInfo = new JTextPane();
+            textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
-            textInfo.setFont(new Font(ARIAL, Font.BOLD, 10));
+            textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
             //----------------------------------------           
-            textInfo.setText(neuron.getInfo().toString());
+            textInfo.setText(neuron.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
             //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
@@ -334,13 +352,15 @@ public class NetworkVisualizer extends JPanel {
 
         static final String TOOL_TIP_TEXT =
                 "<html><body>Щелкните левой кнопкой мыши<br>для просмотра информации</body></html>";
-        static final String ACTIVATION_FUNCTION_TEXT = "Активационная функция: ";
+        static final String ACTIVATION_FUNCTION_TEXT = "Активационная функция:";
+        static final String ACTIVATION_FUNCTION_FORMULA_TEXT = "Формула активационной функции:";
         static final String LAYER_TEXT = "Слой:";
-        static final String NODE_INDEX_TEXT = "Номер узла: %d";
+        static final String NODE_INDEX_TEXT = "Номер узла:";
         static final String IN_LAYER_TEXT = "Входной";
         static final String OUT_LAYER_TEXT = "Выходной";
         static final String HIDDEN_LAYER_TEXT = "Скрытый";
-        static final String NEURAL_LINK_FORMAT = "Вес связи (%d,%d) = %s";
+        static final String NEURAL_LINK_FORMAT = "Вес связи (%d,%d):";
+        static final String NODE_PARAMS = "params";
 
         final Neuron neuron;
         Ellipse2D.Double ellipse;
@@ -361,44 +381,54 @@ public class NetworkVisualizer extends JPanel {
             infoLabel.setToolTipText(TOOL_TIP_TEXT);
         }
 
-        StringBuilder getInfo() {
-            StringBuilder text = new StringBuilder(String.format(NODE_INDEX_TEXT, neuron.index()));
-            text.append(SEPARATOR);
+        String getNeuronInfoAsHtml() {
+            if (template == null) {
+                template = VELOCITY_CONFIGURATION.getTemplate(OPTIONS_TABLE_VM);
+            }
+            if (context == null) {
+                context = new VelocityContext();
+            }
+            context.put(NODE_PARAMS, fillNeuronOptionsMap());
+            StringWriter stringWriter = new StringWriter();
+            template.merge(context, stringWriter);
+            return stringWriter.toString();
+        }
+
+        private Map<String, String> fillNeuronOptionsMap() {
+            Map<String, String> paramsMap = new LinkedHashMap<>();
+            paramsMap.put(NODE_INDEX_TEXT, String.valueOf(neuron.index()));
+            switch (neuron.getType()) {
+                case Neuron.IN_LAYER:
+                    paramsMap.put(LAYER_TEXT, IN_LAYER_TEXT);
+                    break;
+                case Neuron.OUT_LAYER:
+                    paramsMap.put(LAYER_TEXT, OUT_LAYER_TEXT);
+                    break;
+                case Neuron.HIDDEN_LAYER:
+                    paramsMap.put(LAYER_TEXT, HIDDEN_LAYER_TEXT);
+                    break;
+            }
             if (neuron.getType() != Neuron.IN_LAYER) {
-                text.append(ACTIVATION_FUNCTION_TEXT);
-                text.append(neuron.getActivationFunction().getActivationFunctionType().getDescription())
-                        .append(SEPARATOR);
+                paramsMap.put(ACTIVATION_FUNCTION_TEXT,
+                        neuron.getActivationFunction().getActivationFunctionType().getDescription());
                 if (neuron.getActivationFunction() instanceof AbstractFunction) {
                     AbstractFunction abstractFunction = (AbstractFunction) neuron.getActivationFunction();
-                    if (abstractFunction.getCoefficient() != 1.0) {
-                        text.append(String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
-                                decimalFormat.format(abstractFunction.getCoefficient())));
+                    if (abstractFunction.getCoefficient() != AbstractFunction.DEFAULT_COEFFICIENT) {
+                        paramsMap.put(ACTIVATION_FUNCTION_FORMULA_TEXT,
+                                String.format(abstractFunction.getActivationFunctionType().getFormulaFormat(),
+                                        decimalFormat.format(abstractFunction.getCoefficient())));
                     } else {
-                        text.append(abstractFunction.getActivationFunctionType().getFormula());
+                        paramsMap.put(ACTIVATION_FUNCTION_FORMULA_TEXT,
+                                abstractFunction.getActivationFunctionType().getFormula());
                     }
                 }
             }
-            text.append(SEPARATOR);
-            text.append(LAYER_TEXT).append(StringUtils.SPACE);
-            switch (neuron.getType()) {
-                case Neuron.IN_LAYER:
-                    text.append(IN_LAYER_TEXT);
-                    break;
-                case Neuron.OUT_LAYER:
-                    text.append(OUT_LAYER_TEXT);
-                    break;
-                case Neuron.HIDDEN_LAYER:
-                    text.append(HIDDEN_LAYER_TEXT);
-                    break;
-            }
-            text.append(SEPARATOR);
             for (Iterator<NeuralLink> link = neuron.outLinks(); link.hasNext(); ) {
                 NeuralLink edge = link.next();
-                text.append(String.format(NEURAL_LINK_FORMAT, edge.source().index(), edge.target().index(),
-                        decimalFormat.format(edge.getWeight())));
-                text.append(SEPARATOR);
+                paramsMap.put(String.format(NEURAL_LINK_FORMAT, edge.source().index(), edge.target().index()),
+                        decimalFormat.format(edge.getWeight()));
             }
-            return text;
+            return paramsMap;
         }
 
         void dispose() {

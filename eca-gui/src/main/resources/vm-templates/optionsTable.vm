@@ -3,6 +3,12 @@
     <style>
         .attr {
             font-weight: bold;
+            font-family: 'Arial';
+            font-size: 12
+        }
+        .val {
+            font-family: 'Arial';
+            font-size: 12
         }
     </style>
 </head>
@@ -11,7 +17,7 @@
     #foreach($param in $params.entrySet())
         <tr>
             <td class = "attr">$param.key</td>
-            <td>$param.value</td>
+            <td class="val">$param.value</td>
         </tr>
     #end
 </table>

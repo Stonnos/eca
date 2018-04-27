@@ -71,6 +71,9 @@ public class TreeVisualizer extends JPanel {
     private DecisionTreeClassifier tree;
     private ArrayList<NodeDescriptor> treeNodes;
 
+    private Template template;
+    private VelocityContext context;
+
     private Color linkColor = Color.GRAY;
     private Color classColor = Color.RED;
     private Color nodeColor = Color.WHITE;
@@ -388,8 +391,12 @@ public class TreeVisualizer extends JPanel {
         }
 
         String getNodeInfoAsHtml() {
-            Template template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_DECISION_TREE_NODE_VM);
-            VelocityContext context = new VelocityContext();
+            if (template == null) {
+                template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_DECISION_TREE_NODE_VM);
+            }
+            if (context == null) {
+                context = new VelocityContext();
+            }
             context.put(NODE_PARAMS, fillNodeParams());
             StringWriter stringWriter = new StringWriter();
             template.merge(context, stringWriter);
