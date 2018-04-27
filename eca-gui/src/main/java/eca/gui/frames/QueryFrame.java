@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Frame for execution database queries.
@@ -50,8 +51,8 @@ public class QueryFrame extends JFrame {
 
     private JTextArea queryArea;
     private JProgressBar progress;
-    private JButton execute;
-    private JButton interrupt;
+    private JButton executeButton;
+    private JButton interruptButton;
 
     private InstancesSetTable instancesSetTable;
 
@@ -85,7 +86,7 @@ public class QueryFrame extends JFrame {
         this.setLocationRelativeTo(parentFrame);
     }
 
-    public ArrayList<Instances> getSelectedInstances() {
+    public List<Instances> getSelectedInstances() {
         int[] selectedRows = instancesSetTable.getSelectedRows();
         ArrayList<Instances> result = new ArrayList<>(selectedRows.length);
         for (int i : selectedRows) {
@@ -113,19 +114,19 @@ public class QueryFrame extends JFrame {
     private void createGUI() {
         JPanel paramPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         paramPanel.setBorder(PanelBorderUtils.createTitledBorder(DB_TITLE));
-        JTextField url = new JTextField(URL_FIELD_LENGTH);
-        url.setText(connection.getConnectionDescriptor().getUrl());
-        url.setBackground(Color.WHITE);
-        url.setCaretPosition(0);
-        url.setEditable(false);
-        JTextField user = new JTextField(USER_FIELD_LENGTH);
-        user.setText(connection.getConnectionDescriptor().getLogin());
-        user.setBackground(Color.WHITE);
-        user.setEditable(false);
+        JTextField urlField = new JTextField(URL_FIELD_LENGTH);
+        urlField.setText(connection.getConnectionDescriptor().getUrl());
+        urlField.setBackground(Color.WHITE);
+        urlField.setCaretPosition(0);
+        urlField.setEditable(false);
+        JTextField userField = new JTextField(USER_FIELD_LENGTH);
+        userField.setText(connection.getConnectionDescriptor().getLogin());
+        userField.setBackground(Color.WHITE);
+        userField.setEditable(false);
         paramPanel.add(new JLabel(URL_TITLE));
-        paramPanel.add(url);
+        paramPanel.add(urlField);
         paramPanel.add(new JLabel(USER_TITLE));
-        paramPanel.add(user);
+        paramPanel.add(userField);
         //-----------------------------------------------------
         JPanel queryPanel = new JPanel(new GridBagLayout());
         queryPanel.setBorder(PanelBorderUtils.createTitledBorder(QUERY_TITLE));
@@ -134,36 +135,36 @@ public class QueryFrame extends JFrame {
         queryArea.setLineWrap(true);
         queryArea.setFont(QUERY_AREA_FONT);
         JScrollPane scrollPanel = new JScrollPane(queryArea);
-        execute = new JButton(START_BUTTON_TEXT);
-        JButton clear = new JButton(CLEAR_BUTTON_TEXT);
-        interrupt = new JButton(INTERRUPT_BUTTON_TEXT);
-        interrupt.setEnabled(false);
+        executeButton = new JButton(START_BUTTON_TEXT);
+        JButton clearButton = new JButton(CLEAR_BUTTON_TEXT);
+        interruptButton = new JButton(INTERRUPT_BUTTON_TEXT);
+        interruptButton.setEnabled(false);
         //-----------------------------------------
-        execute.addActionListener(e -> {
+        executeButton.addActionListener(e -> {
             if (queryArea.getText() == null || StringUtils.isEmpty(queryArea.getText().trim())) {
                 GuiUtils.showErrorMessageAndRequestFocusOn(QueryFrame.this, queryArea);
                 queryArea.setText(StringUtils.EMPTY);
             } else {
                 progress.setIndeterminate(true);
                 worker = new QueryWorker(queryArea.getText().trim());
-                interrupt.setEnabled(true);
+                interruptButton.setEnabled(true);
                 worker.execute();
             }
         });
 
-        interrupt.addActionListener(e -> interruptWorker());
-        clear.addActionListener(e -> queryArea.setText(StringUtils.EMPTY));
+        interruptButton.addActionListener(e -> interruptWorker());
+        clearButton.addActionListener(e -> queryArea.setText(StringUtils.EMPTY));
         //-----------------------------------------
-        execute.setPreferredSize(QUERY_BUTTON_DIM);
-        clear.setPreferredSize(QUERY_BUTTON_DIM);
-        interrupt.setPreferredSize(QUERY_BUTTON_DIM);
+        executeButton.setPreferredSize(QUERY_BUTTON_DIM);
+        clearButton.setPreferredSize(QUERY_BUTTON_DIM);
+        interruptButton.setPreferredSize(QUERY_BUTTON_DIM);
         queryPanel.add(scrollPanel, new GridBagConstraints(0, 0, 3, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-        queryPanel.add(execute, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        queryPanel.add(executeButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(3, 0, 3, 3), 0, 0));
-        queryPanel.add(clear, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        queryPanel.add(clearButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(3, 3, 3, 3), 0, 0));
-        queryPanel.add(interrupt, new GridBagConstraints(2, 1, 1, 1, 1, 1,
+        queryPanel.add(interruptButton, new GridBagConstraints(2, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(3, 3, 3, 0), 0, 0));
 
         progress = new JProgressBar();
@@ -231,7 +232,7 @@ public class QueryFrame extends JFrame {
         @Override
         protected Void doInBackground() {
             try {
-                execute.setEnabled(false);
+                executeButton.setEnabled(false);
                 connection.setSource(query);
                 data = connection.loadInstances();
             } catch (Exception e) {
@@ -244,8 +245,8 @@ public class QueryFrame extends JFrame {
         @Override
         protected void done() {
             progress.setIndeterminate(false);
-            execute.setEnabled(true);
-            interrupt.setEnabled(false);
+            executeButton.setEnabled(true);
+            interruptButton.setEnabled(false);
             if (data != null) {
                 instancesSetTable.addInstances(data);
             } else {
