@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class CHAID extends DecisionTreeClassifier {
 
+    private static final int BINARY_TABLE_SIZE = 3;
     /**
      * Contingency table
      **/
@@ -60,8 +61,8 @@ public class CHAID extends DecisionTreeClassifier {
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
-        contingencyTable = getUseBinarySplits() || isUseRandomSplits() ? new double[data.numClasses() + 1][3]
-                : new double[data.numClasses() + 1][];
+        contingencyTable = getUseBinarySplits() || isUseRandomSplits() ?
+                new double[data.numClasses() + 1][BINARY_TABLE_SIZE] : new double[data.numClasses() + 1][];
         super.buildClassifier(data);
     }
 
@@ -121,7 +122,7 @@ public class CHAID extends DecisionTreeClassifier {
                     }
                 } else {
                     contingencyTable[i] = new double[x.getRule().attribute().isNumeric()
-                            ? 3 : x.getRule().attribute().numValues() + 1];
+                            ? BINARY_TABLE_SIZE : x.getRule().attribute().numValues() + 1];
                 }
             }
             for (int i = 0; i < contingencyTable.length - 1; i++) {
