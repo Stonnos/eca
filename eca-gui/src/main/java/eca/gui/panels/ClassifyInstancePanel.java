@@ -52,6 +52,9 @@ public class ClassifyInstancePanel extends JPanel {
 
     private JTextPane classField;
 
+    private Template template;
+    private VelocityContext velocityContext;
+
     public ClassifyInstancePanel(ClassifyInstanceTable table, Classifier classifier) {
         this.setClassifier(classifier);
         this.classifyInstanceTable = table;
@@ -123,8 +126,12 @@ public class ClassifyInstancePanel extends JPanel {
         Instance obj = classifyInstanceTable.instance();
         int i = (int) classifier.classifyInstance(obj);
         double probability = classifier.distributionForInstance(obj)[i];
-        Template template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_CLASSIFY_OBJECT_VM);
-        VelocityContext velocityContext = new VelocityContext();
+        if (template == null) {
+            template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_CLASSIFY_OBJECT_VM);
+        }
+        if (velocityContext == null) {
+            velocityContext = new VelocityContext();
+        }
         velocityContext.put(CLASS_INDEX, i);
         velocityContext.put(CLASS_VALUE, classifyInstanceTable.data().classAttribute().value(i));
         velocityContext.put(CLASS_PROBABILITY, classifyInstanceTable.getDecimalFormat().format(probability));
