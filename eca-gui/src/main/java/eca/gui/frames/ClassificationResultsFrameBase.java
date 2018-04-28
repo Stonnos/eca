@@ -288,7 +288,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setJMenuBar(menu);
     }
 
-    private void createGUI(final int digits) throws Exception {
+    private void createGUI(final int digits) {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         pane = new JTabbedPane();
         JPanel resultPanel = new JPanel(new GridBagLayout());
