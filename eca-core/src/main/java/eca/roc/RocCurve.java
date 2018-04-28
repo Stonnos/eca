@@ -72,20 +72,16 @@ public class RocCurve implements InstancesHandler {
      * @return optimal threshold value
      */
     public ThresholdModel findOptimalThreshold(int classIndex) {
-        Optional<Instance> optional = getROCCurve(classIndex).stream().max(((o1, o2) -> {
+        return getROCCurve(classIndex).stream().max(((o1, o2) -> {
             double x = 1.0 - o1.value(SPECIFICITY_INDEX) + o1.value(SENSITIVITY_INDEX);
             double y = 1.0 - o2.value(SPECIFICITY_INDEX) + o2.value(SENSITIVITY_INDEX);
             return Double.compare(x, y);
-        }));
-        return optional.isPresent() ? createThresholdModel(optional.get()) : null;
+        })).map(instance -> {
+            ThresholdModel thresholdModel = new ThresholdModel();
+            thresholdModel.setSpecificity(instance.value(SPECIFICITY_INDEX));
+            thresholdModel.setSensitivity(instance.value(SENSITIVITY_INDEX));
+            thresholdModel.setThresholdValue(instance.value(THRESHOLD_INDEX));
+            return thresholdModel;
+        }).orElse(null);
     }
-
-    private ThresholdModel createThresholdModel(Instance instance) {
-        ThresholdModel thresholdModel = new ThresholdModel();
-        thresholdModel.setSpecificity(instance.value(SPECIFICITY_INDEX));
-        thresholdModel.setSensitivity(instance.value(SENSITIVITY_INDEX));
-        thresholdModel.setThresholdValue(instance.value(THRESHOLD_INDEX));
-        return thresholdModel;
-    }
-
 }
