@@ -5,6 +5,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -66,13 +67,9 @@ public class AttributeStatistics {
      * @return attribute maximum value
      */
     public double getMax(Attribute a) {
-        double maxVal = -Double.MAX_VALUE;
-        for (Instance obj : data) {
-            if (!obj.isMissing(a) && obj.value(a) > maxVal) {
-                maxVal = obj.value(a);
-            }
-        }
-        return maxVal;
+        return data.stream().filter(instance -> !instance.isMissing(a)).max(
+                Comparator.comparingDouble(instance -> instance.value(a))).map(instance -> instance.value(a)).orElse(
+                -Double.MAX_VALUE);
     }
 
     /**
@@ -93,13 +90,9 @@ public class AttributeStatistics {
      * @return attribute minimum value
      */
     public double getMin(Attribute a) {
-        double minVal = Double.MAX_VALUE;
-        for (Instance obj : data) {
-            if (!obj.isMissing(a) && obj.value(a) < minVal) {
-                minVal = obj.value(a);
-            }
-        }
-        return minVal;
+        return data.stream().filter(instance -> !instance.isMissing(a)).min(
+                Comparator.comparingDouble(instance -> instance.value(a))).map(instance -> instance.value(a)).orElse(
+                Double.MAX_VALUE);
     }
 
     /**
@@ -150,7 +143,7 @@ public class AttributeStatistics {
      * Gets the number of values of given attribute.
      *
      * @param attribute {@link Attribute} object
-     * @param val attribute value for comparing
+     * @param val       attribute value for comparing
      * @return the number of values of given attribute.
      */
     public int getValuesNum(Attribute attribute, double val) {
