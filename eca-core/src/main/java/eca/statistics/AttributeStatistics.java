@@ -1,7 +1,6 @@
 package eca.statistics;
 
 import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.Instances;
 
 import java.text.DecimalFormat;
@@ -147,13 +146,7 @@ public class AttributeStatistics {
      * @return the number of values of given attribute.
      */
     public int getValuesNum(Attribute attribute, double val) {
-        int count = 0;
-        for (Instance i : data) {
-            if (i.value(attribute) == val) {
-                count++;
-            }
-        }
-        return count;
+        return (int) data.stream().filter(instance -> instance.value(attribute) == val).count();
     }
 
 }
