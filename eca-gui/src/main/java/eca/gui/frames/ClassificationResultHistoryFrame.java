@@ -45,7 +45,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
         historyList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2 && !historyModel.isEmpty()) {
                     int i = historyList.locationToIndex(e.getPoint());
                     historyModel.getFrame(i).setVisible(true);
                 }
