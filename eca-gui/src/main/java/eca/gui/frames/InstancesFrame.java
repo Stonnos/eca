@@ -1,6 +1,7 @@
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.tables.ResultInstancesTable;
@@ -27,7 +28,7 @@ public class InstancesFrame extends JFrame {
         this.data = data;
         this.setTitle(String.format(DATA_FORMAT, data.relationName()));
         this.setLayout(new GridBagLayout());
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getApplicationConfig().getIconUrl(), log);
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
         JButton okButton = ButtonUtils.createOkButton();
         okButton.addActionListener(e -> setVisible(false));

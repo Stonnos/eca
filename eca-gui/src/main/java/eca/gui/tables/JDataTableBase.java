@@ -7,6 +7,8 @@ package eca.gui.tables;
 
 
 import eca.buffer.StringCopier;
+import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.gui.dialogs.JFontChooser;
 
 import javax.swing.*;
@@ -22,6 +24,9 @@ import java.awt.event.ActionListener;
  * @author Roman Batygin
  */
 public class JDataTableBase extends JTable {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String FONT_SELECTION_MENU_TEXT = "Выбор шрифта";
     private static final String AUTO_SIZE_MENU_TEXT = "Автомасштабирование";
@@ -93,6 +98,7 @@ public class JDataTableBase extends JTable {
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem fontMenu = new JMenuItem(FONT_SELECTION_MENU_TEXT);
+        fontMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.FONT_ICON)));
 
         fontMenu.addActionListener(e -> {
             JFontChooser chooser = new JFontChooser(null, JDataTableBase.this.getFont());
@@ -107,7 +113,9 @@ public class JDataTableBase extends JTable {
         resizeMenu.addItemListener(e -> setAutoResizeOffMode(!resizeMenu.getState()));
         //-----------------------------------
         JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
+        copyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
         JMenuItem copyWithHeaderMenu = new JMenuItem(ALL_DATA_COPY_MENU_TEXT);
+        copyWithHeaderMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
 
         copyMenu.addActionListener(new ActionListener() {
 

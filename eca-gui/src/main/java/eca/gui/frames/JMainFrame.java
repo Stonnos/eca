@@ -12,6 +12,7 @@ import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
@@ -228,10 +229,7 @@ public class JMainFrame extends JFrame {
             } else {
                 this.maximumFractionDigits = CommonDictionary.MAXIMUM_FRACTION_DIGITS;
             }
-            URL iconUrl = getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getIconUrl());
-            if (iconUrl != null) {
-                this.setIconImage(ImageIO.read(iconUrl));
-            }
+            this.setIconImage(ImageIO.read(CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON)));
             if (CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime() != null) {
                 ToolTipManager.sharedInstance().setDismissDelay(
                         CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime());
@@ -732,6 +730,7 @@ public class JMainFrame extends JFrame {
         menu.add(referenceMenu);
         //-------------------------------
         JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
+        openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
         openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
         //-------------------------------
         openFileMenu.addActionListener(new ActionListener() {
@@ -789,6 +788,7 @@ public class JMainFrame extends JFrame {
 
         fileMenu.add(openFileMenu);
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
+        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         disabledMenuElementList.add(saveFileMenu);
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
         fileMenu.add(saveFileMenu);
@@ -825,6 +825,7 @@ public class JMainFrame extends JFrame {
         //---------------------------------------------
         JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
         dbMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift D"));
+        dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(dbMenu);
         dbMenu.addActionListener(event -> {
@@ -855,6 +856,7 @@ public class JMainFrame extends JFrame {
         //---------------------------------------------
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
         urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));
+        urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(event -> {
@@ -881,6 +883,7 @@ public class JMainFrame extends JFrame {
         //------------------------------------------------------
         JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
         loadModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl M"));
+        loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(new ActionListener() {
@@ -932,6 +935,7 @@ public class JMainFrame extends JFrame {
         });
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
+        generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
         generatorMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift G"));
         fileMenu.addSeparator();
         fileMenu.add(generatorMenu);
@@ -954,6 +958,7 @@ public class JMainFrame extends JFrame {
 
         //---------------------------------------------
         JMenuItem exitMenu = new JMenuItem(EXIT_MENU_TEXT);
+        exitMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXIT_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(exitMenu);
         //-------------------------------------------------
@@ -1146,6 +1151,7 @@ public class JMainFrame extends JFrame {
         algorithmsMenu.add(ensembleMenu);
         //------------------------------
         JMenu treesMenu = new JMenu(DECISION_TREES_MENU_TEXT);
+        treesMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.TREE_ICON)));
         classifiersMenu.add(treesMenu);
         JMenuItem id3Item = new JMenuItem(ClassifiersNamesDictionary.ID3);
         JMenuItem c45Item = new JMenuItem(ClassifiersNamesDictionary.C45);
@@ -1196,6 +1202,7 @@ public class JMainFrame extends JFrame {
         treesMenu.add(j48Item);
         //------------------------------------------------------------------
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
+        logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
         classifiersMenu.add(logisticItem);
         logisticItem.addActionListener(event -> {
             if (dataValidated()) {
@@ -1215,6 +1222,7 @@ public class JMainFrame extends JFrame {
         });
         //------------------------------------------------------------------
         JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
+        mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
         classifiersMenu.add(mlpItem);
         mlpItem.addActionListener(event -> {
             if (dataValidated()) {
@@ -1237,6 +1245,7 @@ public class JMainFrame extends JFrame {
         });
         //------------------------------------------------------------------
         JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
+        knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
         knnItem.addActionListener(event -> {
             if (dataValidated()) {
@@ -1376,9 +1385,11 @@ public class JMainFrame extends JFrame {
 
         //-------------------------------------------------------------------
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
+        historyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.HISTORY_ICON)));
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
 
         JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
+        experimentRequestMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXPERIMENT_ICON)));
         disabledMenuElementList.add(experimentRequestMenu);
         experimentRequestMenu.addActionListener(new ActionListener() {
 
@@ -1450,6 +1461,7 @@ public class JMainFrame extends JFrame {
         serviceMenu.add(experimentRequestMenu);
 
         JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
+        attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
         disabledMenuElementList.add(attrStatisticsMenu);
         attrStatisticsMenu.addActionListener(event -> {
             if (dataValidated()) {
@@ -1470,6 +1482,7 @@ public class JMainFrame extends JFrame {
         serviceMenu.add(attrStatisticsMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
+        loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));
         loggingMenu.addActionListener(new ActionListener() {
 
             ConsoleFrame consoleFrame = new ConsoleFrame(JMainFrame.this,

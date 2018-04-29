@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +69,10 @@ public class ConfigurationService {
      */
     public EcaServiceConfig getEcaServiceConfig() {
         if (ecaServiceConfig == null) {
-            ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
+            //ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
         }
+        ecaServiceConfig = new EcaServiceConfig();
+        ecaServiceConfig.setEnabled(false);
         return ecaServiceConfig;
     }
 
@@ -96,8 +99,19 @@ public class ConfigurationService {
         return databaseConfigMap.get(dataBaseType);
     }
 
+    /**
+     * Gets specified icon path.
+     *
+     * @param iconType - icon type
+     * @return icon path
+     */
+    public URL getIconUrl(IconType iconType) {
+        Map<IconType, String> iconTypeStringMap = getApplicationConfig().getIcons();
+        return getClass().getClassLoader().getResource(iconTypeStringMap.get(iconType));
+    }
+
     private <T> T loadConfig(String fileName, Class<T> configType) {
-        try (InputStream inputStream = ConfigurationService.class.getClassLoader().getResourceAsStream(
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
             return OBJECT_MAPPER.readValue(inputStream, configType);
         } catch (IOException ex) {
@@ -116,7 +130,7 @@ public class ConfigurationService {
     }
 
     private <T> T loadConfig(String fileName, TypeReference<T> tTypeReference) {
-        try (InputStream inputStream = ConfigurationService.class.getClassLoader().getResourceAsStream(
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
             return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
         } catch (IOException ex) {

@@ -6,6 +6,7 @@
 package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.text.LengthDocument;
@@ -38,7 +39,7 @@ public class JTextFieldMatrixDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setModal(true);
         this.setResizable(false);
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getApplicationConfig().getIconUrl(), log);
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
         labels = new JLabel[rows];
         texts = new JTextField[rows];
         JPanel panel = new JPanel(new GridLayout(rows, 2, 0, 10));

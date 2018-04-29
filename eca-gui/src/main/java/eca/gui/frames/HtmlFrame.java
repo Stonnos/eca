@@ -1,5 +1,7 @@
 package eca.gui.frames;
 
+import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.HtmlChooser;
 import eca.gui.logging.LoggerUtils;
@@ -19,6 +21,9 @@ import java.io.File;
  */
 @Slf4j
 public class HtmlFrame extends JFrame {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String SAVE_MENU_TEXT = "Сохранить";
@@ -53,6 +58,7 @@ public class HtmlFrame extends JFrame {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenuItem saveMenu = new JMenuItem(SAVE_MENU_TEXT);
+        saveMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         fileMenu.add(saveMenu);
         menu.add(fileMenu);
         //--------------------------------------------

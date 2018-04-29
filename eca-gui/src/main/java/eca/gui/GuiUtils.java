@@ -65,12 +65,9 @@ public class GuiUtils {
         target.requestFocusInWindow();
     }
 
-    public static void setIcon(Window window, String iconPath, Logger log) {
+    public static void setIcon(Window window, URL iconUrl, Logger log) {
         try {
-            URL iconUrl = GuiUtils.class.getClassLoader().getResource(iconPath);
-            if (iconUrl != null) {
-                window.setIconImage(ImageIO.read(iconUrl));
-            }
+            window.setIconImage(ImageIO.read(iconUrl));
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
         }

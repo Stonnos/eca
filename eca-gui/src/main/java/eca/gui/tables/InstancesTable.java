@@ -5,6 +5,8 @@
  */
 package eca.gui.tables;
 
+import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.gui.MissingCellRenderer;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.tables.models.InstancesTableModel;
@@ -19,6 +21,9 @@ import javax.swing.event.PopupMenuListener;
  * @author Roman Batygin
  */
 public class InstancesTable extends JDataTableBase {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static final String DELETE_ATTR_MENU_TEXT = "Удалить выбранный объект";
     private static final String DELETE_ATTRS_MENU_TEXT = "Удалить выбранные объекты";
@@ -43,11 +48,16 @@ public class InstancesTable extends JDataTableBase {
         }
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
+        deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
         JMenuItem deleteAllMenu = new JMenuItem(DELETE_ATTRS_MENU_TEXT);
+        deleteAllMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
         JMenuItem insertMenu = new JMenuItem(ADD_INSTANCE_MENU_TEXT);
+        insertMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ADD_ICON)));
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
+        clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
+        reValueMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.REPLACE_ICON)));
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override

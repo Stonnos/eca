@@ -6,6 +6,8 @@
 package eca.neural;
 
 import eca.buffer.ImageCopier;
+import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
@@ -38,6 +40,9 @@ import java.util.*;
  * @author Roman Batygin
  */
 public class NetworkVisualizer extends JPanel {
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     /**
      * Velocity configuration
@@ -140,11 +145,17 @@ public class NetworkVisualizer extends JPanel {
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem textView = new JMenuItem(MODEL_TEXT_MENU);
+        textView.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.INFO_ICON)));
         JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TEXT);
+        saveImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
+        copyImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
         JMenuItem options = new JMenuItem(IMAGE_OPTIONS_MENU_TEXT);
+        options.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SETTINGS_ICON)));
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
+        increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
+        decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
 
         increase.addActionListener(evt -> {
             neuronDiam += STEP_SIZE;

@@ -8,6 +8,7 @@ package eca.gui.frames;
 import eca.Reference;
 import eca.config.ApplicationConfig;
 import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -169,11 +170,14 @@ public class ClassificationResultsFrameBase extends JFrame {
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
         JMenu helpMenu = new JMenu(REFERENCE_MENU_TEXT);
         JMenuItem saveModelMenu = new JMenuItem(SAVE_MODEL_MENU_TEXT);
+        saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke("F1"));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
+        dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
+        statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
         //--------------------------------------------
         saveModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
         //--------------------------------------------
@@ -313,6 +317,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         //-----------------------------------
         JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
+        saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         Dimension dim = new Dimension(150, 25);
         saveButton.setPreferredSize(dim);
         saveButton.setMinimumSize(dim);

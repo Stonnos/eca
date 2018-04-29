@@ -2,6 +2,8 @@ package eca.config;
 
 import lombok.Data;
 
+import java.util.Map;
+
 /**
  * Application config.
  *
@@ -31,9 +33,9 @@ public class ApplicationConfig {
      */
     private Integer maxDataListSize;
     /**
-     * Eca icon path
+     * Eca icons map
      */
-    private String iconUrl;
+    private Map<IconType, String> icons;
     /**
      * Eca logotype path
      */

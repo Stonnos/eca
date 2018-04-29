@@ -7,12 +7,12 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
 
 migration:
   dateFormat: yyyy-MM-dd HH:mm:ss
-  dataStoragePath: /home/roman/dataStorage
+  dataStoragePath: D:/dataStorage
   batchSize: 100
   durationInSeconds: 30
   jobEnabled: true
