@@ -6,6 +6,7 @@
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
+import eca.config.IconType;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.filter.ConstantAttributesFilter;
 import eca.gui.GuiUtils;
@@ -105,6 +106,8 @@ public class AttributesTable extends JDataTableBase {
 
             }
         });
+
+        renameMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EDIT_ICON)));
 
         renameMenu.addActionListener(evt -> {
             int i = getSelectedRow();

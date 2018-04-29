@@ -34,5 +34,7 @@ public enum IconType {
     SAVE_ICON,
     SETTINGS_ICON,
     STATISTICS_ICON,
-    TREE_ICON
+    TREE_ICON,
+    EDIT_ICON,
+    COLOR_ICON
 }

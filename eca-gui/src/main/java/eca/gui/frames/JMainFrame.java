@@ -348,7 +348,9 @@ public class JMainFrame extends JFrame {
         void createPopMenu() {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem(DATA_CHANGE_NAME_MENU_TEXT);
+            nameMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EDIT_ICON)));
             JMenuItem colorMenu = new JMenuItem(CHOOSE_COLOR_MENU_TEXT);
+            colorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
             nameMenu.addActionListener(e -> {
                 String newRelationName = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
                         DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
