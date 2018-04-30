@@ -29,7 +29,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -202,7 +201,7 @@ public class NetworkVisualizer extends JPanel {
                 try {
                     copier.setImage(getImage());
                     copier.copy();
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     JOptionPane.showMessageDialog(frame, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
@@ -244,7 +243,7 @@ public class NetworkVisualizer extends JPanel {
                         FileUtils.write(file, getImage());
 
                     }
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     JOptionPane.showMessageDialog(frame, e.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
