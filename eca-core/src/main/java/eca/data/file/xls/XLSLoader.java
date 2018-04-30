@@ -106,7 +106,7 @@ public class XLSLoader {
                 o.setDataset(data);
                 for (int j = 0; j < data.numAttributes(); j++) {
                     Cell cell = sheet.getRow(i).getCell(j);
-                    if (Objects.isNull(cell)) {
+                    if (cell == null) {
                         o.setValue(j, Utils.missingValue());
                     } else {
                         switch (cell.getCellTypeEnum()) {
@@ -130,6 +130,10 @@ public class XLSLoader {
                             case BOOLEAN:
                                 String val = String.valueOf(cell.getBooleanCellValue());
                                 o.setValue(j, val);
+                                break;
+
+                            case BLANK:
+                                o.setValue(j, Utils.missingValue());
                                 break;
 
                             default:
@@ -192,7 +196,7 @@ public class XLSLoader {
 
     private void validateData(Sheet sheet) {
         int numHeaders = sheet.getRow(0).getLastCellNum();
-        if (numHeaders > sheet.getRow(0).getPhysicalNumberOfCells()) {
+        if (numHeaders >= sheet.getRow(0).getPhysicalNumberOfCells()) {
             throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
         for (int i = 0; i < getColNum(sheet); i++) {
@@ -211,7 +215,7 @@ public class XLSLoader {
                     if (!AVAILABLE_CELL_TYPES.contains(cellTypeEnum)) {
                         throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);
                     }
-                    if (cellType != null && !cellTypeEnum.equals(CellType.BLANK) && !cellTypeEnum.equals(cellType)) {
+                    if (isCellTypeEquals(cellType, cellTypeEnum)) {
                         throw new IllegalArgumentException(String.format(
                                 FileDataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
@@ -220,5 +224,9 @@ public class XLSLoader {
                 }
             }
         }
+    }
+
+    private boolean isCellTypeEquals(CellType cellTypeA, CellType cellTypeB) {
+        return cellTypeA != null && !cellTypeA.equals(CellType.BLANK) && !cellTypeB.equals(CellType.BLANK) && !cellTypeA.equals(cellTypeB);
     }
 }
