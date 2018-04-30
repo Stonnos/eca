@@ -9,6 +9,7 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.filter.ConstantAttributesFilter;
+import eca.filter.FilterDictionary;
 import eca.gui.GuiUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
@@ -56,6 +57,7 @@ public class AttributesTable extends JDataTableBase {
             "Формат даты для атрибута '%s' должен быть следующим: %s";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
+    private static final int MIN_NUM_CLASS_VALUES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
     private static final int INDEX_COLUMN_PREFERRED_WIDTH = 50;
@@ -166,6 +168,9 @@ public class AttributesTable extends JDataTableBase {
                 newDataSet.add(obj);
             }
             newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
+            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
+                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+            }
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
