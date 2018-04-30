@@ -196,7 +196,7 @@ public class XLSLoader {
 
     private void validateData(Sheet sheet) {
         int numHeaders = sheet.getRow(0).getLastCellNum();
-        if (numHeaders >= sheet.getRow(0).getPhysicalNumberOfCells()) {
+        if (numHeaders > sheet.getRow(0).getPhysicalNumberOfCells()) {
             throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
         for (int i = 0; i < getColNum(sheet); i++) {
