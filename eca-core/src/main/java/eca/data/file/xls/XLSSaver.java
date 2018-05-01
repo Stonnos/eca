@@ -77,42 +77,50 @@ public class XLSSaver {
     public void write(Instances data) throws IOException {
         Objects.requireNonNull(data, "Data is not specified!");
         try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
-            Font font = book.createFont();
-            font.setBold(true);
-            font.setFontHeightInPoints(FONT_SIZE);
-            CellStyle style = book.createCellStyle();
-            CellStyle dateStyle = book.createCellStyle();
-            short date = book.createDataFormat().getFormat(dateFormat);
-            dateStyle.setDataFormat(date);
-            style.setFont(font);
             Sheet sheet = book.createSheet(data.relationName());
+            fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
+            fillDataCells(data, book, sheet);
+            book.write(stream);
+        }
+    }
+
+    private CellStyle createCellStyle(Workbook book) {
+        Font font = book.createFont();
+        font.setBold(true);
+        font.setFontHeightInPoints(FONT_SIZE);
+        CellStyle style = book.createCellStyle();
+        style.setFont(font);
+        return style;
+    }
+
+    private void fillHeaderCells(Instances data, Row row, CellStyle style) {
+        for (int i = 0; i < data.numAttributes(); i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(data.attribute(i).name());
+        }
+    }
+
+    private void fillDataCells(Instances data, Workbook book, Sheet sheet) {
+        CellStyle dateStyle = book.createCellStyle();
+        short date = book.createDataFormat().getFormat(dateFormat);
+        dateStyle.setDataFormat(date);
+        for (int i = 0; i < data.numInstances(); i++) {
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-
-            for (int i = 0; i < data.numAttributes(); i++) {
-                Cell cell = row.createCell(i);
-                cell.setCellStyle(style);
-                cell.setCellValue(data.attribute(i).name());
-            }
-
-            for (int i = 0; i < data.numInstances(); i++) {
-                row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-                for (int j = 0; j < data.numAttributes(); j++) {
-                    Cell cell = row.createCell(j);
-                    Attribute a = data.attribute(j);
-                    if (!data.instance(i).isMissing(a)) {
-                        if (a.isDate()) {
-                            cell.setCellStyle(dateStyle);
-                            cell.setCellValue(new Date((long) data.instance(i).value(a)));
-                        } else if (a.isNumeric()) {
-                            cell.setCellValue(data.instance(i).value(a));
-                        } else {
-                            cell.setCellValue(data.instance(i).stringValue(a));
-                        }
+            for (int j = 0; j < data.numAttributes(); j++) {
+                Cell cell = row.createCell(j);
+                Attribute a = data.attribute(j);
+                if (!data.instance(i).isMissing(a)) {
+                    if (a.isDate()) {
+                        cell.setCellStyle(dateStyle);
+                        cell.setCellValue(new Date((long) data.instance(i).value(a)));
+                    } else if (a.isNumeric()) {
+                        cell.setCellValue(data.instance(i).value(a));
+                    } else {
+                        cell.setCellValue(data.instance(i).stringValue(a));
                     }
                 }
             }
-
-            book.write(stream);
         }
     }
 

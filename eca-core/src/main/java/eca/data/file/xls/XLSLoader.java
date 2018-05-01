@@ -40,6 +40,7 @@ public class XLSLoader {
 
     private static final Set<CellType> AVAILABLE_CELL_TYPES =
             EnumSet.of(CellType.STRING, CellType.NUMERIC, CellType.BLANK, CellType.BOOLEAN);
+    private static final int HEADER_INDEX = 0;
 
     private DataResource resource;
 
@@ -102,38 +103,38 @@ public class XLSLoader {
                     sheet.getLastRowNum());
 
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-                DenseInstance o = new DenseInstance(data.numAttributes());
-                o.setDataset(data);
+                DenseInstance newInstance = new DenseInstance(data.numAttributes());
+                newInstance.setDataset(data);
                 for (int j = 0; j < data.numAttributes(); j++) {
                     Cell cell = sheet.getRow(i).getCell(j);
                     if (cell == null) {
-                        o.setValue(j, Utils.missingValue());
+                        newInstance.setValue(j, Utils.missingValue());
                     } else {
                         switch (cell.getCellTypeEnum()) {
                             case NUMERIC:
                                 if (data.attribute(j).isDate()) {
-                                    o.setValue(j, cell.getDateCellValue().getTime());
+                                    newInstance.setValue(j, cell.getDateCellValue().getTime());
                                 } else {
-                                    o.setValue(j, cell.getNumericCellValue());
+                                    newInstance.setValue(j, cell.getNumericCellValue());
                                 }
                                 break;
 
                             case STRING:
                                 String stringValue = cell.getStringCellValue().trim();
                                 if (StringUtils.isEmpty(stringValue)) {
-                                    o.setValue(j, Utils.missingValue());
+                                    newInstance.setValue(j, Utils.missingValue());
                                 } else {
-                                    o.setValue(j, stringValue);
+                                    newInstance.setValue(j, stringValue);
                                 }
                                 break;
 
                             case BOOLEAN:
                                 String val = String.valueOf(cell.getBooleanCellValue());
-                                o.setValue(j, val);
+                                newInstance.setValue(j, val);
                                 break;
 
                             case BLANK:
-                                o.setValue(j, Utils.missingValue());
+                                newInstance.setValue(j, Utils.missingValue());
                                 break;
 
                             default:
@@ -142,26 +143,26 @@ public class XLSLoader {
                         }
                     }
                 }
-                data.add(o);
+                data.add(newInstance);
             }
             data.setClassIndex(data.numAttributes() - 1);
         }
         return data;
     }
 
-    private int getColNum(Sheet sheet) {
-        return sheet.getRow(0).getPhysicalNumberOfCells();
+    private int getNumColumns(Sheet sheet) {
+        return sheet.getRow(HEADER_INDEX).getPhysicalNumberOfCells();
     }
 
-    private String getColName(Sheet sheet, int i) {
-        return sheet.getRow(0).getCell(i).getStringCellValue().trim();
+    private String getColumnName(Sheet sheet, int i) {
+        return sheet.getRow(HEADER_INDEX).getCell(i).getStringCellValue().trim();
     }
 
     private ArrayList<Attribute> createAttributes(Sheet sheet) {
-        ArrayList<Attribute> attr = new ArrayList<>();
-        for (int i = 0; i < getColNum(sheet); i++) {
+        ArrayList<Attribute> attributes = new ArrayList<>();
+        for (int i = 0; i < getNumColumns(sheet); i++) {
             ArrayList<String> values = new ArrayList<>();
-            boolean isDate = false;
+            int attributeType = Attribute.NUMERIC;
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Cell cell = sheet.getRow(j).getCell(i);
                 if (cell != null && !cell.getCellTypeEnum().equals(CellType.BLANK)) {
@@ -170,43 +171,48 @@ public class XLSLoader {
                         String stringValue = cell.getStringCellValue().trim();
                         if (!StringUtils.isEmpty(stringValue) && !values.contains(stringValue)) {
                             values.add(stringValue);
+                            attributeType = Attribute.NOMINAL;
                         }
                     } else if (cellType.equals(CellType.BOOLEAN)) {
                         String booleanValue = String.valueOf(cell.getBooleanCellValue());
                         if (!values.contains(booleanValue)) {
                             values.add(booleanValue);
+                            attributeType = Attribute.NOMINAL;
                         }
                     } else if (cellType.equals(CellType.NUMERIC) && DateUtil.isCellDateFormatted(cell)) {
-                        isDate = true;
+                        attributeType = Attribute.DATE;
                     }
                 }
             }
-            Attribute attribute;
-            if (isDate) {
-                attribute = new Attribute(getColName(sheet, i), dateFormat);
-            } else if (values.isEmpty()) {
-                attribute = new Attribute(getColName(sheet, i));
-            } else {
-                attribute = new Attribute(getColName(sheet, i), values);
-            }
-            attr.add(attribute);
+            attributes.add(createAttribute(attributeType, getColumnName(sheet, i), values));
         }
-        return attr;
+        return attributes;
+    }
+
+    private Attribute createAttribute(int attributeType, String name, ArrayList<String> values) {
+        switch (attributeType) {
+            case Attribute.NOMINAL:
+                return new Attribute(name, values);
+            case Attribute.DATE:
+                return new Attribute(name, dateFormat);
+            default:
+                return new Attribute(name);
+        }
     }
 
     private void validateData(Sheet sheet) {
-        int numHeaders = sheet.getRow(0).getLastCellNum();
-        if (numHeaders > sheet.getRow(0).getPhysicalNumberOfCells()) {
+        int headerSize = sheet.getRow(HEADER_INDEX).getLastCellNum();
+        if (headerSize > sheet.getRow(HEADER_INDEX).getPhysicalNumberOfCells()) {
             throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
         }
-        for (int i = 0; i < getColNum(sheet); i++) {
+        for (int i = 0; i < getNumColumns(sheet); i++) {
             CellType cellType = null;
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Row row = sheet.getRow(j);
                 if (row == null) {
                     throw new IllegalArgumentException(FileDataDictionary.BAD_DATA_FORMAT);
                 }
-                if (row.getPhysicalNumberOfCells() > numHeaders) {
+                if (row.getPhysicalNumberOfCells() > headerSize) {
                     throw new IllegalArgumentException(FileDataDictionary.HEADER_ERROR);
                 }
                 Cell cell = row.getCell(i);
