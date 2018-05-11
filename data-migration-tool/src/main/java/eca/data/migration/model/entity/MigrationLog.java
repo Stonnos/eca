@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -59,7 +60,7 @@ public class MigrationLog {
     /**
      * Detail message
      */
-    @Column(columnDefinition = "text")
+    @Lob
     private String details;
 
     /**
