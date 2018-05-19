@@ -1,5 +1,7 @@
 package eca.ensemble;
 
+import weka.classifiers.Classifier;
+
 /**
  * Ensemble algorithms utility class.
  *
@@ -25,5 +27,15 @@ public class EnsembleUtils {
      */
     public static int getNumThreads(ConcurrentClassifier classifier) {
         return classifier.getNumThreads() != null ? classifier.getNumThreads() : 1;
+    }
+
+    /**
+     * Checks if classifier is heterogeneous ensemble.
+     *
+     * @param classifier - classifier
+     * @return {@code true} if classifier is heterogeneous ensemble
+     */
+    public static boolean isHeterogeneousEnsembleClassifier(Classifier classifier) {
+        return classifier instanceof AbstractHeterogeneousClassifier || classifier instanceof StackingClassifier;
     }
 }

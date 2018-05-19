@@ -1,7 +1,7 @@
 package eca.client.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import eca.client.json.EvaluationResponseDeserializer;
+import eca.client.json.EvaluationResultsDeserializer;
 import eca.core.evaluation.EvaluationResults;
 import lombok.Data;
 
@@ -11,12 +11,12 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
-@JsonDeserialize(using = EvaluationResponseDeserializer.class)
 public class EvaluationResponse extends EcaResponse {
 
     /**
      * Evaluation results
      */
+    @JsonDeserialize(using = EvaluationResultsDeserializer.class)
     private EvaluationResults evaluationResults;
 
 }

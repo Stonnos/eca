@@ -1,7 +1,7 @@
 package eca.client.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import eca.client.json.ExperimentRequestSerializer;
+import eca.client.json.InstancesSerializer;
 import eca.core.evaluation.EvaluationMethod;
 import lombok.Data;
 import weka.core.Instances;
@@ -12,7 +12,6 @@ import weka.core.Instances;
  * @author Roman Batygin
  */
 @Data
-@JsonSerialize(using = ExperimentRequestSerializer.class)
 public class ExperimentRequestDto {
 
     /**
@@ -33,6 +32,7 @@ public class ExperimentRequestDto {
     /**
      * Training data
      */
+    @JsonSerialize(using = InstancesSerializer.class)
     private Instances data;
 
     /**
