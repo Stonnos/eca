@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Collections;
 
 /**
  * Implements collection of individual classifiers models.
@@ -190,7 +189,7 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      * @return classifiers set converted to <tt>ArrayList</tt> object
      */
     public List<Classifier> toList() {
-        return Collections.unmodifiableList(classifiers);
+        return new ArrayList<>(classifiers);
     }
 
 }
