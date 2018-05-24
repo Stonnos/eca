@@ -44,7 +44,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
-                if (isCancelled()) {
+                if (!isCancelled()) {
                     worker.cancel(true);
                 }
             }
