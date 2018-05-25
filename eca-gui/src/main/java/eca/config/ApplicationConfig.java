@@ -32,6 +32,12 @@ public class ApplicationConfig {
      * Max. training data list size
      */
     private Integer maxDataListSize;
+
+    /**
+     * Seed value for random generator
+     */
+    private Integer seed;
+
     /**
      * Eca icons map
      */

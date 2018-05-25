@@ -51,9 +51,9 @@ public class AutomatedKNearestNeighbours extends AbstractExperiment<KNearestNeig
             }
             incrementIndex();
             KNearestNeighbours kNearestNeighbours = (KNearestNeighbours) AbstractClassifier.makeCopy(getClassifier());
-            int neighbours = getRandom().nextInt(getData().numInstances() - 1) + 1;
+            int neighbours = random.nextInt(getData().numInstances() - 1) + 1;
             kNearestNeighbours.setNumNeighbours(neighbours);
-            DistanceType distanceType = DISTANCE_TYPES[getRandom().nextInt(DISTANCE_TYPES.length)];
+            DistanceType distanceType = DISTANCE_TYPES[random.nextInt(DISTANCE_TYPES.length)];
             kNearestNeighbours.setDistance(distanceType.handle(DISTANCE_BUILDER));
             kNearestNeighbours.setWeight(NumberGenerator.random(KNearestNeighbours.MIN_WEIGHT,
                     KNearestNeighbours.MAX_WEIGHT));

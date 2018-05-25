@@ -21,6 +21,7 @@ import eca.util.Utils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Randomizable;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -31,7 +32,7 @@ import java.util.*;
  * @author Roman Batygin
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler,
-        ListOptionsHandler, DecimalFormatHandler {
+        ListOptionsHandler, DecimalFormatHandler, Randomizable {
 
     private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
@@ -44,6 +45,11 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * Multilayer perceptron
      **/
     private MultilayerPerceptron network;
+
+    /**
+     * Seed value for random generator
+     */
+    private int seed;
 
     /**
      * Decimal format.
@@ -137,6 +143,9 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
             options.addAll(Arrays.asList(algorithmOptions));
         }
 
+        options.add(NeuralNetworkDictionary.SEED);
+        options.add(String.valueOf(seed));
+
         return options;
     }
 
@@ -152,6 +161,16 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     @Override
     public Instances getData() {
         return data;
+    }
+
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed = seed;
     }
 
     /**
@@ -216,6 +235,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         if (network.getHiddenLayer() == null) {
             network.setHiddenLayer(String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data)));
         }
+        network.getLearningAlgorithm().getRandom().setSeed(seed);
     }
 
     private double classValue(double[] y) {

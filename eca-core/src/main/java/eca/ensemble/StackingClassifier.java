@@ -13,9 +13,11 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Randomizable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Implements stacking algorithm.
@@ -33,7 +35,7 @@ import java.util.List;
  * @author Roman Batygin
  */
 public class StackingClassifier extends AbstractClassifier
-        implements EnsembleClassifier, InstancesHandler {
+        implements EnsembleClassifier, InstancesHandler, Randomizable {
 
     private static final String META_SET_NAME = "MetaSet";
     /**
@@ -70,6 +72,11 @@ public class StackingClassifier extends AbstractClassifier
      * Number of folds
      **/
     private int numFolds = 10;
+
+    /**
+     * Seed value for random generator
+     */
+    private int seed;
 
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
@@ -124,6 +131,16 @@ public class StackingClassifier extends AbstractClassifier
         return numFolds;
     }
 
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
     /**
      * Returns classifiers collection.
      *
@@ -166,15 +183,18 @@ public class StackingClassifier extends AbstractClassifier
     public void buildClassifier(Instances dataSet) throws Exception {
         initialData = dataSet;
         filteredData = filter.filterInstances(initialData);
+        initializeClassifiers();
         createMetaFormat();
+        Random random = new Random(seed);
         if (getUseCrossValidation()) {
             Instances newData = new Instances(filteredData);
             newData.stratify(numFolds);
             ClassifiersSet copies = new ClassifiersSet(classifiers);
             for (int i = 0; i < numFolds; i++) {
-                Instances train = newData.trainCV(numFolds, i);
+                Instances train = newData.trainCV(numFolds, i, random);
                 for (int j = 0; j < classifiers.size(); j++) {
-                    classifiers.setClassifier(j, copies.getClassifier(j));
+                    Classifier classifierCopy = copies.getClassifier(j);
+                    classifiers.setClassifier(j, classifierCopy);
                     classifiers.getClassifier(j).buildClassifier(train);
                 }
 
@@ -183,16 +203,29 @@ public class StackingClassifier extends AbstractClassifier
                 classifiers = copies;
             }
             //Rebuilt all classifiers
-            for (Classifier classifier : classifiers) {
-                classifier.buildClassifier(filteredData);
-            }
+            rebuildClassifiers();
         } else {
-            for (Classifier classifier : classifiers) {
-                classifier.buildClassifier(filteredData);
-            }
+            rebuildClassifiers();
             addInstances(filteredData);
         }
         createMetaClassifier();
+    }
+
+    private void initializeClassifiers() {
+        classifiers.forEach(classifier -> {
+            if (classifier instanceof Randomizable) {
+                ((Randomizable) classifier).setSeed(seed);
+            }
+        });
+        if (metaClassifier instanceof Randomizable) {
+            ((Randomizable) metaClassifier).setSeed(seed);
+        }
+    }
+
+    private void rebuildClassifiers() throws Exception {
+        for (Classifier classifier : classifiers) {
+            classifier.buildClassifier(filteredData);
+        }
     }
 
     /**
@@ -228,13 +261,15 @@ public class StackingClassifier extends AbstractClassifier
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(classifiers.size() + 2) * 2];
+        String[] options = new String[(classifiers.size() + 3) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.META_CLASSIFIER;
         options[k++] = String.valueOf(metaClassifier.getClass().getSimpleName());
         options[k++] = EnsembleDictionary.META_SAMPLING_METHOD;
         options[k++] = getUseCrossValidation() ? String.format(EnsembleDictionary.CROSS_VALIDATION, numFolds)
                 : EnsembleDictionary.TRAINING_SET_METHOD;
+        options[k++] = EnsembleDictionary.SEED;
+        options[k++] = String.valueOf(seed);
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[k + 1] = classifiers.getClassifier(j).getClass().getSimpleName();

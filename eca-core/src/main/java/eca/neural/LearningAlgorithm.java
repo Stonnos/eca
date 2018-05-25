@@ -9,6 +9,7 @@ import eca.generators.NumberGenerator;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Implements multilayer perceptron learning algorithm.
@@ -17,11 +18,25 @@ import java.util.Objects;
  */
 public abstract class LearningAlgorithm implements java.io.Serializable {
 
+    private static final double LOWER_BOUND = -0.5;
+    private static final double UPPER_BOUND = 0.5;
+
+    private Random random = new Random();
+
     protected MultilayerPerceptron network;
 
     protected LearningAlgorithm(MultilayerPerceptron network) {
         Objects.requireNonNull(network, "Network is not specified!");
         this.network = network;
+    }
+
+    /**
+     * Returns random object.
+     *
+     * @return random object
+     */
+    public Random getRandom() {
+        return random;
     }
 
     /**
@@ -56,7 +71,7 @@ public abstract class LearningAlgorithm implements java.io.Serializable {
     private void initializeLinks(Iterator<NeuralLink> i) {
         while (i.hasNext()) {
             NeuralLink link = i.next();
-            link.setWeight(NumberGenerator.random(-0.5, 0.5));
+            link.setWeight(NumberGenerator.random(random, LOWER_BOUND, UPPER_BOUND));
         }
     }
 

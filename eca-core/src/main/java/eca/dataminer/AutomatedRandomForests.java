@@ -28,7 +28,7 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
     private static final RandomForestsType[] RANDOM_FORESTS_TYPE = RandomForestsType.values();
 
     /**
-     * Available trees for Random forests
+     * Available trees size for Random forests
      */
     private static final int[] AVAILABLE_TREE_NUM = {10, 25, 50, 75, 100};
 
@@ -75,7 +75,7 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
                 throw new NoSuchElementException();
             }
             incrementIndex();
-            RandomForestsType randomForestsType = RANDOM_FORESTS_TYPE[getRandom().nextInt(RANDOM_FORESTS_TYPE.length)];
+            RandomForestsType randomForestsType = RANDOM_FORESTS_TYPE[random.nextInt(RANDOM_FORESTS_TYPE.length)];
             RandomForests randomForests = generateRandomForests(randomForestsType);
             generateCommonOptions(randomForests);
             return evaluateModel(randomForests);
@@ -87,8 +87,8 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
                     return new RandomForests();
                 case EXTRA_TREES:
                     ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier();
-                    extraTreesClassifier.setUseBootstrapSamples(getRandom().nextBoolean());
-                    int numRandomSplits = getRandom().nextInt(NUM_RANDOM_SPLITS_UPPER_BOUND) + 1;
+                    extraTreesClassifier.setUseBootstrapSamples(random.nextBoolean());
+                    int numRandomSplits = random.nextInt(NUM_RANDOM_SPLITS_UPPER_BOUND) + 1;
                     extraTreesClassifier.setNumRandomSplits(numRandomSplits);
                     return extraTreesClassifier;
                 default:
@@ -98,13 +98,13 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
         }
 
         void generateCommonOptions(RandomForests randomForests) {
-            randomForests.setIterationsNum(AVAILABLE_TREE_NUM[getRandom().nextInt(AVAILABLE_TREE_NUM.length)]);
-            DecisionTreeType decisionTreeType = DECISION_TREE_TYPE[getRandom().nextInt(DECISION_TREE_TYPE.length)];
+            randomForests.setIterationsNum(AVAILABLE_TREE_NUM[random.nextInt(AVAILABLE_TREE_NUM.length)]);
+            DecisionTreeType decisionTreeType = DECISION_TREE_TYPE[random.nextInt(DECISION_TREE_TYPE.length)];
             randomForests.setDecisionTreeType(decisionTreeType);
-            int numRandomAttrs = getRandom().nextInt(getData().numAttributes() - 1) + 1;
+            int numRandomAttrs = random.nextInt(getData().numAttributes() - 1) + 1;
             randomForests.setNumRandomAttr(numRandomAttrs);
             randomForests.setNumThreads(numThreads);
+            randomForests.setSeed(getSeed());
         }
     }
-
 }

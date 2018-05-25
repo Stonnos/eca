@@ -26,15 +26,15 @@ public class NeuralNetworkUtil {
      * a - minimum neurons number in hidden layer <p>
      * b - maximum neurons number in hidden layer <p>
      *
-     * @param data {@link Instances} object
+     * @param data   {@link Instances} object
+     * @param random random object
      * @return the string representation of hidden layer structure
      */
-    public static String generateRandomHiddenLayer(Instances data) {
-        double neuronsCount = generateNeuronsNumberInHiddenLayer(data);
+    public static String generateRandomHiddenLayer(Instances data, Random random) {
+        double neuronsCount = generateNeuronsNumberInHiddenLayer(data, random);
         if (neuronsCount < MIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
             return String.valueOf(MIN_NEURONS_NUM_IN_HIDDEN_LAYER);
         }
-        Random random = new Random();
         int hiddenLayersCount = random.nextInt(MAX_HIDDEN_LAYERS_NUMBER) + MIN_HIDDEN_LAYERS_NUMBER;
         if (hiddenLayersCount == 1 || neuronsCount <= hiddenLayersCount) {
             return String.valueOf((int) neuronsCount);
@@ -70,11 +70,12 @@ public class NeuralNetworkUtil {
      * a - minimum neurons number in hidden layer <p>
      * b - maximum neurons number in hidden layer <p>
      *
-     * @param data {@link Instances} object
+     * @param data   {@link Instances} object
+     * @param random random object
      * @return the random neurons number in hidden layer.
      */
-    public static int generateNeuronsNumberInHiddenLayer(Instances data) {
-        return (int) NumberGenerator.random(getMinNumNeuronsInHiddenLayer(data),
+    public static int generateNeuronsNumberInHiddenLayer(Instances data, Random random) {
+        return (int) NumberGenerator.random(random, getMinNumNeuronsInHiddenLayer(data),
                 getMaxNumNeuronsInHiddenLayer(data));
     }
 

@@ -20,10 +20,19 @@ public class NumberGenerator {
      * @return the number uniformly distributed in defined interval {@code [a, b)}
      */
     public static double random(double lowerBound, double upperBound) {
-        if (lowerBound > upperBound) {
-            throw new IllegalArgumentException("upper bound must be greater than lower bound!");
-        }
-        return Math.random() * (upperBound - lowerBound) + lowerBound;
+        return transform(Math.random(), lowerBound, upperBound);
+    }
+
+    /**
+     * Returns the number uniformly distributed in defined interval {@code [a, b)}.
+     *
+     * @param lowerBound lower bound of interval
+     * @param upperBound upper bound of interval
+     * @param random     random object
+     * @return the number uniformly distributed in defined interval {@code [a, b)}
+     */
+    public static double random(Random random, double lowerBound, double upperBound) {
+        return transform(random.nextDouble(), lowerBound, upperBound);
     }
 
     /**
@@ -50,6 +59,25 @@ public class NumberGenerator {
     public static double nextGaussianWithNoise(Random random, double mean, double variance) {
         double noise = random(NOISE_LOWER_BOUND, NOISE_UPPER_BOUND);
         return nextGaussian(random, mean, variance) + noise;
+    }
+
+    /**
+     * Fills array by random values.
+     *
+     * @param values - specified array
+     * @param random - random object
+     */
+    public static void fillRandom(int[] values, Random random) {
+        for (int i = 0; i < values.length; i++) {
+            values[i] = random.nextInt();
+        }
+    }
+
+    private static double transform(double value, double lowerBound, double upperBound) {
+        if (lowerBound > upperBound) {
+            throw new IllegalArgumentException("Upper bound must be greater than lower bound!");
+        }
+        return value * (upperBound - lowerBound) + lowerBound;
     }
 
 }

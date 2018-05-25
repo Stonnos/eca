@@ -12,6 +12,7 @@ import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
+import weka.core.Randomizable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public abstract class AbstractExperiment<T extends Classifier>
-        implements Experiment<T>, IterableExperiment {
+        implements Experiment<T>, IterableExperiment, Randomizable {
 
     /**
      * Experiment history
@@ -58,6 +59,11 @@ public abstract class AbstractExperiment<T extends Classifier>
     private int numIterations = 100;
 
     /**
+     * Seed value for random generator
+     */
+    private int seed;
+
+    /**
      * Evaluation method
      **/
     private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
@@ -72,7 +78,7 @@ public abstract class AbstractExperiment<T extends Classifier>
      **/
     private final T classifier;
 
-    private final Random random = new Random();
+    protected Random random = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
         this(data, classifier, 100);
@@ -99,8 +105,14 @@ public abstract class AbstractExperiment<T extends Classifier>
         return numIterations;
     }
 
-    public Random getRandom() {
-        return random;
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed = seed;
     }
 
     @Override
@@ -175,7 +187,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     protected final EvaluationResults evaluateModel(Classifier model) throws Exception {
         Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
-                getEvaluationMethod(), getNumFolds(), getNumTests(), getRandom());
+                getEvaluationMethod(), getNumFolds(), getNumTests(), new Random(seed));
         EvaluationResults object = new EvaluationResults(model, evaluation);
         getHistory().add(object);
         return object;

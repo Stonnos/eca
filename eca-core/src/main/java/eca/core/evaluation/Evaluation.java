@@ -107,11 +107,11 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      * @param data       training data
      * @param numFolds   the number of folds
      * @param numTests   the number of tests
-     * @param r          <tt>Random</tt> object
+     * @param random          <tt>Random</tt> object
      * @throws Exception
      */
     public void kCrossValidateModel(Classifier classifier, Instances data, int numFolds,
-                                    int numTests, Random r) throws Exception {
+                                    int numTests, Random random) throws Exception {
         if (numFolds < MINIMUM_NUMBER_OF_FOLDS) {
             throw new IllegalArgumentException(
                     String.format("Number of folds must be greater or equals to %d!", numFolds));
@@ -125,11 +125,11 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
         for (int i = 0; i < numTests; i++) {
 
             Instances current = new Instances(data);
-            current.randomize(r);
+            current.randomize(random);
             current.stratify(numFolds);
 
             for (int j = 0; j < numFolds; j++) {
-                Instances train = current.trainCV(numFolds, j);
+                Instances train = current.trainCV(numFolds, j, random);
                 setPriors(train);
                 Classifier c = AbstractClassifier.makeCopy(classifier);
                 c.buildClassifier(train);

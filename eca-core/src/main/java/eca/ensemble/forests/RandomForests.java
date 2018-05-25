@@ -171,7 +171,8 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
                 DecisionTreeDictionary.MAX_DEPTH, String.valueOf(maxDepth),
                 DecisionTreeDictionary.NUM_RANDOM_ATTRS, String.valueOf(numRandomAttr),
                 ForestsDictionary.DECISION_TREE_ALGORITHM, decisionTreeType.name(),
-                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this))));
+                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this)),
+                EnsembleDictionary.SEED, String.valueOf(getSeed())));
         return optionsList;
     }
 
@@ -184,13 +185,13 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     }
 
     @Override
-    protected Instances createSample() throws Exception {
-        return Sampler.bootstrap(filteredData, new Random());
+    protected Instances createSample(int iteration) throws Exception {
+        return Sampler.bootstrap(filteredData, new Random(getSeed() + iteration));
     }
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
-        DecisionTreeClassifier treeClassifier = createDecisionTree();
+        DecisionTreeClassifier treeClassifier = createDecisionTree(iteration);
         treeClassifier.setUseBinarySplits(true);
         treeClassifier.buildClassifier(data);
         return treeClassifier;
@@ -201,12 +202,13 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
         classifiers.add(classifier);
     }
 
-    protected DecisionTreeClassifier createDecisionTree() {
+    protected DecisionTreeClassifier createDecisionTree(int iteration) {
         DecisionTreeClassifier treeClassifier = getDecisionTreeType().handle(DECISION_TREE_BUILDER);
         treeClassifier.setRandomTree(true);
         treeClassifier.setNumRandomAttr(getNumRandomAttr());
         treeClassifier.setMinObj(getMinObj());
         treeClassifier.setMaxDepth(getMaxDepth());
+        treeClassifier.setSeed(seeds[iteration]);
         return treeClassifier;
     }
 

@@ -107,13 +107,14 @@ public class ExtraTreesClassifier extends RandomForests {
     }
 
     @Override
-    protected Instances createSample() throws Exception {
-        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random()) : Sampler.initial(filteredData);
+    protected Instances createSample(int iteration) throws Exception {
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random(getSeed() + iteration)) :
+                Sampler.initial(filteredData);
     }
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
-        DecisionTreeClassifier treeClassifier = createDecisionTree();
+        DecisionTreeClassifier treeClassifier = createDecisionTree(iteration);
         treeClassifier.setUseRandomSplits(true);
         treeClassifier.setNumRandomSplits(getNumRandomSplits());
         treeClassifier.buildClassifier(data);

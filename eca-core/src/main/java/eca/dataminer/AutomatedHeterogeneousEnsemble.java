@@ -131,6 +131,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                 for (++a; a < VOTING_METHOD.length; ) {
                                     HeterogeneousClassifier nextModel =
                                             (HeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
+                                    nextModel.setSeed(getSeed());
                                     nextModel.setSamplingMethod(SAMPLE_METHOD[s]);
                                     nextModel.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
                                     nextModel.setUseWeightedVotesMethod(VOTING_METHOD[a]);
@@ -147,6 +148,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                         state = NEXT_PERMUTATION_STATE;
                         AbstractHeterogeneousClassifier nextModel
                                 = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
+                        nextModel.setSeed(getSeed());
                         nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
                         return evaluateModel(nextModel);
                     }

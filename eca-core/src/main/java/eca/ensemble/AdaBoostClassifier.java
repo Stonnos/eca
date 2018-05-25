@@ -10,10 +10,10 @@ import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Randomizable;
 import weka.core.Utils;
 
 import java.util.NoSuchElementException;
-import java.util.Random;
 
 /**
  * Implements AdaBoost algorithm. For more information see <p>
@@ -69,7 +69,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(getClassifiersSet().size() + 3) * 2];
+        String[] options = new String[(getClassifiersSet().size() + 4) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
@@ -77,6 +77,8 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMaxError());
+        options[k++] = EnsembleDictionary.SEED;
+        options[k++] = String.valueOf(getSeed());
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
@@ -99,7 +101,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     @Override
-    protected Instances createSample() throws Exception {
+    protected Instances createSample(int iteration) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -117,8 +119,6 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
      * AdaBoost iterative builder.
      */
     private class AdaBoostBuilder extends IterativeEnsembleBuilder {
-
-        Random random = new Random();
 
         AdaBoostBuilder(Instances data) throws Exception {
             super(data);
@@ -145,6 +145,9 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
             double minError = Double.MAX_VALUE;
             for (int i = 0; i < getClassifiersSet().size(); i++) {
                 Classifier classifier = getClassifiersSet().getClassifierCopy(i);
+                if (classifier instanceof Randomizable) {
+                    ((Randomizable) classifier).setSeed(seeds[t]);
+                }
                 classifier.buildClassifier(sample);
                 double error = weightedError(classifier);
                 if (error < minError) {

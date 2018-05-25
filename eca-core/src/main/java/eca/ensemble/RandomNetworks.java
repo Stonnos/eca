@@ -69,7 +69,8 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
                 EnsembleDictionary.SAMPLING_METHOD,
                 isUseBootstrapSamples() ? EnsembleDictionary.BOOTSTRAP_SAMPLE_METHOD
                         : EnsembleDictionary.TRAINING_SAMPLE_METHOD,
-                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this))
+                EnsembleDictionary.NUM_THREADS, String.valueOf(EnsembleUtils.getNumThreads(this)),
+                EnsembleDictionary.SEED, String.valueOf(getSeed())
         };
     }
 
@@ -92,26 +93,28 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     }
 
     @Override
-    protected void initializeOptions() throws Exception {
+    protected void initializeOptions() {
         votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
     }
 
     @Override
-    protected Instances createSample()  throws Exception {
-        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random()) : Sampler.initial(filteredData);
+    protected Instances createSample(int iteration) throws Exception {
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random(getSeed() + iteration)) :
+                Sampler.initial(filteredData);
     }
 
     @Override
-    protected Classifier buildNextClassifier(int iteration, Instances data)  throws Exception {
+    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
         NeuralNetwork neuralNetwork = new NeuralNetwork(data);
-        Random random = new Random();
+        neuralNetwork.setSeed(seeds[iteration]);
         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
         MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
-        multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData));
+        Random networkRandom = new Random(seeds[iteration]);
+        multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData, networkRandom));
         ActivationFunctionType activationFunctionType =
-                ACTIVATION_FUNCTION_TYPES[random.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
+                ACTIVATION_FUNCTION_TYPES[networkRandom.nextInt(ACTIVATION_FUNCTION_TYPES.length)];
         AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
-        double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
+        double coefficientValue = NumberGenerator.random(networkRandom, MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
         randomActivationFunction.setCoefficient(coefficientValue);
         multilayerPerceptron.setActivationFunction(randomActivationFunction);
         neuralNetwork.buildClassifier(data);
@@ -119,7 +122,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     }
 
     @Override
-    protected synchronized void addClassifier(Classifier classifier, Instances data)  throws Exception {
+    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
         double error = Evaluation.error(classifier, data);
         if (error > getMinError() && error < getMaxError()) {
             classifiers.add(classifier);

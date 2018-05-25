@@ -5,10 +5,8 @@
  */
 package eca.ensemble;
 
-import eca.core.evaluation.Evaluation;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
-import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,22 +74,6 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
     }
 
     /**
-     * Returns classifier model at the specified position in this collection
-     * built on given training set.
-     *
-     * @param i    index of the element
-     * @param data <tt>Instances</tt> object
-     * @return classifier model at the specified position in this collection
-     * built on given training set
-     * @throws Exception
-     */
-    public Classifier buildClassifier(int i, Instances data) throws Exception {
-        Classifier classifier = classifiers.get(i);
-        classifier.buildClassifier(data);
-        return classifier;
-    }
-
-    /**
      * Returns <tt>Classifier</tt> object copy at the specified position in this collection.
      *
      * @param i index of the element
@@ -141,46 +123,6 @@ public class ClassifiersSet implements java.lang.Iterable<Classifier>, java.io.S
      */
     public Classifier randomClassifier(Random random) throws Exception {
         return isEmpty() ? null : AbstractClassifier.makeCopy(classifiers.get(random.nextInt(size())));
-    }
-
-    /**
-     * Returns classifier model at random position in this collection
-     * built on given training set.
-     *
-     * @param data   {@link Instances} object
-     * @param random {@link Random} object
-     * @return classifier model at random position in this collection
-     * built on given training set
-     * @throws Exception
-     */
-    public Classifier buildRandomClassifier(Instances data, Random random) throws Exception {
-        Classifier classifier = randomClassifier(random);
-        classifier.buildClassifier(data);
-        return classifier;
-    }
-
-    /**
-     * Returns classifier model in this collection minimizing
-     * classification error on given training set.
-     *
-     * @param data <tt>Instances</tt> object
-     * @return classifier model in this collection minimizing
-     * classification error on given training set
-     * @throws Exception
-     */
-    public Classifier builtOptimalClassifier(Instances data) throws Exception {
-        Classifier model = null;
-        double minError = Double.MAX_VALUE;
-        for (int i = 0; i < size(); i++) {
-            Classifier c = getClassifierCopy(i);
-            c.buildClassifier(data);
-            double error = Evaluation.error(c, data);
-            if (error < minError) {
-                minError = error;
-                model = c;
-            }
-        }
-        return model;
     }
 
     /**

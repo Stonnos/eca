@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.BiPredicate;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 /**
  * Utility class.
@@ -81,5 +81,16 @@ public class Utils {
         } else {
             return Collections.emptyMap();
         }
+    }
+
+    /**
+     * Returns integer value if its not null, null otherwise
+     *
+     * @param value        - integer value
+     * @param defaultValue - default integer value
+     * @return integer value
+     */
+    public static int getIntValueOrDefault(Integer value, int defaultValue) {
+        return value != null ? value : defaultValue;
     }
 }

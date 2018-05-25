@@ -9,14 +9,17 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.voting.VotingMethod;
 import eca.filter.MissingValuesFilter;
+import eca.generators.NumberGenerator;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Randomizable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +37,7 @@ import java.util.concurrent.Executors;
  * @author Roman Batygin
  */
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
-        implements Iterable, EnsembleClassifier, InstancesHandler, ConcurrentClassifier {
+        implements Iterable, EnsembleClassifier, InstancesHandler, ConcurrentClassifier, Randomizable {
 
     private static final int MINIMUM_ITERATIONS_NUMBER = 1;
     private static final int MINIMUM_THREADS_NUMBER = 1;
@@ -54,6 +57,11 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      */
     private Integer numThreads = 1;
 
+    /**
+     * Seed value for random generator
+     */
+    private int seed;
+
     private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
@@ -65,6 +73,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      * Voting object
      **/
     protected VotingMethod votes;
+
+    protected Random random;
+
+    protected int[] seeds;
 
     /**
      * Filtered training set
@@ -106,6 +118,16 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      */
     public final int getIterationsNum() {
         return numIterations;
+    }
+
+    @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed = seed;
     }
 
     /**
@@ -161,16 +183,15 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     /**
      * Initialized classifier options before building.
      *
-     * @throws Exception
      */
-    protected abstract void initializeOptions() throws Exception;
+    protected abstract void initializeOptions();
 
     /**
      * Creates training data for next iteration.
      *
      * @return {@link Instances} object
      */
-    protected abstract Instances createSample() throws Exception;
+    protected abstract Instances createSample(int iteration) throws Exception;
 
     /**
      * Builds the next classifier model.
@@ -196,9 +217,15 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     }
 
     private void initializeData(Instances data) throws Exception {
-        this.initialData = data;
-        this.filteredData = filter.filterInstances(initialData);
-        this.classifiers = new ArrayList<>(numIterations);
+        initialData = data;
+        filteredData = filter.filterInstances(initialData);
+        classifiers = new ArrayList<>(numIterations);
+        random = new Random(seed);
+    }
+
+    private void initializeSeeds() {
+        seeds = new int[getIterationsNum()];
+        NumberGenerator.fillRandom(seeds, random);
     }
 
     /**
@@ -210,13 +237,14 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     private void concurrentBuildClassifier(Instances data) throws Exception {
         initializeData(data);
         initializeOptions();
+        initializeSeeds();
         final CountDownLatch finishedLatch = new CountDownLatch(getIterationsNum());
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
         for (int i = 0; i < getIterationsNum(); i++) {
             final int iteration = i;
             executorService.submit(() -> {
                 try {
-                    Instances sample = createSample();
+                    Instances sample = createSample(iteration);
                     Classifier classifier = buildNextClassifier(iteration, sample);
                     addClassifier(classifier, sample);
                 } catch (Exception ex) {
@@ -241,6 +269,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         IterativeEnsembleBuilder(Instances data) throws Exception {
             initializeData(data);
             initializeOptions();
+            initializeSeeds();
         }
 
         @Override
@@ -261,7 +290,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            Instances sample = createSample();
+            Instances sample = createSample(index);
             Classifier classifier = buildNextClassifier(index, sample);
             addClassifier(classifier, sample);
             if (index == getIterationsNum() - 1) {
@@ -275,6 +304,4 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             return index < numIterations;
         }
     }
-
-
 }

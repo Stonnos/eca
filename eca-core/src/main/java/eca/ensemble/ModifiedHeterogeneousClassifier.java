@@ -63,16 +63,20 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     }
 
     @Override
-    protected Instances createSample() throws Exception {
-        Random random = new Random();
+    protected Instances createSample(int iteration) throws Exception {
+        Random random = new Random(getSeed() + iteration);
         return Sampler.instances(getSamplingMethod(), filteredData,
                 random.nextInt(filteredData.numAttributes() - 1) + 1, random);
     }
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
-        return getUseRandomClassifier() ? getClassifiersSet().buildRandomClassifier(data, new Random()) :
-                getClassifiersSet().builtOptimalClassifier(data);
+        if (getUseRandomClassifier()) {
+            return ClassifierBuilder.buildRandomClassifier(getClassifiersSet(), data, new Random(seeds[iteration]),
+                    seeds[iteration]);
+        } else {
+            return ClassifierBuilder.builtOptimalClassifier(getClassifiersSet(), data, seeds[iteration]);
+        }
     }
 
     @Override

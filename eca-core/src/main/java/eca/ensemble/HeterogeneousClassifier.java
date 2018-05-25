@@ -83,6 +83,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     /**
      * Sets sampling method type.
+     *
      * @param samplingMethod {@link SamplingMethod} object
      */
     public void setSamplingMethod(SamplingMethod samplingMethod) {
@@ -120,7 +121,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     public String[] getOptions() {
-        String[] options = new String[(getClassifiersSet().size() + 7) * 2];
+        String[] options = new String[(getClassifiersSet().size() + 8) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.NUM_ITS;
         options[k++] = String.valueOf(getIterationsNum());
@@ -138,6 +139,8 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
                 : EnsembleDictionary.OPTIMAL_CLASSIFIER;
         options[k++] = EnsembleDictionary.NUM_THREADS;
         options[k++] = String.valueOf(EnsembleUtils.getNumThreads(this));
+        options[k++] = EnsembleDictionary.SEED;
+        options[k++] = String.valueOf(getSeed());
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
             options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
@@ -147,7 +150,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     protected void initializeOptions() {
-        if (getSamplingMethod() == SamplingMethod.INITIAL) {
+        if (SamplingMethod.INITIAL.equals(getSamplingMethod())) {
             setIterationsNum(getClassifiersSet().size());
         }
         votes = getUseWeightedVotesMethod() ? new WeightedVoting(new Aggregator(this), getIterationsNum()) :
@@ -155,19 +158,20 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     @Override
-    protected Instances createSample() throws Exception {
-        return Sampler.instances(samplingMethod, filteredData, new Random());
+    protected Instances createSample(int iteration) throws Exception {
+        return Sampler.instances(samplingMethod, filteredData, new Random(getSeed() + iteration));
     }
 
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
         Classifier model;
-        if (getSamplingMethod() == SamplingMethod.INITIAL) {
-            model = getClassifiersSet().buildClassifier(iteration, data);
+        if (SamplingMethod.INITIAL.equals(getSamplingMethod())) {
+            model = ClassifierBuilder.buildClassifier(getClassifiersSet(), iteration, data, getSeed());
         } else if (getUseRandomClassifier()) {
-            model = getClassifiersSet().buildRandomClassifier(data, new Random());
+            model = ClassifierBuilder.buildRandomClassifier(getClassifiersSet(), data, new Random(seeds[iteration]),
+                    seeds[iteration]);
         } else {
-            model = getClassifiersSet().builtOptimalClassifier(data);
+            model = ClassifierBuilder.builtOptimalClassifier(getClassifiersSet(), data, seeds[iteration]);
         }
         return model;
     }

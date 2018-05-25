@@ -3,7 +3,7 @@
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
     "version": "${project.version}",
-    "releaseDate": "30.04.2018",
+    "releaseDate": "25.05.2018",
     "author": "Roman Batygin",
     "authorEmail": "roman.batygin@mail.ru"
   },
@@ -11,6 +11,7 @@
   "minFractionDigits": 1,
   "maxFractionDigits": 7,
   "maxDataListSize": 25,
+  "seed": 1,
   "icons": {
     "MAIN_ICON": "images/icons/Icon.png",
     "ADD_ICON": "images/icons/add-icon.jpg",

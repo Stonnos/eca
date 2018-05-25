@@ -39,5 +39,5 @@ public class NeuralNetworkDictionary {
 
     public static final String BAD_MOMENTUM_ERROR_FORMAT =
             "Значение коэффициента момента должно лежать в интервале [%.2f, %.2f]!";
-
+    public static final String SEED = "Начальное значение (Seed)";
 }

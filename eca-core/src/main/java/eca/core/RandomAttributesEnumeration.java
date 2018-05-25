@@ -25,12 +25,12 @@ public class RandomAttributesEnumeration implements Enumeration<Attribute> {
     /**
      * Creates <tt>AttributesEnumeration</tt> object.
      *
-     * @param data  <tt>Instances</tt> object.
-     * @param count random attributes number
+     * @param data   <tt>Instances</tt> object.
+     * @param count  random attributes number
+     * @param random random object
      */
-    public RandomAttributesEnumeration(Instances data, int count) {
+    public RandomAttributesEnumeration(Instances data, int count, Random random) {
         ArrayList<Attribute> attributes = new ArrayList<>(count);
-        Random random = new Random();
         int k = count;
         while (k != 0) {
             int i = random.nextInt(data.numAttributes());

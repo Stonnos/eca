@@ -19,5 +19,5 @@ public class DecisionTreeDictionary {
     public static final String NUM_FOLDS = "Число блоков:";
     public static final String BAD_RANDOM_ATTRS_NUMBER_ERROR_TEXT =
             "Число случайных расщеплений атрибута должно быть не менее %d!";
-
+    public static final String SEED = "Начальное значение (Seed)";
 }

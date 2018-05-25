@@ -40,5 +40,5 @@ public class EnsembleDictionary {
 
     public static final String INVALID_NUM_ITS_ERROR_FORMAT = "Число итераций должно быть не менее %d!";
     public static final String INVALID_NUM_THREADS_ERROR_FORMAT = "Число потоков должно быть не менее %d!";
-
+    public static final String SEED = "Начальное значение (Seed)";
 }

@@ -46,6 +46,8 @@ public class CVIterativeBuilder extends IterativeBuilder {
      **/
     private final int numValidations;
 
+    private Random random;
+
     /**
      * Evaluation object
      **/
@@ -54,7 +56,6 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private int cvIndex = -1;
     private int validIndex;
     private Instances currentSet;
-    private Random random = new Random();
     private double[] error;
 
     /**
@@ -67,7 +68,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
      * @throws Exception
      */
     public CVIterativeBuilder(Iterable classifier,
-                              Instances data, int numFolds, int numValidations) throws Exception {
+                              Instances data, int numFolds, int numValidations, Random random) throws Exception {
         this.classifier = classifier;
         this.data = new Instances(data);
         this.currentSet = data;
@@ -76,6 +77,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
         this.evaluation.setValidationsNum(numValidations);
         this.numFolds = numFolds;
         this.numValidations = numValidations;
+        this.random = random;
         error = new double[numValidations * numFolds];
     }
 
@@ -102,7 +104,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
                     currentSet.randomize(random);
                     currentSet.stratify(numFolds);
                 }
-                Instances train = currentSet.trainCV(numFolds, cvIndex);
+                Instances train = currentSet.trainCV(numFolds, cvIndex, random);
                 evaluation.setPriors(train);
                 Classifier c = AbstractClassifier.makeCopy((Classifier) classifier);
                 c.buildClassifier(train);

@@ -42,5 +42,4 @@ public abstract class AbstractHeterogeneousClassifier extends ThresholdClassifie
     public void setClassifiersSet(ClassifiersSet set) {
         this.set = set;
     }
-
 }

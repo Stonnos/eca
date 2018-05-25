@@ -20,6 +20,7 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Randomizable;
 import weka.core.Utils;
 
 import java.io.Serializable;
@@ -51,7 +52,7 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
-        implements InstancesHandler, ListOptionsHandler {
+        implements InstancesHandler, ListOptionsHandler, Randomizable {
 
     public static final int MIN_RANDOM_SPLITS = 1;
 
@@ -111,6 +112,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private int numRandomSplits = 1;
 
     /**
+     * Seed value for random generator
+     */
+    private int seed;
+
+    /**
      * Tree depth
      **/
     private int depth;
@@ -124,9 +130,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected double[][] probabilitiesMatrix;
     protected int[] childrenSizes;
 
-    private final MissingValuesFilter filter = new MissingValuesFilter();
+    protected Random random;
 
-    private final Random random = new Random();
+    private final MissingValuesFilter filter = new MissingValuesFilter();
 
     /**
      * Returns the value of random tree.
@@ -293,6 +299,16 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     @Override
+    public int getSeed() {
+        return seed;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    @Override
     public Instances getData() {
         return data;
     }
@@ -338,6 +354,8 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             options.add(DecisionTreeDictionary.NUM_RANDOM_SPLITS);
             options.add(String.valueOf(numRandomSplits));
         }
+        options.add(DecisionTreeDictionary.SEED);
+        options.add(String.valueOf(seed));
 
         return options;
     }
@@ -362,6 +380,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             setUseBinarySplits(true);
         }
         probabilities = new double[data.numClasses()];
+        random = new Random(seed);
         root = new TreeNode(filter.filterInstances(data));
         root.setDepth(1);
         root.setClassValue(classValue(root));
@@ -647,7 +666,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         double optThreshold = 0.0;
         x.rule = rule;
         for (int i = 0; i < k; i++) {
-            rule.setMeanValue(NumberGenerator.random(minAttrValue, maxAttrValue));
+            rule.setMeanValue(NumberGenerator.random(random, minAttrValue, maxAttrValue));
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
                 split.setParams(measure, x.getRule());
@@ -835,7 +854,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             if (numRandomAttr == 0 || numRandomAttr == data.numAttributes() - 1) {
                 return data.enumerateAttributes();
             } else {
-                return new RandomAttributesEnumeration(data, numRandomAttr);
+                return new RandomAttributesEnumeration(data, numRandomAttr, random);
             }
         } else {
             return data.enumerateAttributes();
