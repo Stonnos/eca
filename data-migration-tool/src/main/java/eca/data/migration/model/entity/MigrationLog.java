@@ -39,6 +39,12 @@ public class MigrationLog {
     private String tableName;
 
     /**
+     * Last migrated table index
+     */
+    @Column(name = "last_table_index")
+    private long lastTableIndex;
+
+    /**
      * Migration start date
      */
     @Column(name = "start_date")

@@ -3,6 +3,7 @@ package eca.data.migration.service;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.FileResource;
 import eca.data.migration.TestHelperUtils;
+import eca.data.migration.config.MigrationConfig;
 import eca.data.migration.exception.MigrationException;
 import eca.data.migration.model.entity.MigrationLog;
 import eca.data.migration.model.entity.MigrationLogSource;
@@ -13,11 +14,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import weka.core.Instances;
-import javax.inject.Inject;
 
+import javax.inject.Inject;
 import java.io.File;
 
 import static org.mockito.Matchers.any;
@@ -30,12 +40,19 @@ import static org.mockito.Mockito.when;
  *
  * @author Roman Batygin
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@AutoConfigureDataJpa
+@EnableJpaRepositories(basePackageClasses = MigrationLogRepository.class)
+@EntityScan(basePackageClasses = MigrationLog.class)
+@EnableConfigurationProperties
+@TestPropertySource("classpath:application.properties")
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(SpringRunner.class)
+@PrepareForTest({MigrationService.class, FileDataLoader.class})
+@Import(MigrationConfig.class)
 public class MigrationServiceTest {
 
-    @Mock
-    private FileDataLoader dataLoader;
+    @Inject
+    private MigrationConfig migrationConfig;
     @Inject
     private MigrationLogRepository migrationLogRepository;
     @Mock
@@ -48,12 +65,14 @@ public class MigrationServiceTest {
     @Before
     public void init() throws Exception {
         migrationLogRepository.deleteAll();
-        migrationService = new MigrationService(dataLoader, instancesService, migrationLogRepository);
+        migrationService = new MigrationService(migrationConfig, instancesService, migrationLogRepository);
         instances = TestHelperUtils.loadInstances();
     }
 
     @Test
     public void testSuccessMigration() throws Exception {
+        FileDataLoader dataLoader = PowerMockito.mock(FileDataLoader.class);
+        PowerMockito.whenNew(FileDataLoader.class).withNoArguments().thenReturn(dataLoader);
         when(dataLoader.loadInstances()).thenReturn(instances);
         doNothing().when(instancesService).migrateInstances(anyString(), any(Instances.class));
         migrationService.migrateData(new FileResource(new File(TestHelperUtils.DATA_PATH)), MigrationLogSource.JOB);
@@ -66,6 +85,8 @@ public class MigrationServiceTest {
 
     @Test(expected = MigrationException.class)
     public void testErrorMigration() throws Exception {
+        FileDataLoader dataLoader = PowerMockito.mock(FileDataLoader.class);
+        PowerMockito.whenNew(FileDataLoader.class).withNoArguments().thenReturn(dataLoader);
         when(dataLoader.loadInstances()).thenThrow(new MigrationException("There was as error!"));
         migrationService.migrateData(new FileResource(new File(TestHelperUtils.DATA_PATH)), MigrationLogSource.JOB);
     }
