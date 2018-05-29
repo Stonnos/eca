@@ -162,7 +162,7 @@ public class AttributesTable extends JDataTableBase {
                     } else if (attribute.isNumeric()) {
                         obj.setValue(attribute, format.parse(valueAt).doubleValue());
                     } else {
-                        obj.setValue(attribute, valueAt);
+                        obj.setValue(attribute, valueAt.trim());
                     }
                 }
                 newDataSet.add(obj);
