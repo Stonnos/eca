@@ -31,7 +31,7 @@ public class UtilsTest {
     @Test
     public void testNormalizeName() {
         String name = "*Фяabc _!$%@@##12-gdgd&?()хжЁ+э\n\t";
-        String result = "_Фяabc_________12_gdgd____хжЁ_э__";
+        String result = "_фяabc_________12_gdgd____хжё_э__";
         Assertions.assertThat(Utils.normalizeName(name)).isEqualTo(result);
     }
 
@@ -64,15 +64,15 @@ public class UtilsTest {
         //Case 1
         Attribute attribute = new Attribute("numericAttribute");
         Assertions.assertThat(Utils.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
-                String.format(COLUMN_FORMAT, attribute.name(), NUMERIC_TYPE));
+                String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), NUMERIC_TYPE));
         //Case 2
         attribute = new Attribute("nominalAttribute", Arrays.asList("A", "B", "C"));
         Assertions.assertThat(Utils.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
-                String.format(COLUMN_FORMAT, attribute.name(), VARCHAR_TYPE));
+                String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), VARCHAR_TYPE));
         //Case 3
         attribute = new Attribute("dateAttribute", DATE_FORMAT);
         Assertions.assertThat(Utils.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
-                String.format(COLUMN_FORMAT, attribute.name(), TIMESTAMP_FORMAT));
+                String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), TIMESTAMP_FORMAT));
     }
 
     /**

@@ -27,6 +27,7 @@ public class Utils {
     /**
      * Normalizes name for data base. Normalization includes:
      * 1. Replaces all non words and non numeric symbols to '_' symbol.
+     * 2. Casts result string to lower case.
      *
      * @param name - name string
      * @return normalized name
@@ -36,7 +37,7 @@ public class Utils {
         for (int i = 0; i < name.length(); i++) {
             resultString.append(Character.isLetterOrDigit(name.charAt(i)) ? name.charAt(i) : DELIMITER);
         }
-        return resultString.toString();
+        return resultString.toString().toLowerCase();
     }
 
     /**
@@ -80,9 +81,8 @@ public class Utils {
     public static String formatValue(Instance instance, Attribute attribute) {
         if (instance.isMissing(attribute)) {
             return NULL_VALUE;
-        }
-        else if (attribute.isNominal()) {
-            return String.format(STRING_VALUE_FORMAT, truncateStringValue(instance.stringValue(attribute)));
+        } else if (attribute.isNominal()) {
+            return String.format(STRING_VALUE_FORMAT, truncateStringValue(instance.stringValue(attribute)).trim());
         } else if (attribute.isDate()) {
             return String.format(STRING_VALUE_FORMAT,
                     SIMPLE_DATE_FORMAT.format(new Date((long) instance.value(attribute))));
