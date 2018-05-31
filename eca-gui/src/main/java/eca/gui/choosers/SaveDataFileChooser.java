@@ -15,16 +15,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class SaveDataFileChooser extends SaveFileChooser {
 
     public SaveDataFileChooser() {
-        getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xls)", DataFileExtension.XLS.getExtension()));
-        getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xlsx)", DataFileExtension.XLSX.getExtension()));
-        getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Csv data files (*.csv)", DataFileExtension.CSV.getExtension()));
-        getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Arff data files (*.arff)", DataFileExtension.ARFF.getExtension()));
-        getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Json data files (*.json)", DataFileExtension.JSON.getExtension()));
+        for (DataFileExtension dataFileExtension : DataFileExtension.values()) {
+            getChooser().addChoosableFileFilter(
+                    new FileNameExtensionFilter(dataFileExtension.getDescription(), dataFileExtension.getExtension()));
+        }
     }
 
 }

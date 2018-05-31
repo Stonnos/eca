@@ -23,7 +23,7 @@ public class TestHelperUtils {
     public static Instances loadInstances() throws Exception {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         XLSLoader dataLoader = new XLSLoader();
-        dataLoader.setResource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
-        return dataLoader.getDataSet();
+        dataLoader.setSource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
+        return dataLoader.loadInstances();
     }
 }

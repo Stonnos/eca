@@ -5,7 +5,9 @@
  */
 package eca.data.file.xls;
 
+import eca.data.AbstractDataSaver;
 import eca.data.DataFileExtension;
+import eca.data.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -28,59 +30,26 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class XLSSaver {
+public class XLSSaver extends AbstractDataSaver {
 
     private static final short FONT_SIZE = 12;
 
-    private File file;
-    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
-    /**
-     * Sets file object.
-     *
-     * @param file {@link File} object
-     */
-    public void setFile(File file) {
-        Objects.requireNonNull(file, "File is not specified!");
-        if (!file.getName().endsWith(DataFileExtension.XLS.getExtension()) &&
-                !file.getName().endsWith(DataFileExtension.XLSX.getExtension())) {
-            throw new IllegalArgumentException("Unexpected file extension!");
-        }
-        this.file = file;
-    }
-
-    /**
-     * Returns date format.
-     *
-     * @return date format
-     */
-    public String getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Sets date format.
-     *
-     * @param dateFormat date format
-     */
-    public void setDateFormat(String dateFormat) {
-        Objects.requireNonNull(dateFormat, "Date format is not specified!");
-        this.dateFormat = dateFormat;
-    }
-
-    /**
-     * Writes data into xls file.
-     *
-     * @param data {@link Instances} object
-     * @throws IOException
-     */
+    @Override
     public void write(Instances data) throws IOException {
         Objects.requireNonNull(data, "Data is not specified!");
-        try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
+        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
             Sheet sheet = book.createSheet(data.relationName());
             fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
             fillDataCells(data, book, sheet);
             book.write(stream);
+        }
+    }
+
+    @Override
+    protected void validateFile(File file) {
+        super.validateFile(file);
+        if (!FileUtils.isXlsExtension(file.getName())) {
+            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
         }
     }
 
@@ -103,7 +72,7 @@ public class XLSSaver {
 
     private void fillDataCells(Instances data, Workbook book, Sheet sheet) {
         CellStyle dateStyle = book.createCellStyle();
-        short date = book.createDataFormat().getFormat(dateFormat);
+        short date = book.createDataFormat().getFormat(getDateFormat());
         dateStyle.setDataFormat(date);
         for (int i = 0; i < data.numInstances(); i++) {
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());

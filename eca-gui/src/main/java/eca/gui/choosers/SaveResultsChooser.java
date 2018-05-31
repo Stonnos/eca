@@ -16,9 +16,11 @@ public class SaveResultsChooser extends SaveFileChooser {
 
     public SaveResultsChooser() {
         getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xls)", DataFileExtension.XLS.getExtension()));
+                new FileNameExtensionFilter(DataFileExtension.XLS.getDescription(),
+                        DataFileExtension.XLS.getExtension()));
         getChooser().addChoosableFileFilter(
-                new FileNameExtensionFilter("Xls data files (*.xlsx)", DataFileExtension.XLSX.getExtension()));
+                new FileNameExtensionFilter(DataFileExtension.XLSX.getDescription(),
+                        DataFileExtension.XLSX.getExtension()));
     }
 
 }

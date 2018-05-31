@@ -5,32 +5,74 @@ package eca.data;
  *
  * @author Roman Batygin
  */
-
 public enum DataFileExtension {
 
-    XLS("xls"),
+    /**
+     * Xls file extension
+     */
+    XLS("xls", "Xls data files (*.xls)"),
 
-    XLSX("xlsx"),
+    /**
+     * Xlsx file extension
+     */
+    XLSX("xlsx", "Xlsx data files (*.xlsx)"),
 
-    ARFF("arff"),
+    /**
+     * ARFF file extension
+     */
+    ARFF("arff", "Arff data files (*.arff)"),
 
-    CSV("csv"),
+    /**
+     * Csv file extension
+     */
+    CSV("csv", "Csv data files (*.csv)"),
 
-    JSON("json");
+    /**
+     * Json file extension
+     */
+    JSON("json", "Json data files (*.json)"),
 
+    /**
+     * Text file extension
+     */
+    TEXT("txt", "Text data files (*.txt)"),
+
+    /**
+     * Data file extension
+     */
+    DATA("data", "DATA data files (*.data)");
+
+    /**
+     * File extension
+     */
     private String extension;
 
-    DataFileExtension(String extension) {
+    /**
+     * Extension description
+     */
+    private String description;
+
+    DataFileExtension(String extension, String description) {
         this.extension = extension;
+        this.description = description;
     }
 
     /**
-     * Returns extension in format: .ext
+     * Returns extension in format: ext
      *
-     * @return extension in format: .ext
+     * @return extension in format: ext
      */
     public String getExtension() {
         return extension;
+    }
+
+    /**
+     * Returns extension description.
+     *
+     * @return extension description
+     */
+    public String getDescription() {
+        return description;
     }
 
     /**

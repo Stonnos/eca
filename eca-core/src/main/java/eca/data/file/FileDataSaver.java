@@ -1,7 +1,9 @@
 package eca.data.file;
 
+import eca.data.AbstractDataSaver;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
+import eca.data.file.text.DATASaver;
 import eca.data.file.xls.XLSSaver;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
@@ -15,7 +17,7 @@ import java.util.Objects;
 
 /**
  * Class for saving {@link Instances} objects to file with extensions such as:
- * csv, arff, xls, xlsx, json.
+ * csv, arff, xls, xlsx, json, txt, data.
  *
  * @author Roman Batygin
  */
@@ -53,19 +55,24 @@ public class FileDataSaver {
         Objects.requireNonNull(file, "File is not specified!");
         Objects.requireNonNull(data, "Data is not specified!");
         if (FileUtils.isXlsExtension(file.getName())) {
-            XLSSaver xlsSaver = new XLSSaver();
-            xlsSaver.setFile(file);
-            xlsSaver.setDateFormat(dateFormat);
-            xlsSaver.write(data);
+            writeData(new XLSSaver(), file, data);
+        } else if (FileUtils.isTxtExtension(file.getName())) {
+            writeData(new DATASaver(), file, data);
         } else {
-            AbstractFileSaver abstractFileSaver = createFileSaver(file, data);
+            AbstractFileSaver abstractFileSaver = createWekaFileSaver(file, data);
             abstractFileSaver.setFile(file);
             abstractFileSaver.setInstances(data);
             abstractFileSaver.writeBatch();
         }
     }
 
-    private AbstractFileSaver createFileSaver(File file, Instances data) {
+    private void writeData(AbstractDataSaver saver, File file, Instances data) throws IOException {
+        saver.setFile(file);
+        saver.setDateFormat(dateFormat);
+        saver.write(data);
+    }
+
+    private AbstractFileSaver createWekaFileSaver(File file, Instances data) {
         String fileName = file.getName();
         AbstractFileSaver abstractFileSaver;
         if (fileName.endsWith(DataFileExtension.CSV.getExtension())) {

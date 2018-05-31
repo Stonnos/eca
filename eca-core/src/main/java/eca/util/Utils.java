@@ -1,5 +1,6 @@
 package eca.util;
 
+import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 
@@ -17,6 +18,8 @@ import java.util.function.BiPredicate;
  */
 
 public class Utils {
+
+    private static final String MISSING_VALUE = "?";
 
     /**
      * Check value in list by specified predicate.
@@ -92,5 +95,15 @@ public class Utils {
      */
     public static int getIntValueOrDefault(Integer value, int defaultValue) {
         return value != null ? value : defaultValue;
+    }
+
+    /**
+     * Checks specified string value for missing value.
+     *
+     * @param val - string value
+     * @return {@code true} if specified string value is missing value
+     */
+    public static boolean isMissing(String val) {
+        return StringUtils.isEmpty(val) || val.equals(MISSING_VALUE);
     }
 }

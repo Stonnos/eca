@@ -5,7 +5,8 @@
  */
 package eca.data.file.xls;
 
-import eca.data.DataFileExtension;
+import eca.data.AbstractDataLoader;
+import eca.data.FileUtils;
 import eca.data.file.FileDataDictionary;
 import eca.data.file.resource.DataResource;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,6 @@ import weka.core.Utils;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -36,67 +36,16 @@ import java.util.Set;
  *
  * @author Roman Batygin
  */
-public class XLSLoader {
+public class XLSLoader extends AbstractDataLoader<DataResource> {
 
     private static final Set<CellType> AVAILABLE_CELL_TYPES =
             EnumSet.of(CellType.STRING, CellType.NUMERIC, CellType.BLANK, CellType.BOOLEAN);
     private static final int HEADER_INDEX = 0;
 
-    private DataResource resource;
-
-    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
-    /**
-     * Returns data file resource.
-     *
-     * @return data file resource
-     */
-    public DataResource getResource() {
-        return resource;
-    }
-
-    /**
-     * Sets data file resource
-     *
-     * @param resource - data file resource
-     */
-    public void setResource(DataResource resource) {
-        Objects.requireNonNull(resource, "Resource is not specified!");
-        if (!resource.getFile().endsWith(DataFileExtension.XLS.getExtension()) &&
-                !resource.getFile().endsWith(DataFileExtension.XLSX.getExtension())) {
-            throw new IllegalArgumentException(String.format("Unexpected file '%s' extension!", resource.getFile()));
-        }
-        this.resource = resource;
-    }
-
-    /**
-     * Returns date format.
-     *
-     * @return date format
-     */
-    public String getDateFormat() {
-        return dateFormat;
-    }
-
-    /**
-     * Sets date format.
-     *
-     * @param dateFormat date format
-     */
-    public void setDateFormat(String dateFormat) {
-        Objects.requireNonNull(dateFormat, "Date format is not specified!");
-        this.dateFormat = dateFormat;
-    }
-
-    /**
-     * Reads data from xls/xlsx file.
-     *
-     * @return {@link Instances} object
-     * @throws Exception
-     */
-    public Instances getDataSet() throws Exception {
+    @Override
+    public Instances loadInstances() throws Exception {
         Instances data;
-        try (Workbook book = WorkbookFactory.create(getResource().openInputStream())) {
+        try (Workbook book = WorkbookFactory.create(getSource().openInputStream())) {
             Sheet sheet = book.getSheetAt(0);
             validateData(sheet);
             data = new Instances(sheet.getSheetName(), createAttributes(sheet),
@@ -150,6 +99,14 @@ public class XLSLoader {
         return data;
     }
 
+    @Override
+    protected void validateSource(DataResource resource) {
+        super.validateSource(resource);
+        if (!FileUtils.isXlsExtension(resource.getFile())) {
+            throw new IllegalArgumentException(String.format("Unexpected file '%s' extension!", resource.getFile()));
+        }
+    }
+
     private int getNumColumns(Sheet sheet) {
         return sheet.getRow(HEADER_INDEX).getPhysicalNumberOfCells();
     }
@@ -194,7 +151,7 @@ public class XLSLoader {
             case Attribute.NOMINAL:
                 return new Attribute(name, values);
             case Attribute.DATE:
-                return new Attribute(name, dateFormat);
+                return new Attribute(name, getDateFormat());
             default:
                 return new Attribute(name);
         }
@@ -233,6 +190,7 @@ public class XLSLoader {
     }
 
     private boolean isCellTypeEquals(CellType cellTypeA, CellType cellTypeB) {
-        return cellTypeA != null && !cellTypeA.equals(CellType.BLANK) && !cellTypeB.equals(CellType.BLANK) && !cellTypeA.equals(cellTypeB);
+        return cellTypeA != null && !cellTypeA.equals(CellType.BLANK) && !cellTypeB.equals(CellType.BLANK) &&
+                !cellTypeA.equals(cellTypeB);
     }
 }

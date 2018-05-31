@@ -4,6 +4,7 @@ import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
 import eca.data.file.resource.DataResource;
+import eca.data.file.text.DATALoader;
 import eca.data.file.xls.XLSLoader;
 import eca.util.Utils;
 import weka.core.Instances;
@@ -39,10 +40,9 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                             String.format("Can't load data from file '%s'. Data is null!", getSource().getFile()));
                 }
             } else if (FileUtils.isXlsExtension(getSource().getFile())) {
-                XLSLoader loader = new XLSLoader();
-                loader.setResource(getSource());
-                loader.setDateFormat(getDateFormat());
-                data = loader.getDataSet();
+                data = loadData(new XLSLoader());
+            } else if (FileUtils.isTxtExtension(getSource().getFile())) {
+                data = loadData(new DATALoader());
             } else {
                 throw new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile()));
@@ -60,6 +60,12 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
             throw new IllegalArgumentException(String.format(FileDataDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
                     Arrays.asList(FILE_EXTENSIONS)));
         }
+    }
+
+    private Instances loadData(AbstractDataLoader<DataResource> loader) throws Exception {
+        loader.setSource(getSource());
+        loader.setDateFormat(getDateFormat());
+        return loader.loadInstances();
     }
 
     private AbstractFileLoader createWekaDataLoader() {
