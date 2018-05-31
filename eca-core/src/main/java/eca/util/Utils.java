@@ -20,6 +20,7 @@ import java.util.function.BiPredicate;
 public class Utils {
 
     private static final String MISSING_VALUE = "?";
+    private static final String QUOTE = "'";
 
     /**
      * Check value in list by specified predicate.
@@ -105,5 +106,15 @@ public class Utils {
      */
     public static boolean isMissing(String val) {
         return StringUtils.isEmpty(val) || val.equals(MISSING_VALUE);
+    }
+
+    /**
+     * Trims and removes all quotes from string.
+     *
+     * @param val - specified string
+     * @return result string
+     */
+    public static String removeQuotes(String val) {
+        return !StringUtils.isEmpty(val) ? StringUtils.remove(val.trim(), QUOTE) : val;
     }
 }

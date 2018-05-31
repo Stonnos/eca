@@ -82,7 +82,8 @@ public class Utils {
         if (instance.isMissing(attribute)) {
             return NULL_VALUE;
         } else if (attribute.isNominal()) {
-            return String.format(STRING_VALUE_FORMAT, truncateStringValue(instance.stringValue(attribute)).trim());
+            String val = eca.util.Utils.removeQuotes(instance.stringValue(attribute));
+            return String.format(STRING_VALUE_FORMAT, truncateStringValue(val));
         } else if (attribute.isDate()) {
             return String.format(STRING_VALUE_FORMAT,
                     SIMPLE_DATE_FORMAT.format(new Date((long) instance.value(attribute))));

@@ -37,7 +37,7 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
             DenseInstance newInstance = new DenseInstance(instances.numAttributes());
             newInstance.setDataset(instances);
             for (int j = 0; j < instances.numAttributes(); j++) {
-                String val = data.get(i).get(j).trim();
+                String val = eca.util.Utils.removeQuotes(data.get(i).get(j));
                 Attribute attribute = instances.attribute(j);
                 if (isMissing(val)) {
                     newInstance.setValue(attribute, Utils.missingValue());
@@ -77,14 +77,15 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
             ArrayList<String> values = new ArrayList<>();
             int attributeType = Attribute.NUMERIC;
             for (int j = 1; j < data.size(); j++) {
-                String val = data.get(j).get(i).trim();
+                String val = eca.util.Utils.removeQuotes(data.get(j).get(i));
                 if ((!NumberUtils.isCreatable(val) && !isMissing(val) && !values.contains(val)) ||
                         (!values.isEmpty() && !values.contains(val))) {
                     attributeType = Attribute.NOMINAL;
                     values.add(val);
                 }
             }
-            attributes.add(createAttribute(attributeType, data.get(0).get(i), values));
+            attributes.add(
+                    createAttribute(attributeType, eca.util.Utils.removeQuotes(data.get(0).get(i)), values));
         }
         return attributes;
     }
