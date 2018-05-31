@@ -40,7 +40,12 @@ public enum DataFileExtension {
     /**
      * Data file extension
      */
-    DATA("data", "DATA data files (*.data)");
+    DATA("data", "DATA data files (*.data)"),
+
+    /**
+     * Docx file extension
+     */
+    DOCX("docx", "Docx data files (*.docx)");
 
     /**
      * File extension

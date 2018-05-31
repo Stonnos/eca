@@ -2,6 +2,7 @@ package eca.data;
 
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -29,6 +30,11 @@ public class FileUtils {
             ImmutableSet.of(DataFileExtension.XLS.getExtension(), DataFileExtension.XLSX.getExtension());
 
     /**
+     * Docx extensions
+     */
+    private static final Set<String> DOCX_EXTENSIONS = Collections.singleton(DataFileExtension.DOCX.getExtension());
+
+    /**
      * Returns true if specified file extension belongs to weka formats (csv, arff, json).
      *
      * @param fileName - file name
@@ -49,13 +55,23 @@ public class FileUtils {
     }
 
     /**
-     * Returns true if specified file extension belongs to txt formats (txt, data, doc, docx).
+     * Returns true if specified file extension belongs to txt formats (txt, data).
      *
      * @param fileName - file name
-     * @return true if specified file extension belongs to txt formats (txt, data, doc, docx)
+     * @return true if specified file extension belongs to txt formats (txt, data)
      */
     public static boolean isTxtExtension(String fileName) {
         return containsExtension(fileName, TXT_EXTENSIONS);
+    }
+
+    /**
+     * Returns true if specified file extension belongs to docx format.
+     *
+     * @param fileName - file name
+     * @return true if specified file extension belongs to docx format
+     */
+    public static boolean isDocxExtension(String fileName) {
+        return containsExtension(fileName, DOCX_EXTENSIONS);
     }
 
     private static boolean containsExtension(String fileName, Set<String> extensions) {

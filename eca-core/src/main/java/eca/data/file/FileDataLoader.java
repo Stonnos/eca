@@ -5,6 +5,7 @@ import eca.data.DataFileExtension;
 import eca.data.FileUtils;
 import eca.data.file.resource.DataResource;
 import eca.data.file.text.DATALoader;
+import eca.data.file.text.DocxLoader;
 import eca.data.file.xls.XLSLoader;
 import eca.util.Utils;
 import weka.core.Instances;
@@ -43,6 +44,8 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 data = loadData(new XLSLoader());
             } else if (FileUtils.isTxtExtension(getSource().getFile())) {
                 data = loadData(new DATALoader());
+            } else if (FileUtils.isDocxExtension(getSource().getFile())) {
+                data = loadData(new DocxLoader());
             } else {
                 throw new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile()));
