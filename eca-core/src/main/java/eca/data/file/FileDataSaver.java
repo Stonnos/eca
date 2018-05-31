@@ -4,6 +4,7 @@ import eca.data.AbstractDataSaver;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
 import eca.data.file.text.DATASaver;
+import eca.data.file.text.DocxSaver;
 import eca.data.file.xls.XLSSaver;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
@@ -58,6 +59,8 @@ public class FileDataSaver {
             writeData(new XLSSaver(), file, data);
         } else if (FileUtils.isTxtExtension(file.getName())) {
             writeData(new DATASaver(), file, data);
+        } else if (FileUtils.isDocxExtension(file.getName())) {
+            writeData(new DocxSaver(), file, data);
         } else {
             AbstractFileSaver abstractFileSaver = createWekaFileSaver(file, data);
             abstractFileSaver.setFile(file);
