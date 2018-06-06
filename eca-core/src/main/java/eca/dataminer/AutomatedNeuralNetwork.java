@@ -68,8 +68,9 @@ public class AutomatedNeuralNetwork extends AbstractExperiment<NeuralNetwork> {
             AbstractFunction randomActivationFunction = activationFunctionType.handle(ACTIVATION_FUNCTION_BUILDER);
             double coefficientValue = NumberGenerator.random(MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
             randomActivationFunction.setCoefficient(coefficientValue);
-            model.network().setActivationFunction(randomActivationFunction);
-            model.network().setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(getData(), random));
+            model.getMultilayerPerceptron().setActivationFunction(randomActivationFunction);
+            model.getMultilayerPerceptron().setHiddenLayer(
+                    NeuralNetworkUtil.generateRandomHiddenLayer(getData(), random));
             return evaluateModel(model);
         }
     }

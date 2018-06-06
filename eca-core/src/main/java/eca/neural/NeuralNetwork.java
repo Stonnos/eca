@@ -44,7 +44,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     /**
      * Multilayer perceptron
      **/
-    private MultilayerPerceptron network;
+    private MultilayerPerceptron multilayerPerceptron;
 
     /**
      * Seed value for random generator
@@ -74,7 +74,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * Default constructor for creation <tt>NeuralNetwork</tt> object.
      */
     public NeuralNetwork() {
-        this.network = new MultilayerPerceptron(MultilayerPerceptron.MINIMUM_NUMBER_OF_NEURONS_IN_LAYER,
+        this.multilayerPerceptron = new MultilayerPerceptron(MultilayerPerceptron.MINIMUM_NUMBER_OF_NEURONS_IN_LAYER,
                 MultilayerPerceptron.MINIMUM_NUMBER_OF_NEURONS_IN_LAYER);
     }
 
@@ -86,7 +86,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      */
     public NeuralNetwork(Instances data, ActivationFunction function) {
         this(data);
-        network.setActivationFunction(function);
+        this.multilayerPerceptron.setActivationFunction(function);
     }
 
     @Override
@@ -105,20 +105,20 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         List<String> options = new ArrayList<>();
 
         options.add(NeuralNetworkDictionary.IN_LAYER_NEURONS_NUM);
-        options.add(String.valueOf(network().inLayerNeuronsNum()));
+        options.add(String.valueOf(getMultilayerPerceptron().getNumInNeurons()));
         options.add(NeuralNetworkDictionary.OUT_LAYER_NEURONS_NUM);
-        options.add(String.valueOf(network().outLayerNeuronsNum()));
+        options.add(String.valueOf(getMultilayerPerceptron().getNumOutNeurons()));
         options.add(NeuralNetworkDictionary.HIDDEN_LAYER_NUM);
-        options.add(String.valueOf(network().hiddenLayersNum()));
+        options.add(String.valueOf(getMultilayerPerceptron().hiddenLayersNum()));
         options.add(NeuralNetworkDictionary.HIDDEN_LAYER_STRUCTURE);
-        options.add(network().getHiddenLayer());
+        options.add(getMultilayerPerceptron().getHiddenLayer());
         options.add(NeuralNetworkDictionary.MAX_ITS);
-        options.add(String.valueOf(network().getMaxIterationsNum()));
+        options.add(String.valueOf(getMultilayerPerceptron().getNumIterations()));
         options.add(NeuralNetworkDictionary.ERROR_THRESHOLD);
-        options.add(COMMON_DECIMAL_FORMAT.format(network().getMinError()));
+        options.add(COMMON_DECIMAL_FORMAT.format(getMultilayerPerceptron().getMinError()));
 
         options.add(NeuralNetworkDictionary.HIDDEN_LAYER_AF);
-        ActivationFunction activationFunction = network().getActivationFunction();
+        ActivationFunction activationFunction = getMultilayerPerceptron().getActivationFunction();
         options.add(activationFunction.getActivationFunctionType().getDescription());
 
         if (activationFunction instanceof AbstractFunction) {
@@ -127,7 +127,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         }
 
         options.add(NeuralNetworkDictionary.OUT_LAYER_AF);
-        ActivationFunction outActivationFunction = network().getOutActivationFunction();
+        ActivationFunction outActivationFunction = getMultilayerPerceptron().getOutActivationFunction();
         options.add(outActivationFunction.getActivationFunctionType().getDescription());
 
         if (outActivationFunction instanceof AbstractFunction) {
@@ -136,10 +136,10 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         }
 
         options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
-        options.add(network().getLearningAlgorithm().getClass().getSimpleName());
+        options.add(getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName());
 
-        if (network.getLearningAlgorithm() instanceof BackPropagation) {
-            String[] algorithmOptions = network().getLearningAlgorithm().getOptions();
+        if (multilayerPerceptron.getLearningAlgorithm() instanceof BackPropagation) {
+            String[] algorithmOptions = getMultilayerPerceptron().getLearningAlgorithm().getOptions();
             options.addAll(Arrays.asList(algorithmOptions));
         }
 
@@ -154,8 +154,8 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      *
      * @return <tt>MultilayerPerceptron</tt> object
      */
-    public MultilayerPerceptron network() {
-        return network;
+    public MultilayerPerceptron getMultilayerPerceptron() {
+        return multilayerPerceptron;
     }
 
     @Override
@@ -177,7 +177,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
      * Builds neural network structure.
      */
     public void buildNetwork() {
-        network.build();
+        multilayerPerceptron.build();
     }
 
     @Override
@@ -190,20 +190,20 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         initialize(data);
         double[][] x = normalizer.normalizeInputValues();
         double[][] y = normalizer.normalizeOutputValues();
-        network.train(x, y);
+        multilayerPerceptron.train(x, y);
     }
 
     @Override
     public double classifyInstance(Instance obj) {
         double[] x = normalizer.normalizeObject(filter.filterInstance(obj));
-        double[] y = network.computeOutputVector(x);
+        double[] y = multilayerPerceptron.computeOutputVector(x);
         return classValue(y);
     }
 
     @Override
     public double[] distributionForInstance(Instance obj) {
         double[] x = normalizer.normalizeObject(filter.filterInstance(obj));
-        double[] y = network.computeOutputVector(x);
+        double[] y = multilayerPerceptron.computeOutputVector(x);
         Utils.normalize(y);
         return y;
     }
@@ -226,16 +226,16 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     }
 
     private void initializeInputOptions(Instances data) {
-        if (network == null) {
-            network = new MultilayerPerceptron(data.numAttributes() - 1, data.numClasses());
+        if (multilayerPerceptron == null) {
+            multilayerPerceptron = new MultilayerPerceptron(data.numAttributes() - 1, data.numClasses());
         } else {
-            network.setInLayerNeuronsNum(data.numAttributes() - 1);
-            network.setOutLayerNeuronsNum(data.numClasses());
+            multilayerPerceptron.setNumInNeurons(data.numAttributes() - 1);
+            multilayerPerceptron.setNumOutNeurons(data.numClasses());
         }
-        if (network.getHiddenLayer() == null) {
-            network.setHiddenLayer(String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data)));
+        if (multilayerPerceptron.getHiddenLayer() == null) {
+            multilayerPerceptron.setHiddenLayer(String.valueOf(NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data)));
         }
-        network.getLearningAlgorithm().getRandom().setSeed(seed);
+        multilayerPerceptron.getLearningAlgorithm().getRandom().setSeed(seed);
     }
 
     private double classValue(double[] y) {
@@ -262,7 +262,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
             initialize(data);
             double[][] x = normalizer.normalizeInputValues();
             double[][] y = normalizer.normalizeOutputValues();
-            iterativeBuilder = network().getIterativeBuilder(x, y);
+            iterativeBuilder = getMultilayerPerceptron().getIterativeBuilder(x, y);
         }
 
         @Override
@@ -277,7 +277,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
 
         @Override
         public int numIterations() {
-            return network().getMaxIterationsNum();
+            return getMultilayerPerceptron().getNumIterations();
         }
 
         @Override

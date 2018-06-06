@@ -124,12 +124,12 @@ public class NetworkVisualizer extends JPanel {
 
     private void drawNet(Graphics2D g2d) {
         Enumeration<Attribute> attr = net.getData().enumerateAttributes();
-        for (Neuron n : net.network().inLayerNeurons) {
+        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
             drawInArrow(g2d, nodes.get(n.index()), attr.nextElement().name());
         }
 
         Enumeration<Object> values = net.getData().classAttribute().enumerateValues();
-        for (Neuron n : net.network().outLayerNeurons) {
+        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
             drawOutArrow(g2d, nodes.get(n.index()), values.nextElement().toString());
         }
 
@@ -551,19 +551,19 @@ public class NetworkVisualizer extends JPanel {
     }
 
     private double screenWidth() {
-        return net.network().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
+        return net.getMultilayerPerceptron().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
     }
 
     private double screenHeight() {
-        int max = Integer.max(Integer.max(net.network().inLayerNeurons.length,
-                net.network().outLayerNeurons.length),
+        int max = Integer.max(Integer.max(net.getMultilayerPerceptron().inLayerNeurons.length,
+                net.getMultilayerPerceptron().outLayerNeurons.length),
                 maxHiddenLayerSize());
         return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
     }
 
     private int maxHiddenLayerSize() {
         int max = 0;
-        for (Neuron[] layer : net.network().hiddenLayerNeurons) {
+        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
             max = Integer.max(max, layer.length);
         }
         return max;
@@ -575,20 +575,20 @@ public class NetworkVisualizer extends JPanel {
     }
 
     private double startX() {
-        double length = net.network().layersNum() * neuronDiam
-                + (net.network().layersNum() - 1) * STEP_BETWEEN_LEVELS;
+        double length = net.getMultilayerPerceptron().layersNum() * neuronDiam
+                + (net.getMultilayerPerceptron().layersNum() - 1) * STEP_BETWEEN_LEVELS;
         return (this.getMaximumSize().width - length) / 2.0;
     }
 
     private void computeCoordinates() {
-        double w = startX(), h = startY(net.network().inLayerNeurons.length);
-        for (Neuron n : net.network().inLayerNeurons) {
+        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
 
-        for (Neuron[] layer : net.network().hiddenLayerNeurons) {
+        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
             for (Neuron n : layer) {
@@ -599,8 +599,8 @@ public class NetworkVisualizer extends JPanel {
         }
 
         w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.network().outLayerNeurons.length);
-        for (Neuron n : net.network().outLayerNeurons) {
+        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
             h += neuronDiam + STEP_BETWEEN_NODES;
@@ -608,14 +608,14 @@ public class NetworkVisualizer extends JPanel {
     }
 
     private void createNodes() {
-        double w = startX(), h = startY(net.network().inLayerNeurons.length);
-        for (Neuron n : net.network().inLayerNeurons) {
+        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
 
-        for (Neuron[] layer : net.network().hiddenLayerNeurons) {
+        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
             for (Neuron n : layer) {
@@ -626,8 +626,8 @@ public class NetworkVisualizer extends JPanel {
         }
 
         w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.network().outLayerNeurons.length);
-        for (Neuron n : net.network().outLayerNeurons) {
+        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
             h += neuronDiam + STEP_BETWEEN_NODES;

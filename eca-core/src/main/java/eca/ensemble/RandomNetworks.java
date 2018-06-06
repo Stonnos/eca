@@ -108,7 +108,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
         NeuralNetwork neuralNetwork = new NeuralNetwork(data);
         neuralNetwork.setSeed(seeds[iteration]);
         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(getDecimalFormat().getMaximumFractionDigits());
-        MultilayerPerceptron multilayerPerceptron = neuralNetwork.network();
+        MultilayerPerceptron multilayerPerceptron = neuralNetwork.getMultilayerPerceptron();
         Random networkRandom = new Random(seeds[iteration]);
         multilayerPerceptron.setHiddenLayer(NeuralNetworkUtil.generateRandomHiddenLayer(filteredData, networkRandom));
         ActivationFunctionType activationFunctionType =

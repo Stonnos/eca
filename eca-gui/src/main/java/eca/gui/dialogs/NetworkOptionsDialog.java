@@ -117,7 +117,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
                     text = afCoefficientTextField;
                     getActivationFunction().setCoefficient(doubleFormat.
                             parse(afCoefficientTextField.getText().trim()).doubleValue());
-                    network().setMaxIterationsNum(Integer.parseInt(numItsTextField.getText().trim()));
+                    network().setNumIterations(Integer.parseInt(numItsTextField.getText().trim()));
                     text = estimateTextField;
                     network().setMinError(estimateFormat.
                             parse(estimateTextField.getText().trim()).doubleValue());
@@ -285,8 +285,8 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     }
 
     private void setOptions() {
-        inNeuronsTextField.setText(String.valueOf(network().inLayerNeuronsNum()));
-        outNeuronsTextField.setText(String.valueOf(network().outLayerNeuronsNum()));
+        inNeuronsTextField.setText(String.valueOf(network().getNumInNeurons()));
+        outNeuronsTextField.setText(String.valueOf(network().getNumOutNeurons()));
         hidLayersTextField.setText(getHiddenLayer());
         afCoefficientTextField.setText(doubleFormat.format(activationFunctionCoefficient()));
         estimateTextField.setText(estimateFormat.format(minError()));
@@ -304,7 +304,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     }
 
     private MultilayerPerceptron network() {
-        return classifier().network();
+        return classifier().getMultilayerPerceptron();
     }
 
     private String getHiddenLayer() {
@@ -316,7 +316,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     }
 
     private int maxIts() {
-        return network().getMaxIterationsNum();
+        return network().getNumIterations();
     }
 
     private BackPropagation learningAlgorithm() {

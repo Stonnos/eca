@@ -74,12 +74,12 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Number of neurons in input layer
      **/
-    private int inLayerNeuronsNum;
+    private int numInNeurons;
 
     /**
      * Number of neurons in output layer
      **/
-    private int outLayerNeuronsNum;
+    private int numOutNeurons;
 
     /**
      * Hidden layer structure
@@ -99,7 +99,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * The maximum number of iterations for learning
      **/
-    private int maxIterationsNum = 1000000;
+    private int numIterations = 1000000;
 
     /**
      * Number of neural links
@@ -109,25 +109,25 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Creates <tt>MultilayerPerceptron</tt> with given options.
      *
-     * @param inLayerNeuronsNum  the number of neurons in input layer
-     * @param outLayerNeuronsNum the number of neurons in output layer
+     * @param numInNeurons  the number of neurons in input layer
+     * @param numOutNeurons the number of neurons in output layer
      * @param function           the neurons activation function in hidden layer
      */
-    public MultilayerPerceptron(int inLayerNeuronsNum, int outLayerNeuronsNum,
+    public MultilayerPerceptron(int numInNeurons, int numOutNeurons,
                                 ActivationFunction function) {
-        this.setInLayerNeuronsNum(inLayerNeuronsNum);
-        this.setOutLayerNeuronsNum(outLayerNeuronsNum);
+        this.setNumInNeurons(numInNeurons);
+        this.setNumOutNeurons(numOutNeurons);
         this.setActivationFunction(function);
     }
 
     /**
      * Creates <tt>MultilayerPerceptron</tt> with given options.
      *
-     * @param inLayerNeuronsNum  the number of neurons in input layer
-     * @param outLayerNeuronsNum the number of neurons in output layer
+     * @param numInNeurons  the number of neurons in input layer
+     * @param numOutNeurons the number of neurons in output layer
      */
-    public MultilayerPerceptron(int inLayerNeuronsNum, int outLayerNeuronsNum) {
-        this(inLayerNeuronsNum, outLayerNeuronsNum, new LogisticFunction());
+    public MultilayerPerceptron(int numInNeurons, int numOutNeurons) {
+        this(numInNeurons, numOutNeurons, new LogisticFunction());
     }
 
     /**
@@ -169,8 +169,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @return the number of neurons in input layer
      */
-    public int inLayerNeuronsNum() {
-        return inLayerNeuronsNum;
+    public int getNumInNeurons() {
+        return numInNeurons;
     }
 
     /**
@@ -178,8 +178,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @return the number of neurons in output layer
      */
-    public int outLayerNeuronsNum() {
-        return outLayerNeuronsNum;
+    public int getNumOutNeurons() {
+        return numOutNeurons;
     }
 
     /**
@@ -194,25 +194,25 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Sets the number of neurons in input layer.
      *
-     * @param inLayerNeuronsNum the number of neurons in input layer
+     * @param numInNeurons the number of neurons in input layer
      * @throws IllegalArgumentException if the the number of neurons in input layer
      *                                  is less than 1
      */
-    public final void setInLayerNeuronsNum(int inLayerNeuronsNum) {
-        checkValue(inLayerNeuronsNum);
-        this.inLayerNeuronsNum = inLayerNeuronsNum;
+    public final void setNumInNeurons(int numInNeurons) {
+        checkValue(numInNeurons);
+        this.numInNeurons = numInNeurons;
     }
 
     /**
      * Sets the number of neurons in output layer.
      *
-     * @param outLayerNeuronsNum the number of neurons in output layer
+     * @param numOutNeurons the number of neurons in output layer
      * @throws IllegalArgumentException if the the number of neurons in output layer
      *                                  is less than 1
      */
-    public final void setOutLayerNeuronsNum(int outLayerNeuronsNum) {
-        checkValue(outLayerNeuronsNum);
-        this.outLayerNeuronsNum = outLayerNeuronsNum;
+    public final void setNumOutNeurons(int numOutNeurons) {
+        checkValue(numOutNeurons);
+        this.numOutNeurons = numOutNeurons;
     }
 
     /**
@@ -254,10 +254,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
     /**
      * Sets the maximum number of iterations for learning.
      *
-     * @param maxIterationsNum the maximum number of iterations for learning
+     * @param numIterations the maximum number of iterations for learning
      */
-    public void setMaxIterationsNum(int maxIterationsNum) {
-        this.maxIterationsNum = maxIterationsNum;
+    public void setNumIterations(int numIterations) {
+        this.numIterations = numIterations;
     }
 
     /**
@@ -265,8 +265,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @return the maximum number of iterations for learning
      */
-    public int getMaxIterationsNum() {
-        return maxIterationsNum;
+    public int getNumIterations() {
+        return numIterations;
     }
 
     /**
@@ -315,7 +315,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
     public void setLearningAlgorithm(LearningAlgorithm algorithm) {
         Objects.requireNonNull(algorithm, "Learning algorithm is not specified!");
         if (algorithm.network != this) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Unexpected network reference!");
         }
         this.algorithm = algorithm;
     }
@@ -333,13 +333,13 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * Builds the multilayer perceptron structure.
      */
     public void build() {
-        inLayerNeurons = new Neuron[inLayerNeuronsNum];
+        inLayerNeurons = new Neuron[numInNeurons];
         StringTokenizer tokenizer = new StringTokenizer(hiddenLayer, ",");
         hiddenLayerNeurons = new Neuron[hiddenLayersNum()][];
         for (int i = 0; i < hiddenLayerNeurons.length; i++) {
             hiddenLayerNeurons[i] = new Neuron[Integer.valueOf(tokenizer.nextToken())];
         }
-        outLayerNeurons = new Neuron[outLayerNeuronsNum];
+        outLayerNeurons = new Neuron[numOutNeurons];
         createLayers();
         createLinks();
     }
@@ -351,13 +351,13 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @return the output vector
      */
     public double[] computeOutputVector(double[] x) {
-        checkVector(x, inLayerNeuronsNum());
-        double[] y = new double[outLayerNeuronsNum()];
-        for (int i = 0; i < inLayerNeuronsNum(); i++) {
+        checkVector(x, getNumInNeurons());
+        double[] y = new double[getNumOutNeurons()];
+        for (int i = 0; i < getNumInNeurons(); i++) {
             inLayerNeurons[i].setOutValue(x[i]);
         }
         computeValuesInHiddenLayer();
-        for (int i = 0; i < outLayerNeuronsNum(); i++) {
+        for (int i = 0; i < getNumOutNeurons(); i++) {
             Neuron u = outLayerNeurons[i];
             u.sum();
             y[i] = u.process();
@@ -380,7 +380,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
             i++;
             int j = i % input.length;
             double[] y = computeOutputVector(input[j]);
-            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > maxIterationsNum) {
+            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > numIterations) {
                 break;
             }
             algorithm.train(y, output[j]);
@@ -451,9 +451,9 @@ public class MultilayerPerceptron implements java.io.Serializable {
             }
             int j = i % input.length;
             double[] y = computeOutputVector(input[j]);
-            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > maxIterationsNum) {
-                step = maxIterationsNum - i;
-                i = maxIterationsNum - 1;
+            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > numIterations) {
+                step = numIterations - i;
+                i = numIterations - 1;
             } else {
                 algorithm.train(y, output[j]);
             }
@@ -466,14 +466,14 @@ public class MultilayerPerceptron implements java.io.Serializable {
          * @return <tt>true</tt> if the next iteration is exists.
          */
         public boolean isNext() {
-            return i < getMaxIterationsNum();
+            return i < getNumIterations();
         }
 
     }
 
     private void createLayers() {
         int index = 0;
-        for (int i = 0; i < inLayerNeuronsNum(); i++) {
+        for (int i = 0; i < getNumInNeurons(); i++) {
             inLayerNeurons[i] = new Neuron(index++, null, Neuron.IN_LAYER);
         }
 
@@ -483,7 +483,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
             }
         }
 
-        for (int i = 0; i < outLayerNeuronsNum(); i++) {
+        for (int i = 0; i < getNumOutNeurons(); i++) {
             outLayerNeurons[i] = new Neuron(index++, outerFunction, Neuron.OUT_LAYER);
         }
     }
@@ -548,8 +548,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
             throw new IllegalArgumentException("Input and output vectors must have the same lengths!");
         }
         for (int i = 0; i < input.length; i++) {
-            checkVector(input[i], inLayerNeuronsNum());
-            checkVector(output[i], outLayerNeuronsNum());
+            checkVector(input[i], getNumInNeurons());
+            checkVector(output[i], getNumOutNeurons());
         }
     }
 

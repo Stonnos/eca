@@ -159,17 +159,21 @@ public class StatisticsTableBuilder {
 
     public final JTable createStatistics(NeuralNetwork mlp, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, mlp);
-        model.addRow(new Entry(IN_LAYER_NEURONS_NUM_TEXT, String.valueOf(mlp.network().inLayerNeuronsNum())));
-        model.addRow(new Entry(OUT_LAYER_NEURONS_NUM_TEXT, String.valueOf(mlp.network().outLayerNeuronsNum())));
-        model.addRow(new Entry(HIDDEN_LAYERS_NUM_TEXT, String.valueOf(mlp.network().hiddenLayersNum())));
-        model.addRow(new Entry(HIDDEN_LAYER_STRUCTURE_TEXT, mlp.network().getHiddenLayer()));
-        model.addRow(new Entry(LINKS_NUM_TEXT, String.valueOf(mlp.network().getLinksNum())));
-        model.addRow(new Entry(AF_OF_HIDDEN_LAYER_TEXT, mlp.network().getActivationFunction()
+        model.addRow(new Entry(IN_LAYER_NEURONS_NUM_TEXT,
+                String.valueOf(mlp.getMultilayerPerceptron().getNumInNeurons())));
+        model.addRow(new Entry(OUT_LAYER_NEURONS_NUM_TEXT,
+                String.valueOf(mlp.getMultilayerPerceptron().getNumOutNeurons())));
+        model.addRow(
+                new Entry(HIDDEN_LAYERS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().hiddenLayersNum())));
+        model.addRow(new Entry(HIDDEN_LAYER_STRUCTURE_TEXT, mlp.getMultilayerPerceptron().getHiddenLayer()));
+        model.addRow(new Entry(LINKS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().getLinksNum())));
+        model.addRow(new Entry(AF_OF_HIDDEN_LAYER_TEXT, mlp.getMultilayerPerceptron().getActivationFunction()
                 .getActivationFunctionType().getDescription()));
-        model.addRow(new Entry(AF_OF_OUT_LAYER_TEXT, mlp.network()
+        model.addRow(new Entry(AF_OF_OUT_LAYER_TEXT, mlp.getMultilayerPerceptron()
                 .getOutActivationFunction().getActivationFunctionType().getDescription()));
         model.addRow(
-                new Entry(LEARNING_ALGORITHM_TEXT, mlp.network().getLearningAlgorithm().getClass().getSimpleName()));
+                new Entry(LEARNING_ALGORITHM_TEXT,
+                        mlp.getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName()));
         return createTable(model);
     }
 

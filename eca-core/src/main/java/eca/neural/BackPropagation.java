@@ -83,7 +83,7 @@ public class BackPropagation extends LearningAlgorithm {
 
     @Override
     public void train(double[] actual, double[] expected) {
-        for (int i = 0; i < network.outLayerNeuronsNum(); i++) {
+        for (int i = 0; i < network.getNumOutNeurons(); i++) {
             Neuron u = network.outLayerNeurons[i];
             u.setError((expected[i] - actual[i]) * u.derivative());
             correctWeight(u);
