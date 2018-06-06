@@ -224,7 +224,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      *
      * @return the value of random attributes number
      */
-    public final int numRandomAttr() {
+    public final int getNumRandomAttr() {
         return numRandomAttr;
     }
 
@@ -373,7 +373,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     @Override
     public void buildClassifier(Instances data) throws Exception {
         this.data = data;
-        if (isRandomTree() && numRandomAttr() > data.numAttributes() - 1) {
+        if (isRandomTree() && getNumRandomAttr() > data.numAttributes() - 1) {
             setNumRandomAttr(0);
         }
         if (isUseRandomSplits()) {

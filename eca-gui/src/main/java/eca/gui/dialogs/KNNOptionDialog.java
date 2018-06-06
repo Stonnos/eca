@@ -135,7 +135,7 @@ public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbo
     private void setOptions() {
         numNeighboursTextField.setText(String.valueOf(classifier().getNumNeighbours()));
         weightTextField.setText(estimateFormat.format(classifier().getWeight()));
-        DistanceType distanceType = classifier().distance().getDistanceType();
+        DistanceType distanceType = classifier().getDistance().getDistanceType();
         metricBox.setSelectedItem(distanceType.getDescription());
     }
 

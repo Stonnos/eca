@@ -116,7 +116,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      *
      * @return the values of iterations number
      */
-    public final int getIterationsNum() {
+    public final int getNumIterations() {
         return numIterations;
     }
 
@@ -224,7 +224,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     }
 
     private void initializeSeeds() {
-        seeds = new int[getIterationsNum()];
+        seeds = new int[getNumIterations()];
         NumberGenerator.fillRandom(seeds, random);
     }
 
@@ -238,9 +238,9 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         initializeData(data);
         initializeOptions();
         initializeSeeds();
-        final CountDownLatch finishedLatch = new CountDownLatch(getIterationsNum());
+        final CountDownLatch finishedLatch = new CountDownLatch(getNumIterations());
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
-        for (int i = 0; i < getIterationsNum(); i++) {
+        for (int i = 0; i < getNumIterations(); i++) {
             final int iteration = i;
             executorService.submit(() -> {
                 try {
@@ -293,7 +293,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             Instances sample = createSample(index);
             Classifier classifier = buildNextClassifier(index, sample);
             addClassifier(classifier, sample);
-            if (index == getIterationsNum() - 1) {
+            if (index == getNumIterations() - 1) {
                 checkModelForEmpty();
             }
             return ++index;

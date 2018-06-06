@@ -210,7 +210,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
             minObjTextField.setText(String.valueOf(classifier().getMinObj()));
             maxDepthTextField.setText(String.valueOf(classifier().getMaxDepth()));
             randomTreeBox.setSelected(classifier().isRandomTree());
-            numRandomAttrTextField.setText(String.valueOf(classifier().numRandomAttr()));
+            numRandomAttrTextField.setText(String.valueOf(classifier().getNumRandomAttr()));
             numRandomAttrTextField.setEditable(randomTreeBox.isSelected());
             binaryTreeBox.setSelected(classifier().getUseBinarySplits());
             randomSplitsBox.setSelected(classifier().isUseRandomSplits());

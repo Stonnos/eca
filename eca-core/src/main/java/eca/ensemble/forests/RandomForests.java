@@ -166,7 +166,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     @Override
     public List<String> getListOptions() {
         List<String> optionsList = new ArrayList<>();
-        optionsList.addAll(Arrays.asList(ForestsDictionary.NUM_TREES, String.valueOf(getIterationsNum()),
+        optionsList.addAll(Arrays.asList(ForestsDictionary.NUM_TREES, String.valueOf(getNumIterations()),
                 DecisionTreeDictionary.MIN_NUM_OBJECTS_IN_LEAF, String.valueOf(minObj),
                 DecisionTreeDictionary.MAX_DEPTH, String.valueOf(maxDepth),
                 DecisionTreeDictionary.NUM_RANDOM_ATTRS, String.valueOf(numRandomAttr),

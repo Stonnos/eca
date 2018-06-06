@@ -63,7 +63,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     @Override
     public String[] getOptions() {
         return new String[] {
-                EnsembleDictionary.NUM_ITS, String.valueOf(getIterationsNum()),
+                EnsembleDictionary.NUM_ITS, String.valueOf(getNumIterations()),
                 EnsembleDictionary.NETWORK_MIN_ERROR, COMMON_DECIMAL_FORMAT.format(getMinError()),
                 EnsembleDictionary.NETWORK_MAX_ERROR, COMMON_DECIMAL_FORMAT.format(getMaxError()),
                 EnsembleDictionary.SAMPLING_METHOD,
@@ -94,7 +94,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     protected void initializeOptions() {
-        votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
+        votes = new WeightedVoting(new Aggregator(this), getNumIterations());
     }
 
     @Override

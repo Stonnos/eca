@@ -185,7 +185,7 @@ public class StatisticsTableBuilder {
 
     public final JTable createStatistics(KNearestNeighbours cls, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, cls);
-        model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.distance().getDistanceType().getDescription()));
+        model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.getDistance().getDistanceType().getDescription()));
         return createTable(model);
     }
 

@@ -17,12 +17,12 @@ public interface WeightedVotesAvailable {
      *
      * @return <tt>true</tt> if weighted votes method is selected
      */
-    boolean getUseWeightedVotesMethod();
+    boolean getUseWeightedVotes();
 
     /**
      * Sets weighted votes method flag.
      *
      * @param flag weighted votes method flag
      */
-    void setUseWeightedVotesMethod(boolean flag);
+    void setUseWeightedVotes(boolean flag);
 }

@@ -171,7 +171,7 @@ public class KNearestNeighbours extends AbstractClassifier
      *
      * @return the distance function object
      */
-    public Distance distance() {
+    public Distance getDistance() {
         return metric;
     }
 

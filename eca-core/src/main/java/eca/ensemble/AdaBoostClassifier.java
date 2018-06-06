@@ -72,7 +72,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         String[] options = new String[(getClassifiersSet().size() + 4) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.NUM_ITS;
-        options[k++] = String.valueOf(getIterationsNum());
+        options[k++] = String.valueOf(getNumIterations());
         options[k++] = EnsembleDictionary.MIN_ERROR;
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
@@ -95,7 +95,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     protected void initializeOptions() {
-        votes = new WeightedVoting(new Aggregator(this), getIterationsNum());
+        votes = new WeightedVoting(new Aggregator(this), getNumIterations());
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
@@ -130,10 +130,10 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 throw new NoSuchElementException();
             }
             if (!nextIteration(index)) {
-                step = getIterationsNum() - index;
-                index = getIterationsNum() - 1;
+                step = getNumIterations() - index;
+                index = getNumIterations() - 1;
             }
-            if (index == getIterationsNum() - 1) {
+            if (index == getNumIterations() - 1) {
                 checkModelForEmpty();
             }
             return ++index;

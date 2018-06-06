@@ -58,7 +58,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
     @Override
     protected void initializeOptions() {
         aggregator = new SubspacesAggregator(this);
-        votes = getUseWeightedVotesMethod() ? new WeightedVoting(aggregator, getIterationsNum()) :
+        votes = getUseWeightedVotes() ? new WeightedVoting(aggregator, getNumIterations()) :
                 new MajorityVoting(aggregator);
     }
 
@@ -85,7 +85,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
         if (error > getMinError() && error < getMaxError()) {
             classifiers.add(classifier);
             aggregator.setInstances(data);
-            if (getUseWeightedVotesMethod()) {
+            if (getUseWeightedVotes()) {
                 ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
             }
         }

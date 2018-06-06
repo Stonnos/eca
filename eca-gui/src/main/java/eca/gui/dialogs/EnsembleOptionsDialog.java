@@ -309,12 +309,12 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         votesGroup.add(weightedRadioButton);
         majorityRadioButton.addItemListener(e -> {
             if (classifier() instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier()).setUseWeightedVotesMethod(false);
+                ((HeterogeneousClassifier) classifier()).setUseWeightedVotes(false);
             }
         });
         weightedRadioButton.addItemListener(e -> {
             if (classifier() instanceof HeterogeneousClassifier) {
-                ((HeterogeneousClassifier) classifier()).setUseWeightedVotesMethod(true);
+                ((HeterogeneousClassifier) classifier()).setUseWeightedVotes(true);
             }
         });
         majorityRadioButton.setSelected(true);
@@ -376,7 +376,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     }
 
     private void setOptions() {
-        numClassifiersTextField.setText(String.valueOf(classifier().getIterationsNum()));
+        numClassifiersTextField.setText(String.valueOf(classifier().getNumIterations()));
         classifierMaxErrorTextField.setText(estimateFormat.format(classifier().getMaxError()));
         classifierMinErrorTextField.setText(estimateFormat.format(classifier().getMinError()));
         threadsSpinner.setModel(

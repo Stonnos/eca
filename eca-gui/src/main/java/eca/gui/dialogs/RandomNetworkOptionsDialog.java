@@ -66,7 +66,7 @@ public class RandomNetworkOptionsDialog extends ClassifierOptionsDialogBase<Rand
     }
 
     private void setOptions() {
-        numClassifiersTextField.setText(String.valueOf(classifier().getIterationsNum()));
+        numClassifiersTextField.setText(String.valueOf(classifier().getNumIterations()));
         classifierMaxErrorTextField.setText(estimateFormat.format(classifier().getMaxError()));
         classifierMinErrorTextField.setText(estimateFormat.format(classifier().getMinError()));
         useBootstrapSamplesCheckBox.setSelected(classifier().isUseBootstrapSamples());

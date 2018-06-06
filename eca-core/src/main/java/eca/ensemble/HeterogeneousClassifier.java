@@ -92,12 +92,12 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     @Override
-    public boolean getUseWeightedVotesMethod() {
+    public boolean getUseWeightedVotes() {
         return useWeightedVotes;
     }
 
     @Override
-    public void setUseWeightedVotesMethod(boolean flag) {
+    public void setUseWeightedVotes(boolean flag) {
         this.useWeightedVotes = flag;
     }
 
@@ -124,14 +124,13 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         String[] options = new String[(getClassifiersSet().size() + 8) * 2];
         int k = 0;
         options[k++] = EnsembleDictionary.NUM_ITS;
-        options[k++] = String.valueOf(getIterationsNum());
+        options[k++] = String.valueOf(getNumIterations());
         options[k++] = EnsembleDictionary.MIN_ERROR;
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMinError());
         options[k++] = EnsembleDictionary.MAX_ERROR;
         options[k++] = COMMON_DECIMAL_FORMAT.format(getMaxError());
         options[k++] = EnsembleDictionary.VOTING_METHOD;
-        options[k++] = getUseWeightedVotesMethod() ?
-                EnsembleDictionary.WEIGHTED_VOTING : EnsembleDictionary.MAJORITY_VOTING;
+        options[k++] = getUseWeightedVotes() ? EnsembleDictionary.WEIGHTED_VOTING : EnsembleDictionary.MAJORITY_VOTING;
         options[k++] = EnsembleDictionary.SAMPLING_METHOD;
         options[k++] = getSamplingMethod().getDescription();
         options[k++] = EnsembleDictionary.CLASSIFIER_SELECTION;
@@ -153,7 +152,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         if (SamplingMethod.INITIAL.equals(getSamplingMethod())) {
             setIterationsNum(getClassifiersSet().size());
         }
-        votes = getUseWeightedVotesMethod() ? new WeightedVoting(new Aggregator(this), getIterationsNum()) :
+        votes = getUseWeightedVotes() ? new WeightedVoting(new Aggregator(this), getNumIterations()) :
                 new MajorityVoting(new Aggregator(this));
     }
 
@@ -181,7 +180,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         double error = Evaluation.error(classifier, data);
         if (error > getMinError() && error < getMaxError()) {
             classifiers.add(classifier);
-            if (getUseWeightedVotesMethod()) {
+            if (getUseWeightedVotes()) {
                 ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
             }
         }

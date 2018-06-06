@@ -134,7 +134,7 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                                     nextModel.setSeed(getSeed());
                                     nextModel.setSamplingMethod(SAMPLE_METHOD[s]);
                                     nextModel.setUseRandomClassifier(CLASSIFIER_SELECTION_METHOD[i]);
-                                    nextModel.setUseWeightedVotesMethod(VOTING_METHOD[a]);
+                                    nextModel.setUseWeightedVotes(VOTING_METHOD[a]);
                                     nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
                                     return evaluateModel(nextModel);
                                 }

@@ -32,7 +32,7 @@ public class SubspacesAggregator extends Aggregator {
      */
     public SubspacesAggregator(IterativeEnsembleClassifier classifier) {
         super(classifier);
-        instances = new ArrayList<>(classifier.getIterationsNum());
+        instances = new ArrayList<>(classifier.getNumIterations());
     }
 
     /**
