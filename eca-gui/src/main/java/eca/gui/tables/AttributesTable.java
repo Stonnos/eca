@@ -69,12 +69,15 @@ public class AttributesTable extends JDataTableBase {
 
     private int lastDataModificationCount;
     private int lastAttributesModificationCount;
+    private int lastClassModificationCount;
+    private int classModificationCount;
     private Instances lastCreatedInstances;
 
     public AttributesTable(InstancesTable instancesTable, final JComboBox<String> classBox) {
         super(new AttributesTableModel(instancesTable.data()));
         this.instancesTable = instancesTable;
         this.classBox = classBox;
+        this.addClassAttributeListener();
         this.getColumnModel().getColumn(0).setPreferredWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMaxWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMinWidth(INDEX_COLUMN_PREFERRED_WIDTH);
@@ -144,9 +147,7 @@ public class AttributesTable extends JDataTableBase {
     }
 
     public Instances createData(String relationName) throws Exception {
-        if (lastCreatedInstances == null ||
-                (lastDataModificationCount != instancesTable.model().getModificationCount() ||
-                        lastAttributesModificationCount != getAttributesTableModel().getModificationCount())) {
+        if (lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified()) {
             Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
             DecimalFormat format = instancesTable.model().format();
             for (int i = 0; i < instancesTable.getRowCount(); i++) {
@@ -177,6 +178,7 @@ public class AttributesTable extends JDataTableBase {
             }
             lastDataModificationCount = instancesTable.model().getModificationCount();
             lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
+            lastClassModificationCount = classModificationCount;
             lastCreatedInstances = filterInstances;
         }
         return lastCreatedInstances;
@@ -220,6 +222,22 @@ public class AttributesTable extends JDataTableBase {
 
     private boolean isDate(int i) {
         return getAttributesTableModel().isDate(i);
+    }
+
+    private void addClassAttributeListener() {
+        classBox.addActionListener(event -> classModificationCount++);
+    }
+
+    private boolean isDataModified() {
+        return lastDataModificationCount != instancesTable.model().getModificationCount();
+    }
+
+    private boolean isAttributesModified() {
+        return lastAttributesModificationCount != getAttributesTableModel().getModificationCount();
+    }
+
+    private boolean isClassModified() {
+        return classModificationCount != lastClassModificationCount;
     }
 
     private boolean validateSelectedAttributesCount() {
