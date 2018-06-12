@@ -11,6 +11,11 @@ import lombok.Data;
 public class EcaResponse {
 
     /**
+     * Request unique identifier
+     */
+    private String requestId;
+
+    /**
      * Technical status
      */
     private TechnicalStatus status;

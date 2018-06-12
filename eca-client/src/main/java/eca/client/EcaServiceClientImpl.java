@@ -9,6 +9,7 @@ import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.exception.EcaServiceException;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
+import eca.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -166,8 +167,9 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         validateResponse(response);
         final EvaluationResponse evaluationResponse = response.getBody();
 
-        log.info("Received response from eca - service with status [{}] for model '{}', data '{}'.",
-                evaluationResponse.getStatus(), classifier.getClass().getSimpleName(), data.relationName());
+        log.info("Received response from eca - service with id [{}], status [{}] for model '{}', data '{}'.",
+                evaluationResponse.getRequestId(), evaluationResponse.getStatus(),
+                classifier.getClass().getSimpleName(), data.relationName());
 
         return evaluationResponse.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
             @Override
@@ -197,8 +199,8 @@ public class EcaServiceClientImpl implements EcaServiceClient {
                 restTemplate.postForEntity(experimentUrl, experimentRequestDto, EcaResponse.class);
         validateResponse(response);
         EcaResponse ecaResponse = response.getBody();
-        log.info("Received response from eca - service with status [{}] for experiment request {}.",
-                ecaResponse.getStatus(), experimentRequestDto.getExperimentType());
+        log.info("Received response from eca - service with id [{}], status [{}] for experiment request {}.",
+                ecaResponse.getRequestId(), ecaResponse.getStatus(), experimentRequestDto.getExperimentType());
 
         return ecaResponse;
     }
@@ -210,14 +212,10 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {
             evaluationRequestDto.setEvaluationOptionsMap(new HashMap<>());
-            if (numFolds != null) {
-                evaluationRequestDto.getEvaluationOptionsMap().put(EvaluationOption.NUM_FOLDS,
-                        String.valueOf(numFolds));
-            }
-            if (numTests != null) {
-                evaluationRequestDto.getEvaluationOptionsMap().put(EvaluationOption.NUM_TESTS,
-                        String.valueOf(numTests));
-            }
+            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
+                    EvaluationOption.NUM_FOLDS, numFolds);
+            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
+                    EvaluationOption.NUM_TESTS, numTests);
         }
         return evaluationRequestDto;
     }

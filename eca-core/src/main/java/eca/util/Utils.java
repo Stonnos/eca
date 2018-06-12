@@ -117,4 +117,19 @@ public class Utils {
     public static String removeQuotes(String val) {
         return !StringUtils.isEmpty(val) ? StringUtils.remove(val.trim(), QUOTE) : val;
     }
+
+    /**
+     * Puts value to specified map if it is not null.
+     *
+     * @param map   - map
+     * @param key   - key value
+     * @param value - value associated with key
+     * @param <K>   key generic type
+     * @param <V>   value generic type
+     */
+    public static <K, V> void putValueIfNotNull(Map<K, String> map, K key, V value) {
+        if (value != null) {
+            map.put(key, String.valueOf(value));
+        }
+    }
 }
