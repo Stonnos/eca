@@ -227,7 +227,7 @@ public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<Rando
         }
 
         void setClassifierOptions() {
-            classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+            classifier().setNumIterations(Integer.parseInt(numClassifiersTextField.getText().trim()));
             classifier().setMinObj(Integer.parseInt(minObjTextField.getText().trim()));
             classifier().setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
             classifier().setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));

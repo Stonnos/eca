@@ -103,7 +103,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      * @param numIterations the values of iterations number
      * @throws IllegalArgumentException if the values of iterations number is less than 1
      */
-    public final void setIterationsNum(int numIterations) {
+    public final void setNumIterations(int numIterations) {
         if (numIterations < MINIMUM_ITERATIONS_NUMBER) {
             throw new IllegalArgumentException(
                     String.format(EnsembleDictionary.INVALID_NUM_ITS_ERROR_FORMAT, MINIMUM_ITERATIONS_NUMBER));

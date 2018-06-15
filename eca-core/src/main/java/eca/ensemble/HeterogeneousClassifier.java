@@ -150,7 +150,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     @Override
     protected void initializeOptions() {
         if (SamplingMethod.INITIAL.equals(getSamplingMethod())) {
-            setIterationsNum(getClassifiersSet().size());
+            setNumIterations(getClassifiersSet().size());
         }
         votes = getUseWeightedVotes() ? new WeightedVoting(new Aggregator(this), getNumIterations()) :
                 new MajorityVoting(new Aggregator(this));

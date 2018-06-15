@@ -388,7 +388,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         JTextField textField = classifierMinErrorTextField;
         try {
             textField = numClassifiersTextField;
-            classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+            classifier().setNumIterations(Integer.parseInt(numClassifiersTextField.getText().trim()));
             textField = classifierMinErrorTextField;
             classifier().setMinError(estimateFormat
                     .parse(classifierMinErrorTextField.getText().trim()).doubleValue());

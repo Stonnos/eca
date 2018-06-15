@@ -98,7 +98,7 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
         }
 
         void generateCommonOptions(RandomForests randomForests) {
-            randomForests.setIterationsNum(AVAILABLE_TREE_NUM[random.nextInt(AVAILABLE_TREE_NUM.length)]);
+            randomForests.setNumIterations(AVAILABLE_TREE_NUM[random.nextInt(AVAILABLE_TREE_NUM.length)]);
             DecisionTreeType decisionTreeType = DECISION_TREE_TYPE[random.nextInt(DECISION_TREE_TYPE.length)];
             randomForests.setDecisionTreeType(decisionTreeType);
             int numRandomAttrs = random.nextInt(getData().numAttributes() - 1) + 1;

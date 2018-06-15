@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 
 import static eca.client.util.Utils.validateResponse;
 
@@ -55,6 +55,11 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      * Number of tests
      **/
     private Integer numTests;
+
+    /**
+     * Seed value for random gebnerator
+     */
+    private Integer seed;
 
     /**
      * Rest template object
@@ -116,6 +121,24 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      */
     public void setNumTests(Integer numTests) {
         this.numTests = numTests;
+    }
+
+    /**
+     * Returns seed value.
+     *
+     * @return seed value
+     */
+    public Integer getSeed() {
+        return seed;
+    }
+
+    /**
+     * Sets seed value.
+     *
+     * @param seed - seed value
+     */
+    public void setSeed(Integer seed) {
+        this.seed = seed;
     }
 
     /**
@@ -211,11 +234,13 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         evaluationRequestDto.setData(data);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {
-            evaluationRequestDto.setEvaluationOptionsMap(new HashMap<>());
+            evaluationRequestDto.setEvaluationOptionsMap(new EnumMap<>(EvaluationOption.class));
             Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
                     EvaluationOption.NUM_FOLDS, numFolds);
             Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
                     EvaluationOption.NUM_TESTS, numTests);
+            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
+                    EvaluationOption.SEED, seed);
         }
         return evaluationRequestDto;
     }

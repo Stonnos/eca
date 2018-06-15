@@ -131,7 +131,7 @@ public class RandomNetworkOptionsDialog extends ClassifierOptionsDialogBase<Rand
             } else {
                 try {
                     textField = numClassifiersTextField;
-                    classifier().setIterationsNum(Integer.parseInt(numClassifiersTextField.getText().trim()));
+                    classifier().setNumIterations(Integer.parseInt(numClassifiersTextField.getText().trim()));
                     textField = classifierMinErrorTextField;
                     classifier().setMinError(estimateFormat
                             .parse(classifierMinErrorTextField.getText().trim()).doubleValue());
