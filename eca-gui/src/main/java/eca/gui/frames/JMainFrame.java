@@ -1479,6 +1479,7 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+        disabledMenuElementList.add(optimalClassifierMenu);
 
         serviceMenu.add(historyMenu);
         serviceMenu.add(experimentRequestMenu);
