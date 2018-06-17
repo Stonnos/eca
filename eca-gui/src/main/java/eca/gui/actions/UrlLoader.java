@@ -11,21 +11,16 @@ import weka.core.Instances;
 /**
  * @author Roman Batygin
  */
-public class UrlLoader implements CallbackAction {
+public class UrlLoader extends AbstractCallback<Instances> {
 
-    private Instances data;
     private final FileDataLoader loader;
 
     public UrlLoader(FileDataLoader loader) {
         this.loader = loader;
     }
 
-    public Instances data() {
-        return data;
-    }
-
     @Override
     public void apply() throws Exception {
-        data = loader.loadInstances();
+        result = loader.loadInstances();
     }
 }

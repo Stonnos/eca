@@ -9,12 +9,10 @@ import eca.client.dto.ExperimentRequestDto;
  *
  * @author Roman Batygin
  */
-public class ExperimentRequestSender implements CallbackAction {
+public class ExperimentRequestSender extends AbstractCallback<EcaResponse> {
 
     private EcaServiceClient ecaServiceClient;
     private ExperimentRequestDto experimentRequestDto;
-    private EcaResponse ecaResponse;
-
     /**
      * Constructor with params.
      *
@@ -28,15 +26,6 @@ public class ExperimentRequestSender implements CallbackAction {
 
     @Override
     public void apply() throws Exception {
-        ecaResponse = ecaServiceClient.createExperimentRequest(experimentRequestDto);
-    }
-
-    /**
-     * Returns eca response.
-     *
-     * @return eca response
-     */
-    public EcaResponse getEcaResponse() {
-        return ecaResponse;
+        result = ecaServiceClient.createExperimentRequest(experimentRequestDto);
     }
 }

@@ -13,21 +13,16 @@ import java.io.File;
 /**
  * @author Roman Batygin
  */
-public class ModelLoader implements CallbackAction {
+public class ModelLoader extends AbstractCallback<ClassificationModel> {
 
-    private ClassificationModel model;
     private final File file;
 
     public ModelLoader(File file) {
         this.file = file;
     }
 
-    public ClassificationModel model() {
-        return model;
-    }
-
     @Override
     public void apply() throws Exception {
-        model = (ClassificationModel) ModelConverter.loadModel(file);
+        result = (ClassificationModel) ModelConverter.loadModel(file);
     }
 }

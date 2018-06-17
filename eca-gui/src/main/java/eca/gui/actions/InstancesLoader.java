@@ -8,27 +8,20 @@ package eca.gui.actions;
 import eca.data.file.FileDataLoader;
 import weka.core.Instances;
 
-import java.io.File;
-
 /**
  * @author Roman Batygin
  */
-public class InstancesLoader implements CallbackAction {
+public class InstancesLoader extends AbstractCallback<Instances> {
 
-    private Instances data;
     private final FileDataLoader dataLoader;
 
     public InstancesLoader(FileDataLoader dataLoader) {
         this.dataLoader = dataLoader;
     }
 
-    public Instances data() {
-        return data;
-    }
-
     @Override
     public void apply() throws Exception {
-        data = dataLoader.loadInstances();
+        result = dataLoader.loadInstances();
     }
 
 }

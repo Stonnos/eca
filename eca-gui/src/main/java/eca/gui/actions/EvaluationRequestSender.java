@@ -10,12 +10,11 @@ import weka.core.Instances;
  *
  * @author Roman Batygin
  */
-public class EvaluationRequestSender implements CallbackAction {
+public class EvaluationRequestSender extends AbstractCallback<EvaluationResults> {
 
     private EcaServiceClient ecaServiceClient;
     private AbstractClassifier classifier;
     private Instances data;
-    private EvaluationResults evaluationResults;
 
     /**
      * Constructor with params.
@@ -32,15 +31,6 @@ public class EvaluationRequestSender implements CallbackAction {
 
     @Override
     public void apply() throws Exception {
-        evaluationResults = ecaServiceClient.performRequest(classifier, data);
-    }
-
-    /**
-     * Gets evaluation results.
-     *
-     * @return evaluation results
-     */
-    public EvaluationResults getEvaluationResults() {
-        return evaluationResults;
+        result = ecaServiceClient.performRequest(classifier, data);
     }
 }

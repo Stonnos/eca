@@ -7,11 +7,9 @@ import weka.core.Instances;
  * @author Roman Batygin
  */
 
-public class DataGeneratorCallback implements CallbackAction {
+public class DataGeneratorCallback extends AbstractCallback<Instances> {
 
     private DataGenerator dataGenerator;
-
-    private Instances result;
 
     public DataGeneratorCallback(DataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
@@ -20,9 +18,5 @@ public class DataGeneratorCallback implements CallbackAction {
     @Override
     public void apply() {
         result = dataGenerator.generate();
-    }
-
-    public Instances getResult() {
-        return result;
     }
 }

@@ -44,6 +44,7 @@ import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
+import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
@@ -51,7 +52,6 @@ import eca.gui.actions.EvaluationRequestSender;
 import eca.gui.actions.ExperimentRequestSender;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
-import eca.gui.actions.OptimalClassifierRequestSender;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
@@ -575,7 +575,7 @@ public class JMainFrame extends JFrame {
         LoadDialog progress = new LoadDialog(JMainFrame.this,
                 requestSender, MODEL_BUILDING_MESSAGE);
         process(progress, () -> {
-            EvaluationResults evaluationResults = requestSender.getEvaluationResults();
+            EvaluationResults evaluationResults = requestSender.getResult();
             resultsHistory.createResultFrame(frame.getTitle(), evaluationResults.getClassifier(),
                     frame.data(), evaluationResults.getEvaluation(), maximumFractionDigits);
         });
@@ -729,7 +729,7 @@ public class JMainFrame extends JFrame {
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        process(progress, () -> createDataFrame(loader.data()));
+                        process(progress, () -> createDataFrame(loader.getResult()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -862,7 +862,7 @@ public class JMainFrame extends JFrame {
                     UrlLoader loader = new UrlLoader(dataLoader);
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
                             loader, DATA_LOADING_MESSAGE);
-                    process(progress, () -> createDataFrame(loader.data()));
+                    process(progress, () -> createDataFrame(loader.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
@@ -893,7 +893,7 @@ public class JMainFrame extends JFrame {
                                 loader, MODEL_BUILDING_MESSAGE);
 
                         process(progress, () -> {
-                            ClassificationModel model = loader.model();
+                            ClassificationModel model = loader.getResult();
                             String description;
                             int digits;
                             Map<String, String> properties = model.getAdditionalProperties();
@@ -1412,7 +1412,7 @@ public class JMainFrame extends JFrame {
                                         experimentRequestSender, EXPERIMENT_REQUEST_LOADING_MESSAGE);
 
                                 process(progress, () -> {
-                                    EcaResponse ecaResponse = experimentRequestSender.getEcaResponse();
+                                    EcaResponse ecaResponse = experimentRequestSender.getResult();
                                     ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                                         @Override
                                         public Void caseSuccessStatus() {
@@ -1458,18 +1458,19 @@ public class JMainFrame extends JFrame {
                 try {
                     ecaServiceClient.setOptimalClassifierUrl(
                             CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl());
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        OptimalClassifierRequestSender requestSender = new OptimalClassifierRequestSender
-                                (ecaServiceClient, dataBuilder.getData());
-                        LoadDialog progress = new LoadDialog(JMainFrame.this, requestSender, MODEL_BUILDING_MESSAGE);
-                        process(progress, () -> {
-                            EvaluationResults evaluationResults = requestSender.getEvaluationResults();
-                            resultsHistory.createResultFrame(
-                                    evaluationResults.getClassifier().getClass().getSimpleName(),
-                                    evaluationResults.getClassifier(), dataBuilder.getData(),
-                                    evaluationResults.getEvaluation(), maximumFractionDigits);
-                        });
+                    final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
+                        @Override
+                        public void apply() throws Exception {
+                            this.result = ecaServiceClient.performRequest(selectedPanel().getData());
+                        }
+                    };
+                    LoadDialog progress = new LoadDialog(JMainFrame.this, callback, MODEL_BUILDING_MESSAGE);
+                    process(progress, () -> {
+                        EvaluationResults evaluationResults = callback.getResult();
+                        resultsHistory.createResultFrame(
+                                evaluationResults.getClassifier().getClass().getSimpleName(),
+                                evaluationResults.getClassifier(), callback.getResult().getEvaluation().getData(),
+                                evaluationResults.getEvaluation(), maximumFractionDigits);
                     });
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);

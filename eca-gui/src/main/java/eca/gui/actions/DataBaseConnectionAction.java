@@ -18,10 +18,6 @@ public class DataBaseConnectionAction implements CallbackAction {
         this.connection = connection;
     }
 
-    public JdbcQueryExecutor getConnection() {
-        return connection;
-    }
-
     @Override
     public void apply() throws Exception {
         connection.open();
