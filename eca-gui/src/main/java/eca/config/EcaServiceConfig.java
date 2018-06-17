@@ -22,4 +22,8 @@ public class EcaServiceConfig {
      * Experiment url
      */
     private String experimentUrl;
+    /**
+     * Eca - service url for evaluation with optimal classifier options
+     */
+    private String optimalClassifierUrl;
 }

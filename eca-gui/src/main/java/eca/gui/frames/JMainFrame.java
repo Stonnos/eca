@@ -6,7 +6,6 @@
 package eca.gui.frames;
 
 import eca.Reference;
-import eca.client.EcaServiceClient;
 import eca.client.EcaServiceClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
@@ -48,15 +47,17 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
+import eca.gui.actions.EvaluationRequestSender;
 import eca.gui.actions.ExperimentRequestSender;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
+import eca.gui.actions.OptimalClassifierRequestSender;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
-import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.ClassifierBuilderDialog;
+import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.DataGeneratorDialog;
 import eca.gui.dialogs.DatabaseConnectionDialog;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
@@ -193,6 +194,7 @@ public class JMainFrame extends JFrame {
     private static final String RANDOM_GENERATOR_MENU_TEXT = "Настройки генератора случайных чисел";
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
+    private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -214,6 +216,8 @@ public class JMainFrame extends JFrame {
 
     private final SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+
+    private EcaServiceClientImpl ecaServiceClient = new EcaServiceClientImpl();
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -522,32 +526,6 @@ public class JMainFrame extends JFrame {
     }
 
     /**
-     * Eca - service callback action.
-     */
-    private class EcaServiceAction implements CallbackAction {
-
-        EcaServiceClient restClient;
-        AbstractClassifier classifier;
-        Instances data;
-        EvaluationResults classifierDescriptor;
-
-        EcaServiceAction(EcaServiceClient restClient, AbstractClassifier classifier, Instances data) {
-            this.restClient = restClient;
-            this.classifier = classifier;
-            this.data = data;
-        }
-
-        @Override
-        public void apply() throws Exception {
-            classifierDescriptor = restClient.performRequest(classifier, data);
-        }
-
-        EvaluationResults getClassifierDescriptor() {
-            return classifierDescriptor;
-        }
-    }
-
-    /**
      * Classification results history model.
      */
     public class ResultsHistory extends DefaultListModel<String> {
@@ -586,26 +564,20 @@ public class JMainFrame extends JFrame {
     }
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
-
-        EcaServiceClientImpl restClient = new EcaServiceClientImpl();
-        restClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        restClient.setEvaluationUrl(CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl());
-
-        if (EvaluationMethod.CROSS_VALIDATION.equals(restClient.getEvaluationMethod())) {
-            restClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
-            restClient.setNumTests(evaluationMethodOptionsDialog.numTests());
+        ecaServiceClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
+        ecaServiceClient.setEvaluationUrl(CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl());
+        if (EvaluationMethod.CROSS_VALIDATION.equals(ecaServiceClient.getEvaluationMethod())) {
+            ecaServiceClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
+            ecaServiceClient.setNumTests(evaluationMethodOptionsDialog.numTests());
         }
-
-        EcaServiceAction ecaServiceAction = new EcaServiceAction(restClient, (AbstractClassifier) frame.classifier(),
-                frame.data());
-
+        EvaluationRequestSender requestSender =
+                new EvaluationRequestSender(ecaServiceClient, (AbstractClassifier) frame.classifier(), frame.data());
         LoadDialog progress = new LoadDialog(JMainFrame.this,
-                ecaServiceAction, MODEL_BUILDING_MESSAGE);
-
+                requestSender, MODEL_BUILDING_MESSAGE);
         process(progress, () -> {
-            EvaluationResults classifierDescriptor = ecaServiceAction.getClassifierDescriptor();
-            resultsHistory.createResultFrame(frame.getTitle(), classifierDescriptor.getClassifier(),
-                    frame.data(), classifierDescriptor.getEvaluation(), maximumFractionDigits);
+            EvaluationResults evaluationResults = requestSender.getEvaluationResults();
+            resultsHistory.createResultFrame(frame.getTitle(), evaluationResults.getClassifier(),
+                    frame.data(), evaluationResults.getEvaluation(), maximumFractionDigits);
         });
     }
 
@@ -1419,16 +1391,12 @@ public class JMainFrame extends JFrame {
         disabledMenuElementList.add(experimentRequestMenu);
         experimentRequestMenu.addActionListener(new ActionListener() {
 
-            EcaServiceClientImpl ecaServiceClient;
             ExperimentRequestDto experimentRequestDto;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 if (dataValidated()) {
                     try {
-                        if (ecaServiceClient == null) {
-                            ecaServiceClient = new EcaServiceClientImpl();
-                        }
                         ecaServiceClient.setExperimentUrl(CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, () -> {
@@ -1482,9 +1450,38 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
+        JMenuItem optimalClassifierMenu = new JMenuItem(OPTIMAL_CLASSIFIER_MENU_TEXT);
+        optimalClassifierMenu.setIcon(
+                new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPTIMAL_CLASSIFIER_ICON)));
+        optimalClassifierMenu.addActionListener(event -> {
+            if (dataValidated()) {
+                try {
+                    ecaServiceClient.setOptimalClassifierUrl(
+                            CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl());
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        OptimalClassifierRequestSender requestSender = new OptimalClassifierRequestSender
+                                (ecaServiceClient, dataBuilder.getData());
+                        LoadDialog progress = new LoadDialog(JMainFrame.this, requestSender, MODEL_BUILDING_MESSAGE);
+                        process(progress, () -> {
+                            EvaluationResults evaluationResults = requestSender.getEvaluationResults();
+                            resultsHistory.createResultFrame(
+                                    evaluationResults.getClassifier().getClass().getSimpleName(),
+                                    evaluationResults.getClassifier(), dataBuilder.getData(),
+                                    evaluationResults.getEvaluation(), maximumFractionDigits);
+                        });
+                    });
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
 
         serviceMenu.add(historyMenu);
         serviceMenu.add(experimentRequestMenu);
+        serviceMenu.add(optimalClassifierMenu);
 
         JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
         attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));

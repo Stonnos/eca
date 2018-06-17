@@ -36,5 +36,6 @@ public enum IconType {
     STATISTICS_ICON,
     TREE_ICON,
     EDIT_ICON,
-    COLOR_ICON
+    COLOR_ICON,
+    OPTIMAL_CLASSIFIER_ICON
 }

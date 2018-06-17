@@ -23,4 +23,5 @@ public class CommonDictionary {
     public static final String ECA_SERVICE_ENABLED = "eca.service.enabled";
     public static final String ECA_SERVICE_URL = "eca.service.url";
     public static final String ECA_SERVICE_EXPERIMENT_URL = "eca.service.experiment-url";
+    public static final String ECA_SERVICE_OPTIMAL_CLASSIFIER_URL = "eca.service.optimal-classifier-url";
 }

@@ -45,7 +45,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     /**
      * Eca - service url for evaluation with optimal classifier options
      */
-    private String optimizeEvaluationUrl;
+    private String optimalClassifierUrl;
 
     /**
      * Evaluation test method
@@ -188,17 +188,17 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      *
      * @return url for evaluation with optimal classifier options
      */
-    public String getOptimizeEvaluationUrl() {
-        return optimizeEvaluationUrl;
+    public String getOptimalClassifierUrl() {
+        return optimalClassifierUrl;
     }
 
     /**
      * Sets url for evaluation with optimal classifier options.
      *
-     * @param optimizeEvaluationUrl - url for evaluation with optimal classifier options
+     * @param optimalClassifierUrl - url for evaluation with optimal classifier options
      */
-    public void setOptimizeEvaluationUrl(String optimizeEvaluationUrl) {
-        this.optimizeEvaluationUrl = optimizeEvaluationUrl;
+    public void setOptimalClassifierUrl(String optimalClassifierUrl) {
+        this.optimalClassifierUrl = optimalClassifierUrl;
     }
 
     @Override
@@ -237,7 +237,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         Assert.notNull(data, "Instances must be specified!");
         log.info("Starting to send request into eca - service for data '{}'.", data.relationName());
         ResponseEntity<EvaluationResponse> response =
-                restTemplate.postForEntity(optimizeEvaluationUrl, new InstancesRequest(data), EvaluationResponse.class);
+                restTemplate.postForEntity(optimalClassifierUrl, new InstancesRequest(data), EvaluationResponse.class);
         validateResponse(response);
         EvaluationResponse evaluationResponse = response.getBody();
         log.info("Received response from eca - service with id [{}], status [{}] for data '{}'.",

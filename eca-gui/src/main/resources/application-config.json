@@ -42,7 +42,8 @@
     "STATISTICS_ICON": "images/icons/statistics-icon.jpg",
     "TREE_ICON": "images/icons/tree-icon.jpg",
     "EDIT_ICON": "images/icons/edit-icon.jpg",
-    "COLOR_ICON": "images/icons/color-icon.jpg"
+    "COLOR_ICON": "images/icons/color-icon.jpg",
+    "OPTIMAL_CLASSIFIER_ICON": "images/icons/classification-optimization-icon.jpg"
   },
   "logotypeUrl": "images/Logotype.jpg",
   "tooltipDismissTime": 60000,

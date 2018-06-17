@@ -1,5 +1,6 @@
 {
   "enabled": false,
   "evaluationUrl": "http://localhost:8085/eca-service/evaluation/execute",
-  "experimentUrl": "http://localhost:8085/eca-service/experiment/create"
+  "experimentUrl": "http://localhost:8085/eca-service/experiment/create",
+  "optimalClassifierUrl": "http://localhost:8085/eca-service/evaluation/optimize"
 }
