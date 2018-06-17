@@ -7,25 +7,34 @@ import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 /**
- * Implements client for communication with eca - service api.
+ * Implements client for communication with eca - service API.
  *
  * @author Roman Batygin
  */
 public interface EcaServiceClient {
 
     /**
-     * Sends request to eca - service.
+     * Sends request to eca - service for classifier model evaluation.
      *
-     * @param classifier {@link AbstractClassifier} object
-     * @param data {@link Instances} object
-     * @return {@link EvaluationResults} object
+     * @param classifier - classifier object
+     * @param data       - training data object
+     * @return evaluation results
      */
     EvaluationResults performRequest(AbstractClassifier classifier, Instances data);
 
     /**
      * Sends experiment request to eca - service.
-     * @param experimentRequestDto {@link ExperimentRequestDto} object
+     *
+     * @param experimentRequestDto - experiment request dto object
      */
     EcaResponse createExperimentRequest(ExperimentRequestDto experimentRequestDto);
+
+    /**
+     * Sends request to eca - service for classifier evaluation with optimal options.
+     *
+     * @param data - training data
+     * @return evaluation results
+     */
+    EvaluationResults performRequest(Instances data);
 
 }
