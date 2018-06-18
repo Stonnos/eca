@@ -98,6 +98,9 @@ public class EcaServiceOptionsDialog extends JDialog {
             case CommonDictionary.ECA_SERVICE_EXPERIMENT_URL:
                 CONFIG_SERVICE.getEcaServiceConfig().setExperimentUrl(entry.getValue());
                 break;
+            case CommonDictionary.ECA_SERVICE_OPTIMAL_CLASSIFIER_URL:
+                CONFIG_SERVICE.getEcaServiceConfig().setOptimalClassifierUrl(entry.getValue());
+                break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));
         }
