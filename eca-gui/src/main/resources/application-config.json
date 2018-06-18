@@ -52,7 +52,7 @@
   "dateFormat": "yyyy-MM-dd HH:mm:ss",
   "crossValidationConfig": {
     "numFolds": 10,
-    "numTests": 10
+    "numTests": 1
   },
   "experimentConfig": {
     "numBestResults": 10
