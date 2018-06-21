@@ -13,6 +13,9 @@ import java.util.Date;
  */
 public class Utils {
 
+    private Utils() {
+    }
+
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final String DELIMITER = "_";
