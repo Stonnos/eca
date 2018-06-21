@@ -36,7 +36,7 @@ public class ImageCopier implements Transferable, Copyable {
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        return (DataFlavor[]) FLAVORS.clone();
+        return FLAVORS.clone();
     }
 
     @Override
