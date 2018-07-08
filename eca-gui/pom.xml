@@ -15,7 +15,7 @@
 
     <properties>
         <jcommon.version>1.0.23</jcommon.version>
-        <jfreechart.version>1.0.19</jfreechart.version>
+        <jfreechart.version>1.0.14</jfreechart.version>
         <velocity.version>1.7</velocity.version>
         <exe.file.name>ECA</exe.file.name>
         <maven-resources-plugin.version>3.0.1</maven-resources-plugin.version>
