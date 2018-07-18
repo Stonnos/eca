@@ -22,6 +22,7 @@ import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
 import eca.data.file.resource.FileResource;
 import eca.data.file.resource.UrlResource;
+import eca.dataminer.AutomatedDecisionTree;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedKNearestNeighbours;
 import eca.dataminer.AutomatedNeuralNetwork;
@@ -169,7 +170,7 @@ public class JMainFrame extends JFrame {
             "Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм";
     private static final String DATA_MINER_ADA_BOOST_MENU_TEXT = "Автоматическое построение: алгоритм AdaBoost";
     private static final String DATA_MINER_STACKING_MENU_TEXT = "Автоматическое построение: алгоритм Stacking";
-    private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: Случайные леса";
+    private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: случайные леса";
     private static final String INDIVIDUAL_CLASSIFIERS_MENU_TEXT = "Индувидуальные алгоритмы";
     private static final String ENSEMBLE_CLASSIFIERS_MENU_TEXT = "Ансамблевые алгоритмы";
     private static final String DECISION_TREES_MENU_TEXT = "Деревья решений";
@@ -195,6 +196,7 @@ public class JMainFrame extends JFrame {
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
+    private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1001,6 +1003,7 @@ public class JMainFrame extends JFrame {
         JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
         JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
         JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
+        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
         //--------------------------------------------------
         aNeuralMenu.addActionListener(event -> {
             if (dataValidated()) {
@@ -1131,6 +1134,26 @@ public class JMainFrame extends JFrame {
             }
         });
         //----------------------------------------
+        automatedDecisionTreeMenu.addActionListener(event -> {
+            if (dataValidated()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getData());
+                        automatedDecisionTree.setSeed(seed);
+                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
+                                (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
+                                        maximumFractionDigits);
+                        automatedDecisionTreeFrame.setVisible(true);
+                    });
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        //----------------------------------------
         dataMinerMenu.add(aNeuralMenu);
         dataMinerMenu.add(aHeteroEnsMenu);
         dataMinerMenu.add(modifiedHeteroEnsMenu);
@@ -1138,6 +1161,7 @@ public class JMainFrame extends JFrame {
         dataMinerMenu.add(aStackingMenu);
         dataMinerMenu.add(knnOptimizerMenu);
         dataMinerMenu.add(automatedRandomForestsMenu);
+        dataMinerMenu.add(automatedDecisionTreeMenu);
         //-------------------------------
         JMenu classifiersMenu = new JMenu(INDIVIDUAL_CLASSIFIERS_MENU_TEXT);
         JMenu ensembleMenu = new JMenu(ENSEMBLE_CLASSIFIERS_MENU_TEXT);

@@ -8,17 +8,17 @@ import javax.swing.*;
 /**
  * @author Roman Batygin
  */
-public class AutomatedKNearestNeighboursFrame extends ExperimentFrame {
+public class AutomatedDecisionTreeFrame extends ExperimentFrame {
 
-    private static final String TITLE_TEXT = "Автоматическое построение KNN";
     private static final String OPTIONS_TITLE = "Настройки";
     private static final String EXPERIMENTS_NUMBER_TITLE = "Число экспериментов:";
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 1000000;
 
-    public AutomatedKNearestNeighboursFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
+    public AutomatedDecisionTreeFrame(String title, AbstractExperiment experiment, JFrame parent, int digits)
+            throws Exception {
         super(experiment, parent, digits);
-        this.setTitle(TITLE_TEXT);
+        this.setTitle(title);
     }
 
     @Override

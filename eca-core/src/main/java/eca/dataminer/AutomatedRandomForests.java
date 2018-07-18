@@ -7,6 +7,8 @@ import eca.ensemble.forests.DecisionTreeType;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.ensemble.forests.RandomForestsType;
+import eca.ensemble.forests.RandomForestsTypeVisitor;
+import eca.generators.NumberGenerator;
 import weka.core.Instances;
 
 import java.util.NoSuchElementException;
@@ -27,12 +29,14 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
 
     private static final RandomForestsType[] RANDOM_FORESTS_TYPE = RandomForestsType.values();
 
-    /**
-     * Available trees size for Random forests
-     */
-    private static final int[] AVAILABLE_TREE_NUM = {10, 25, 50, 75, 100};
+    private static final int MIN_NUM_OBJ = 2;
+    private static final int MAX_NUM_OBJ = 10;
 
-    private static final int NUM_RANDOM_SPLITS_UPPER_BOUND = 25;
+    private static final int MIN_TREES_NUM = 10;
+    private static final int MAX_TREES_NUM = 50;
+
+    private static final int NUM_RANDOM_SPLITS_LOWER_BOUND = 1;
+    private static final int NUM_RANDOM_SPLITS_UPPER_BOUND = 50;
 
     private Integer numThreads = 1;
 
@@ -76,29 +80,29 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
             }
             incrementIndex();
             RandomForestsType randomForestsType = RANDOM_FORESTS_TYPE[random.nextInt(RANDOM_FORESTS_TYPE.length)];
-            RandomForests randomForests = generateRandomForests(randomForestsType);
+            RandomForests randomForests = randomForestsType.handle(new RandomForestsTypeVisitor<RandomForests>() {
+                @Override
+                public RandomForests caseRandomForests() {
+                    return new RandomForests();
+                }
+
+                @Override
+                public RandomForests caseExtraTrees() {
+                    ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier();
+                    extraTreesClassifier.setUseBootstrapSamples(random.nextBoolean());
+                    extraTreesClassifier.setNumRandomSplits(
+                            NumberGenerator.randomInt(random, NUM_RANDOM_SPLITS_LOWER_BOUND,
+                                    NUM_RANDOM_SPLITS_UPPER_BOUND));
+                    return extraTreesClassifier;
+                }
+            });
             generateCommonOptions(randomForests);
             return evaluateModel(randomForests);
         }
 
-        RandomForests generateRandomForests(RandomForestsType randomForestsType) {
-            switch (randomForestsType) {
-                case RANDOM_FORESTS:
-                    return new RandomForests();
-                case EXTRA_TREES:
-                    ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier();
-                    extraTreesClassifier.setUseBootstrapSamples(random.nextBoolean());
-                    int numRandomSplits = random.nextInt(NUM_RANDOM_SPLITS_UPPER_BOUND) + 1;
-                    extraTreesClassifier.setNumRandomSplits(numRandomSplits);
-                    return extraTreesClassifier;
-                default:
-                    throw new IllegalArgumentException(
-                            String.format("Unexpected random forests type: %s", randomForestsType));
-            }
-        }
-
         void generateCommonOptions(RandomForests randomForests) {
-            randomForests.setNumIterations(AVAILABLE_TREE_NUM[random.nextInt(AVAILABLE_TREE_NUM.length)]);
+            randomForests.setNumIterations(NumberGenerator.randomInt(random, MIN_TREES_NUM, MAX_TREES_NUM));
+            randomForests.setMinObj(NumberGenerator.randomInt(random, MIN_NUM_OBJ, MAX_NUM_OBJ));
             DecisionTreeType decisionTreeType = DECISION_TREE_TYPE[random.nextInt(DECISION_TREE_TYPE.length)];
             randomForests.setDecisionTreeType(decisionTreeType);
             int numRandomAttrs = random.nextInt(getData().numAttributes() - 1) + 1;

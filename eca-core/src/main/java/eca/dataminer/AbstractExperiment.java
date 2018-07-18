@@ -51,7 +51,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     /**
      * Number of tests
      **/
-    private int numTests = 10;
+    private int numTests = 1;
 
     /**
      * Number of iterations

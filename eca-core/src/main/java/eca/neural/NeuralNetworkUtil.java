@@ -22,7 +22,7 @@ public class NeuralNetworkUtil {
 
     /**
      * Creates hidden layer with random neurons number
-     * in interval [a, b). Where: <p>
+     * in interval [a, b]. Where: <p>
      * a - minimum neurons number in hidden layer <p>
      * b - maximum neurons number in hidden layer <p>
      *
@@ -35,14 +35,14 @@ public class NeuralNetworkUtil {
         if (neuronsCount < MIN_NEURONS_NUM_IN_HIDDEN_LAYER) {
             return String.valueOf(MIN_NEURONS_NUM_IN_HIDDEN_LAYER);
         }
-        int hiddenLayersCount = random.nextInt(MAX_HIDDEN_LAYERS_NUMBER) + MIN_HIDDEN_LAYERS_NUMBER;
+        int hiddenLayersCount = NumberGenerator.randomInt(random, MIN_HIDDEN_LAYERS_NUMBER, MAX_HIDDEN_LAYERS_NUMBER);
         if (hiddenLayersCount == 1 || neuronsCount <= hiddenLayersCount) {
             return String.valueOf((int) neuronsCount);
         }
         double[] scores = new double[hiddenLayersCount];
         double resultSum = 0.0;
         for (int i = 0; i < scores.length; i++) {
-            scores[i] = random.nextInt(MAX_SCORE_VALUE) + MIN_SCORE_VALUE;
+            scores[i] = NumberGenerator.randomInt(random, MIN_SCORE_VALUE, MAX_SCORE_VALUE);
             resultSum += scores[i];
         }
         double normalizationValue = neuronsCount / resultSum;
@@ -66,7 +66,7 @@ public class NeuralNetworkUtil {
 
     /**
      * Generates the random neurons number in hidden layer
-     * in interval [a, b). Where: <p>
+     * in interval [a, b]. Where: <p>
      * a - minimum neurons number in hidden layer <p>
      * b - maximum neurons number in hidden layer <p>
      *
@@ -75,7 +75,7 @@ public class NeuralNetworkUtil {
      * @return the random neurons number in hidden layer.
      */
     public static int generateNeuronsNumberInHiddenLayer(Instances data, Random random) {
-        return (int) NumberGenerator.random(random, getMinNumNeuronsInHiddenLayer(data),
+        return NumberGenerator.randomInt(random, getMinNumNeuronsInHiddenLayer(data),
                 getMaxNumNeuronsInHiddenLayer(data));
     }
 

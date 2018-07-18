@@ -24,6 +24,18 @@ public class NumberGenerator {
     }
 
     /**
+     * Returns the number uniformly distributed in defined interval {@code [a, b]}.
+     *
+     * @param lowerBound lower bound of interval
+     * @param upperBound upper bound of interval
+     * @param random     random object
+     * @return the number uniformly distributed in defined interval {@code [a, b]}
+     */
+    public static int randomInt(Random random, int lowerBound, int upperBound) {
+        return random.nextInt(upperBound - lowerBound + 1) + lowerBound;
+    }
+
+    /**
      * Returns the number uniformly distributed in defined interval {@code [a, b)}.
      *
      * @param lowerBound lower bound of interval
@@ -79,5 +91,4 @@ public class NumberGenerator {
         }
         return value * (upperBound - lowerBound) + lowerBound;
     }
-
 }

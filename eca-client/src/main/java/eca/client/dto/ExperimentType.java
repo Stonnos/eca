@@ -48,7 +48,12 @@ public enum ExperimentType {
      * Optimal options automatic selection for stacking algorithm using cross - validation
      * method for meta data set creation.
      */
-    STACKING_CV(ExperimentTypeDictionary.STACKING_CV_NAME);
+    STACKING_CV(ExperimentTypeDictionary.STACKING_CV_NAME),
+
+    /**
+     * Optimal options automatic selection for decision tree algorithms.
+     */
+    DECISION_TREE(ExperimentTypeDictionary.DECISION_TREE_NAME);
 
     private String description;
 
