@@ -11,6 +11,7 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 import weka.core.Instances;
+import weka.core.Utils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,8 +25,8 @@ public class AutomatedDecisionTree extends AbstractExperiment<DecisionTreeClassi
 
     private static final int MIN_NUM_OBJ = 2;
     private static final int MAX_NUM_OBJ = 10;
-    private static final int NUM_RANDOM_SPLITS_LOWER_BOUND = 1;
-    private static final int NUM_RANDOM_SPLITS_UPPER_BOUND = 50;
+
+    private static final int MIN_HEIGHT = 0;
 
     /**
      * Available alpha values for hi square test used by CHAID algorithm
@@ -56,6 +57,12 @@ public class AutomatedDecisionTree extends AbstractExperiment<DecisionTreeClassi
      * Decision tree iterative builder.
      */
     private class DecisionTreeIterativeBuilder extends AbstractIterativeBuilder {
+
+        int maxHeight;
+
+        DecisionTreeIterativeBuilder() {
+            this.maxHeight = (int) Utils.log2(getData().numInstances());
+        }
 
         @Override
         public EvaluationResults next() throws Exception {
@@ -94,20 +101,9 @@ public class AutomatedDecisionTree extends AbstractExperiment<DecisionTreeClassi
 
         void generateCommonOptions(DecisionTreeClassifier decisionTreeClassifier) {
             decisionTreeClassifier.setMinObj(NumberGenerator.randomInt(random, MIN_NUM_OBJ, MAX_NUM_OBJ));
-            decisionTreeClassifier.setUseRandomSplits(random.nextBoolean());
-            if (random.nextBoolean()) {
-                decisionTreeClassifier.setRandomTree(true);
-                int numRandomAttrs = random.nextInt(getData().numAttributes() - 1) + 1;
-                decisionTreeClassifier.setNumRandomAttr(numRandomAttrs);
-            }
-            if (random.nextBoolean()) {
-                decisionTreeClassifier.setUseRandomSplits(true);
-                decisionTreeClassifier.setNumRandomSplits(
-                        NumberGenerator.randomInt(random, NUM_RANDOM_SPLITS_LOWER_BOUND,
-                                NUM_RANDOM_SPLITS_UPPER_BOUND));
-            }
+            decisionTreeClassifier.setMaxDepth(NumberGenerator.randomInt(random, MIN_HEIGHT, maxHeight));
+            decisionTreeClassifier.setUseBinarySplits(random.nextBoolean());
             decisionTreeClassifier.setSeed(getSeed());
         }
-
     }
 }
