@@ -10,7 +10,6 @@ import eca.ensemble.forests.RandomForestsType;
 import eca.ensemble.forests.RandomForestsTypeVisitor;
 import eca.generators.NumberGenerator;
 import weka.core.Instances;
-import weka.core.Utils;
 
 import java.util.NoSuchElementException;
 
@@ -38,8 +37,6 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
 
     private static final int NUM_RANDOM_SPLITS_LOWER_BOUND = 1;
     private static final int NUM_RANDOM_SPLITS_UPPER_BOUND = 50;
-
-    private static final int MIN_HEIGHT = 0;
 
     private Integer numThreads = 1;
 
@@ -76,12 +73,6 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
      */
     private class RandomForestsIterativeBuilder extends AbstractIterativeBuilder {
 
-        int maxHeight;
-
-        RandomForestsIterativeBuilder() {
-            this.maxHeight = (int) Utils.log2(getData().numInstances());
-        }
-
         @Override
         public EvaluationResults next() throws Exception {
             if (!hasNext()) {
@@ -112,7 +103,6 @@ public class AutomatedRandomForests extends AbstractExperiment<RandomForests> im
         void generateCommonOptions(RandomForests randomForests) {
             randomForests.setNumIterations(NumberGenerator.randomInt(random, MIN_TREES_NUM, MAX_TREES_NUM));
             randomForests.setMinObj(NumberGenerator.randomInt(random, MIN_NUM_OBJ, MAX_NUM_OBJ));
-            randomForests.setMaxDepth(NumberGenerator.randomInt(random, MIN_HEIGHT, maxHeight));
             DecisionTreeType decisionTreeType = DECISION_TREE_TYPE[random.nextInt(DECISION_TREE_TYPE.length)];
             randomForests.setDecisionTreeType(decisionTreeType);
             int numRandomAttrs = random.nextInt(getData().numAttributes() - 1) + 1;
