@@ -78,19 +78,27 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
         ArrayList<Attribute> attributes = new ArrayList<>();
         for (int i = 0; i < data.get(0).size(); i++) {
             ArrayList<String> values = new ArrayList<>();
-            int attributeType = Attribute.NUMERIC;
+            int attributeType = getAttributeType(data, i);
             for (int j = 1; j < data.size(); j++) {
                 String val = removeQuotes(data.get(j).get(i));
-                if (!NumberUtils.isCreatable(val) && !isMissing(val)) {
-                    attributeType = Attribute.NOMINAL;
-                }
-                if (!isMissing(val) && !values.contains(val)) {
+                if (attributeType == Attribute.NOMINAL && !isMissing(val) && !values.contains(val)) {
                     values.add(val);
                 }
             }
             attributes.add(createAttribute(attributeType, removeQuotes(data.get(0).get(i)), values));
         }
         return attributes;
+    }
+
+    private int getAttributeType(List<List<String>> data, int i) {
+        int attributeType = Attribute.NUMERIC;
+        for (int j = 1; j < data.size(); j++) {
+            String val = removeQuotes(data.get(j).get(i));
+            if (!NumberUtils.isCreatable(val) && !isMissing(val)) {
+                attributeType = Attribute.NOMINAL;
+            }
+        }
+        return attributeType;
     }
 
     private Attribute createAttribute(int attributeType, String name, ArrayList<String> values) {
