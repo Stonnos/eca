@@ -84,7 +84,7 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
                 if (!NumberUtils.isCreatable(val) && !isMissing(val)) {
                     attributeType = Attribute.NOMINAL;
                 }
-                if (attributeType == Attribute.NOMINAL && !isMissing(val) && !values.contains(val)) {
+                if (!isMissing(val) && !values.contains(val)) {
                     values.add(val);
                 }
             }
