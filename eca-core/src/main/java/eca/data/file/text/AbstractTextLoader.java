@@ -79,10 +79,12 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
         for (int i = 0; i < data.get(0).size(); i++) {
             ArrayList<String> values = new ArrayList<>();
             int attributeType = getAttributeType(data, i);
-            for (int j = 1; j < data.size(); j++) {
-                String val = removeQuotes(data.get(j).get(i));
-                if (attributeType == Attribute.NOMINAL && !isMissing(val) && !values.contains(val)) {
-                    values.add(val);
+            if (attributeType == Attribute.NOMINAL) {
+                for (int j = 1; j < data.size(); j++) {
+                    String val = removeQuotes(data.get(j).get(i));
+                    if (!isMissing(val) && !values.contains(val)) {
+                        values.add(val);
+                    }
                 }
             }
             attributes.add(createAttribute(attributeType, removeQuotes(data.get(0).get(i)), values));
