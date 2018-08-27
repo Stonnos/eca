@@ -14,17 +14,13 @@ public class FrequencyUtils {
     /**
      * Calculates frequency for given interval.
      *
-     * @param data {@link Instances} object
-     * @param attribute {@link Attribute} object
+     * @param data          {@link Instances} object
+     * @param attribute     {@link Attribute} object
      * @param frequencyData {@link FrequencyData} object
      */
     public static void calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
-        int frequency = 0;
-        for (int i = 0; i < data.numInstances(); i++) {
-            if (IntervalUtils.containsIncludeRightBound(frequencyData, data.instance(i).value(attribute))) {
-                frequency++;
-            }
-        }
+        int frequency = (int) data.stream().filter(
+                instance -> IntervalUtils.containsIncludeRightBound(frequencyData, instance.value(attribute))).count();
         frequencyData.setFrequency(frequency);
     }
 
@@ -36,12 +32,8 @@ public class FrequencyUtils {
      * @param frequencyData {@link FrequencyData} object
      */
     public static void calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
-        int frequency = 0;
-        for (int i = 0; i < data.numInstances(); i++) {
-            if (IntervalUtils.contains(frequencyData, data.instance(i).value(attribute))) {
-                frequency++;
-            }
-        }
+        int frequency = (int) data.stream().filter(
+                instance -> IntervalUtils.contains(frequencyData, instance.value(attribute))).count();
         frequencyData.setFrequency(frequency);
     }
 

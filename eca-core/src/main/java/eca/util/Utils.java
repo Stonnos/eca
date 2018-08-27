@@ -21,6 +21,7 @@ public class Utils {
 
     private static final String MISSING_VALUE = "?";
     private static final String QUOTE = "'";
+    private static final char POINT = '.';
 
     /**
      * Check value in list by specified predicate.
@@ -131,5 +132,19 @@ public class Utils {
         if (value != null) {
             map.put(key, String.valueOf(value));
         }
+    }
+
+    /**
+     * Gets instances name from file.
+     *
+     * @param fileName - file name
+     * @return instances name
+     */
+    public static String getInstancesName(String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            return null;
+        }
+        int index = fileName.lastIndexOf(POINT);
+        return index < 0 ? null : fileName.substring(0, index);
     }
 }

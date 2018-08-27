@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static eca.util.Utils.getInstancesName;
 import static eca.util.Utils.isMissing;
 import static eca.util.Utils.removeQuotes;
 
@@ -32,7 +33,8 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
         if (CollectionUtils.isEmpty(data)) {
             throw new IllegalArgumentException(String.format("File '%s' has empty data!", getSource().getFile()));
         }
-        Instances instances = new Instances(getSource().getFile(), createAttribute(data), data.size());
+        Instances instances =
+                new Instances(getInstancesName(getSource().getFile()), createAttribute(data), data.size());
 
         for (int i = 1; i < data.size(); i++) {
             DenseInstance newInstance = new DenseInstance(instances.numAttributes());
@@ -79,9 +81,10 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
             int attributeType = Attribute.NUMERIC;
             for (int j = 1; j < data.size(); j++) {
                 String val = removeQuotes(data.get(j).get(i));
-                if ((!NumberUtils.isCreatable(val) && !isMissing(val) && !values.contains(val)) ||
-                        (!values.isEmpty() && !values.contains(val))) {
+                if (!NumberUtils.isCreatable(val) && !isMissing(val)) {
                     attributeType = Attribute.NOMINAL;
+                }
+                if (!isMissing(val) && !values.contains(val)) {
                     values.add(val);
                 }
             }
