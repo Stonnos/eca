@@ -5,7 +5,8 @@
  */
 package eca.data.db;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -13,15 +14,21 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Roman Batygin
  */
-@Data
+@Getter
 public abstract class ConnectionDescriptor implements java.io.Serializable {
 
     private DataBaseType dataBaseType;
+    @Setter
     private String host = StringUtils.EMPTY;
+    @Setter
     private int port;
+    @Setter
     private String dataBaseName = StringUtils.EMPTY;
+    @Setter
     private String login = StringUtils.EMPTY;
+    @Setter
     private String password = StringUtils.EMPTY;
+    @Setter
     private String driver;
 
     protected ConnectionDescriptor(DataBaseType dataBaseType) {
