@@ -1,8 +1,5 @@
 package eca.data.db;
 
-import eca.data.db.ConnectionDescriptor;
-import eca.data.db.DataBaseType;
-
 /**
  * Implements PostreSQL  datasource descriptor.
  *
