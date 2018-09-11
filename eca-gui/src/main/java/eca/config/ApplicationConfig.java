@@ -13,6 +13,11 @@ import java.util.Map;
 public class ApplicationConfig {
 
     /**
+     * Is production mode?
+     */
+    private Boolean production;
+
+    /**
      * Project info
      */
     private ProjectInfo projectInfo;

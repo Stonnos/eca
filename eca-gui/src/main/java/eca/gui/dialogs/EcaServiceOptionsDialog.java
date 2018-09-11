@@ -83,8 +83,8 @@ public class EcaServiceOptionsDialog extends JDialog {
                         String.format(INVALID_PROPERTY_ERROR_FORMAT, entry.getKey()));
             }
             setOptions(entry);
-            CONFIG_SERVICE.saveEcaServiceConfig();
         }
+        CONFIG_SERVICE.saveEcaServiceConfig();
     }
 
     private void setOptions(Entry entry) {

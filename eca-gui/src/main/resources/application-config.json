@@ -1,4 +1,5 @@
 {
+  "production": true,
   "projectInfo": {
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
