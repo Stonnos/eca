@@ -233,7 +233,7 @@ public class AttributesStatisticsFrame extends JFrame {
                                     frequencyData.getFrequency());
                         }
                         JFreeChart chart =
-                                ChartFactory.createPieChart(PIE_DIAGRAM_TITLE, pieDataSet, true, true, false);
+                                ChartFactory.createPieChart(PIE_DIAGRAM_TITLE, pieDataSet, true, false, false);
                         ((PiePlot) chart.getPlot()).setLabelGenerator(PIE_LABEL_GENERATOR);
                         return chart;
                     }
@@ -246,7 +246,7 @@ public class AttributesStatisticsFrame extends JFrame {
                                     frequencyData.getFrequency());
                         }
                         JFreeChart chart =
-                                ChartFactory.createPieChart3D(PIE_DIAGRAM_TITLE, pieDataSet, true, true, false);
+                                ChartFactory.createPieChart3D(PIE_DIAGRAM_TITLE, pieDataSet, true, false, false);
                         ((PiePlot) chart.getPlot()).setLabelGenerator(PIE_LABEL_GENERATOR);
                         PiePlot3D plot = (PiePlot3D) chart.getPlot();
                         plot.setStartAngle(START_ANGLE);
