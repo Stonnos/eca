@@ -41,6 +41,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final BasicStroke FREQUENCY_DIAGRAM_STROKE =
             new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
     private static final int START_ANGLE = 290;
-    private static final float FOREGROUND_ALPHA = 0.80f;
+    private static final float FOREGROUND_ALPHA = 0.70f;
 
     private static PieSectionLabelGenerator PIE_LABEL_GENERATOR;
 
@@ -200,21 +201,24 @@ public class AttributesStatisticsFrame extends JFrame {
         plotBox.addActionListener(event -> {
             int attrIndex = attributesBox.getSelectedIndex();
             Attribute attribute = data.attribute(attrIndex);
-            if (attribute.isNominal()) {
-                String selectedDiagram = plotBox.getSelectedItem().toString();
-                DiagramType diagramType = DiagramType.findByDescription(selectedDiagram);
-                FrequencyDiagramModel frequencyDiagramModel = frequencyDiagramModels[attrIndex];
-                if (!frequencyDiagramModel.getDiagramType().equals(diagramType)) {
-                    frequencyDiagramModel.setDiagramType(diagramType);
-                    updateChart(frequencyDiagramModel, attribute);
-                    attributeChartPanel.setChart(frequencyDiagramModel.getChart());
-                }
+            String selectedDiagram = plotBox.getSelectedItem().toString();
+            DiagramType diagramType = DiagramType.findByDescription(selectedDiagram);
+            FrequencyDiagramModel frequencyDiagramModel = frequencyDiagramModels[attrIndex];
+            frequencyDiagramModel.setCurrentDiagramType(diagramType);
+            if (!frequencyDiagramModel.getDiagramMap().containsKey(diagramType)) {
+                JFreeChart chart = createChart(frequencyDiagramModel, attribute);
+                frequencyDiagramModel.getDiagramMap().put(diagramType, chart);
+                frequencyDiagramModel.setCurrentChart(chart);
+            } else {
+                JFreeChart chart = frequencyDiagramModel.getDiagramMap().get(diagramType);
+                frequencyDiagramModel.setCurrentChart(chart);
             }
+            attributeChartPanel.setChart(frequencyDiagramModel.getCurrentChart());
         });
     }
 
-    private void updateChart(FrequencyDiagramModel frequencyDiagramModel, Attribute attribute) {
-        JFreeChart chart = frequencyDiagramModel.getDiagramType().handle(
+    private JFreeChart createChart(FrequencyDiagramModel frequencyDiagramModel, Attribute attribute) {
+        return frequencyDiagramModel.getCurrentDiagramType().handle(
                 new DiagramTypeVisitor<JFreeChart>() {
                     @Override
                     public JFreeChart caseFrequencyDiagram() {
@@ -250,7 +254,6 @@ public class AttributesStatisticsFrame extends JFrame {
                         return chart;
                     }
                 });
-        frequencyDiagramModel.setChart(chart);
     }
 
     private void createAttributeBox(Instances data) {
@@ -281,7 +284,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private void showFrequencyDiagramPlot(int attrIndex) {
         createFrequencyDiagramModel(attrIndex);
         if (attributeChartPanel == null) {
-            attributeChartPanel = new ChartPanel(frequencyDiagramModels[attrIndex].getChart());
+            attributeChartPanel = new ChartPanel(frequencyDiagramModels[attrIndex].getCurrentChart());
             attributeChartPanel.setPreferredSize(FREQUENCY_DIAGRAM_DIMENSION);
             attributeChartPanel.setMinimumSize(FREQUENCY_DIAGRAM_DIMENSION);
             JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
@@ -296,9 +299,8 @@ public class AttributesStatisticsFrame extends JFrame {
             });
             attributeChartPanel.getPopupMenu().add(dataMenu);
         } else {
-            plotBox.setSelectedItem(frequencyDiagramModels[attrIndex].getDiagramType().getDescription());
+            plotBox.setSelectedItem(frequencyDiagramModels[attrIndex].getCurrentDiagramType().getDescription());
             plotBox.setEnabled(frequencyDiagramBuilder.getData().attribute(attrIndex).isNominal());
-            attributeChartPanel.setChart(frequencyDiagramModels[attrIndex].getChart());
         }
     }
 
@@ -318,7 +320,7 @@ public class AttributesStatisticsFrame extends JFrame {
         List<FrequencyData> frequencyDataList =
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNominalAttribute(attribute);
         JFreeChart chart = createFrequencyDiagramChart(frequencyDataList, attribute);
-        return new FrequencyDiagramModel(chart, frequencyDataList, DiagramType.FREQUENCY_DIAGRAM);
+        return createFrequencyDiagramModel(frequencyDataList, chart);
     }
 
     private JFreeChart createFrequencyDiagramChart(List<FrequencyData> frequencyDataList, Attribute attribute) {
@@ -359,7 +361,17 @@ public class AttributesStatisticsFrame extends JFrame {
         chart.setBorderVisible(true);
         chart.setBorderPaint(FREQUENCY_DIAGRAM_BORDER_COLOR);
         chart.setBorderStroke(FREQUENCY_DIAGRAM_STROKE);
-        return new FrequencyDiagramModel(chart, frequencyDataList, DiagramType.FREQUENCY_DIAGRAM);
+        return createFrequencyDiagramModel(frequencyDataList, chart);
+    }
+
+    private FrequencyDiagramModel createFrequencyDiagramModel(List<FrequencyData> frequencyDataList, JFreeChart chart) {
+        FrequencyDiagramModel frequencyDiagramModel = new FrequencyDiagramModel();
+        frequencyDiagramModel.setDiagramMap(new EnumMap<>(DiagramType.class));
+        frequencyDiagramModel.getDiagramMap().put(DiagramType.FREQUENCY_DIAGRAM, chart);
+        frequencyDiagramModel.setFrequencyDataList(frequencyDataList);
+        frequencyDiagramModel.setCurrentDiagramType(DiagramType.FREQUENCY_DIAGRAM);
+        frequencyDiagramModel.setCurrentChart(chart);
+        return frequencyDiagramModel;
     }
 
     /**
