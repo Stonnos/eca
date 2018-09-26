@@ -197,7 +197,7 @@ public class JMainFrame extends JFrame {
     private static final String SEED_TEXT = "Начальное значение (seed):";
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
     private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
-    private static final String SCATTER_DIAGRAM_MENU_TEXT = "Диаграммы рассеяния";
+    private static final String SCATTER_DIAGRAM_MENU_TEXT = "Построение диаграмм рассеяния";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
