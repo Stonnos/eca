@@ -98,7 +98,7 @@ public class AttributesStatisticsFrame extends JFrame {
 
     static {
         PIE_LABEL_GENERATOR = new StandardPieSectionLabelGenerator("{0} : {1} ({2})", new DecimalFormat("0"),
-                new DecimalFormat("0%"));
+                new DecimalFormat("0.00%"));
     }
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
