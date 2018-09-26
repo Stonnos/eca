@@ -1,9 +1,11 @@
 package eca.gui.frames;
 
+import eca.config.ConfigurationService;
 import eca.gui.ButtonUtils;
 import eca.util.Utils;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.SymbolAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -18,6 +20,7 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Roman Batygin
@@ -32,6 +35,12 @@ public class ScatterDiagramsFrame extends JFrame {
     private static final String X_LABEL = "X:";
     private static final String Y_LABEL = "Y:";
     private static final Dimension ATTR_BOX_SIZE = new Dimension(300, 25);
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
+
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private Instances data;
 
@@ -123,7 +132,12 @@ public class ScatterDiagramsFrame extends JFrame {
     }
 
     private ValueAxis createAxis(Attribute attribute) {
-        if (attribute.isNumeric()) {
+        if (attribute.isDate()) {
+            DateAxis dateAxis = new DateAxis(attribute.name());
+            dateAxis.setDateFormatOverride(SIMPLE_DATE_FORMAT);
+            return dateAxis;
+        }
+        else if (attribute.isNumeric()) {
             NumberAxis axis = new NumberAxis(attribute.name());
             axis.setAutoRangeIncludesZero(false);
             return axis;
