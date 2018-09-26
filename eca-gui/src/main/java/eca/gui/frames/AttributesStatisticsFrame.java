@@ -97,7 +97,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private FrequencyDiagramBuilder frequencyDiagramBuilder;
 
     static {
-        PIE_LABEL_GENERATOR = new StandardPieSectionLabelGenerator("{0} : {1}", new DecimalFormat("0"),
+        PIE_LABEL_GENERATOR = new StandardPieSectionLabelGenerator("{0} : {1} ({2})", new DecimalFormat("0"),
                 new DecimalFormat("0%"));
     }
 
@@ -369,7 +369,7 @@ public class AttributesStatisticsFrame extends JFrame {
         xySeriesCollection.setIntervalWidth(frequencyData.getUpperBound() - frequencyData.getLowerBound());
         JFreeChart chart = ChartFactory.createXYBarChart(FREQUENCY_DIAGRAM_TITLE,
                 String.format(X_LABEL_FORMAT, frequencyDiagramModel.getAttribute().name()), false,
-                FREQUENCY_Y_LABEL, xySeriesCollection, PlotOrientation.VERTICAL, true, true, false
+                FREQUENCY_Y_LABEL, xySeriesCollection, PlotOrientation.VERTICAL, true, false, false
         );
         XYPlot xyPlot = (XYPlot) chart.getPlot();
         xyPlot.getRenderer().setBaseSeriesVisibleInLegend(false);
