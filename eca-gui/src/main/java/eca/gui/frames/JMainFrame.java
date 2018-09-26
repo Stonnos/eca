@@ -197,6 +197,7 @@ public class JMainFrame extends JFrame {
     private static final String SEED_TEXT = "Начальное значение (seed):";
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
     private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
+    private static final String SCATTER_DIAGRAM_MENU_TEXT = "Диаграммы рассеяния";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1529,6 +1530,27 @@ public class JMainFrame extends JFrame {
             }
         });
         serviceMenu.add(attrStatisticsMenu);
+
+        JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
+        scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
+        disabledMenuElementList.add(scatterDiagramMenu);
+        scatterDiagramMenu.addActionListener(event -> {
+            if (dataValidated()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getData(),
+                                JMainFrame.this);
+                        scatterDiagramsFrame.setVisible(true);
+                    });
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        serviceMenu.add(scatterDiagramMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
         loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));

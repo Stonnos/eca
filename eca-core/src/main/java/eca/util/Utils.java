@@ -3,6 +3,7 @@ package eca.util;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,6 +65,24 @@ public class Utils {
             ArrayList<String> values = new ArrayList<>();
             for (int i = 0; i < attribute.numValues(); i++) {
                 values.add(attribute.value(i));
+            }
+            return values;
+        }
+    }
+
+    /**
+     * Gets all values of nominal attribute as array.
+     *
+     * @param attribute - attribute
+     * @return values of nominal attribute
+     */
+    public static String[] getAttributeValuesAsArray(Attribute attribute) {
+        if (attribute == null || !attribute.isNominal()) {
+            return null;
+        } else {
+            String[] values = new String[attribute.numValues()];
+            for (int i = 0; i < attribute.numValues(); i++) {
+                values[i] = attribute.value(i);
             }
             return values;
         }
@@ -146,5 +165,19 @@ public class Utils {
         }
         int index = fileName.lastIndexOf(POINT);
         return index < 0 ? null : fileName.substring(0, index);
+    }
+
+    /**
+     * Gets attributes names as array.
+     *
+     * @param data - instances
+     * @return attributes names as array
+     */
+    public static String[] getAttributeNames(Instances data) {
+        String[] names = new String[data.numAttributes()];
+        for (int i = 0; i < data.numAttributes(); i++) {
+            names[i] = data.attribute(i).name();
+        }
+        return names;
     }
 }
