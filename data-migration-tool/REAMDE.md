@@ -1,4 +1,4 @@
-Data migration tool v6.1
+Data migration tool v6.2
 ========================================
 
 Описание
@@ -49,7 +49,7 @@ Data migration tool v6.1
    
 4. Запустить проект из командной строки с помощью команды:
 
-   java -jar data-migration-tool-6.1.jar
+   java -jar data-migration-tool-6.2.jar
   
 5. End point для миграции данных доступен по адресу http://[host]:[port]/migration-tool/migrate. Где host и port -
    адрес хоста и номер порта, на котором развернуто приложение. Ниже приведен пример команды через утилиту curl
