@@ -19,8 +19,11 @@ import weka.core.Attribute;
 import weka.core.Instances;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Roman Batygin
@@ -30,10 +33,10 @@ public class ScatterDiagramsFrame extends JFrame {
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 600;
     private static final Dimension SCATTER_DIAGRAM_DIMENSION = new Dimension(DEFAULT_WIDTH, 400);
-    private static final String TITLE_TEXT = "Диаграммы рассеяния";
+    private static final String TITLE_TEXT = "Построение диаграмм рассеяния";
     private static final String SCATTER_DIAGRAM_TITLE = "Диаграмма рассеяния";
-    private static final String X_LABEL = "X:";
-    private static final String Y_LABEL = "Y:";
+    private static final String X_LABEL = "Атрибут X:";
+    private static final String Y_LABEL = "Атрибут Y:";
     private static final Dimension ATTR_BOX_SIZE = new Dimension(300, 25);
 
     private static final ConfigurationService CONFIG_SERVICE =
@@ -45,6 +48,8 @@ public class ScatterDiagramsFrame extends JFrame {
     private Instances data;
 
     private ChartPanel scatterChartPanel;
+
+    private Map<String, Map<String, JFreeChart>> scatterChartsMap = new HashMap<>();
 
     public ScatterDiagramsFrame(Instances data, JFrame parent) {
         this.data = data;
@@ -67,12 +72,12 @@ public class ScatterDiagramsFrame extends JFrame {
         xAttributeBox.addActionListener(event -> {
             Attribute xAttr = data.attribute(xAttributeBox.getSelectedIndex());
             Attribute yAttr = data.attribute(yAttributeBox.getSelectedIndex());
-            scatterChartPanel.setChart(createScatterChart(xAttr, yAttr));
+            updateScatterChart(xAttr, yAttr);
         });
         yAttributeBox.addActionListener(event -> {
             Attribute xAttr = data.attribute(xAttributeBox.getSelectedIndex());
             Attribute yAttr = data.attribute(yAttributeBox.getSelectedIndex());
-            scatterChartPanel.setChart(createScatterChart(xAttr, yAttr));
+            updateScatterChart(xAttr, yAttr);
         });
         xAttributeBox.setMinimumSize(ATTR_BOX_SIZE);
         xAttributeBox.setPreferredSize(ATTR_BOX_SIZE);
@@ -94,6 +99,7 @@ public class ScatterDiagramsFrame extends JFrame {
         optionsPanel.add(xAttributeBox);
         optionsPanel.add(new JLabel(Y_LABEL));
         optionsPanel.add(yAttributeBox);
+        optionsPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         plotPanel.add(optionsPanel, new GridBagConstraints(0, 1, 4, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 10, 5), 0, 0));
@@ -122,6 +128,24 @@ public class ScatterDiagramsFrame extends JFrame {
         return new JFreeChart(SCATTER_DIAGRAM_TITLE, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
     }
 
+    private void updateScatterChart(Attribute xAttr, Attribute yAttr) {
+        JFreeChart scatterChart;
+        if (!scatterChartsMap.containsKey(xAttr.name())) {
+            Map<String, JFreeChart> attrChartsMap = new HashMap<>();
+            scatterChart = createScatterChart(xAttr, yAttr);
+            attrChartsMap.put(yAttr.name(), scatterChart);
+            scatterChartsMap.put(xAttr.name(), attrChartsMap);
+        } else {
+            Map<String, JFreeChart> attrChartsMap = scatterChartsMap.get(xAttr.name());
+            scatterChart = attrChartsMap.get(yAttr.name());
+            if (scatterChart == null) {
+                scatterChart = createScatterChart(xAttr, yAttr);
+                attrChartsMap.put(yAttr.name(), scatterChart);
+            }
+        }
+        scatterChartPanel.setChart(scatterChart);
+    }
+
     private XYSeriesCollection createAndFillXYSeriesCollection() {
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         for (int i = 0; i < data.numClasses(); i++) {
@@ -136,8 +160,7 @@ public class ScatterDiagramsFrame extends JFrame {
             DateAxis dateAxis = new DateAxis(attribute.name());
             dateAxis.setDateFormatOverride(SIMPLE_DATE_FORMAT);
             return dateAxis;
-        }
-        else if (attribute.isNumeric()) {
+        } else if (attribute.isNumeric()) {
             NumberAxis axis = new NumberAxis(attribute.name());
             axis.setAutoRangeIncludesZero(false);
             return axis;
