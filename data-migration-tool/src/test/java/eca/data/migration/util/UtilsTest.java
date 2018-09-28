@@ -28,7 +28,7 @@ public class UtilsTest {
     private static final String STRING_VALUE_FORMAT = "'%s'";
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String COLUMN_FORMAT = "%s %s";
-    private static final String NUMERIC_TYPE = "NUMERIC";
+    private static final String NUMERIC_TYPE = "NUMERIC(18,9)";
     private static final String VARCHAR_TYPE = "VARCHAR(255)";
     private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
     private static final String NULL_VALUE = "NULL";
