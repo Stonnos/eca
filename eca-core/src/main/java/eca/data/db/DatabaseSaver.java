@@ -36,13 +36,6 @@ public class DatabaseSaver implements DataSaver {
     private String tableName;
 
     /**
-     * Overwrite existing table?
-     */
-    @Getter
-    @Setter
-    private boolean overwriteTable;
-
-    /**
      * Constructor with params.
      *
      * @param connectionDescriptor - connection descriptor
@@ -61,11 +54,6 @@ public class DatabaseSaver implements DataSaver {
                 connectionDescriptor.getLogin(), connectionDescriptor.getPassword());
              Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
-            if (isOverwriteTable()) {
-                log.info("Starting to drop table '{}'", tableName);
-                statement.execute(String.format(DROP_TABLE_QUERY_FORMAT, tableName));
-                log.info("Table '{}' has been dropped", tableName);
-            }
             log.info("Starting to create new table '{}'", tableName);
             statement.execute(SqlHelper.buildCreateTableQuery(tableName, data));
             log.info("Table '{}' has been created", tableName);

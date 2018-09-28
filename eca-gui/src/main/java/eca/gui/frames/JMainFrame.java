@@ -868,7 +868,6 @@ public class JMainFrame extends JFrame {
                             DatabaseSaver databaseSaver =
                                     new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
                             databaseSaver.setTableName(databaseSaverDialog.getTableName());
-                            databaseSaver.setOverwriteTable(databaseSaverDialog.isOverwriteTable());
                             LoadDialog progress = new LoadDialog(JMainFrame.this,
                                     new DatabaseSaverAction(databaseSaver, dataBuilder.getData()),
                                     DB_SAVE_PROGRESS_MESSAGE_TEXT);

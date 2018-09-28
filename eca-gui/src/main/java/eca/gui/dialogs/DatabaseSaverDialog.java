@@ -38,7 +38,6 @@ public class DatabaseSaverDialog extends JDialog {
             "Имя таблицы должно начинаться с латинского символа!";
 
     private JTextField tableNameField;
-    private JCheckBox overwriteCheckbox;
 
     private DatabaseConnectionPanel databaseConnectionPanel;
 
@@ -107,24 +106,17 @@ public class DatabaseSaverDialog extends JDialog {
         return tableNameField.getText();
     }
 
-    public boolean isOverwriteTable() {
-        return overwriteCheckbox.isSelected();
-    }
-
     private JPanel createAdditionalPanel() {
         JPanel additionalOptionsPanel = new JPanel(new GridBagLayout());
         additionalOptionsPanel.setBorder(PanelBorderUtils.createTitledBorder(ADDITIONAL_OPTIONS_TEXT));
         tableNameField = new JTextField(TEXT_LENGTH);
         tableNameField.setDocument(new LengthDocument(FIELD_LENGTH));
         tableNameField.setInputVerifier(new TextFieldInputVerifier());
-        overwriteCheckbox = new JCheckBox(OVERWRITE_TABLE_TEXT);
         additionalOptionsPanel.add(new JLabel(TABLE_NAME_TEXT),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.NONE,
                         new Insets(10, 10, 10, 10), 0, 0));
         additionalOptionsPanel.add(tableNameField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        additionalOptionsPanel.add(overwriteCheckbox, new GridBagConstraints(0, 2, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         return additionalOptionsPanel;
     }
 
