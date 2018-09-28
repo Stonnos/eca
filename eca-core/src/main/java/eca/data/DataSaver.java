@@ -2,8 +2,6 @@ package eca.data;
 
 import weka.core.Instances;
 
-import java.io.IOException;
-
 /**
  * Data saver interface.
  *
@@ -16,5 +14,5 @@ public interface DataSaver {
      *
      * @param data - instances
      */
-    void write(Instances data) throws IOException;
+    void write(Instances data) throws Exception;
 }

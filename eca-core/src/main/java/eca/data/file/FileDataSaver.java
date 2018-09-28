@@ -52,7 +52,7 @@ public class FileDataSaver {
      * @param data <tt>Instances</tt> object
      * @throws IOException
      */
-    public void saveData(File file, Instances data) throws IOException {
+    public void saveData(File file, Instances data) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
         Objects.requireNonNull(data, "Data is not specified!");
         if (FileUtils.isXlsExtension(file.getName())) {
@@ -69,7 +69,7 @@ public class FileDataSaver {
         }
     }
 
-    private void writeData(AbstractDataSaver saver, File file, Instances data) throws IOException {
+    private void writeData(AbstractDataSaver saver, File file, Instances data) throws Exception {
         saver.setFile(file);
         saver.setDateFormat(dateFormat);
         saver.write(data);
