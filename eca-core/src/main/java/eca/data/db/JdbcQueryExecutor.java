@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -111,66 +112,42 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        try (Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY); ResultSet result = statement.executeQuery(getSource())) {
-            checkColumnsTypes(result);
-            ResultSetMetaData meta = result.getMetaData();
-            String tableName = meta.getTableName(RELATION_NAME_INDEX);
-            data = new Instances(StringUtils.isEmpty(tableName) ? DEFAULT_RELATION_NAME
-                    : tableName, createAttributes(result), result.getFetchSize());
-            result.beforeFirst();
+        try (Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(getSource())) {
+            ResultData resultData = getResultData(result);
+            data = new Instances(
+                    StringUtils.isEmpty(resultData.getTableName()) ? DEFAULT_RELATION_NAME : resultData.getTableName(),
+                    createAttributes(resultData), result.getFetchSize());
 
-            while (result.next()) {
+            for (List<Object> row : resultData.getData()) {
                 Instance obj = new DenseInstance(data.numAttributes());
                 obj.setDataset(data);
-                for (int i = 1; i <= meta.getColumnCount(); i++) {
-                    Attribute attribute = data.attribute(i - 1);
-                    if (result.getObject(i) == null) {
+                for (int i = 0; i < resultData.getColumnData().size(); i++) {
+                    Attribute attribute = data.attribute(i);
+                    if (row.get(i) == null) {
                         obj.setValue(attribute, Utils.missingValue());
-                    } else if (isNumeric(meta.getColumnType(i))) {
-                        obj.setValue(attribute, result.getDouble(i));
-                    } else if (isDate(meta.getColumnType(i))) {
-
-                        switch (meta.getColumnType(i)) {
-                            case Types.DATE:
-                                obj.setValue(attribute, result.getDate(i).getTime());
-                                break;
-                            case Types.TIME:
-                                obj.setValue(attribute, result.getTime(i).getTime());
-                                break;
-                            case Types.TIMESTAMP:
-                                obj.setValue(attribute, result.getTimestamp(i).getTime());
-                                break;
-                            default:
-                                throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
-                                        meta.getColumnTypeName(i)));
-                        }
-
+                    } else if (attribute.isDate()) {
+                        obj.setValue(attribute, (long) row.get(i));
+                    } else if (attribute.isNumeric()) {
+                        obj.setValue(attribute, (double) row.get(i));
                     } else {
-                        String stringValue = result.getObject(i).toString().trim();
-                        if (!StringUtils.isEmpty(stringValue)) {
-                            obj.setValue(attribute, stringValue);
-                        } else {
-                            obj.setValue(attribute, Utils.missingValue());
-                        }
+                        obj.setValue(attribute, row.get(i).toString());
                     }
                 }
                 data.add(obj);
             }
 
         }
-
         data.setClassIndex(data.numAttributes() - 1);
         return data;
     }
 
-    private void checkColumnsTypes(ResultSet result) throws SQLException {
-        ResultSetMetaData meta = result.getMetaData();
-        for (int i = 1; i <= meta.getColumnCount(); i++) {
-            if (!isNumeric(meta.getColumnType(i)) && !isNominal(meta.getColumnType(i)) &&
-                    !isDate(meta.getColumnType(i))) {
+    private void checkColumnsTypes(ResultSetMetaData metaData) throws SQLException {
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            if (!isNumeric(metaData.getColumnType(i)) && !isNominal(metaData.getColumnType(i)) &&
+                    !isDate(metaData.getColumnType(i))) {
                 throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
-                        meta.getColumnTypeName(i)));
+                        metaData.getColumnTypeName(i)));
             }
 
         }
@@ -197,34 +174,87 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
         return false;
     }
 
-    private ArrayList<Attribute> createAttributes(ResultSet result) throws SQLException {
-        ResultSetMetaData meta = result.getMetaData();
-        ArrayList<Attribute> attr = new ArrayList<>(meta.getColumnCount());
-        for (int i = 1; i <= meta.getColumnCount(); i++) {
-            if (isNumeric(meta.getColumnType(i))) {
-                attr.add(new Attribute(meta.getColumnName(i)));
-            } else if (isDate(meta.getColumnType(i))) {
-                attr.add(new Attribute(meta.getColumnName(i), getDateFormat()));
+    private ArrayList<Attribute> createAttributes(ResultData resultData) {
+        ArrayList<Attribute> attr = new ArrayList<>(resultData.getColumnData().size());
+        for (int i = 0; i < resultData.getColumnData().size(); i++) {
+            ColumnData columnData = resultData.getColumnData().get(i);
+            if (isNumeric(columnData.getType())) {
+                attr.add(new Attribute(columnData.getName()));
+            } else if (isDate(columnData.getType())) {
+                attr.add(new Attribute(columnData.getName(), getDateFormat()));
             } else {
-                attr.add(new Attribute(meta.getColumnName(i), createNominalAttribute(result, i)));
+                attr.add(new Attribute(columnData.getName(), createNominalAttribute(resultData.getData(), i)));
             }
         }
         return attr;
     }
 
-    private ArrayList<String> createNominalAttribute(ResultSet result, int i) throws SQLException {
+    private ArrayList<String> createNominalAttribute(List<List<Object>> dataList, int i) {
         ArrayList<String> values = new ArrayList<>();
-        result.beforeFirst();
-        while (result.next()) {
-            Object value = result.getObject(i);
+        dataList.forEach(row -> {
+            Object value = row.get(i);
             if (value != null) {
                 String trimValue = value.toString().trim();
                 if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {
                     values.add(trimValue);
                 }
             }
-        }
+        });
         return values;
     }
 
+    private ResultData getResultData(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        checkColumnsTypes(metaData);
+        String tableName = metaData.getTableName(RELATION_NAME_INDEX);
+        List<ColumnData> columnDataList = getColumnsData(metaData);
+        List<List<Object>> dataList = getDataFromResultSet(resultSet, metaData);
+        return new ResultData(tableName, columnDataList, dataList);
+    }
+
+    private List<ColumnData> getColumnsData(ResultSetMetaData metaData) throws SQLException {
+        List<ColumnData> columnDataList = new ArrayList<>(metaData.getColumnCount());
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            columnDataList.add(new ColumnData(metaData.getColumnType(i), metaData.getColumnName(i)));
+        }
+        return columnDataList;
+    }
+
+    private List<List<Object>> getDataFromResultSet(ResultSet result, ResultSetMetaData metaData) throws SQLException {
+        List<List<Object>> data = new ArrayList<>();
+        while (result.next()) {
+            List<Object> row = new ArrayList<>();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                if (result.getObject(i) == null) {
+                    row.add(null);
+                } else if (isNumeric(metaData.getColumnType(i))) {
+                    row.add(result.getDouble(i));
+                } else if (isDate(metaData.getColumnType(i))) {
+                    switch (metaData.getColumnType(i)) {
+                        case Types.DATE:
+                            row.add(result.getDate(i).getTime());
+                            break;
+                        case Types.TIME:
+                            row.add(result.getTime(i).getTime());
+                            break;
+                        case Types.TIMESTAMP:
+                            row.add(result.getTimestamp(i).getTime());
+                            break;
+                        default:
+                            throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
+                                    metaData.getColumnTypeName(i)));
+                    }
+                } else {
+                    String stringValue = result.getObject(i).toString().trim();
+                    if (!StringUtils.isEmpty(stringValue)) {
+                        row.add(stringValue);
+                    } else {
+                        row.add(null);
+                    }
+                }
+            }
+            data.add(row);
+        }
+        return data;
+    }
 }
