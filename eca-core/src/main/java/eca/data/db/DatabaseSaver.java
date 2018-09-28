@@ -20,8 +20,6 @@ import java.util.Objects;
 @Slf4j
 public class DatabaseSaver implements DataSaver {
 
-    private static final String DROP_TABLE_QUERY_FORMAT = "DROP TABLE IF EXISTS %s";
-
     /**
      * Connection descriptor
      */
