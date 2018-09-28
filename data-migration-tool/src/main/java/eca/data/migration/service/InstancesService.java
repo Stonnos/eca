@@ -1,6 +1,6 @@
 package eca.data.migration.service;
 
-import eca.data.db.SqlHelper;
+import eca.data.db.SqlQueryHelper;
 import eca.data.migration.config.MigrationConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +22,7 @@ public class InstancesService {
     private final JdbcTemplate jdbcTemplate;
     private final TransactionalService transactionalMigrationService;
     private final MigrationConfig migrationConfig;
+    private final SqlQueryHelper sqlQueryHelper;
 
     /**
      * Constructor with spring dependency injection.
@@ -29,14 +30,17 @@ public class InstancesService {
      * @param jdbcTemplate                  - jdbc template bean
      * @param transactionalMigrationService - transactional migration service bean
      * @param migrationConfig               - migration config bean
+     * @param sqlQueryHelper                - sql query helper bean
      */
     @Inject
     public InstancesService(JdbcTemplate jdbcTemplate,
                             TransactionalService transactionalMigrationService,
-                            MigrationConfig migrationConfig) {
+                            MigrationConfig migrationConfig,
+                            SqlQueryHelper sqlQueryHelper) {
         this.jdbcTemplate = jdbcTemplate;
         this.transactionalMigrationService = transactionalMigrationService;
         this.migrationConfig = migrationConfig;
+        this.sqlQueryHelper = sqlQueryHelper;
     }
 
     /**
@@ -49,7 +53,7 @@ public class InstancesService {
     public void migrateInstances(String tableName, Instances instances) {
         log.info("Starting to migrate instances '{}' into table '{}'.", instances.relationName(), tableName);
         log.info("Starting to create table '{}'.", tableName);
-        String createTableQuery = SqlHelper.buildCreateTableQuery(tableName, instances);
+        String createTableQuery = sqlQueryHelper.buildCreateTableQuery(tableName, instances);
         log.trace("create table query: {}", createTableQuery);
         jdbcTemplate.execute(createTableQuery);
         log.info("Table '{}' has been successfully created.", tableName);

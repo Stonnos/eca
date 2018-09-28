@@ -21,6 +21,11 @@ import java.util.Objects;
 public class DatabaseSaver implements DataSaver {
 
     /**
+     * TO_DATE function format for Oracle database
+     */
+    private static final String TO_DATE_FUNCTION_FORMAT = "TO_DATE('%s', 'yyyy-mm-dd hh24:mi:ss')";
+
+    /**
      * Connection descriptor
      */
     @Getter
@@ -34,6 +39,11 @@ public class DatabaseSaver implements DataSaver {
     private String tableName;
 
     /**
+     * Sql query helper
+     */
+    private SqlQueryHelper sqlQueryHelper;
+
+    /**
      * Constructor with params.
      *
      * @param connectionDescriptor - connection descriptor
@@ -42,6 +52,7 @@ public class DatabaseSaver implements DataSaver {
         Objects.requireNonNull(connectionDescriptor, "Connection descriptor must be specified!");
         Objects.requireNonNull(connectionDescriptor.getDriver(), "Driver is not specified!");
         this.connectionDescriptor = connectionDescriptor;
+        this.initSqlQueryHelper();
     }
 
     @Override
@@ -53,14 +64,52 @@ public class DatabaseSaver implements DataSaver {
              Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             log.info("Starting to create new table '{}'", tableName);
-            statement.execute(SqlHelper.buildCreateTableQuery(tableName, data));
+            statement.execute(sqlQueryHelper.buildCreateTableQuery(tableName, data));
             log.info("Table '{}' has been created", tableName);
             log.info("Starting to insert rows into table '{}'", tableName);
             for (Instance instance : data) {
-                statement.execute(SqlHelper.buildInsertQuery(tableName, data, instance));
+                statement.execute(sqlQueryHelper.buildInsertQuery(tableName, data, instance));
             }
             connection.commit();
             log.info("Data has been saved into table '{}'", tableName);
         }
+    }
+
+    private void initSqlQueryHelper() {
+        sqlQueryHelper = new SqlQueryHelper();
+        connectionDescriptor.getDataBaseType().handle(new DataBaseTypeVisitor<Void>() {
+            @Override
+            public Void caseMySql() {
+                return null;
+            }
+
+            @Override
+            public Void casePostgreSQL() {
+                sqlQueryHelper.setDateColumnType(SqlTypeUtils.TIMESTAMP_TYPE);
+                return null;
+            }
+
+            @Override
+            public Void caseOracle() {
+                sqlQueryHelper.setDateColumnType(SqlTypeUtils.DATE_TYPE);
+                sqlQueryHelper.setDateValueFormat(TO_DATE_FUNCTION_FORMAT);
+                return null;
+            }
+
+            @Override
+            public Void caseMSAccess() {
+                return null;
+            }
+
+            @Override
+            public Void caseMSSQL() {
+                return null;
+            }
+
+            @Override
+            public Void caseSQLite() {
+                return null;
+            }
+        });
     }
 }

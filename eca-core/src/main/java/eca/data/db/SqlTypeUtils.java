@@ -14,6 +14,23 @@ public class SqlTypeUtils {
     }
 
     /**
+     * Numeric column sql type
+     */
+    public static final String NUMERIC_TYPE = "NUMERIC(18,9)";
+    /**
+     * Datetime column sql type
+     */
+    public static final String DATETIME_TYPE = "DATETIME";
+    /**
+     * Date column sql type
+     */
+    public static final String DATE_TYPE = "DATE";
+    /**
+     * Timestamp column sql type
+     */
+    public static final String TIMESTAMP_TYPE = "TIMESTAMP";
+
+    /**
      * Available column types of numeric attribute
      **/
     private static final int[] NUMERIC_TYPES = {Types.DOUBLE, Types.FLOAT,

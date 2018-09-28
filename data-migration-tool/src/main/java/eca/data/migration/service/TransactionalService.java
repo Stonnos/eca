@@ -1,6 +1,6 @@
 package eca.data.migration.service;
 
-import eca.data.db.SqlHelper;
+import eca.data.db.SqlQueryHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -19,15 +19,18 @@ import javax.inject.Inject;
 public class TransactionalService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SqlQueryHelper sqlQueryHelper;
 
     /**
      * Constructor with spring dependency injection.
      *
-     * @param jdbcTemplate - jdbc template bean
+     * @param jdbcTemplate   - jdbc template bean
+     * @param sqlQueryHelper - sql auery helper bean
      */
     @Inject
-    public TransactionalService(JdbcTemplate jdbcTemplate) {
+    public TransactionalService(JdbcTemplate jdbcTemplate, SqlQueryHelper sqlQueryHelper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.sqlQueryHelper = sqlQueryHelper;
     }
 
     /**
@@ -41,7 +44,7 @@ public class TransactionalService {
     @Transactional
     public void migrateBatch(String tableName, Instances instances, int limit, int offset) {
         for (int i = offset; i < Integer.min(instances.numInstances(), limit + offset); i++) {
-            jdbcTemplate.update(SqlHelper.buildInsertQuery(tableName, instances, instances.instance(i)));
+            jdbcTemplate.update(sqlQueryHelper.buildInsertQuery(tableName, instances, instances.instance(i)));
         }
     }
 }

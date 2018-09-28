@@ -1,7 +1,10 @@
 package eca.data.migration.util;
 
+import eca.data.db.SqlQueryHelper;
+import eca.data.db.SqlTypeUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -12,13 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import static eca.data.db.SqlHelper.formatAttribute;
-import static eca.data.db.SqlHelper.formatValue;
-import static eca.data.db.SqlHelper.normalizeName;
-import static eca.data.db.SqlHelper.truncateStringValue;
+import static eca.data.db.SqlQueryHelper.normalizeName;
+import static eca.data.db.SqlQueryHelper.truncateStringValue;
 
 /**
- * Unit tests for checking {@link eca.data.db.SqlHelper} functionality.
+ * Unit tests for checking {@link SqlQueryHelper} functionality.
  *
  * @author Roman Batygin
  */
@@ -32,6 +33,13 @@ public class UtilsTest {
     private static final String VARCHAR_TYPE = "VARCHAR(255)";
     private static final String TIMESTAMP_FORMAT = "TIMESTAMP";
     private static final String NULL_VALUE = "NULL";
+
+    private SqlQueryHelper sqlQueryHelper = new SqlQueryHelper();
+
+    @Before
+    public void init() {
+        sqlQueryHelper.setDateColumnType(SqlTypeUtils.TIMESTAMP_TYPE);
+    }
 
     @Test
     public void testNormalizeName() {
@@ -68,15 +76,15 @@ public class UtilsTest {
     public void testFormatAttribute() {
         //Case 1
         Attribute attribute = new Attribute("numericAttribute");
-        Assertions.assertThat(formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
                 String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), NUMERIC_TYPE));
         //Case 2
         attribute = new Attribute("nominalAttribute", Arrays.asList("A", "B", "C"));
-        Assertions.assertThat(formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
                 String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), VARCHAR_TYPE));
         //Case 3
         attribute = new Attribute("dateAttribute", DATE_FORMAT);
-        Assertions.assertThat(formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatAttribute(attribute, COLUMN_FORMAT)).isEqualTo(
                 String.format(COLUMN_FORMAT, attribute.name().toLowerCase(), TIMESTAMP_FORMAT));
     }
 
@@ -104,16 +112,16 @@ public class UtilsTest {
         Date dateValue = new Date();
         instance.setValue(dateAttribute, dateValue.getTime());
         //Case 1
-        Assertions.assertThat(formatValue(instance, numericAttribute)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatValue(instance, numericAttribute)).isEqualTo(
                 String.valueOf(instance.value(numericAttribute)));
         //Case 2
-        Assertions.assertThat(formatValue(instance, dateAttribute)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatValue(instance, dateAttribute)).isEqualTo(
                 String.format(STRING_VALUE_FORMAT, instance.stringValue(dateAttribute)));
         //Case 3
-        Assertions.assertThat(formatValue(instance, nominalAttribute)).isEqualTo(
+        Assertions.assertThat(sqlQueryHelper.formatValue(instance, nominalAttribute)).isEqualTo(
                 String.format(STRING_VALUE_FORMAT, instance.stringValue(nominalAttribute)));
         //Case 4
         instance.setValue(numericAttribute, weka.core.Utils.missingValue());
-        Assertions.assertThat(formatValue(instance, numericAttribute)).isEqualTo(NULL_VALUE);
+        Assertions.assertThat(sqlQueryHelper.formatValue(instance, numericAttribute)).isEqualTo(NULL_VALUE);
     }
 }

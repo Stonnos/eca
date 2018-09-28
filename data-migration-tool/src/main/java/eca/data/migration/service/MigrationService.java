@@ -1,6 +1,6 @@
 package eca.data.migration.service;
 
-import eca.data.db.SqlHelper;
+import eca.data.db.SqlQueryHelper;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.DataResource;
 import eca.data.migration.config.MigrationConfig;
@@ -80,7 +80,7 @@ public class MigrationService {
         MigrationLog migrationLog = new MigrationLog();
         migrationLog.setSourceFileName(dataResource.getFile());
         migrationLog.setLastTableIndex(lastTableIndex + 1);
-        migrationLog.setTableName(String.format(TABLE_NAME_FORMAT, SqlHelper.normalizeName(dataResource.getFile()),
+        migrationLog.setTableName(String.format(TABLE_NAME_FORMAT, SqlQueryHelper.normalizeName(dataResource.getFile()),
                 migrationLog.getLastTableIndex()));
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
         migrationLog.setMigrationLogSource(migrationLogSource);
