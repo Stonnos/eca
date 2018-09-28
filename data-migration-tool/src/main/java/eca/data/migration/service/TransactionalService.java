@@ -1,16 +1,13 @@
 package eca.data.migration.service;
 
-import eca.data.migration.util.Utils;
+import eca.data.db.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.Instances;
 
 import javax.inject.Inject;
-import java.util.Enumeration;
 
 /**
  * Service for transactional data migration.
@@ -20,9 +17,6 @@ import java.util.Enumeration;
 @Slf4j
 @Service
 public class TransactionalService {
-
-    private static final String INSERT_QUERY_FORMAT = "INSERT INTO %s VALUES(%s);";
-    private static final String VALUE_DELIMITER_FORMAT = "%s, ";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -47,18 +41,7 @@ public class TransactionalService {
     @Transactional
     public void migrateBatch(String tableName, Instances instances, int limit, int offset) {
         for (int i = offset; i < Integer.min(instances.numInstances(), limit + offset); i++) {
-            jdbcTemplate.update(buildInsertQuery(tableName, instances, instances.instance(i)));
+            jdbcTemplate.update(SqlHelper.buildInsertQuery(tableName, instances, instances.instance(i)));
         }
-    }
-
-    private String buildInsertQuery(String tableName, Instances instances, Instance instance) {
-        StringBuilder queryString = new StringBuilder();
-        for (Enumeration<Attribute> attributeEnumeration = instances.enumerateAttributes();
-             attributeEnumeration.hasMoreElements(); ) {
-            queryString.append(
-                    String.format(VALUE_DELIMITER_FORMAT, Utils.formatValue(instance, attributeEnumeration.nextElement())));
-        }
-        queryString.append(Utils.formatValue(instance, instances.classAttribute()));
-        return String.format(INSERT_QUERY_FORMAT, tableName, queryString);
     }
 }

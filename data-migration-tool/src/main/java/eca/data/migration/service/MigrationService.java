@@ -1,5 +1,6 @@
 package eca.data.migration.service;
 
+import eca.data.db.SqlHelper;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.DataResource;
 import eca.data.migration.config.MigrationConfig;
@@ -8,7 +9,6 @@ import eca.data.migration.model.entity.MigrationLog;
 import eca.data.migration.model.entity.MigrationLogSource;
 import eca.data.migration.model.entity.MigrationStatus;
 import eca.data.migration.repository.MigrationLogRepository;
-import eca.data.migration.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import weka.core.Instances;
@@ -80,7 +80,7 @@ public class MigrationService {
         MigrationLog migrationLog = new MigrationLog();
         migrationLog.setSourceFileName(dataResource.getFile());
         migrationLog.setLastTableIndex(lastTableIndex + 1);
-        migrationLog.setTableName(String.format(TABLE_NAME_FORMAT, Utils.normalizeName(dataResource.getFile()),
+        migrationLog.setTableName(String.format(TABLE_NAME_FORMAT, SqlHelper.normalizeName(dataResource.getFile()),
                 migrationLog.getLastTableIndex()));
         migrationLog.setMigrationStatus(MigrationStatus.IN_PROGRESS);
         migrationLog.setMigrationLogSource(migrationLogSource);
