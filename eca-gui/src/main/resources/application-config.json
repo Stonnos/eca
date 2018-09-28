@@ -45,7 +45,8 @@
     "EDIT_ICON": "images/icons/edit-icon.jpg",
     "COLOR_ICON": "images/icons/color-icon.jpg",
     "OPTIMAL_CLASSIFIER_ICON": "images/icons/classification-optimization-icon.jpg",
-    "SCATTER_ICON": "images/icons/scatter-icon.jpg"
+    "SCATTER_ICON": "images/icons/scatter-icon.jpg",
+    "DB_SAVE_ICON": "images/icons/database-save-icon.jpg"
   },
   "logotypeUrl": "images/Logotype.jpg",
   "tooltipDismissTime": 60000,

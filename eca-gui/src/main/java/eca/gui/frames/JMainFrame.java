@@ -17,6 +17,7 @@ import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
+import eca.data.db.DatabaseSaver;
 import eca.data.db.JdbcQueryExecutor;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
@@ -49,6 +50,7 @@ import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
+import eca.gui.actions.DatabaseSaverAction;
 import eca.gui.actions.EvaluationRequestSender;
 import eca.gui.actions.ExperimentRequestSender;
 import eca.gui.actions.InstancesLoader;
@@ -61,6 +63,7 @@ import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.DataGeneratorDialog;
 import eca.gui.dialogs.DatabaseConnectionDialog;
+import eca.gui.dialogs.DatabaseSaverDialog;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
 import eca.gui.dialogs.EcaServiceOptionsDialog;
 import eca.gui.dialogs.EnsembleOptionsDialog;
@@ -198,6 +201,9 @@ public class JMainFrame extends JFrame {
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
     private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
     private static final String SCATTER_DIAGRAM_MENU_TEXT = "Построение диаграмм рассеяния";
+    private static final String DB_SAVE_MENU_TEXT = "Сохранить данные в базу данных";
+    private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
+    private static final String SAVE_DATA_INFO_FORMAT = "Данные были успешно сохранены в таблицу '%s'";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -846,6 +852,43 @@ public class JMainFrame extends JFrame {
             }
             conn.dispose();
         });
+
+        JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
+        dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
+        disabledMenuElementList.add(dbSaverMenu);
+        dbSaverMenu.addActionListener(event -> {
+            if (dataValidated()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
+                        databaseSaverDialog.setTableName(dataBuilder.getData().relationName());
+                        databaseSaverDialog.setVisible(true);
+                        if (databaseSaverDialog.dialogResult()) {
+                            DatabaseSaver databaseSaver =
+                                    new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
+                            databaseSaver.setTableName(databaseSaverDialog.getTableName());
+                            databaseSaver.setOverwriteTable(databaseSaverDialog.isOverwriteTable());
+                            LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getData()),
+                                    DB_SAVE_PROGRESS_MESSAGE_TEXT);
+                            process(progress, () -> {
+                                JOptionPane.showMessageDialog(JMainFrame.this,
+                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            });
+                        }
+                        databaseSaverDialog.dispose();
+                    });
+
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        fileMenu.add(dbSaverMenu);
         //---------------------------------------------
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
         urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));

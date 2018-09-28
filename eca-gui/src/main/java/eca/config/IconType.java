@@ -38,5 +38,6 @@ public enum IconType {
     EDIT_ICON,
     COLOR_ICON,
     OPTIMAL_CLASSIFIER_ICON,
-    SCATTER_ICON
+    SCATTER_ICON,
+    DB_SAVE_ICON
 }
