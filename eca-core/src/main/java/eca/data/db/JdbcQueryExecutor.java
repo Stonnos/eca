@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static eca.data.db.SqlTypeUtils.isDate;
+import static eca.data.db.SqlTypeUtils.isNominal;
+import static eca.data.db.SqlTypeUtils.isNumeric;
+
 /**
  * Implements loading data from database.
  *
@@ -37,28 +41,6 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     private static final String DEFAULT_RELATION_NAME = "Relation";
 
     private static final int RELATION_NAME_INDEX = 1;
-
-    /**
-     * Available column types of numeric attribute
-     **/
-    private static final int[] NUMERIC_TYPES = {Types.DOUBLE, Types.FLOAT,
-            Types.INTEGER, Types.SMALLINT,
-            Types.DECIMAL, Types.NUMERIC,
-            Types.REAL, Types.TINYINT,
-            Types.BIGINT};
-
-    /**
-     * Available column types of nominal attribute
-     **/
-    private static final int[] NOMINAL_TYPES = {Types.CHAR, Types.VARCHAR,
-            Types.NCHAR, Types.NVARCHAR, Types.BOOLEAN, Types.BIT,
-            Types.LONGVARCHAR, Types.LONGNVARCHAR};
-
-    /**
-     * Available column types of date attribute
-     **/
-    private static final int[] DATES_TYPES = {Types.DATE, Types.TIME,
-            Types.TIMESTAMP};
 
     /**
      * Database connection object
@@ -151,27 +133,6 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
             }
 
         }
-    }
-
-    private boolean isNominal(int type) {
-        return existType(NOMINAL_TYPES, type);
-    }
-
-    private boolean isDate(int type) {
-        return existType(DATES_TYPES, type);
-    }
-
-    private boolean isNumeric(int type) {
-        return existType(NUMERIC_TYPES, type);
-    }
-
-    private boolean existType(int[] types, int type) {
-        for (int t : types) {
-            if (type == t) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private ArrayList<Attribute> createAttributes(ResultData resultData) {
