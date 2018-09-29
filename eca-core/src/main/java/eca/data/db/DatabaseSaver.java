@@ -59,9 +59,12 @@ public class DatabaseSaver implements DataSaver {
     public void write(Instances data) throws Exception {
         log.info("Staring to save data into table '{}'", tableName);
         Class.forName(connectionDescriptor.getDriver());
-        try (Connection connection = DriverManager.getConnection(connectionDescriptor.getUrl(),
-                connectionDescriptor.getLogin(), connectionDescriptor.getPassword());
-             Statement statement = connection.createStatement()) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection(connectionDescriptor.getUrl(), connectionDescriptor.getLogin(),
+                    connectionDescriptor.getPassword());
+            statement = connection.createStatement();
             connection.setAutoCommit(false);
             log.info("Starting to create new table '{}'", tableName);
             statement.execute(sqlQueryHelper.buildCreateTableQuery(tableName, data));
@@ -72,6 +75,18 @@ public class DatabaseSaver implements DataSaver {
             }
             connection.commit();
             log.info("Data has been saved into table '{}'", tableName);
+        } catch (Exception ex) {
+            if (connection != null) {
+                connection.rollback();
+            }
+            throw new Exception(ex.getMessage());
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
