@@ -15,7 +15,7 @@ import java.text.DecimalFormatSymbols;
  */
 public class NumericFormatFactory implements java.io.Serializable {
 
-    private static final char DECIMAL_SEPARATOR = ',';
+    public static final char DECIMAL_SEPARATOR = ',';
 
     /**
      * Creates numeric format object.

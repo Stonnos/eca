@@ -11,9 +11,11 @@ import eca.dictionary.AttributesTypesDictionary;
 import eca.filter.ConstantAttributesFilter;
 import eca.filter.FilterDictionary;
 import eca.gui.GuiUtils;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
 import eca.gui.text.DoubleDocument;
+import eca.text.NumericFormatFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -61,6 +63,8 @@ public class AttributesTable extends JDataTableBase {
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
     private static final int INDEX_COLUMN_PREFERRED_WIDTH = 50;
+    public static final String NUMERIC_OVERFLOW_ERROR_FORMAT =
+            "Для числового атрибута '%s' найдены слишком большие значения!\nДлина целой части не должна превышать %d знаков!";
 
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
@@ -266,21 +270,37 @@ public class AttributesTable extends JDataTableBase {
                 for (int k = 0; k < instancesTable.getRowCount(); k++) {
                     String str = (String) instancesTable.getValueAt(k, j);
                     if (str != null) {
-                        if (isNumeric(attrIndex) && !str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                            throw new IllegalArgumentException(
-                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                        if (isNumeric(attrIndex)) {
+                            if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                                throw new IllegalArgumentException(
+                                        String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                            }
+                            tryParseNumeric(attribute, str);
                         }
                         if (isDate(attrIndex)) {
-                            try {
-                                SIMPLE_DATE_FORMAT.parse(str);
-                            } catch (Exception e) {
-                                throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                                        attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
-                            }
+                            tryParseDate(attribute, str);
                         }
                     }
                 }
             }
+        }
+    }
+
+    private void tryParseNumeric(String attribute, String val) {
+        int delimiterIndex = val.lastIndexOf(NumericFormatFactory.DECIMAL_SEPARATOR);
+        int length = delimiterIndex < 0 ? val.length() : delimiterIndex;
+        if (length > CommonDictionary.MAXIMUM_INTEGER_DIGITS) {
+            throw new IllegalArgumentException(
+                    String.format(NUMERIC_OVERFLOW_ERROR_FORMAT, attribute, CommonDictionary.MAXIMUM_INTEGER_DIGITS));
+        }
+    }
+
+    private void tryParseDate(String attribute, String val) {
+        try {
+            SIMPLE_DATE_FORMAT.parse(val);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
+                    attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
         }
     }
 
