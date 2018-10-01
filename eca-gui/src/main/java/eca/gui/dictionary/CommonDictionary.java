@@ -11,7 +11,7 @@ public class CommonDictionary {
     }
 
     public static final int MAXIMUM_FRACTION_DIGITS = 7;
-    public static final int MAXIMUM_INTEGER_DIGITS = 9;
+    public static final int MAXIMUM_INTEGER_DIGITS = 12;
     public static final int MIN_THREADS_NUM = 1;
 
     public static final int MINIMUM_NUMBER_OF_FOLDS = 2;

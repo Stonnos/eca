@@ -16,7 +16,7 @@ public class SqlTypeUtils {
     /**
      * Numeric column sql type
      */
-    public static final String NUMERIC_TYPE = "NUMERIC(18,9)";
+    public static final String NUMERIC_TYPE = "NUMERIC(22,9)";
     /**
      * Datetime column sql type
      */
