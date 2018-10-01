@@ -536,7 +536,7 @@ public class JMainFrame extends JFrame {
         DataBuilder() {
         }
 
-        public DataBuilder(boolean filter) {
+        DataBuilder(boolean filter) {
             this.filter = filter;
         }
 
@@ -871,6 +871,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
         dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
+        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(event -> {
             if (isDataValid()) {
