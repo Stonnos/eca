@@ -7,7 +7,6 @@ import weka.core.Instances;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 
 /**
  * SQL helper class.
@@ -94,11 +93,10 @@ public class SqlQueryHelper {
      */
     public String buildCreateTableQuery(String tableName, Instances instances) {
         StringBuilder queryString = new StringBuilder();
-        for (Enumeration<Attribute> attributeEnumeration = instances.enumerateAttributes();
-             attributeEnumeration.hasMoreElements(); ) {
-            queryString.append(formatAttribute(attributeEnumeration.nextElement(), COLUMN_FORMAT));
+        for (int i = 0; i < instances.numAttributes() - 1; i++) {
+            queryString.append(formatAttribute(instances.attribute(i), COLUMN_FORMAT));
         }
-        queryString.append(formatAttribute(instances.classAttribute(), LAST_COLUMN_FORMAT));
+        queryString.append(formatAttribute(instances.attribute(instances.numAttributes() - 1), LAST_COLUMN_FORMAT));
         return String.format(CREATE_TABLE_QUERY_FORMAT, tableName, queryString);
     }
 
@@ -112,12 +110,10 @@ public class SqlQueryHelper {
      */
     public String buildInsertQuery(String tableName, Instances instances, Instance instance) {
         StringBuilder queryString = new StringBuilder();
-        for (Enumeration<Attribute> attributeEnumeration = instances.enumerateAttributes();
-             attributeEnumeration.hasMoreElements(); ) {
-            queryString.append(
-                    String.format(VALUE_DELIMITER_FORMAT, formatValue(instance, attributeEnumeration.nextElement())));
+        for (int i = 0; i < instances.numAttributes() - 1; i++) {
+            queryString.append(String.format(VALUE_DELIMITER_FORMAT, formatValue(instance, instances.attribute(i))));
         }
-        queryString.append(formatValue(instance, instances.classAttribute()));
+        queryString.append(formatValue(instance, instances.attribute(instances.numAttributes() - 1)));
         return String.format(INSERT_QUERY_FORMAT, tableName, queryString);
     }
 
