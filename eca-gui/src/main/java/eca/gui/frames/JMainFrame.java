@@ -345,12 +345,16 @@ public class JMainFrame extends JFrame {
             return menu;
         }
 
-        Instances getData() throws Exception {
-            return attributesTable.createData(relationNameTextField.getText());
+        Instances getFilteredData() throws Exception {
+            return attributesTable.createAndFilterData(relationNameTextField.getText());
         }
 
-        void validateData() throws Exception {
-            attributesTable.validateData();
+        Instances getSimpleData() throws Exception {
+            return attributesTable.createSimpleData(relationNameTextField.getText());
+        }
+
+        void validateData(boolean validateClass) {
+            attributesTable.validateData(validateClass);
         }
 
         void setFrameColor(Color color) {
@@ -524,9 +528,21 @@ public class JMainFrame extends JFrame {
 
         Instances data;
 
+        /**
+         * Filter instances using {@link eca.filter.ConstantAttributesFilter}?
+         */
+        boolean filter = true;
+
+        DataBuilder() {
+        }
+
+        public DataBuilder(boolean filter) {
+            this.filter = filter;
+        }
+
         @Override
         public void apply() throws Exception {
-            data = selectedPanel().getData();
+            data = filter ? selectedPanel().getFilteredData() : selectedPanel().getSimpleData();
         }
 
         Instances getData() {
@@ -800,8 +816,8 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    if (dataValidated()) {
-                        final DataBuilder dataBuilder = new DataBuilder();
+                    if (isDataValid()) {
+                        final DataBuilder dataBuilder = new DataBuilder(false);
                         createTrainingData(dataBuilder, () -> {
                             if (fileChooser == null) {
                                 fileChooser = new SaveDataFileChooser();
@@ -857,9 +873,9 @@ public class JMainFrame extends JFrame {
         dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataValid()) {
                 try {
-                    final DataBuilder dataBuilder = new DataBuilder();
+                    final DataBuilder dataBuilder = new DataBuilder(false);
                     createTrainingData(dataBuilder, () -> {
                         DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
                         databaseSaverDialog.setTableName(dataBuilder.getData().relationName());
@@ -1049,7 +1065,7 @@ public class JMainFrame extends JFrame {
         JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
         //--------------------------------------------------
         aNeuralMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1073,7 +1089,7 @@ public class JMainFrame extends JFrame {
         });
         //--------------------------------------------------
         modifiedHeteroEnsMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
@@ -1088,7 +1104,7 @@ public class JMainFrame extends JFrame {
         });
         //--------------------------------------------------
         aHeteroEnsMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
@@ -1103,7 +1119,7 @@ public class JMainFrame extends JFrame {
         });
         //--------------------------------------------------
         aAdaBoostMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
@@ -1118,7 +1134,7 @@ public class JMainFrame extends JFrame {
         });
         //--------------------------------------------------
         aStackingMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
@@ -1133,7 +1149,7 @@ public class JMainFrame extends JFrame {
         });
 
         knnOptimizerMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1157,7 +1173,7 @@ public class JMainFrame extends JFrame {
 
         //--------------------------------------------------
         automatedRandomForestsMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1178,7 +1194,7 @@ public class JMainFrame extends JFrame {
         });
         //----------------------------------------
         automatedDecisionTreeMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1220,27 +1236,27 @@ public class JMainFrame extends JFrame {
         JMenuItem chaidItem = new JMenuItem(ClassifiersNamesDictionary.CHAID);
         JMenuItem j48Item = new JMenuItem(ClassifiersNamesDictionary.J48);
         id3Item.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
             }
         });
         c45Item.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
             }
         });
         cartItem.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createTreeOptionDialog(ClassifiersNamesDictionary.CART, new CART());
             }
         });
         chaidItem.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createTreeOptionDialog(ClassifiersNamesDictionary.CHAID, new CHAID());
             }
         });
         j48Item.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1266,7 +1282,7 @@ public class JMainFrame extends JFrame {
         logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
         classifiersMenu.add(logisticItem);
         logisticItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1286,7 +1302,7 @@ public class JMainFrame extends JFrame {
         mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
         classifiersMenu.add(mlpItem);
         mlpItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1310,7 +1326,7 @@ public class JMainFrame extends JFrame {
         knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
         knnItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1331,7 +1347,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         JMenuItem heterogeneousItem = new JMenuItem(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE);
         heterogeneousItem.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createEnsembleOptionDialog(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE,
                         new HeterogeneousClassifier(), true);
             }
@@ -1340,7 +1356,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         JMenuItem boostingItem = new JMenuItem(EnsemblesNamesDictionary.BOOSTING);
         boostingItem.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createEnsembleOptionDialog(EnsemblesNamesDictionary.BOOSTING,
                         new AdaBoostClassifier(), false);
             }
@@ -1348,7 +1364,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         JMenuItem rndSubSpaceItem = new JMenuItem(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE);
         rndSubSpaceItem.addActionListener(e -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 createEnsembleOptionDialog(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE,
                         new ModifiedHeterogeneousClassifier(), true);
             }
@@ -1358,7 +1374,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         JMenuItem rndForestsItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_FORESTS);
         rndForestsItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1380,7 +1396,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem extraTreesItem = new JMenuItem(EnsemblesNamesDictionary.EXTRA_TREES);
         extraTreesItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1402,7 +1418,7 @@ public class JMainFrame extends JFrame {
         //-------------------------------------------------
         JMenuItem stackingItem = new JMenuItem(EnsemblesNamesDictionary.STACKING);
         stackingItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1425,7 +1441,7 @@ public class JMainFrame extends JFrame {
         //----------------------------------
         JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_NETWORKS);
         rndNetworksItem.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1462,7 +1478,7 @@ public class JMainFrame extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (dataValidated()) {
+                if (isDataAndClassValid()) {
                     try {
                         ecaServiceClient.setExperimentUrl(CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
@@ -1521,14 +1537,14 @@ public class JMainFrame extends JFrame {
         optimalClassifierMenu.setIcon(
                 new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPTIMAL_CLASSIFIER_ICON)));
         optimalClassifierMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     ecaServiceClient.setOptimalClassifierUrl(
                             CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl());
                     final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
                         @Override
                         public void apply() throws Exception {
-                            this.result = ecaServiceClient.performRequest(selectedPanel().getData());
+                            this.result = ecaServiceClient.performRequest(selectedPanel().getFilteredData());
                         }
                     };
                     LoadDialog progress = new LoadDialog(JMainFrame.this, callback, MODEL_BUILDING_MESSAGE);
@@ -1556,7 +1572,7 @@ public class JMainFrame extends JFrame {
         attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
         disabledMenuElementList.add(attrStatisticsMenu);
         attrStatisticsMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1577,7 +1593,7 @@ public class JMainFrame extends JFrame {
         scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
         disabledMenuElementList.add(scatterDiagramMenu);
         scatterDiagramMenu.addActionListener(event -> {
-            if (dataValidated()) {
+            if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
@@ -1652,9 +1668,17 @@ public class JMainFrame extends JFrame {
                 frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
-    private boolean dataValidated() {
+    private boolean isDataAndClassValid() {
+        return validateDataInternal(true);
+    }
+
+    private boolean isDataValid() {
+        return validateDataInternal(false);
+    }
+
+    private boolean validateDataInternal(boolean validateClass) {
         try {
-            selectedPanel().validateData();
+            selectedPanel().validateData(validateClass);
         } catch (Exception e) {
             LoggerUtils.error(log, e);
             JOptionPane.showMessageDialog(JMainFrame.this,

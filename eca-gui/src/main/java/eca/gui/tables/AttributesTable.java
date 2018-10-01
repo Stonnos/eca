@@ -31,6 +31,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -63,7 +64,7 @@ public class AttributesTable extends JDataTableBase {
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
     private static final int INDEX_COLUMN_PREFERRED_WIDTH = 50;
-    public static final String NUMERIC_OVERFLOW_ERROR_FORMAT =
+    private static final String NUMERIC_OVERFLOW_ERROR_FORMAT =
             "Для числового атрибута '%s' найдены слишком большие значения!\nДлина целой части не должна превышать %d знаков!";
 
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
@@ -150,28 +151,17 @@ public class AttributesTable extends JDataTableBase {
         this.setAutoResizeOff(false);
     }
 
-    public Instances createData(String relationName) throws Exception {
-        if (lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified()) {
-            Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
-            DecimalFormat format = instancesTable.model().format();
-            for (int i = 0; i < instancesTable.getRowCount(); i++) {
-                Instance obj = new DenseInstance(newDataSet.numAttributes());
-                obj.setDataset(newDataSet);
-                for (int j = 0; j < newDataSet.numAttributes(); j++) {
-                    Attribute attribute = newDataSet.attribute(j);
-                    String valueAt = (String) instancesTable.getValueAt(i, getAttrIndex(attribute.name()));
-                    if (valueAt == null) {
-                        obj.setValue(attribute, Utils.missingValue());
-                    } else if (attribute.isDate()) {
-                        obj.setValue(attribute, attribute.parseDate(valueAt));
-                    } else if (attribute.isNumeric()) {
-                        obj.setValue(attribute, format.parse(valueAt).doubleValue());
-                    } else {
-                        obj.setValue(attribute, valueAt.trim());
-                    }
-                }
-                newDataSet.add(obj);
-            }
+    /**
+     * Creates filtered instances taking into selected attributes with assigned class attribute.
+     * {@link ConstantAttributesFilter} is used for filtering instances.
+     *
+     * @param relationName - relation name
+     * @return created instances
+     * @throws Exception
+     */
+    public Instances createAndFilterData(String relationName) throws Exception {
+        if (isInstancesModified()) {
+            Instances newDataSet = createInstances(relationName);
             newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
             if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
                 throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
@@ -180,26 +170,40 @@ public class AttributesTable extends JDataTableBase {
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
             }
-            lastDataModificationCount = instancesTable.model().getModificationCount();
-            lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
-            lastClassModificationCount = classModificationCount;
-            lastCreatedInstances = filterInstances;
+            updateLastCreatedInstances(filterInstances);
         }
         return lastCreatedInstances;
     }
 
-    public void validateData() {
+    /**
+     * Creates instances taking into selected attributes with no assigned class attribute.
+     *
+     * @param relationName - relation name
+     * @return created instances
+     * @throws Exception
+     */
+    public Instances createSimpleData(String relationName) throws Exception {
+        if (isInstancesModified()) {
+            Instances newDataSet = createInstances(relationName);
+            updateLastCreatedInstances(newDataSet);
+        }
+        return lastCreatedInstances;
+    }
+
+    public void validateData(boolean validateClass) {
         if (instancesTable.getRowCount() == 0) {
             throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
         if (validateSelectedAttributesCount()) {
             throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
         }
-        if (!isSelected(classIndex())) {
-            throw new IllegalArgumentException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
-        }
-        if (isNumeric(classIndex())) {
-            throw new IllegalArgumentException(BAD_CLASS_TYPE_ERROR_MESSAGE);
+        if (validateClass) {
+            if (!isSelected(classIndex())) {
+                throw new IllegalArgumentException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
+            }
+            if (isNumeric(classIndex())) {
+                throw new IllegalArgumentException(BAD_CLASS_TYPE_ERROR_MESSAGE);
+            }
         }
         validateValues();
     }
@@ -232,6 +236,37 @@ public class AttributesTable extends JDataTableBase {
         classBox.addActionListener(event -> classModificationCount++);
     }
 
+    private Instances createInstances(String relationName) throws ParseException {
+        Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
+        DecimalFormat format = instancesTable.model().format();
+        for (int i = 0; i < instancesTable.getRowCount(); i++) {
+            Instance obj = new DenseInstance(newDataSet.numAttributes());
+            obj.setDataset(newDataSet);
+            for (int j = 0; j < newDataSet.numAttributes(); j++) {
+                Attribute attribute = newDataSet.attribute(j);
+                String valueAt = (String) instancesTable.getValueAt(i, getAttrIndex(attribute.name()));
+                if (valueAt == null) {
+                    obj.setValue(attribute, Utils.missingValue());
+                } else if (attribute.isDate()) {
+                    obj.setValue(attribute, attribute.parseDate(valueAt));
+                } else if (attribute.isNumeric()) {
+                    obj.setValue(attribute, format.parse(valueAt).doubleValue());
+                } else {
+                    obj.setValue(attribute, valueAt.trim());
+                }
+            }
+            newDataSet.add(obj);
+        }
+        return newDataSet;
+    }
+
+    private void updateLastCreatedInstances(Instances newInstances) {
+        lastDataModificationCount = instancesTable.model().getModificationCount();
+        lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
+        lastClassModificationCount = classModificationCount;
+        lastCreatedInstances = newInstances;
+    }
+
     private boolean isDataModified() {
         return lastDataModificationCount != instancesTable.model().getModificationCount();
     }
@@ -242,6 +277,10 @@ public class AttributesTable extends JDataTableBase {
 
     private boolean isClassModified() {
         return classModificationCount != lastClassModificationCount;
+    }
+
+    private boolean isInstancesModified() {
+        return lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified();
     }
 
     private boolean validateSelectedAttributesCount() {
@@ -337,7 +376,7 @@ public class AttributesTable extends JDataTableBase {
     }
 
     /**
-     *
+     * Combo box render for attribute type selection.
      */
     private class ComboBoxRenderer extends JComboBox<String>
             implements TableCellRenderer {
@@ -358,10 +397,10 @@ public class AttributesTable extends JDataTableBase {
             return this;
         }
 
-    } // End of class ComboBoxRender
+    }
 
     /**
-     *
+     * Combo box editor render for attribute type selection.
      */
     private class JComboBoxEditor extends DefaultCellEditor {
 

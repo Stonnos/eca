@@ -7,11 +7,12 @@ import weka.filters.unsupervised.attribute.RemoveUseless;
 import java.io.Serializable;
 
 /**
- * Implements filtering of constant attributes in input data.
+ * This filter removes attributes that do not vary at all or that vary too much.
+ * All constant attributes are deleted automatically, along with any that exceed
+ * the maximum percentage of variance parameter.
  *
  * @author Roman Batygin
  */
-
 public class ConstantAttributesFilter implements Filter, Serializable {
 
     private final RemoveUseless removeUseless = new RemoveUseless();
