@@ -64,8 +64,8 @@ public class DatabaseSaver implements DataSaver {
         try {
             connection = DriverManager.getConnection(connectionDescriptor.getUrl(), connectionDescriptor.getLogin(),
                     connectionDescriptor.getPassword());
-            statement = connection.createStatement();
             connection.setAutoCommit(false);
+            statement = connection.createStatement();
             log.info("Starting to create new table '{}'", tableName);
             statement.execute(sqlQueryHelper.buildCreateTableQuery(tableName, data));
             log.info("Table '{}' has been created", tableName);
