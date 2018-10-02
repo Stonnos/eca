@@ -42,10 +42,33 @@ public class InstancesTable extends JDataTableBase {
 
     public InstancesTable(final Instances data, final JTextField numInstances, int digits) {
         super(new InstancesTableModel(data, digits));
+        getInstancesTableModel().addSortListenerToHeader(this);
         MissingCellRenderer renderer = new MissingCellRenderer();
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
+        this.createPopupMenuList(numInstances);
+    }
+
+    /**
+     * Returns instances table model.
+     *
+     * @return instances table model
+     */
+    public InstancesTableModel getInstancesTableModel() {
+        return (InstancesTableModel) this.getModel();
+    }
+
+    /**
+     * Returns initial instances.
+     *
+     * @return initial instances
+     */
+    public Instances data() {
+        return getInstancesTableModel().data();
+    }
+
+    private void createPopupMenuList(final JTextField numInstances) {
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
         deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
@@ -83,17 +106,17 @@ public class InstancesTable extends JDataTableBase {
         deleteMenu.addActionListener(e -> {
             int i = getSelectedRow();
             if (i != -1) {
-                model().remove(i);
+                getInstancesTableModel().remove(i);
             }
-            numInstances.setText(String.valueOf(model().getRowCount()));
+            numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
         });
 
         deleteAllMenu.addActionListener(e -> {
             int[] i = getSelectedRows();
             if (i.length != 0) {
-                model().remove(i);
+                getInstancesTableModel().remove(i);
             }
-            numInstances.setText(String.valueOf(model().getRowCount()));
+            numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
         });
 
         insertMenu.addActionListener(e -> {
@@ -103,8 +126,8 @@ public class InstancesTable extends JDataTableBase {
                     null, null);
             if (newVal != null) {
                 String obj = newVal.trim();
-                model().add(obj.isEmpty() ? null : obj);
-                numInstances.setText(String.valueOf(model().getRowCount()));
+                getInstancesTableModel().add(obj.isEmpty() ? null : obj);
+                numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
             }
         });
 
@@ -113,14 +136,14 @@ public class InstancesTable extends JDataTableBase {
                     ARE_YOU_SURE_TEXT, null,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
-                model().clear();
-                numInstances.setText(String.valueOf(model().getRowCount()));
+                getInstancesTableModel().clear();
+                numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
             }
         });
 
         missMenu.addActionListener(e -> {
-            model().removeMissing();
-            numInstances.setText(String.valueOf(model().getRowCount()));
+            getInstancesTableModel().removeMissing();
+            numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
         });
 
         reValueMenu.addActionListener(e -> {
@@ -134,7 +157,7 @@ public class InstancesTable extends JDataTableBase {
                         labels, values, ROWS, TEXT_FIELD_LENGTH);
                 frame.setVisible(true);
                 if (frame.dialogResult()) {
-                    model().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
+                    getInstancesTableModel().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
                 }
             }
         });
@@ -146,13 +169,4 @@ public class InstancesTable extends JDataTableBase {
         popMenu.add(reValueMenu);
         this.getTableHeader().setComponentPopupMenu(popMenu);
     }
-
-    public InstancesTableModel model() {
-        return (InstancesTableModel) this.getModel();
-    }
-
-    public Instances data() {
-        return model().data();
-    }
-
 }

@@ -10,7 +10,13 @@ import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
 import weka.core.Instances;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,12 +61,24 @@ public class InstancesTableModel extends AbstractTableModel {
         return data;
     }
 
+    /**
+     * Remove specified row.
+     *
+     * @param i - row index
+     */
     public void remove(int i) {
         values.remove(i);
         modificationCount++;
         fireTableRowsDeleted(i, i);
     }
 
+    /**
+     * Replaced all values.
+     *
+     * @param j      - column index
+     * @param oldVal - old value
+     * @param newVal - new value
+     */
     public void replace(int j, Object oldVal, Object newVal) {
         for (int i = 0; i < values.size(); i++) {
             if ((oldVal.toString().isEmpty() && getValue(i, j) == null) ||
@@ -71,6 +89,9 @@ public class InstancesTableModel extends AbstractTableModel {
         this.fireTableDataChanged();
     }
 
+    /**
+     * Clear all data
+     */
     public void clear() {
         for (List<Object> row : values) {
             row.clear();
@@ -80,12 +101,20 @@ public class InstancesTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    /**
+     * Removed specified rows.
+     *
+     * @param indices - rows indices
+     */
     public void remove(int[] indices) {
         for (int i = 0; i < indices.length; i++) {
             remove(indices[i] - i);
         }
     }
 
+    /**
+     * Removes rows with missing values.
+     */
     public void removeMissing() {
         ListIterator<List<Object>> iterator = values.listIterator();
         while (iterator.hasNext()) {
@@ -105,6 +134,60 @@ public class InstancesTableModel extends AbstractTableModel {
         }
         modificationCount++;
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+    }
+
+    /**
+     * Sorts data by specified column.
+     *
+     * @param columnIndex - column index
+     * @param ascending   - sorts by ascending?
+     */
+    public void sort(int columnIndex, boolean ascending) {
+        if (columnIndex > 0) {
+            values.sort((o1, o2) -> {
+                Object x = o1.get(columnIndex - 1);
+                Object y = o2.get(columnIndex - 1);
+                int sign = ascending ? 1 : -1;
+                if (Objects.equals(x, y)) {
+                    return 0;
+                } else if (x == null) {
+                    return ascending ? sign : -sign;
+                } else if (y == null) {
+                    return ascending ? -sign : sign;
+                } else {
+                    return sign * x.toString().compareTo(y.toString());
+                }
+            });
+            modificationCount++;
+            fireTableDataChanged();
+        }
+    }
+
+    /**
+     * Add sort listener to table header.
+     *
+     * @param table - table object
+     */
+    public void addSortListenerToHeader(final JTable table) {
+        table.setColumnSelectionAllowed(false);
+        JTableHeader header = table.getTableHeader();
+        if (header != null) {
+            MouseAdapter listMouseListener = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    TableColumnModel columnModel = table.getColumnModel();
+                    int viewColumn = columnModel.getColumnIndexAtX(e.getX());
+                    int column = table.convertColumnIndexToModel(viewColumn);
+                    if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && !e.isAltDown() &&
+                            column != -1) {
+                        int shiftPressed = e.getModifiers() & InputEvent.SHIFT_MASK;
+                        boolean ascending = (shiftPressed == 0);
+                        InstancesTableModel.this.sort(column, ascending);
+                    }
+                }
+            };
+            header.addMouseListener(listMouseListener);
+        }
     }
 
     @Override
@@ -150,6 +233,4 @@ public class InstancesTableModel extends AbstractTableModel {
             modificationCount++;
         }
     }
-
-
 }

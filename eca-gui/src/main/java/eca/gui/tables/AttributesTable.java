@@ -238,7 +238,7 @@ public class AttributesTable extends JDataTableBase {
 
     private Instances createInstances(String relationName) throws ParseException {
         Instances newDataSet = new Instances(relationName, createAttributesList(), instancesTable.getRowCount());
-        DecimalFormat format = instancesTable.model().format();
+        DecimalFormat format = instancesTable.getInstancesTableModel().format();
         for (int i = 0; i < instancesTable.getRowCount(); i++) {
             Instance obj = new DenseInstance(newDataSet.numAttributes());
             obj.setDataset(newDataSet);
@@ -261,14 +261,14 @@ public class AttributesTable extends JDataTableBase {
     }
 
     private void updateLastCreatedInstances(Instances newInstances) {
-        lastDataModificationCount = instancesTable.model().getModificationCount();
+        lastDataModificationCount = instancesTable.getInstancesTableModel().getModificationCount();
         lastAttributesModificationCount = getAttributesTableModel().getModificationCount();
         lastClassModificationCount = classModificationCount;
         lastCreatedInstances = newInstances;
     }
 
     private boolean isDataModified() {
-        return lastDataModificationCount != instancesTable.model().getModificationCount();
+        return lastDataModificationCount != instancesTable.getInstancesTableModel().getModificationCount();
     }
 
     private boolean isAttributesModified() {
