@@ -12,11 +12,7 @@ import eca.config.IconType;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
-import eca.data.DataFileExtension;
-import eca.ensemble.AbstractHeterogeneousClassifier;
-import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleClassifier;
-import eca.ensemble.StackingClassifier;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
@@ -35,45 +31,33 @@ import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
+import eca.report.AttachmentImage;
+import eca.report.EvaluationReport;
+import eca.report.EvaluationXlsReportService;
 import eca.roc.AttributesSelection;
 import eca.roc.RocCurve;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.J48;
 import eca.trees.TreeVisualizer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Drawing;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Picture;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.gui.treevisualizer.PlaceNode2;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classification results frame.
@@ -108,6 +92,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
+    private static final int ATTACHMENT_TAB_INDEX = 3;
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
@@ -124,8 +109,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private ROCCurvePanel rocCurvePanel;
 
     public ClassificationResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-                                          Evaluation evaluation, final int digits)
-            throws Exception {
+                                          Evaluation evaluation, final int digits) {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
@@ -153,7 +137,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         return evaluation;
     }
 
-    public final void addPanel(String title, Component panel) {
+    public void addPanel(String title, Component panel) {
         pane.add(title, panel);
     }
 
@@ -292,75 +276,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setJMenuBar(menu);
     }
 
-    private void createGUI(final int digits) {
-        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        pane = new JTabbedPane();
-        JPanel resultPanel = new JPanel(new GridBagLayout());
-        //------------------------------------------------------
-        resultPane = new JScrollPane();
-        resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
-        //------------------------------------------------------
-        misMatrix = new MisClassificationMatrix(evaluation);
-        JScrollPane misClassPane = new JScrollPane(misMatrix);
-        misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
-        //----------------------------------------
-        costMatrix = new ClassificationCostsMatrix(evaluation, digits);
-        JScrollPane costsPane = new JScrollPane(costMatrix);
-        costsPane.setBorder(PanelBorderUtils.
-                createTitledBorder(RESULTS_TEXT));
-        //---------------------------------
-        resultPanel.add(resultPane, new GridBagConstraints(0, 0, 1, 1, 1, 0.5,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        resultPanel.add(costsPane, new GridBagConstraints(0, 1, 1, 1, 1, 0.25,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        //-----------------------------------
-        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
-        saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
-        Dimension dim = new Dimension(150, 25);
-        saveButton.setPreferredSize(dim);
-        saveButton.setMinimumSize(dim);
-        resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
-        //----------------------------------
-        saveButton.addActionListener(new ActionListener() {
-
-            SaveResultsChooser chooser;
-            XlsResultsSaver xlsResultsSaver;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                File file;
-                try {
-                    if (chooser == null) {
-                        chooser = new SaveResultsChooser();
-                    }
-                    chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
-                    file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
-                    if (file != null) {
-                        if (xlsResultsSaver == null) {
-                            xlsResultsSaver = new XlsResultsSaver();
-                        }
-                        xlsResultsSaver.save(file);
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
-
-        pane.add(RESULTS_TEXT, resultPanel);
-        pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
-                new ClassifyInstanceTable(data, digits), classifier));
-        pane.add(ROC_CURVES_TEXT, rocCurvePanel);
-        this.add(pane);
-    }
-
     public JFrame getParentFrame() {
         return parentFrame;
     }
@@ -407,192 +322,107 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
     }
 
-    /**
-     * Class for saving classification results into XLS file.
-     */
-    private class XlsResultsSaver {
+    private void createGUI(final int digits) {
+        this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        pane = new JTabbedPane();
+        JPanel resultPanel = new JPanel(new GridBagLayout());
+        //------------------------------------------------------
+        resultPane = new JScrollPane();
+        resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
+        //------------------------------------------------------
+        misMatrix = new MisClassificationMatrix(evaluation);
+        JScrollPane misClassPane = new JScrollPane(misMatrix);
+        misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
+        //----------------------------------------
+        costMatrix = new ClassificationCostsMatrix(evaluation, digits);
+        JScrollPane costsPane = new JScrollPane(costMatrix);
+        costsPane.setBorder(PanelBorderUtils.
+                createTitledBorder(RESULTS_TEXT));
+        //---------------------------------
+        resultPanel.add(resultPane, new GridBagConstraints(0, 0, 1, 1, 1, 0.5,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
+        resultPanel.add(costsPane, new GridBagConstraints(0, 1, 1, 1, 1, 0.25,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
+        resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
+        //-----------------------------------
+        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
+        saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        Dimension dim = new Dimension(150, 25);
+        saveButton.setPreferredSize(dim);
+        saveButton.setMinimumSize(dim);
+        resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
+        //----------------------------------
+        saveButton.addActionListener(new ActionListener() {
 
-        static final String INPUT_OPTIONS_TEXT = "Входные параметры";
-        static final String INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS = "Входные параметры классификатора";
-        static final String INDIVIDUAL_CLASSIFIER = "Классификатор";
-        static final String CLASSIFIERS_INPUT_OPTIONS = "Входные параметры базовых классификаторов:";
-        static final String META_CLASSIFIER_INPUT_OPTIONS = "Входные параметры мета-классификатора";
-        static final String META_CLASSIFIER_TEXT = "Мета-классификатор:";
-        static final String INDIVIDUAL_CLASSIFIER_TEXT = "Базовый классификатор:";
-        static final String PNG = "PNG";
-        static final int FONT_SIZE = 12;
-        static final int PICTURE_ANCHOR_COL1 = 5;
-        static final int PICTURE_ANCHOR_ROW1 = 5;
+            SaveResultsChooser chooser;
+            EvaluationXlsReportService reportService;
 
-        void save(File file) throws Exception {
-            try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
-                Font font = book.createFont();
-                font.setBold(true);
-                font.setFontHeightInPoints((short) FONT_SIZE);
-                CellStyle style = book.createCellStyle();
-                style.setFont(font);
-                createXlsInputParamSheet(book, style);
-                createXlsResultsSheet(book, style);
-                writePicture(file, book, (BufferedImage) rocCurvePanel.createImage(), ROC_CURVES_TEXT);
-                book.write(stream);
-            }
-        }
-
-        Workbook createWorkbook(File file) {
-            return file.getName().endsWith(DataFileExtension.XLS.getExtension()) ? new HSSFWorkbook() :
-                    new XSSFWorkbook();
-        }
-
-        void createXlsInputParamSheet(Workbook book, CellStyle style) {
-            Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
-            AbstractClassifier cls = (AbstractClassifier) classifier;
-            createTitle(sheet, style, INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS);
-            createPair(sheet, style, INDIVIDUAL_CLASSIFIER, cls.getClass().getSimpleName());
-            String[] options = cls.getOptions();
-            setXlsClassifierOptions(sheet, options);
-            if (cls instanceof AbstractHeterogeneousClassifier) {
-                createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
-                AbstractHeterogeneousClassifier ens = (AbstractHeterogeneousClassifier) cls;
-                ClassifiersSet set = ens.getClassifiersSet();
-                setXlsEnsembleOptions(sheet, style, set.toList());
-            }
-            if (cls instanceof StackingClassifier) {
-                createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
-                StackingClassifier ens = (StackingClassifier) cls;
-                setXlsEnsembleOptions(sheet, style, ens.getClassifiers().toList());
-                createTitle(sheet, style, META_CLASSIFIER_INPUT_OPTIONS);
-                String[] metaOptions = ((AbstractClassifier) ens.getMetaClassifier()).getOptions();
-                createPair(sheet, style, META_CLASSIFIER_TEXT,
-                        ens.getMetaClassifier().getClass().getSimpleName());
-                setXlsClassifierOptions(sheet, metaOptions);
-            }
-        }
-
-        void setXlsClassifierOptions(Sheet sheet, String[] options) {
-            for (int i = 0; i < options.length; i += 2) {
-                Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-                Cell cell = row.createCell(0);
-                cell.setCellValue(options[i]);
-                sheet.autoSizeColumn(0);
-                cell = row.createCell(1);
-                cell.setCellValue(options[i + 1]);
-                sheet.autoSizeColumn(1);
-            }
-        }
-
-        void setXlsEnsembleOptions(Sheet sheet, CellStyle style, List<Classifier> set) {
-            for (int i = 0; i < set.size(); i++) {
-                AbstractClassifier single = (AbstractClassifier) set.get(i);
-                createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, single.getClass().getSimpleName());
-                createTitle(sheet, style, INPUT_OPTIONS_TEXT);
-                String[] singleOptions = single.getOptions();
-                setXlsClassifierOptions(sheet, singleOptions);
-            }
-        }
-
-        void createTitle(Sheet sheet, CellStyle style, String title) {
-            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            Cell cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue(title);
-            sheet.autoSizeColumn(0);
-        }
-
-        void createPair(Sheet sheet, CellStyle style, String title1, String title2) {
-            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            Cell cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue(title1);
-            sheet.autoSizeColumn(0);
-            cell = row.createCell(1);
-            cell.setCellStyle(style);
-            cell.setCellValue(title2);
-            sheet.autoSizeColumn(1);
-        }
-
-        void createXlsResultsSheet(Workbook book, CellStyle style) throws Exception {
-            Sheet sheet = book.createSheet(RESULTS_TEXT);
-            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            Cell cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue(STATISTICS_TEXT);
-            DecimalFormat fmt = costMatrix.getFormat();
-            //------------------------------
-            for (int i = 0; i < statTable.getRowCount(); i++) {
-                row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-                cell = row.createCell(0);
-                cell.setCellValue((String) statTable.getValueAt(i, 0));
-                cell = row.createCell(1);
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                File file;
                 try {
-                    cell.setCellValue(fmt.parse((String) statTable.getValueAt(i, 1)).doubleValue());
-                } catch (Exception e) {
-                    cell.setCellValue((String) statTable.getValueAt(i, 1));
-                }
-            }
-            //------------------------------------------
-            row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue(RESULTS_TEXT);
-            row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            for (int i = 0; i < costMatrix.getColumnCount(); i++) {
-                cell = row.createCell(i);
-                cell.setCellValue(costMatrix.getColumnName(i));
-            }
-            //----------------------------
-            for (int i = 0; i < costMatrix.getRowCount(); i++) {
-                row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-                for (int j = 0; j < costMatrix.getColumnCount(); j++) {
-                    cell = row.createCell(j);
-                    if (j == 0) {
-                        cell.setCellValue((Integer) costMatrix.getValueAt(i, j));
-                    } else {
-                        cell.setCellValue(fmt.parse((String) costMatrix.getValueAt(i, j)).doubleValue());
+                    if (chooser == null) {
+                        chooser = new SaveResultsChooser();
                     }
+                    chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
+                    file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
+                    if (file != null) {
+                        if (reportService == null) {
+                            reportService = new EvaluationXlsReportService();
+                            reportService.setDecimalFormat(costMatrix.getFormat());
+                        }
+                        reportService.setFile(file);
+                        EvaluationReport evaluationReport =
+                                new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
+                                        createAttachmentImagesList());
+                        reportService.setEvaluationReport(evaluationReport);
+                        reportService.saveReport();
+                    }
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
                 }
             }
-            //------------------------------
-            row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            cell = row.createCell(0);
-            cell.setCellStyle(style);
-            cell.setCellValue(MATRIX_TEXT);
-            row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-            for (int i = 0; i < misMatrix.getColumnCount(); i++) {
-                cell = row.createCell(i);
-                cell.setCellValue(misMatrix.getColumnName(i));
-                sheet.autoSizeColumn(i);
-            }
-            //-------------------------------------------------
-            for (int i = 0; i < misMatrix.getRowCount(); i++) {
-                row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-                for (int j = 0; j < misMatrix.getColumnCount(); j++) {
-                    cell = row.createCell(j);
-                    cell.setCellValue((Integer) misMatrix.getValueAt(i, j));
-                }
-            }
-        }
+        });
 
-        void writePicture(File file, Workbook book, BufferedImage bImage, String title)
-                throws Exception {
-            Sheet sheet = book.createSheet(title);
-            ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream();
-            ImageIO.write(bImage, PNG, byteArrayImg);
-            int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
-            short col1 = 0;
-            short col2 = 0;
-            ClientAnchor anchor;
-            if (file.getName().endsWith(DataFileExtension.XLS.getExtension())) {
-                anchor = new HSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
-            } else {
-                anchor = new XSSFClientAnchor(0, 0, 0, 0, col1, 0, col2, 0);
-            }
-            anchor.setCol1(PICTURE_ANCHOR_COL1);
-            anchor.setRow1(PICTURE_ANCHOR_ROW1);
-            Drawing drawing = sheet.createDrawingPatriarch();
-            Picture pict = drawing.createPicture(anchor, pictureIdx);
-            pict.resize();
-        }
+        rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
 
+        pane.add(RESULTS_TEXT, resultPanel);
+        pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
+                new ClassifyInstanceTable(data, digits), classifier));
+        pane.add(ROC_CURVES_TEXT, rocCurvePanel);
+        this.add(pane);
     }
 
+    private Map<String, String> createStatisticsMap() {
+        Map<String, String> resultMap = new LinkedHashMap<>();
+        for (int i = 0; i < statTable.getRowCount(); i++) {
+            resultMap.put(statTable.getValueAt(i, 0).toString(), statTable.getValueAt(i, 1).toString());
+        }
+        return resultMap;
+    }
+
+    private List<AttachmentImage> createAttachmentImagesList() {
+        List<AttachmentImage> attachmentImages = new ArrayList<>();
+        try {
+            attachmentImages.add(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
+            if (classifier instanceof DecisionTreeClassifier) {
+                JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+                TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
+                attachmentImages.add(new AttachmentImage(TREE_STRUCTURE_TAB_TITLE, treeVisualizer.getImage()));
+            } else if (classifier instanceof NeuralNetwork) {
+                JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+                NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
+                attachmentImages.add(new AttachmentImage(NETWORK_STRUCTURE_TAB_TITLE, networkVisualizer.getImage()));
+            }
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
+                    null, JOptionPane.WARNING_MESSAGE);
+        }
+        return attachmentImages;
+    }
 }
