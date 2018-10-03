@@ -8,18 +8,15 @@ package eca.gui.tables.models;
 import eca.config.ConfigurationService;
 import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
+import weka.core.Attribute;
 import weka.core.Instances;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -126,6 +123,11 @@ public class InstancesTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    /**
+     * Adds row with specified value at each cell.
+     *
+     * @param val - cell value
+     */
     public void add(Object val) {
         ArrayList<Object> row = new ArrayList<>(getColumnCount());
         values.add(row);
@@ -137,57 +139,51 @@ public class InstancesTableModel extends AbstractTableModel {
     }
 
     /**
-     * Sorts data by specified column.
+     * Sorts data by specified column and attribute type.
      *
-     * @param columnIndex - column index
-     * @param ascending   - sorts by ascending?
+     * @param columnIndex   - column index
+     * @param attributeType - attribute type
+     * @param ascending     - sorts by ascending?
      */
-    public void sort(int columnIndex, boolean ascending) {
-        if (columnIndex > 0) {
-            values.sort((o1, o2) -> {
-                Object x = o1.get(columnIndex - 1);
-                Object y = o2.get(columnIndex - 1);
-                int sign = ascending ? 1 : -1;
-                if (Objects.equals(x, y)) {
-                    return 0;
-                } else if (x == null) {
-                    return ascending ? sign : -sign;
-                } else if (y == null) {
-                    return ascending ? -sign : sign;
-                } else {
-                    return sign * x.toString().compareTo(y.toString());
+    public void sort(final int columnIndex, final int attributeType, final boolean ascending) {
+        values.sort((o1, o2) -> {
+            Object x = o1.get(columnIndex - 1);
+            Object y = o2.get(columnIndex - 1);
+            int sign = ascending ? 1 : -1;
+            if (Objects.equals(x, y)) {
+                return 0;
+            } else if (x == null) {
+                return ascending ? sign : -sign;
+            } else if (y == null) {
+                return ascending ? -sign : sign;
+            } else {
+                switch (attributeType) {
+                    case Attribute.DATE:
+                        try {
+                            Date dateX = SIMPLE_DATE_FORMAT.parse(x.toString());
+                            Date dateY = SIMPLE_DATE_FORMAT.parse(y.toString());
+                            return sign * dateX.compareTo(dateY);
+                        } catch (ParseException ex) {
+                            throw new IllegalArgumentException(ex.getMessage());
+                        }
+                    case Attribute.NUMERIC:
+                        try {
+                            Number numberX = format.parse(x.toString());
+                            Number numberY = format.parse(y.toString());
+                            return sign * Double.compare(numberX.doubleValue(), numberY.doubleValue());
+                        } catch (ParseException ex) {
+                            throw new IllegalArgumentException(ex.getMessage());
+                        }
+                    case Attribute.NOMINAL:
+                        return sign * x.toString().compareTo(y.toString());
+                    default:
+                        throw new IllegalArgumentException(
+                                String.format("Unexpected attribute type for column index %d!", columnIndex));
                 }
-            });
-            modificationCount++;
-            fireTableDataChanged();
-        }
-    }
-
-    /**
-     * Add sort listener to table header.
-     *
-     * @param table - table object
-     */
-    public void addSortListenerToHeader(final JTable table) {
-        table.setColumnSelectionAllowed(false);
-        JTableHeader header = table.getTableHeader();
-        if (header != null) {
-            MouseAdapter listMouseListener = new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    TableColumnModel columnModel = table.getColumnModel();
-                    int viewColumn = columnModel.getColumnIndexAtX(e.getX());
-                    int column = table.convertColumnIndexToModel(viewColumn);
-                    if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && !e.isAltDown() &&
-                            column != -1) {
-                        int shiftPressed = e.getModifiers() & InputEvent.SHIFT_MASK;
-                        boolean ascending = (shiftPressed == 0);
-                        InstancesTableModel.this.sort(column, ascending);
-                    }
-                }
-            };
-            header.addMouseListener(listMouseListener);
-        }
+            }
+        });
+        modificationCount++;
+        fireTableDataChanged();
     }
 
     @Override

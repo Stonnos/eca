@@ -346,15 +346,15 @@ public class JMainFrame extends JFrame {
         }
 
         Instances getFilteredData() throws Exception {
-            return attributesTable.createAndFilterData(relationNameTextField.getText());
+            return instanceTable.createAndFilterData(relationNameTextField.getText());
         }
 
         Instances getSimpleData() throws Exception {
-            return attributesTable.createSimpleData(relationNameTextField.getText());
+            return instanceTable.createSimpleData(relationNameTextField.getText());
         }
 
         void validateData(boolean validateClass) {
-            attributesTable.validateData(validateClass);
+            instanceTable.validateData(validateClass);
         }
 
         void setFrameColor(Color color) {
@@ -484,9 +484,10 @@ public class JMainFrame extends JFrame {
             }
             data.setClassIndex(data.numAttributes() - 1);
             classBox.setSelectedIndex(data.classIndex());
-            instanceTable = new InstancesTable(data, numInstancesTextField, digits);
+            instanceTable = new InstancesTable(data, numInstancesTextField, classBox, digits);
             dataScrollPane.setViewportView(instanceTable);
             attributesTable = new AttributesTable(instanceTable, classBox);
+            instanceTable.setAttributesTable(attributesTable);
             attrScrollPane.setViewportView(attributesTable);
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());
         }
