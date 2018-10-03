@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,6 +64,7 @@ public class EvaluationXlsReportService implements ReportService {
     private static final String[] COST_CLASSIFICATION_HEADER =
             {"Класс", "TPR", "FPR", "TNR", "FNR", "Полнота", "Точность", "F - мера", "AUC"};
     private static final String NAN = "NaN";
+    private static final String DOUBLE_FORMAT = "^[-]?[0-9]*[,]?[0-9]*$";
 
     private static final int CLASS_COL_IDX = 0;
     private static final int TP_COL_IDX = 1;
@@ -175,13 +177,13 @@ public class EvaluationXlsReportService implements ReportService {
             cell.setCellValue(options[i]);
             sheet.autoSizeColumn(0);
             cell = row.createCell(1);
-            cell.setCellValue(options[i + 1]);
+            setCellValue(cell, options[i + 1]);
             sheet.autoSizeColumn(1);
         }
     }
 
-    private void setXlsEnsembleOptions(Sheet sheet, CellStyle style, List<Classifier> set) {
-        set.forEach(classifier -> {
+    private void setXlsEnsembleOptions(Sheet sheet, CellStyle style, List<Classifier> classifiers) {
+        classifiers.forEach(classifier -> {
             AbstractClassifier single = (AbstractClassifier) classifier;
             createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, single.getClass().getSimpleName());
             createTitle(sheet, style, INPUT_OPTIONS_TEXT);
@@ -210,6 +212,18 @@ public class EvaluationXlsReportService implements ReportService {
         sheet.autoSizeColumn(1);
     }
 
+    private void setCellValue(Cell cell, String value) {
+        try {
+            if (value.matches(DOUBLE_FORMAT)) {
+                cell.setCellValue(decimalFormat.parse(value).doubleValue());
+            } else {
+                cell.setCellValue(value);
+            }
+        } catch (ParseException ex) {
+            throw new IllegalArgumentException(String.format("Can't set cell value for %s!", value));
+        }
+    }
+
     private CellStyle createBorderedCellStyle(Workbook book) {
         CellStyle cellStyle = book.createCellStyle();
         cellStyle.setBorderBottom(BorderStyle.THIN);
@@ -219,7 +233,7 @@ public class EvaluationXlsReportService implements ReportService {
         return cellStyle;
     }
 
-    private void createXlsResultsSheet(Workbook book, CellStyle style) throws Exception {
+    private void createXlsResultsSheet(Workbook book, CellStyle style) {
         Sheet sheet = book.createSheet(RESULTS_TEXT);
         CellStyle tableStyle = createBorderedCellStyle(book);
         createStatisticsTable(sheet, style, tableStyle);
@@ -239,11 +253,7 @@ public class EvaluationXlsReportService implements ReportService {
             statisticsCell.setCellValue(key);
             statisticsCell = statisticsRow.createCell(1);
             statisticsCell.setCellStyle(tableStyle);
-            try {
-                statisticsCell.setCellValue(decimalFormat.parse(value).doubleValue());
-            } catch (Exception e) {
-                statisticsCell.setCellValue(value);
-            }
+            setCellValue(statisticsCell, value);
         });
     }
 
@@ -309,29 +319,29 @@ public class EvaluationXlsReportService implements ReportService {
                         cell.setCellValue(classAttribute.value(i));
                         break;
                     case TP_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.truePositiveRate(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.truePositiveRate(i)));
                         break;
                     case FP_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.falsePositiveRate(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.falsePositiveRate(i)));
                         break;
                     case TN_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.trueNegativeRate(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.trueNegativeRate(i)));
                         break;
                     case FN_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.falseNegativeRate(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.falseNegativeRate(i)));
                         break;
                     case RECALL_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.recall(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.recall(i)));
                         break;
                     case PRECISION_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.precision(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.precision(i)));
                         break;
                     case FM_COL_IDX:
-                        cell.setCellValue(decimalFormat.format(evaluation.fMeasure(i)));
+                        setCellValue(cell, decimalFormat.format(evaluation.fMeasure(i)));
                         break;
                     case AUC_COL_IDX:
                         double aucValue = evaluation.areaUnderROC(i);
-                        cell.setCellValue(Double.isNaN(aucValue) ? NAN : decimalFormat.format(aucValue));
+                        setCellValue(cell, Double.isNaN(aucValue) ? NAN : decimalFormat.format(aucValue));
                         break;
                 }
             }
