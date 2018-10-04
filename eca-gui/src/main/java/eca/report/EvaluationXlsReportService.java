@@ -203,8 +203,8 @@ public class EvaluationXlsReportService extends AbstractReportService {
         Sheet sheet = book.createSheet(RESULTS_TEXT);
         CellStyle tableStyle = createBorderedCellStyle(book);
         createStatisticsTable(sheet, style, tableStyle);
-        createMisClassificationMatrix(sheet, style, tableStyle);
         createCostMatrix(sheet, style, tableStyle);
+        createMisClassificationMatrix(sheet, style, tableStyle);
     }
 
     private void createStatisticsTable(Sheet sheet, CellStyle style, CellStyle tableStyle) {

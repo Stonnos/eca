@@ -11,12 +11,14 @@
             margin: auto;
             width: 80%;
             overflow: scroll;
+            margin-bottom: 30px;
         }
 
         .confusion-table {
             margin: auto;
             width: 90%;
             overflow: scroll;
+            margin-bottom: 30px;
         }
 
         .attachment {
@@ -25,6 +27,16 @@
             font-style: italic;
             margin-top: 20px;
             margin-bottom: 5px;
+        }
+
+        .inputOptions {
+            margin: auto;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         th, td {
@@ -40,7 +52,7 @@
 <body>
 
 <center>
-    <h2 style="margin-bottom: 20px">Отчет по результатам классификации</h2>
+    <h2 class="title">Отчет по результатам классификации</h2>
 </center>
 
 <table class="statistics-table">
@@ -54,6 +66,10 @@
         </tr>
     #end
 </table>
+
+<div class="inputOptions">
+    $inputOptions
+</div>
 
 <table class="classification-cost-table">
     <tr>
@@ -86,7 +102,7 @@
 </table>
 
 <center>
-    <h3>Матрица классификации</h3>
+    <h3 style="margin: 15px;">Матрица классификации</h3>
 </center>
 <table class="confusion-table">
     <tr>

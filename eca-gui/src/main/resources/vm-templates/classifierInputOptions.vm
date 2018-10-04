@@ -11,10 +11,14 @@
             font-family: 'Arial';
             font-size: 12
         }
+
+        .optionsTable {
+            margin: auto;
+        }
     </style>
 </head>
 <body>
-<table>
+<table class="optionsTable">
     <tr>
         <th class="attr" colspan="2">Входные параметры классификатора</th>
     </tr>
@@ -27,7 +31,7 @@
 </table>
     #if ($extendedOptions)
     <h4 class="attr" style="text-align: center">Входные параметры базовых классификаторов:</h4>
-    <table>
+    <table class="optionsTable">
         #foreach($inputOptionsMap in $classifiersOptions.entrySet())
             <tr>
                 <th class="attr" colspan="2">$inputOptionsMap.key</th>
