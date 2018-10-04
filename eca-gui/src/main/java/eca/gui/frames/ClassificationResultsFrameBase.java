@@ -12,6 +12,7 @@ import eca.config.IconType;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
+import eca.data.FileUtils;
 import eca.ensemble.EnsembleClassifier;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
@@ -31,7 +32,9 @@ import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
+import eca.report.AbstractReportService;
 import eca.report.AttachmentImage;
+import eca.report.EvaluationHtmlReportService;
 import eca.report.EvaluationReport;
 import eca.report.EvaluationXlsReportService;
 import eca.roc.AttributesSelection;
@@ -93,6 +96,8 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final int ATTACHMENT_TAB_INDEX = 3;
+    private static final String HTML_EXTENSION = ".html";
+    private static final String INVALID_REPORT_EXTENSION = "Система не поддерживает отчеты с расширением %s";
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
@@ -354,39 +359,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
         //----------------------------------
-        saveButton.addActionListener(new ActionListener() {
-
-            SaveResultsChooser chooser;
-            EvaluationXlsReportService reportService;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                File file;
-                try {
-                    if (chooser == null) {
-                        chooser = new SaveResultsChooser();
-                    }
-                    chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
-                    file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
-                    if (file != null) {
-                        if (reportService == null) {
-                            reportService = new EvaluationXlsReportService();
-                            reportService.setDecimalFormat(costMatrix.getFormat());
-                        }
-                        reportService.setFile(file);
-                        EvaluationReport evaluationReport =
-                                new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
-                                        createAttachmentImagesList());
-                        reportService.setEvaluationReport(evaluationReport);
-                        reportService.saveReport();
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        saveButton.addActionListener(new SaveReportListener());
 
         rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
 
@@ -424,5 +397,50 @@ public class ClassificationResultsFrameBase extends JFrame {
                     null, JOptionPane.WARNING_MESSAGE);
         }
         return attachmentImages;
+    }
+
+    /**
+     * Action listener for saving evaluation results report.
+     */
+    private class SaveReportListener implements ActionListener {
+
+        SaveResultsChooser chooser;
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            File file;
+            try {
+                if (chooser == null) {
+                    chooser = new SaveResultsChooser();
+                }
+                chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
+                file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
+                if (file != null) {
+                    saveReportToFile(file);
+                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        void saveReportToFile(File file) throws Exception {
+            AbstractReportService reportService;
+            if (FileUtils.isXlsExtension(file.getName())) {
+                reportService = new EvaluationXlsReportService();
+            } else if (file.getName().endsWith(HTML_EXTENSION)) {
+                reportService = new EvaluationHtmlReportService();
+            } else {
+                throw new IllegalArgumentException(String.format(INVALID_REPORT_EXTENSION, file.getName()));
+            }
+            reportService.setFile(file);
+            reportService.setDecimalFormat(costMatrix.getFormat());
+            EvaluationReport evaluationReport =
+                    new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
+                            createAttachmentImagesList());
+            reportService.setEvaluationReport(evaluationReport);
+            reportService.saveReport();
+        }
     }
 }

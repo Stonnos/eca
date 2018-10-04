@@ -21,6 +21,8 @@ public class SaveResultsChooser extends SaveFileChooser {
         getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter(DataFileExtension.XLSX.getDescription(),
                         DataFileExtension.XLSX.getExtension()));
+        getChooser().addChoosableFileFilter(
+                new FileNameExtensionFilter("HTML data files (*.html)", "html"));
     }
 
 }

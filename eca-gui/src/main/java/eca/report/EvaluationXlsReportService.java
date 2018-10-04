@@ -41,7 +41,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class EvaluationXlsReportService implements ReportService {
+public class EvaluationXlsReportService extends AbstractReportService {
 
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
@@ -76,61 +76,27 @@ public class EvaluationXlsReportService implements ReportService {
     private static final int FM_COL_IDX = 7;
     private static final int AUC_COL_IDX = 8;
 
-    @Getter
-    private EvaluationReport evaluationReport;
-
-    @Getter
-    private File file;
-
-    @Getter
-    private DecimalFormat decimalFormat;
-
-    /**
-     * Sets file for saving report.
-     *
-     * @param file - file
-     */
-    public void setFile(File file) {
-        if (!FileUtils.isXlsExtension(file.getName())) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
-        }
-        this.file = file;
-    }
-
-    /**
-     * Sets evaluation report.
-     *
-     * @param evaluationReport - evaluation report
-     */
-    public void setEvaluationReport(EvaluationReport evaluationReport) {
-        Objects.requireNonNull(evaluationReport, "Evaluation report isn't specified!");
-        this.evaluationReport = evaluationReport;
-    }
-
-    /**
-     * Sets decimal format.
-     *
-     * @param decimalFormat - decimal format
-     */
-    public void setDecimalFormat(DecimalFormat decimalFormat) {
-        Objects.requireNonNull(decimalFormat, "Decimal format isn't specified!");
-        this.decimalFormat = decimalFormat;
-    }
-
     @Override
     public void saveReport() throws Exception {
-        try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
+        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
             Font font = createTitleFont(book);
             CellStyle style = book.createCellStyle();
             style.setFont(font);
             createClassifierInputParamSheet(book, style);
             createXlsResultsSheet(book, style);
-            if (!CollectionUtils.isEmpty(evaluationReport.getAttachmentImages())) {
-                for (AttachmentImage attachmentImage : evaluationReport.getAttachmentImages()) {
-                    writeImage(file, book, (BufferedImage) attachmentImage.getImage(), attachmentImage.getTitle());
+            if (!CollectionUtils.isEmpty(getEvaluationReport().getAttachmentImages())) {
+                for (AttachmentImage attachmentImage : getEvaluationReport().getAttachmentImages()) {
+                    writeImage(getFile(), book, (BufferedImage) attachmentImage.getImage(), attachmentImage.getTitle());
                 }
             }
             book.write(stream);
+        }
+    }
+
+    @Override
+    protected void validateFile(File file) {
+        if (!FileUtils.isXlsExtension(file.getName())) {
+            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
         }
     }
 
@@ -147,7 +113,7 @@ public class EvaluationXlsReportService implements ReportService {
 
     private void createClassifierInputParamSheet(Workbook book, CellStyle style) {
         Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
-        AbstractClassifier classifier = (AbstractClassifier) evaluationReport.getClassifier();
+        AbstractClassifier classifier = (AbstractClassifier) getEvaluationReport().getClassifier();
         createTitle(sheet, style, INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS);
         createPair(sheet, style, INDIVIDUAL_CLASSIFIER, classifier.getClass().getSimpleName());
         String[] inputOptions = classifier.getOptions();
@@ -215,7 +181,7 @@ public class EvaluationXlsReportService implements ReportService {
     private void setCellValue(Cell cell, String value) {
         try {
             if (value.matches(DOUBLE_FORMAT)) {
-                cell.setCellValue(decimalFormat.parse(value).doubleValue());
+                cell.setCellValue(getDecimalFormat().parse(value).doubleValue());
             } else {
                 cell.setCellValue(value);
             }
@@ -246,7 +212,7 @@ public class EvaluationXlsReportService implements ReportService {
         Cell cell = row.createCell(0);
         cell.setCellStyle(style);
         cell.setCellValue(STATISTICS_TEXT);
-        evaluationReport.getStatisticsMap().forEach((key, value) -> {
+        getEvaluationReport().getStatisticsMap().forEach((key, value) -> {
             Row statisticsRow = sheet.createRow(sheet.getPhysicalNumberOfRows());
             Cell statisticsCell = statisticsRow.createCell(0);
             statisticsCell.setCellStyle(tableStyle);
@@ -269,7 +235,7 @@ public class EvaluationXlsReportService implements ReportService {
         cell.setCellStyle(tableStyle);
         cell.setCellValue(ACTUAL_CLASS_TEXT);
         sheet.autoSizeColumn(0);
-        Attribute classAttribute = evaluationReport.getData().classAttribute();
+        Attribute classAttribute = getEvaluationReport().getData().classAttribute();
         for (int i = 1; i <= classAttribute.numValues(); i++) {
             cell = row.createCell(i);
             cell.setCellStyle(tableStyle);
@@ -278,7 +244,7 @@ public class EvaluationXlsReportService implements ReportService {
         }
 
         //Creates confusion classification table
-        double[][] confusionMatrix = evaluationReport.getEvaluation().confusionMatrix();
+        double[][] confusionMatrix = getEvaluationReport().getEvaluation().confusionMatrix();
         for (int i = 0; i < confusionMatrix.length; i++) {
             row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             cell = row.createCell(0);
@@ -307,8 +273,8 @@ public class EvaluationXlsReportService implements ReportService {
         }
 
         //Creates results table
-        Attribute classAttribute = evaluationReport.getData().classAttribute();
-        Evaluation evaluation = evaluationReport.getEvaluation();
+        Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+        Evaluation evaluation = getEvaluationReport().getEvaluation();
         for (int i = 0; i < classAttribute.numValues(); i++) {
             row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             for (int j = 0; j < COST_CLASSIFICATION_HEADER.length; j++) {
@@ -319,29 +285,29 @@ public class EvaluationXlsReportService implements ReportService {
                         cell.setCellValue(classAttribute.value(i));
                         break;
                     case TP_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.truePositiveRate(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.truePositiveRate(i)));
                         break;
                     case FP_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.falsePositiveRate(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.falsePositiveRate(i)));
                         break;
                     case TN_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.trueNegativeRate(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.trueNegativeRate(i)));
                         break;
                     case FN_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.falseNegativeRate(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.falseNegativeRate(i)));
                         break;
                     case RECALL_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.recall(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.recall(i)));
                         break;
                     case PRECISION_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.precision(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.precision(i)));
                         break;
                     case FM_COL_IDX:
-                        setCellValue(cell, decimalFormat.format(evaluation.fMeasure(i)));
+                        setCellValue(cell, getDecimalFormat().format(evaluation.fMeasure(i)));
                         break;
                     case AUC_COL_IDX:
                         double aucValue = evaluation.areaUnderROC(i);
-                        setCellValue(cell, Double.isNaN(aucValue) ? NAN : decimalFormat.format(aucValue));
+                        setCellValue(cell, Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
                         break;
                 }
             }

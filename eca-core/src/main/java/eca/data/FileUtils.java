@@ -76,7 +76,7 @@ public class FileUtils {
 
     private static boolean containsExtension(String fileName, Set<String> extensions) {
         for (String extension : extensions) {
-            if (fileName.endsWith(extension)) {
+            if (fileName.endsWith(String.format(".%s", extension))) {
                 return true;
             }
         }

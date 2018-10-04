@@ -1,0 +1,115 @@
+<html>
+<head>
+    <style>
+        .statistics-table {
+            margin: auto;
+            width: 50%;
+            margin-bottom: 30px;
+        }
+
+        .classification-cost-table {
+            margin: auto;
+            width: 80%;
+            overflow: scroll;
+        }
+
+        .confusion-table {
+            margin: auto;
+            width: 90%;
+            overflow: scroll;
+        }
+
+        .attachment {
+            display: block;
+            text-align: center;
+            font-style: italic;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            background: #e2e2e2;
+        }
+
+        body {
+            background: #83d1d1;
+        }
+    </style>
+</head>
+<body>
+
+<center>
+    <h2 style="margin-bottom: 20px">Отчет по результатам классификации</h2>
+</center>
+
+<table class="statistics-table">
+    <tr>
+        <th colspan="2">Основная статистика</th>
+    </tr>
+    #foreach($entry in $statistics.entrySet())
+        <tr>
+            <td>$entry.key</td>
+            <td>$entry.value</td>
+        </tr>
+    #end
+</table>
+
+<table class="classification-cost-table">
+    <tr>
+        <th colspan="9">Результаты классификации</th>
+    </tr>
+    <tr>
+        <th>Класс</th>
+        <th>TPR</th>
+        <th>FPR</th>
+        <th>TNR</th>
+        <th>FNR</th>
+        <th>Полнота (Recall)</th>
+        <th>Точность (Precision)</th>
+        <th>F - мера</th>
+        <th>AUC</th>
+    </tr>
+    #foreach($record in $classificationCosts)
+        <tr>
+            <td>$record.classValue</td>
+            <td>$record.tpRate</td>
+            <td>$record.fpRate</td>
+            <td>$record.tnRate</td>
+            <td>$record.fnRate</td>
+            <td>$record.recall</td>
+            <td>$record.precision</td>
+            <td>$record.fMeasure</td>
+            <td>$record.aucValue</td>
+        </tr>
+    #end
+</table>
+
+<center>
+    <h3>Матрица классификации</h3>
+</center>
+<table class="confusion-table">
+    <tr>
+        <th>Реальное</th>
+        #foreach($classValue in $confusionMatrix.classValues)
+            <th>$classValue (Прогнозное)</th>
+        #end
+    </tr>
+    #foreach($record in $confusionMatrix.confusionMatrixRecords)
+        <tr>
+            <td>$record.classValue</td>
+            #foreach($val in $record.values)
+                <td>$val</td>
+            #end
+        </tr>
+    #end
+</table>
+
+#foreach($attachment in $attachments)
+    <figure class="attachment">
+        <p><img src="data:image/png;base64,$attachment.base64String"></p>
+        <figcaption>$attachment.title</figcaption>
+    </figure>
+#end
+</body>
+</html>
