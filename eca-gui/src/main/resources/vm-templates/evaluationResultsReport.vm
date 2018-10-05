@@ -45,7 +45,7 @@
         }
 
         body {
-            background: #83d1d1;
+            background: rgb(198, 226, 255);
         }
     </style>
 </head>

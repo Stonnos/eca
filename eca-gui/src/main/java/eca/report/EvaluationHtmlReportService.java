@@ -101,7 +101,7 @@ public class EvaluationHtmlReportService extends AbstractReportService {
             record.setClassValue(classAttribute.value(i));
             record.setValues(new ArrayList<>());
             for (int j = 0; j < confusionMatrix[i].length; j++) {
-                record.getValues().add(String.valueOf(confusionMatrix[i][j]));
+                record.getValues().add((int) confusionMatrix[i][j]);
             }
             confusionMatrixReport.getConfusionMatrixRecords().add(record);
         }

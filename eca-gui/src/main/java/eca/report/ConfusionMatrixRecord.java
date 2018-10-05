@@ -20,5 +20,5 @@ public class ConfusionMatrixRecord {
     /**
      * Confusion matrix row for class value
      */
-    private List<String> values;
+    private List<Integer> values;
 }
