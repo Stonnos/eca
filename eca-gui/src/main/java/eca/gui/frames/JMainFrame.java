@@ -725,6 +725,12 @@ public class JMainFrame extends JFrame {
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
         windowsMenu = new JMenu(WINDOWS_MENU_TEXT);
         JMenu referenceMenu = new JMenu(REFERENCE_MENU_TEXT);
+        fillFileMenu(fileMenu);
+        fillAlgorithmsMenu(algorithmsMenu);
+        fillDataMinerMenu(dataMinerMenu);
+        fillServiceMenu(serviceMenu);
+        fillOptionsMenu(optionsMenu);
+        fillReferenceMenu(referenceMenu);
         menu.add(fileMenu);
         menu.add(algorithmsMenu);
         menu.add(dataMinerMenu);
@@ -732,503 +738,15 @@ public class JMainFrame extends JFrame {
         menu.add(serviceMenu);
         menu.add(windowsMenu);
         menu.add(referenceMenu);
-        //-------------------------------
-        JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
-        openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
-        openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
-        //-------------------------------
-        openFileMenu.addActionListener(new ActionListener() {
+        this.setJMenuBar(menu);
+    }
 
-            OpenDataFileChooser fileChooser;
-            FileDataLoader dataLoader = new FileDataLoader();
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new OpenDataFileChooser();
-                    }
-                    File file = fileChooser.openFile(JMainFrame.this);
-                    if (file != null) {
-                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                        dataLoader.setSource(new FileResource(file));
-                        InstancesLoader loader = new InstancesLoader(dataLoader);
-                        LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader, DATA_LOADING_MESSAGE);
-                        process(progress, () -> createDataFrame(loader.getResult()));
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        //------------------------------------------------
-        JMenuItem sampleMenu = new JMenuItem(EVALUATION_METHOD_MENU_TEXT);
-        sampleMenu.addActionListener(e -> evaluationMethodOptionsDialog.showDialog());
-        optionsMenu.add(sampleMenu);
-        //------------------------------------------------
-        JMenuItem digitsMenu = new JMenuItem(NUMBER_FORMAT_MENU_TEXT);
-        digitsMenu.addActionListener(e -> {
-            SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
-                    NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits,
-                    CONFIG_SERVICE.getApplicationConfig().getMinFractionDigits(),
-                    CONFIG_SERVICE.getApplicationConfig().getMaxFractionDigits());
-            dialog.setVisible(true);
-            if (dialog.dialogResult()) {
-                maximumFractionDigits = dialog.getValue();
-            }
-            dialog.dispose();
-        });
-        optionsMenu.add(digitsMenu);
-        //------------------------------------------------
-        JMenuItem seedMenu = new JMenuItem(RANDOM_GENERATOR_MENU_TEXT);
-        seedMenu.addActionListener(e -> {
-            SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this, RANDOM_GENERATOR_TITLE, SEED_TEXT, seed,
-                    CommonDictionary.MIN_SEED, CommonDictionary.MAX_SEED);
-            dialog.setVisible(true);
-            if (dialog.dialogResult()) {
-                seed = dialog.getValue();
-            }
-            dialog.dispose();
-        });
-        optionsMenu.add(seedMenu);
-        //-------------------------------
-        JMenuItem ecaServiceOptionsMenu = new JMenuItem(ECA_SERVICE_MENU_TEXT);
-        ecaServiceOptionsMenu.addActionListener(e -> {
-            EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
-            ecaServiceOptionsDialog.setVisible(true);
-        });
-        optionsMenu.add(ecaServiceOptionsMenu);
-
-        fileMenu.add(openFileMenu);
-        JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
-        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
-        disabledMenuElementList.add(saveFileMenu);
-        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
-        fileMenu.add(saveFileMenu);
-        //-------------------------------------------------
-        saveFileMenu.addActionListener(new ActionListener() {
-
-            SaveDataFileChooser fileChooser;
-            FileDataSaver dataSaver = new FileDataSaver();
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (isDataValid()) {
-                        final DataBuilder dataBuilder = new DataBuilder(false);
-                        createTrainingData(dataBuilder, () -> {
-                            if (fileChooser == null) {
-                                fileChooser = new SaveDataFileChooser();
-                            }
-                            fileChooser.setSelectedFile(new File(dataBuilder.getData().relationName()));
-                            File file = fileChooser.getSelectedFile(JMainFrame.this);
-                            if (file != null) {
-                                dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                dataSaver.saveData(file, dataBuilder.getData());
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        //---------------------------------------------
-        JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
-        dbMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift D"));
-        dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
-        fileMenu.addSeparator();
-        fileMenu.add(dbMenu);
-        dbMenu.addActionListener(event -> {
-            DatabaseConnectionDialog conn = new DatabaseConnectionDialog(JMainFrame.this);
-            conn.setVisible(true);
-            if (conn.dialogResult()) {
-                try {
-                    JdbcQueryExecutor connection = new JdbcQueryExecutor();
-                    connection.setConnectionDescriptor(conn.getConnectionDescriptor());
-                    connection.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            new DataBaseConnectionAction(connection),
-                            DB_CONNECTION_WAITING_MESSAGE);
-
-                    process(progress, () -> {
-                        QueryFrame queryFrame = new QueryFrame(JMainFrame.this, connection);
-                        queryFrame.setVisible(true);
-                    });
-
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-            conn.dispose();
-        });
-
-        JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
-        dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
-        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
-        disabledMenuElementList.add(dbSaverMenu);
-        dbSaverMenu.addActionListener(event -> {
-            if (isDataValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder(false);
-                    createTrainingData(dataBuilder, () -> {
-                        DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
-                        databaseSaverDialog.setTableName(dataBuilder.getData().relationName());
-                        databaseSaverDialog.setVisible(true);
-                        if (databaseSaverDialog.dialogResult()) {
-                            DatabaseSaver databaseSaver =
-                                    new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
-                            databaseSaver.setTableName(databaseSaverDialog.getTableName());
-                            LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getData()),
-                                    DB_SAVE_PROGRESS_MESSAGE_TEXT);
-                            process(progress, () -> {
-                                JOptionPane.showMessageDialog(JMainFrame.this,
-                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
-                                        JOptionPane.INFORMATION_MESSAGE);
-                            });
-                        }
-                        databaseSaverDialog.dispose();
-                    });
-
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        fileMenu.add(dbSaverMenu);
-        //---------------------------------------------
-        JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
-        urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));
-        urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
-        fileMenu.addSeparator();
-        fileMenu.add(urlMenu);
-        urlMenu.addActionListener(event -> {
-            String dataUrl = (String) JOptionPane.showInputDialog(JMainFrame.this,
-                    URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
-                    null, DEFAULT_URL_FOR_DATA_LOADING);
-
-            if (dataUrl != null) {
-                try {
-                    FileDataLoader dataLoader = new FileDataLoader();
-                    dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
-                    dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                    UrlLoader loader = new UrlLoader(dataLoader);
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, DATA_LOADING_MESSAGE);
-                    process(progress, () -> createDataFrame(loader.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        //------------------------------------------------------
-        JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
-        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl M"));
-        loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
-        fileMenu.addSeparator();
-        fileMenu.add(loadModelMenu);
-        loadModelMenu.addActionListener(new ActionListener() {
-
-            OpenModelChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new OpenModelChooser();
-                    }
-                    File file = fileChooser.openFile(JMainFrame.this);
-                    if (file != null) {
-                        ModelLoader loader = new ModelLoader(file);
-                        LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader, MODEL_BUILDING_MESSAGE);
-
-                        process(progress, () -> {
-                            ClassificationModel model = loader.getResult();
-                            String description;
-                            int digits;
-                            Map<String, String> properties = model.getAdditionalProperties();
-                            if (model.getAdditionalProperties() != null) {
-                                String descriptionProp =
-                                        properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
-                                description = descriptionProp != null ? descriptionProp
-                                        : model.getClassifier().getClass().getSimpleName();
-                                String digitsProp = properties.get(ClassificationModelDictionary.DIGITS_KEY);
-                                digits = digitsProp != null ? Integer.valueOf(digitsProp) : maximumFractionDigits;
-                            } else {
-                                description = model.getClassifier().getClass().getSimpleName();
-                                digits = maximumFractionDigits;
-                            }
-
-                            resultsHistory.createResultFrame(description,
-                                    model.getClassifier(),
-                                    model.getData(),
-                                    model.getEvaluation(), digits);
-                        });
-
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
-        generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
-        generatorMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift G"));
-        fileMenu.addSeparator();
-        fileMenu.add(generatorMenu);
-        generatorMenu.addActionListener(event -> {
-            DataGeneratorDialog dialog = new DataGeneratorDialog(JMainFrame.this);
-            dialog.setVisible(true);
-            if (dialog.dialogResult()) {
-                try {
-                    DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
-                    LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
-                            DATA_GENERATION_LOADING_MESSAGE);
-                    process(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        //---------------------------------------------
-        JMenuItem exitMenu = new JMenuItem(EXIT_MENU_TEXT);
-        exitMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXIT_ICON)));
-        fileMenu.addSeparator();
-        fileMenu.add(exitMenu);
-        //-------------------------------------------------
-        exitMenu.addActionListener(e -> JMainFrame.this.closeWindow());
-        //-------------------------------
-        JMenuItem aboutProgramMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
-        JMenuItem reference = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
-        //-------------------------------------------------
-        aboutProgramMenu.addActionListener(new ActionListener() {
-
-            AboutProgramFrame frame;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (frame == null) {
-                    frame = new AboutProgramFrame(JMainFrame.this);
-                }
-                frame.setVisible(true);
-            }
-        });
-        //-------------------------------------------------
-        reference.addActionListener(new ActionListener() {
-
-            Reference ref;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (ref == null) {
-                        ref = new Reference();
-                    }
-                    ref.openReference();
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        //-----------------------------------------------
-        referenceMenu.add(aboutProgramMenu);
-        referenceMenu.add(reference);
-        //---------------------------------------------------
-        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS_MENU_TEXT);
-        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
-        JMenuItem modifiedHeteroEnsMenu =
-                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
-        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
-        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
-        JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
-        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
-        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
-        //--------------------------------------------------
-        aNeuralMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getData());
-                        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
-                        AutomatedNeuralNetwork automatedNeuralNetwork =
-                                new AutomatedNeuralNetwork(dataBuilder.getData(), neuralNetwork);
-                        automatedNeuralNetwork.setSeed(seed);
-                        ExperimentFrame experimentFrame =
-                                new AutomatedNeuralNetworkFrame(automatedNeuralNetwork, JMainFrame.this,
-                                        maximumFractionDigits);
-                        experimentFrame.setVisible(true);
-                    });
-
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //--------------------------------------------------
-        modifiedHeteroEnsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
-                            () -> createEnsembleExperiment(new ModifiedHeterogeneousClassifier(),
-                                    modifiedHeteroEnsMenu.getText(), dataBuilder.getData()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //--------------------------------------------------
-        aHeteroEnsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
-                            () -> createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(),
-                                    dataBuilder.getData()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //--------------------------------------------------
-        aAdaBoostMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
-                            () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
-                                    dataBuilder.getData()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //--------------------------------------------------
-        aStackingMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
-                            () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
-                                    dataBuilder.getData()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        knnOptimizerMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
-                        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
-                        AutomatedKNearestNeighbours automatedKNearestNeighbours =
-                                new AutomatedKNearestNeighbours(dataBuilder.getData(), kNearestNeighbours);
-                        automatedKNearestNeighbours.setSeed(seed);
-                        AutomatedKNearestNeighboursFrame automatedKNearestNeighboursFrame =
-                                new AutomatedKNearestNeighboursFrame(automatedKNearestNeighbours,
-                                        JMainFrame.this, maximumFractionDigits);
-                        automatedKNearestNeighboursFrame.setVisible(true);
-                    });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        //--------------------------------------------------
-        automatedRandomForestsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        AutomatedRandomForests automatedRandomForests =
-                                new AutomatedRandomForests(dataBuilder.getData());
-                        automatedRandomForests.setSeed(seed);
-                        AutomatedRandomForestsFrame automatedRandomForestsFrame =
-                                new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
-                                        automatedRandomForests, JMainFrame.this, maximumFractionDigits);
-                        automatedRandomForestsFrame.setVisible(true);
-                    });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //----------------------------------------
-        automatedDecisionTreeMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getData());
-                        automatedDecisionTree.setSeed(seed);
-                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
-                                (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
-                                        maximumFractionDigits);
-                        automatedDecisionTreeFrame.setVisible(true);
-                    });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        //----------------------------------------
-        dataMinerMenu.add(aNeuralMenu);
-        dataMinerMenu.add(aHeteroEnsMenu);
-        dataMinerMenu.add(modifiedHeteroEnsMenu);
-        dataMinerMenu.add(aAdaBoostMenu);
-        dataMinerMenu.add(aStackingMenu);
-        dataMinerMenu.add(knnOptimizerMenu);
-        dataMinerMenu.add(automatedRandomForestsMenu);
-        dataMinerMenu.add(automatedDecisionTreeMenu);
-        //-------------------------------
+    private void fillAlgorithmsMenu(JMenu algorithmsMenu) {
         JMenu classifiersMenu = new JMenu(INDIVIDUAL_CLASSIFIERS_MENU_TEXT);
         JMenu ensembleMenu = new JMenu(ENSEMBLE_CLASSIFIERS_MENU_TEXT);
         algorithmsMenu.add(classifiersMenu);
         algorithmsMenu.add(ensembleMenu);
-        //------------------------------
+
         JMenu treesMenu = new JMenu(DECISION_TREES_MENU_TEXT);
         treesMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.TREE_ICON)));
         classifiersMenu.add(treesMenu);
@@ -1279,7 +797,7 @@ public class JMainFrame extends JFrame {
         treesMenu.add(cartItem);
         treesMenu.add(chaidItem);
         treesMenu.add(j48Item);
-        //------------------------------------------------------------------
+
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
         logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
         classifiersMenu.add(logisticItem);
@@ -1299,7 +817,7 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
-        //------------------------------------------------------------------
+
         JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
         mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
         classifiersMenu.add(mlpItem);
@@ -1323,7 +841,7 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
-        //------------------------------------------------------------------
+
         JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
         knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
@@ -1346,7 +864,7 @@ public class JMainFrame extends JFrame {
                 }
             }
         });
-        //----------------------------------
+
         JMenuItem heterogeneousItem = new JMenuItem(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE);
         heterogeneousItem.addActionListener(e -> {
             if (isDataAndClassValid()) {
@@ -1355,7 +873,7 @@ public class JMainFrame extends JFrame {
             }
         });
         ensembleMenu.add(heterogeneousItem);
-        //----------------------------------
+
         JMenuItem boostingItem = new JMenuItem(EnsemblesNamesDictionary.BOOSTING);
         boostingItem.addActionListener(e -> {
             if (isDataAndClassValid()) {
@@ -1363,7 +881,7 @@ public class JMainFrame extends JFrame {
                         new AdaBoostClassifier(), false);
             }
         });
-        //----------------------------------
+
         JMenuItem rndSubSpaceItem = new JMenuItem(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE);
         rndSubSpaceItem.addActionListener(e -> {
             if (isDataAndClassValid()) {
@@ -1373,7 +891,7 @@ public class JMainFrame extends JFrame {
         });
         ensembleMenu.add(rndSubSpaceItem);
         ensembleMenu.add(boostingItem);
-        //----------------------------------
+
         JMenuItem rndForestsItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_FORESTS);
         rndForestsItem.addActionListener(event -> {
             if (isDataAndClassValid()) {
@@ -1417,7 +935,6 @@ public class JMainFrame extends JFrame {
         });
         ensembleMenu.add(extraTreesItem);
 
-        //-------------------------------------------------
         JMenuItem stackingItem = new JMenuItem(EnsemblesNamesDictionary.STACKING);
         stackingItem.addActionListener(event -> {
             if (isDataAndClassValid()) {
@@ -1440,7 +957,6 @@ public class JMainFrame extends JFrame {
         });
         ensembleMenu.add(stackingItem);
 
-        //----------------------------------
         JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_NETWORKS);
         rndNetworksItem.addActionListener(event -> {
             if (isDataAndClassValid()) {
@@ -1465,8 +981,178 @@ public class JMainFrame extends JFrame {
             }
         });
         ensembleMenu.add(rndNetworksItem);
+    }
 
-        //-------------------------------------------------------------------
+    private void fillDataMinerMenu(JMenu dataMinerMenu) {
+        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS_MENU_TEXT);
+        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
+        JMenuItem modifiedHeteroEnsMenu =
+                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
+        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
+        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
+        JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
+        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
+        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
+
+        aNeuralMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getData());
+                        neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
+                        AutomatedNeuralNetwork automatedNeuralNetwork =
+                                new AutomatedNeuralNetwork(dataBuilder.getData(), neuralNetwork);
+                        automatedNeuralNetwork.setSeed(seed);
+                        ExperimentFrame experimentFrame =
+                                new AutomatedNeuralNetworkFrame(automatedNeuralNetwork, JMainFrame.this,
+                                        maximumFractionDigits);
+                        experimentFrame.setVisible(true);
+                    });
+
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        modifiedHeteroEnsMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder,
+                            () -> createEnsembleExperiment(new ModifiedHeterogeneousClassifier(),
+                                    modifiedHeteroEnsMenu.getText(), dataBuilder.getData()));
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        aHeteroEnsMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder,
+                            () -> createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(),
+                                    dataBuilder.getData()));
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        aAdaBoostMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder,
+                            () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
+                                    dataBuilder.getData()));
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        aStackingMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder,
+                            () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
+                                    dataBuilder.getData()));
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        knnOptimizerMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                        kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
+                        AutomatedKNearestNeighbours automatedKNearestNeighbours =
+                                new AutomatedKNearestNeighbours(dataBuilder.getData(), kNearestNeighbours);
+                        automatedKNearestNeighbours.setSeed(seed);
+                        AutomatedKNearestNeighboursFrame automatedKNearestNeighboursFrame =
+                                new AutomatedKNearestNeighboursFrame(automatedKNearestNeighbours,
+                                        JMainFrame.this, maximumFractionDigits);
+                        automatedKNearestNeighboursFrame.setVisible(true);
+                    });
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        automatedRandomForestsMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        AutomatedRandomForests automatedRandomForests =
+                                new AutomatedRandomForests(dataBuilder.getData());
+                        automatedRandomForests.setSeed(seed);
+                        AutomatedRandomForestsFrame automatedRandomForestsFrame =
+                                new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
+                                        automatedRandomForests, JMainFrame.this, maximumFractionDigits);
+                        automatedRandomForestsFrame.setVisible(true);
+                    });
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        automatedDecisionTreeMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getData());
+                        automatedDecisionTree.setSeed(seed);
+                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
+                                (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
+                                        maximumFractionDigits);
+                        automatedDecisionTreeFrame.setVisible(true);
+                    });
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        dataMinerMenu.add(aNeuralMenu);
+        dataMinerMenu.add(aHeteroEnsMenu);
+        dataMinerMenu.add(modifiedHeteroEnsMenu);
+        dataMinerMenu.add(aAdaBoostMenu);
+        dataMinerMenu.add(aStackingMenu);
+        dataMinerMenu.add(knnOptimizerMenu);
+        dataMinerMenu.add(automatedRandomForestsMenu);
+        dataMinerMenu.add(automatedDecisionTreeMenu);
+    }
+
+    private void fillServiceMenu(JMenu serviceMenu) {
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
         historyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.HISTORY_ICON)));
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
@@ -1625,8 +1311,331 @@ public class JMainFrame extends JFrame {
             }
         });
         serviceMenu.add(loggingMenu);
+    }
 
-        this.setJMenuBar(menu);
+    private void fillReferenceMenu(JMenu referenceMenu) {
+        JMenuItem aboutProgramMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
+        JMenuItem reference = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
+        reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
+
+        aboutProgramMenu.addActionListener(new ActionListener() {
+
+            AboutProgramFrame frame;
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (frame == null) {
+                    frame = new AboutProgramFrame(JMainFrame.this);
+                }
+                frame.setVisible(true);
+            }
+        });
+
+        reference.addActionListener(new ActionListener() {
+
+            Reference ref;
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    if (ref == null) {
+                        ref = new Reference();
+                    }
+                    ref.openReference();
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        referenceMenu.add(aboutProgramMenu);
+        referenceMenu.add(reference);
+    }
+
+    private void fillOptionsMenu(JMenu optionsMenu) {
+        JMenuItem sampleMenu = new JMenuItem(EVALUATION_METHOD_MENU_TEXT);
+        sampleMenu.addActionListener(e -> evaluationMethodOptionsDialog.showDialog());
+        optionsMenu.add(sampleMenu);
+
+        JMenuItem digitsMenu = new JMenuItem(NUMBER_FORMAT_MENU_TEXT);
+        digitsMenu.addActionListener(e -> {
+            SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this,
+                    NUMBER_FORMAT_TITLE, DECIMAL_PLACES_TITLE, maximumFractionDigits,
+                    CONFIG_SERVICE.getApplicationConfig().getMinFractionDigits(),
+                    CONFIG_SERVICE.getApplicationConfig().getMaxFractionDigits());
+            dialog.setVisible(true);
+            if (dialog.dialogResult()) {
+                maximumFractionDigits = dialog.getValue();
+            }
+            dialog.dispose();
+        });
+        optionsMenu.add(digitsMenu);
+
+        JMenuItem seedMenu = new JMenuItem(RANDOM_GENERATOR_MENU_TEXT);
+        seedMenu.addActionListener(e -> {
+            SpinnerDialog dialog = new SpinnerDialog(JMainFrame.this, RANDOM_GENERATOR_TITLE, SEED_TEXT, seed,
+                    CommonDictionary.MIN_SEED, CommonDictionary.MAX_SEED);
+            dialog.setVisible(true);
+            if (dialog.dialogResult()) {
+                seed = dialog.getValue();
+            }
+            dialog.dispose();
+        });
+        optionsMenu.add(seedMenu);
+
+        JMenuItem ecaServiceOptionsMenu = new JMenuItem(ECA_SERVICE_MENU_TEXT);
+        ecaServiceOptionsMenu.addActionListener(e -> {
+            EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
+            ecaServiceOptionsDialog.setVisible(true);
+        });
+        optionsMenu.add(ecaServiceOptionsMenu);
+    }
+
+    private void fillFileMenu(JMenu fileMenu) {
+        JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
+        openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
+        openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
+        openFileMenu.addActionListener(new ActionListener() {
+
+            OpenDataFileChooser fileChooser;
+            FileDataLoader dataLoader = new FileDataLoader();
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    if (fileChooser == null) {
+                        fileChooser = new OpenDataFileChooser();
+                    }
+                    File file = fileChooser.openFile(JMainFrame.this);
+                    if (file != null) {
+                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                        dataLoader.setSource(new FileResource(file));
+                        InstancesLoader loader = new InstancesLoader(dataLoader);
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                loader, DATA_LOADING_MESSAGE);
+                        process(progress, () -> createDataFrame(loader.getResult()));
+                    }
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        fileMenu.add(openFileMenu);
+
+        JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
+        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        disabledMenuElementList.add(saveFileMenu);
+        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
+        fileMenu.add(saveFileMenu);
+
+        saveFileMenu.addActionListener(new ActionListener() {
+
+            SaveDataFileChooser fileChooser;
+            FileDataSaver dataSaver = new FileDataSaver();
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    if (isDataValid()) {
+                        final DataBuilder dataBuilder = new DataBuilder(false);
+                        createTrainingData(dataBuilder, () -> {
+                            if (fileChooser == null) {
+                                fileChooser = new SaveDataFileChooser();
+                            }
+                            fileChooser.setSelectedFile(new File(dataBuilder.getData().relationName()));
+                            File file = fileChooser.getSelectedFile(JMainFrame.this);
+                            if (file != null) {
+                                dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                                dataSaver.saveData(file, dataBuilder.getData());
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
+        dbMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift D"));
+        dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(dbMenu);
+        dbMenu.addActionListener(event -> {
+            DatabaseConnectionDialog conn = new DatabaseConnectionDialog(JMainFrame.this);
+            conn.setVisible(true);
+            if (conn.dialogResult()) {
+                try {
+                    JdbcQueryExecutor connection = new JdbcQueryExecutor();
+                    connection.setConnectionDescriptor(conn.getConnectionDescriptor());
+                    connection.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                    LoadDialog progress = new LoadDialog(JMainFrame.this,
+                            new DataBaseConnectionAction(connection),
+                            DB_CONNECTION_WAITING_MESSAGE);
+
+                    process(progress, () -> {
+                        QueryFrame queryFrame = new QueryFrame(JMainFrame.this, connection);
+                        queryFrame.setVisible(true);
+                    });
+
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+            conn.dispose();
+        });
+
+        JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
+        dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
+        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
+        disabledMenuElementList.add(dbSaverMenu);
+        dbSaverMenu.addActionListener(event -> {
+            if (isDataValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder(false);
+                    createTrainingData(dataBuilder, () -> {
+                        DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
+                        databaseSaverDialog.setTableName(dataBuilder.getData().relationName());
+                        databaseSaverDialog.setVisible(true);
+                        if (databaseSaverDialog.dialogResult()) {
+                            DatabaseSaver databaseSaver =
+                                    new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
+                            databaseSaver.setTableName(databaseSaverDialog.getTableName());
+                            LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getData()),
+                                    DB_SAVE_PROGRESS_MESSAGE_TEXT);
+                            process(progress, () -> {
+                                JOptionPane.showMessageDialog(JMainFrame.this,
+                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            });
+                        }
+                        databaseSaverDialog.dispose();
+                    });
+
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        fileMenu.add(dbSaverMenu);
+
+        JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
+        urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));
+        urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(urlMenu);
+        urlMenu.addActionListener(event -> {
+            String dataUrl = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                    URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, DEFAULT_URL_FOR_DATA_LOADING);
+
+            if (dataUrl != null) {
+                try {
+                    FileDataLoader dataLoader = new FileDataLoader();
+                    dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
+                    dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                    UrlLoader loader = new UrlLoader(dataLoader);
+                    LoadDialog progress = new LoadDialog(JMainFrame.this,
+                            loader, DATA_LOADING_MESSAGE);
+                    process(progress, () -> createDataFrame(loader.getResult()));
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
+        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl M"));
+        loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(loadModelMenu);
+        loadModelMenu.addActionListener(new ActionListener() {
+
+            OpenModelChooser fileChooser;
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    if (fileChooser == null) {
+                        fileChooser = new OpenModelChooser();
+                    }
+                    File file = fileChooser.openFile(JMainFrame.this);
+                    if (file != null) {
+                        ModelLoader loader = new ModelLoader(file);
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                loader, MODEL_BUILDING_MESSAGE);
+
+                        process(progress, () -> {
+                            ClassificationModel model = loader.getResult();
+                            String description;
+                            int digits;
+                            Map<String, String> properties = model.getAdditionalProperties();
+                            if (model.getAdditionalProperties() != null) {
+                                String descriptionProp =
+                                        properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
+                                description = descriptionProp != null ? descriptionProp
+                                        : model.getClassifier().getClass().getSimpleName();
+                                String digitsProp = properties.get(ClassificationModelDictionary.DIGITS_KEY);
+                                digits = digitsProp != null ? Integer.valueOf(digitsProp) : maximumFractionDigits;
+                            } else {
+                                description = model.getClassifier().getClass().getSimpleName();
+                                digits = maximumFractionDigits;
+                            }
+
+                            resultsHistory.createResultFrame(description,
+                                    model.getClassifier(),
+                                    model.getData(),
+                                    model.getEvaluation(), digits);
+                        });
+
+                    }
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
+        generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
+        generatorMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift G"));
+        fileMenu.addSeparator();
+        fileMenu.add(generatorMenu);
+        generatorMenu.addActionListener(event -> {
+            DataGeneratorDialog dialog = new DataGeneratorDialog(JMainFrame.this);
+            dialog.setVisible(true);
+            if (dialog.dialogResult()) {
+                try {
+                    DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
+                    LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
+                            DATA_GENERATION_LOADING_MESSAGE);
+                    process(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        JMenuItem exitMenu = new JMenuItem(EXIT_MENU_TEXT);
+        exitMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXIT_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(exitMenu);
+        exitMenu.addActionListener(e -> JMainFrame.this.closeWindow());
     }
 
     /**
@@ -1636,8 +1645,7 @@ public class JMainFrame extends JFrame {
      * @param progressMessage progress message
      * @throws Exception
      */
-    private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame, String progressMessage)
-            throws Exception {
+    private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame, String progressMessage) {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());

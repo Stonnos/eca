@@ -270,11 +270,7 @@ public class InstancesTable extends JDataTableBase {
      * @throws Exception
      */
     public Instances createSimpleData(String relationName) throws Exception {
-        if (isInstancesModified()) {
-            Instances newDataSet = createInstances(relationName);
-            updateLastCreatedInstances(newDataSet);
-        }
-        return lastCreatedInstances;
+        return createInstances(relationName);
     }
 
     public void validateData(boolean validateClass) {
