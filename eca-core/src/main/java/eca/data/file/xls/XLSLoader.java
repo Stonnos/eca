@@ -178,7 +178,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                     if (!AVAILABLE_CELL_TYPES.contains(cellTypeEnum)) {
                         throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);
                     }
-                    if (isCellTypeEquals(cellType, cellTypeEnum)) {
+                    if (isCellTypeNotEquals(cellType, cellTypeEnum)) {
                         throw new IllegalArgumentException(String.format(
                                 FileDataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
@@ -189,7 +189,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
         }
     }
 
-    private boolean isCellTypeEquals(CellType cellTypeA, CellType cellTypeB) {
+    private boolean isCellTypeNotEquals(CellType cellTypeA, CellType cellTypeB) {
         return cellTypeA != null && !cellTypeA.equals(CellType.BLANK) && !cellTypeB.equals(CellType.BLANK) &&
                 !cellTypeA.equals(cellTypeB);
     }
