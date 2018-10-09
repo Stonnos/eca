@@ -5,7 +5,6 @@
  */
 package eca.gui.tables;
 
-import eca.config.ConfigurationService;
 import eca.gui.GuiUtils;
 import eca.gui.service.ClassifierInputOptionsService;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
@@ -28,22 +27,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 
+import static eca.gui.service.ValidationService.isNumericOverflow;
+import static eca.gui.service.ValidationService.parseDate;
+
 /**
- * Instances classification panel.
+ * Instances classification table.
  *
  * @author Roman Batygin
  */
 public class ClassifyInstanceTable extends JDataTableBase {
-
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
-
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final int DOUBLE_FIELD_LENGTH = 12;
     private static final int INT_FIELD_LENGTH = 8;
@@ -55,7 +49,6 @@ public class ClassifyInstanceTable extends JDataTableBase {
 
     private static final String ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT = "Не задано значение атрибута '%s'";
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
-    private static final String INVALID_DATE_FORMAT_ERROR = "Недопустимый формат даты для атрибута '%s'";
     private static final String INTEGER_REGEX = "^[0-9]+$";
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
@@ -108,31 +101,31 @@ public class ClassifyInstanceTable extends JDataTableBase {
         return getClassifyInstanceTableModel().data();
     }
 
-    public Instance instance() throws ParseException {
+    public Instance buildInstance() throws ParseException {
         Object[] vector = getClassifyInstanceTableModel().values();
         Instances data = data();
-        Enumeration<Attribute> en = data.enumerateAttributes();
+        Enumeration<Attribute> attributeEnumeration = data.enumerateAttributes();
         Instance instance = new DenseInstance(data.numAttributes());
         instance.setDataset(data);
-        while (en.hasMoreElements()) {
-            Attribute a = en.nextElement();
-            String strValue = (String) vector[a.index()];
+        while (attributeEnumeration.hasMoreElements()) {
+            Attribute attribute = attributeEnumeration.nextElement();
+            String strValue = (String) vector[attribute.index()];
             if (StringUtils.isEmpty(strValue)) {
-                throw new IllegalArgumentException(String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, a.name()));
+                throw new IllegalArgumentException(
+                        String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, attribute.name()));
             }
-            if (a.isDate()) {
-                try {
-                    Date date = SIMPLE_DATE_FORMAT.parse(strValue);
-                    instance.setValue(a, date.getTime());
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException(String.format(INVALID_DATE_FORMAT_ERROR, a.name()));
-                }
+            if (attribute.isDate()) {
+                instance.setValue(attribute, parseDate(attribute.name(), strValue).getTime());
             } else {
                 double value = decimalFormat.parse(strValue).doubleValue();
-                if (a.isNominal() && (!strValue.matches(INTEGER_REGEX) || !a.isInRange(value))) {
-                    throw new IllegalArgumentException(String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, a.name()));
+                if (attribute.isNumeric()) {
+                    isNumericOverflow(attribute.name(), strValue);
                 }
-                instance.setValue(a, value);
+                else if (attribute.isNominal() && (!strValue.matches(INTEGER_REGEX) || !attribute.isInRange(value))) {
+                    throw new IllegalArgumentException(
+                            String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, attribute.name()));
+                }
+                instance.setValue(attribute, value);
             }
         }
         return instance;

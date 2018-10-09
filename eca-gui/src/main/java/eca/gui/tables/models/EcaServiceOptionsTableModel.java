@@ -18,7 +18,7 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
-    private ArrayList<Entry> options = new ArrayList<>();
+    private ArrayList<Entry<String, String>> options = new ArrayList<>();
 
     public EcaServiceOptionsTableModel() {
         init();
@@ -47,7 +47,7 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        Entry entry = options.get(rowIndex);
+        Entry<String, String> entry = options.get(rowIndex);
         entry.setValue(aValue.toString());
         fireTableCellUpdated(rowIndex, columnIndex);
     }
@@ -57,18 +57,18 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
         return TITLE[column];
     }
 
-    public Iterator<Entry> getOptions() {
+    public Iterator<Entry<String, String>> getOptions() {
         return options.iterator();
     }
 
     private void init() {
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_ENABLED,
+        options.add(new Entry<>(CommonDictionary.ECA_SERVICE_ENABLED,
                 CONFIG_SERVICE.getEcaServiceConfig().getEnabled().toString()));
         options.add(
-                new Entry(CommonDictionary.ECA_SERVICE_URL, CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl()));
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL,
+                new Entry<>(CommonDictionary.ECA_SERVICE_URL, CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl()));
+        options.add(new Entry<>(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL,
                 CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl()));
-        options.add(new Entry(CommonDictionary.ECA_SERVICE_OPTIMAL_CLASSIFIER_URL,
+        options.add(new Entry<>(CommonDictionary.ECA_SERVICE_OPTIMAL_CLASSIFIER_URL,
                 CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl()));
     }
 }

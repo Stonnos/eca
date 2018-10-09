@@ -69,8 +69,9 @@ public class EcaServiceOptionsDialog extends JDialog {
     }
 
     private void saveEcaServiceOptions() throws IOException {
-        for (Iterator<Entry> iterator = ecaServiceOptionsTableModel.getOptions(); iterator.hasNext(); ) {
-            Entry entry = iterator.next();
+        for (Iterator<Entry<String, String>> iterator = ecaServiceOptionsTableModel.getOptions();
+             iterator.hasNext(); ) {
+            Entry<String, String> entry = iterator.next();
             if (StringUtils.isEmpty(entry.getValue())) {
                 throw new IllegalArgumentException(
                         String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
@@ -87,7 +88,7 @@ public class EcaServiceOptionsDialog extends JDialog {
         CONFIG_SERVICE.saveEcaServiceConfig();
     }
 
-    private void setOptions(Entry entry) {
+    private void setOptions(Entry<String, String> entry) {
         switch (entry.getKey()) {
             case CommonDictionary.ECA_SERVICE_ENABLED:
                 CONFIG_SERVICE.getEcaServiceConfig().setEnabled(Boolean.valueOf(entry.getValue()));

@@ -10,12 +10,12 @@ import eca.config.IconType;
 import eca.filter.ConstantAttributesFilter;
 import eca.filter.FilterDictionary;
 import eca.gui.MissingCellRenderer;
+import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
-import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.InstancesTableModel;
 import eca.gui.text.DoubleDocument;
-import eca.text.NumericFormatFactory;
+import eca.util.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -34,8 +34,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import static eca.gui.service.ValidationService.isNumericOverflow;
+import static eca.gui.service.ValidationService.parseDate;
 
 /**
  * @author Roman Batygin
@@ -45,10 +48,6 @@ public class InstancesTable extends JDataTableBase {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-
 
     private static final String DELETE_ATTR_MENU_TEXT = "Удалить выбранный объект";
     private static final String DELETE_ATTRS_MENU_TEXT = "Удалить выбранные объекты";
@@ -70,15 +69,11 @@ public class InstancesTable extends JDataTableBase {
     private static final String BAD_CLASS_TYPE_ERROR_MESSAGE = "Атрибут класса должен иметь категориальный тип!";
     private static final String CLASS_NOT_SELECTED_ERROR_MESSAGE = "Не выбран атрибут класса!";
     private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
-    private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
-            "Формат даты для атрибута '%s' должен быть следующим: %s";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
     private static final int MIN_NUM_CLASS_VALUES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
-    private static final String NUMERIC_OVERFLOW_ERROR_FORMAT =
-            "Для числового атрибута '%s' найдены слишком большие значения!\nДлина целой части не должна превышать %d знаков!";
 
     private AttributesTable attributesTable;
     private JComboBox<String> classBox;
@@ -188,13 +183,10 @@ public class InstancesTable extends JDataTableBase {
         });
 
         insertMenu.addActionListener(e -> {
-            String newVal = (String) JOptionPane.showInputDialog(InstancesTable.this.getRootPane(),
-                    INSTANCE_VALUE_TEXT,
-                    ADD_INSTANCE_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
-                    null, null);
-            if (newVal != null) {
-                String obj = newVal.trim();
-                getInstancesTableModel().add(obj.isEmpty() ? null : obj);
+            CreateNewInstanceDialog createNewInstanceDialog = new CreateNewInstanceDialog(null, createAttributesInfo());
+            createNewInstanceDialog.setVisible(true);
+            if (createNewInstanceDialog.isDialogResult()) {
+                getInstancesTableModel().addRow(createNewInstanceDialog.getValues());
                 numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
             }
         });
@@ -339,10 +331,10 @@ public class InstancesTable extends JDataTableBase {
                         throw new IllegalArgumentException(
                                 String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
                     }
-                    tryParseNumeric(attribute, str);
+                    isNumericOverflow(attribute, str);
                 }
                 if (attributesTable.isDate(attrIndex)) {
-                    tryParseDate(attribute, str);
+                    parseDate(attribute, str);
                 }
             }
         }
@@ -413,24 +405,6 @@ public class InstancesTable extends JDataTableBase {
         return classBox.getSelectedIndex();
     }
 
-    private void tryParseNumeric(String attribute, String val) {
-        int delimiterIndex = val.lastIndexOf(NumericFormatFactory.DECIMAL_SEPARATOR);
-        int length = delimiterIndex < 0 ? val.length() : delimiterIndex;
-        if (length > CommonDictionary.MAXIMUM_INTEGER_DIGITS) {
-            throw new IllegalArgumentException(
-                    String.format(NUMERIC_OVERFLOW_ERROR_FORMAT, attribute, CommonDictionary.MAXIMUM_INTEGER_DIGITS));
-        }
-    }
-
-    private void tryParseDate(String attribute, String val) {
-        try {
-            SIMPLE_DATE_FORMAT.parse(val);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                    attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
-        }
-    }
-
     private ArrayList<Attribute> createAttributesList() {
         ArrayList<Attribute> attr = new ArrayList<>(getColumnCount() - 1);
         for (int i = 1; i < getColumnCount(); i++) {
@@ -461,5 +435,23 @@ public class InstancesTable extends JDataTableBase {
             }
         }
         return new Attribute(attribute, values);
+    }
+
+    private List<Entry<String, Integer>> createAttributesInfo() {
+        Instances data = data();
+        List<Entry<String, Integer>> attributes = new ArrayList<>();
+        for (int i = 0; i < data.numAttributes(); i++) {
+            Entry<String, Integer> entry = new Entry<>();
+            entry.setKey(data.attribute(i).name());
+            if (attributesTable.isDate(i)) {
+                entry.setValue(Attribute.DATE);
+            } else if (attributesTable.isNumeric(i)) {
+                entry.setValue(Attribute.NUMERIC);
+            } else {
+                entry.setValue(Attribute.NOMINAL);
+            }
+            attributes.add(entry);
+        }
+        return attributes;
     }
 }

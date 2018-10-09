@@ -82,14 +82,14 @@ public class StatisticsTableBuilder {
      */
     private class ResultsModel extends AbstractTableModel {
 
-        ArrayList<Entry> results = new ArrayList<>();
+        ArrayList<Entry<String, String>> results = new ArrayList<>();
 
         ResultsModel(Evaluation e, Classifier classifier) {
-            results.add(new Entry(INITIAL_DATA_TEXT, e.getHeader().relationName()));
-            results.add(new Entry(NUMBER_OF_INSTANCES_TEXT, decimalFormat.format(e.getData().numInstances())));
-            results.add(new Entry(NUMBER_OF_ATTRIBUTES_TEXT, decimalFormat.format(e.getData().numAttributes())));
-            results.add(new Entry(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(e.getData().numClasses())));
-            results.add(new Entry(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
+            results.add(new Entry<>(INITIAL_DATA_TEXT, e.getHeader().relationName()));
+            results.add(new Entry<>(NUMBER_OF_INSTANCES_TEXT, decimalFormat.format(e.getData().numInstances())));
+            results.add(new Entry<>(NUMBER_OF_ATTRIBUTES_TEXT, decimalFormat.format(e.getData().numAttributes())));
+            results.add(new Entry<>(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(e.getData().numClasses())));
+            results.add(new Entry<>(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
 
             String evaluationMethodStr;
             if (e.isKCrossValidationMethod()) {
@@ -99,22 +99,22 @@ public class StatisticsTableBuilder {
                 evaluationMethodStr = TRAINING_DATA_METHOD_TEXT;
             }
 
-            results.add(new Entry(EVALUATION_METHOD_TEXT, evaluationMethodStr));
-            results.add(new Entry(NUMBER_OF_TEST_INSTANCES, decimalFormat.format(e.numInstances())));
-            results.add(new Entry(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.correct())));
-            results.add(new Entry(INCORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.incorrect())));
-            results.add(new Entry(CLASSIFIER_ACCURACY_TEXT, decimalFormat.format(e.pctCorrect())));
-            results.add(new Entry(CLASSIFIER_ERROR_TEXT, decimalFormat.format(e.pctIncorrect())));
-            results.add(new Entry(CLASSIFIER_MEAN_ERROR_TEXT, decimalFormat.format(e.meanAbsoluteError())));
-            results.add(new Entry(ROOT_MEAN_SQUARED_ERROR_TEXT, decimalFormat.format(e.rootMeanSquaredError())));
+            results.add(new Entry<>(EVALUATION_METHOD_TEXT, evaluationMethodStr));
+            results.add(new Entry<>(NUMBER_OF_TEST_INSTANCES, decimalFormat.format(e.numInstances())));
+            results.add(new Entry<>(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.correct())));
+            results.add(new Entry<>(INCORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(e.incorrect())));
+            results.add(new Entry<>(CLASSIFIER_ACCURACY_TEXT, decimalFormat.format(e.pctCorrect())));
+            results.add(new Entry<>(CLASSIFIER_ERROR_TEXT, decimalFormat.format(e.pctIncorrect())));
+            results.add(new Entry<>(CLASSIFIER_MEAN_ERROR_TEXT, decimalFormat.format(e.meanAbsoluteError())));
+            results.add(new Entry<>(ROOT_MEAN_SQUARED_ERROR_TEXT, decimalFormat.format(e.rootMeanSquaredError())));
             if (e.isKCrossValidationMethod()) {
-                results.add(new Entry(VARIANCE_ERROR_TEXT, decimalFormat.format(e.varianceError())));
+                results.add(new Entry<>(VARIANCE_ERROR_TEXT, decimalFormat.format(e.varianceError())));
                 double[] x = e.errorConfidenceInterval();
-                results.add(new Entry(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
+                results.add(new Entry<>(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
                         String.format("[%s; %s]", decimalFormat.format(x[0]), decimalFormat.format(x[1]))));
             }
             if (e.getTotalTimeMillis() != null) {
-                results.add(new Entry(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
+                results.add(new Entry<>(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));
             }
         }
 
@@ -134,7 +134,7 @@ public class StatisticsTableBuilder {
                     : results.get(row).getValue();
         }
 
-        public void addRow(Entry value) {
+        public void addRow(Entry<String, String> value) {
             results.add(value);
             fireTableRowsInserted(getRowCount(), getRowCount());
         }
@@ -151,35 +151,35 @@ public class StatisticsTableBuilder {
 
     public final JTable createStatistics(DecisionTreeClassifier tree, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, tree);
-        model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf(tree.numNodes())));
-        model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf(tree.numLeaves())));
-        model.addRow(new Entry(TREE_DEPTH_TEXT, String.valueOf(tree.depth())));
+        model.addRow(new Entry<>(NUMBER_OF_NODES_TEXT, String.valueOf(tree.numNodes())));
+        model.addRow(new Entry<>(NUMBER_OF_LEAVES_TEXT, String.valueOf(tree.numLeaves())));
+        model.addRow(new Entry<>(TREE_DEPTH_TEXT, String.valueOf(tree.depth())));
         return createTable(model);
     }
 
     public final JTable createStatistics(NeuralNetwork mlp, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, mlp);
-        model.addRow(new Entry(IN_LAYER_NEURONS_NUM_TEXT,
+        model.addRow(new Entry<>(IN_LAYER_NEURONS_NUM_TEXT,
                 String.valueOf(mlp.getMultilayerPerceptron().getNumInNeurons())));
-        model.addRow(new Entry(OUT_LAYER_NEURONS_NUM_TEXT,
+        model.addRow(new Entry<>(OUT_LAYER_NEURONS_NUM_TEXT,
                 String.valueOf(mlp.getMultilayerPerceptron().getNumOutNeurons())));
         model.addRow(
-                new Entry(HIDDEN_LAYERS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().hiddenLayersNum())));
-        model.addRow(new Entry(HIDDEN_LAYER_STRUCTURE_TEXT, mlp.getMultilayerPerceptron().getHiddenLayer()));
-        model.addRow(new Entry(LINKS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().getLinksNum())));
-        model.addRow(new Entry(AF_OF_HIDDEN_LAYER_TEXT, mlp.getMultilayerPerceptron().getActivationFunction()
+                new Entry<>(HIDDEN_LAYERS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().hiddenLayersNum())));
+        model.addRow(new Entry<>(HIDDEN_LAYER_STRUCTURE_TEXT, mlp.getMultilayerPerceptron().getHiddenLayer()));
+        model.addRow(new Entry<>(LINKS_NUM_TEXT, String.valueOf(mlp.getMultilayerPerceptron().getLinksNum())));
+        model.addRow(new Entry<>(AF_OF_HIDDEN_LAYER_TEXT, mlp.getMultilayerPerceptron().getActivationFunction()
                 .getActivationFunctionType().getDescription()));
-        model.addRow(new Entry(AF_OF_OUT_LAYER_TEXT, mlp.getMultilayerPerceptron()
+        model.addRow(new Entry<>(AF_OF_OUT_LAYER_TEXT, mlp.getMultilayerPerceptron()
                 .getOutActivationFunction().getActivationFunctionType().getDescription()));
         model.addRow(
-                new Entry(LEARNING_ALGORITHM_TEXT,
+                new Entry<>(LEARNING_ALGORITHM_TEXT,
                         mlp.getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName()));
         return createTable(model);
     }
 
     public final JTable createStatistics(IterativeEnsembleClassifier cls, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, cls);
-        model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
+        model.addRow(new Entry<>(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
         return createTable(model);
     }
 
@@ -189,21 +189,21 @@ public class StatisticsTableBuilder {
 
     public final JTable createStatistics(KNearestNeighbours cls, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, cls);
-        model.addRow(new Entry(DISTANCE_FUNCTION_TEXT, cls.getDistance().getDistanceType().getDescription()));
+        model.addRow(new Entry<>(DISTANCE_FUNCTION_TEXT, cls.getDistance().getDistanceType().getDescription()));
         return createTable(model);
     }
 
     public final JTable createStatistics(StackingClassifier cls, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, cls);
-        model.addRow(new Entry(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
-        model.addRow(new Entry(META_CLASSIFIER_NAME_TEXT, cls.getMetaClassifier().getClass().getSimpleName()));
+        model.addRow(new Entry<>(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(cls.numClassifiers())));
+        model.addRow(new Entry<>(META_CLASSIFIER_NAME_TEXT, cls.getMetaClassifier().getClass().getSimpleName()));
         return createTable(model);
     }
 
     public final JTable createStatistics(J48 j48, Evaluation evaluation) {
         ResultsModel model = new ResultsModel(evaluation, j48);
-        model.addRow(new Entry(NUMBER_OF_NODES_TEXT, String.valueOf((int) j48.measureTreeSize())));
-        model.addRow(new Entry(NUMBER_OF_LEAVES_TEXT, String.valueOf((int) j48.measureNumLeaves())));
+        model.addRow(new Entry<>(NUMBER_OF_NODES_TEXT, String.valueOf((int) j48.measureTreeSize())));
+        model.addRow(new Entry<>(NUMBER_OF_LEAVES_TEXT, String.valueOf((int) j48.measureNumLeaves())));
         return createTable(model);
     }
 

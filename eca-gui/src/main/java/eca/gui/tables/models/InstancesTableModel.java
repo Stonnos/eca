@@ -124,16 +124,12 @@ public class InstancesTableModel extends AbstractTableModel {
     }
 
     /**
-     * Adds row with specified value at each cell.
+     * Adds row.
      *
-     * @param val - cell value
+     * @param row - values list
      */
-    public void add(Object val) {
-        ArrayList<Object> row = new ArrayList<>(getColumnCount());
+    public void addRow(List<Object> row) {
         values.add(row);
-        for (int i = 0; i < getColumnCount(); i++) {
-            row.add(val);
-        }
         modificationCount++;
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }

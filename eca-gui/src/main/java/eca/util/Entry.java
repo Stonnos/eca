@@ -8,13 +8,15 @@ package eca.util;
 /**
  * Class for storage pairs (key, value).
  *
+ * @param <K> - key generic type
+ * @param <V> - value generic type
  * @author Roman Batygin
  */
-public class Entry implements java.io.Serializable {
+public class Entry<K, V> implements java.io.Serializable {
 
-    private String key;
+    private K key;
 
-    private String value;
+    private V value;
 
     /**
      * Creates object.
@@ -28,7 +30,7 @@ public class Entry implements java.io.Serializable {
      * @param key   key
      * @param value value
      */
-    public Entry(String key, String value) {
+    public Entry(K key, V value) {
         this.key = key;
         this.value = value;
     }
@@ -38,7 +40,7 @@ public class Entry implements java.io.Serializable {
      *
      * @return key value
      */
-    public String getKey() {
+    public K getKey() {
         return key;
     }
 
@@ -47,7 +49,7 @@ public class Entry implements java.io.Serializable {
      *
      * @param key key value
      */
-    public void setKey(String key) {
+    public void setKey(K key) {
         this.key = key;
     }
 
@@ -56,7 +58,7 @@ public class Entry implements java.io.Serializable {
      *
      * @return value
      */
-    public String getValue() {
+    public V getValue() {
         return value;
     }
 
@@ -65,7 +67,7 @@ public class Entry implements java.io.Serializable {
      *
      * @param value value
      */
-    public void setValue(String value) {
+    public void setValue(V value) {
         this.value = value;
     }
 

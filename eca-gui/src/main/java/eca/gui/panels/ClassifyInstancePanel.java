@@ -123,7 +123,7 @@ public class ClassifyInstancePanel extends JPanel {
     }
 
     private String buildClassificationResult() throws Exception {
-        Instance obj = classifyInstanceTable.instance();
+        Instance obj = classifyInstanceTable.buildInstance();
         int i = (int) classifier.classifyInstance(obj);
         double probability = classifier.distributionForInstance(obj)[i];
         if (template == null) {
