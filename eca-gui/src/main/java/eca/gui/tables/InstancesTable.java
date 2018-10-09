@@ -269,10 +269,10 @@ public class InstancesTable extends JDataTableBase {
         if (getRowCount() == 0) {
             throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
-        if (validateSelectedAttributesCount()) {
-            throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
-        }
         if (validateClass) {
+            if (validateSelectedAttributesCount()) {
+                throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
+            }
             if (!attributesTable.isSelected(getClassIndex())) {
                 throw new IllegalArgumentException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
