@@ -110,22 +110,27 @@ public class ClassifyInstanceTable extends JDataTableBase {
         while (attributeEnumeration.hasMoreElements()) {
             Attribute attribute = attributeEnumeration.nextElement();
             String strValue = (String) vector[attribute.index()];
-            if (StringUtils.isEmpty(strValue)) {
-                throw new IllegalArgumentException(
-                        String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, attribute.name()));
-            }
-            if (attribute.isDate()) {
-                instance.setValue(attribute, parseDate(attribute.name(), strValue).getTime());
-            } else {
-                double value = decimalFormat.parse(strValue).doubleValue();
-                if (attribute.isNumeric()) {
-                    isNumericOverflow(attribute.name(), strValue);
-                }
-                else if (attribute.isNominal() && (!strValue.matches(INTEGER_REGEX) || !attribute.isInRange(value))) {
+            try {
+                if (StringUtils.isEmpty(strValue)) {
                     throw new IllegalArgumentException(
-                            String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, attribute.name()));
+                            String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, attribute.name()));
                 }
-                instance.setValue(attribute, value);
+                if (attribute.isDate()) {
+                    instance.setValue(attribute, parseDate(attribute.name(), strValue).getTime());
+                } else {
+                    double value = decimalFormat.parse(strValue).doubleValue();
+                    if (attribute.isNumeric()) {
+                        isNumericOverflow(attribute.name(), strValue);
+                    } else if (attribute.isNominal() &&
+                            (!strValue.matches(INTEGER_REGEX) || !attribute.isInRange(value))) {
+                        throw new IllegalArgumentException(
+                                String.format(INVALID_ATTR_VALUE_ERROR_FORMAT, attribute.name()));
+                    }
+                    instance.setValue(attribute, value);
+                }
+            } catch (Exception ex) {
+                changeSelection(attribute.index(), ClassifyInstanceTableModel.INPUT_TEXT_COLUMN_INDEX, false, false);
+                throw new IllegalArgumentException(ex.getMessage());
             }
         }
         return instance;

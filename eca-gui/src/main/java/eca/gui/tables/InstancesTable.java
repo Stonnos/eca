@@ -326,15 +326,20 @@ public class InstancesTable extends JDataTableBase {
         for (int k = 0; k < getRowCount(); k++) {
             String str = (String) getValueAt(k, j);
             if (str != null) {
-                if (attributesTable.isNumeric(attrIndex)) {
-                    if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
-                        throw new IllegalArgumentException(
-                                String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                try {
+                    if (attributesTable.isNumeric(attrIndex)) {
+                        if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                            throw new IllegalArgumentException(
+                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                        }
+                        isNumericOverflow(attribute, str);
                     }
-                    isNumericOverflow(attribute, str);
-                }
-                if (attributesTable.isDate(attrIndex)) {
-                    parseDate(attribute, str);
+                    if (attributesTable.isDate(attrIndex)) {
+                        parseDate(attribute, str);
+                    }
+                } catch (Exception ex) {
+                    changeSelection(k, j, false, false);
+                    throw new IllegalArgumentException(ex.getMessage());
                 }
             }
         }

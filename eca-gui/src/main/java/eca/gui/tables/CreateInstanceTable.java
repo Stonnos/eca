@@ -93,10 +93,15 @@ public class CreateInstanceTable extends JDataTableBase {
             String value = values[i];
             String attrName = attributes.get(i).getKey();
             if (!StringUtils.isEmpty(value)) {
-                if (attributes.get(i).getValue() == Attribute.DATE) {
-                    parseDate(attrName, value);
-                } else if (attributes.get(i).getValue() == Attribute.NUMERIC) {
-                    isNumericOverflow(attrName, value);
+                try {
+                    if (attributes.get(i).getValue() == Attribute.DATE) {
+                        parseDate(attrName, value);
+                    } else if (attributes.get(i).getValue() == Attribute.NUMERIC) {
+                        isNumericOverflow(attrName, value);
+                    }
+                } catch (Exception ex) {
+                    changeSelection(i, CreateInstanceTableModel.INPUT_TEXT_COLUMN_INDEX, false, false);
+                    throw new IllegalArgumentException(ex.getMessage());
                 }
             }
         }
