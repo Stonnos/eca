@@ -94,7 +94,8 @@ public class XLSSaver extends AbstractDataSaver {
     }
 
     private Workbook createWorkbook(File file) {
-        return file.getName().endsWith(DataFileExtension.XLS.getExtension()) ? new HSSFWorkbook() : new XSSFWorkbook();
+        return file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension()) ? new HSSFWorkbook() :
+                new XSSFWorkbook();
     }
 
 }

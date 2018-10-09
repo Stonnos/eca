@@ -101,7 +101,8 @@ public class EvaluationXlsReportService extends AbstractReportService {
     }
 
     private Workbook createWorkbook(File file) {
-        return file.getName().endsWith(DataFileExtension.XLS.getExtension()) ? new HSSFWorkbook() : new XSSFWorkbook();
+        return file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension()) ? new HSSFWorkbook() :
+                new XSSFWorkbook();
     }
 
     private Font createTitleFont(Workbook book) {
@@ -320,7 +321,7 @@ public class EvaluationXlsReportService extends AbstractReportService {
             ImageIO.write(image, PNG, byteArrayImg);
             int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
             ClientAnchor anchor;
-            if (file.getName().endsWith(DataFileExtension.XLS.getExtension())) {
+            if (file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension())) {
                 anchor = new HSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);
             } else {
                 anchor = new XSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);

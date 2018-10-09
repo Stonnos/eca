@@ -6,6 +6,7 @@ import eca.data.FileUtils;
 import eca.data.file.text.DATASaver;
 import eca.data.file.text.DocxSaver;
 import eca.data.file.xls.XLSSaver;
+import eca.data.file.xml.XmlSaver;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
@@ -61,6 +62,8 @@ public class FileDataSaver {
             writeData(new DATASaver(), file, data);
         } else if (FileUtils.isDocxExtension(file.getName())) {
             writeData(new DocxSaver(), file, data);
+        } else if (file.getName().endsWith(DataFileExtension.XML.getExtendedExtension())) {
+            writeData(new XmlSaver(), file, data);
         } else {
             AbstractFileSaver abstractFileSaver = createWekaFileSaver(file, data);
             abstractFileSaver.setFile(file);
@@ -78,11 +81,11 @@ public class FileDataSaver {
     private AbstractFileSaver createWekaFileSaver(File file, Instances data) {
         String fileName = file.getName();
         AbstractFileSaver abstractFileSaver;
-        if (fileName.endsWith(DataFileExtension.CSV.getExtension())) {
+        if (fileName.endsWith(DataFileExtension.CSV.getExtendedExtension())) {
             abstractFileSaver = new CSVSaver();
-        } else if (fileName.endsWith(DataFileExtension.ARFF.getExtension())) {
+        } else if (fileName.endsWith(DataFileExtension.ARFF.getExtendedExtension())) {
             abstractFileSaver = new ArffSaver();
-        } else if (fileName.endsWith(DataFileExtension.JSON.getExtension())) {
+        } else if (fileName.endsWith(DataFileExtension.JSON.getExtendedExtension())) {
             abstractFileSaver = new JSONSaver();
         } else {
             throw new IllegalArgumentException(

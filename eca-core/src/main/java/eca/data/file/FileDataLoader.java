@@ -7,6 +7,7 @@ import eca.data.file.resource.DataResource;
 import eca.data.file.text.DATALoader;
 import eca.data.file.text.DocxLoader;
 import eca.data.file.xls.XLSLoader;
+import eca.data.file.xml.XmlLoader;
 import eca.util.Utils;
 import weka.core.Instances;
 import weka.core.converters.AbstractFileLoader;
@@ -46,6 +47,8 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 data = loadData(new DATALoader());
             } else if (FileUtils.isDocxExtension(getSource().getFile())) {
                 data = loadData(new DocxLoader());
+            } else if (getSource().getFile().endsWith(DataFileExtension.XML.getExtendedExtension())) {
+                data = loadData(new XmlLoader());
             } else {
                 throw new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile()));
@@ -72,11 +75,11 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     }
 
     private AbstractFileLoader createWekaDataLoader() {
-        if (getSource().getFile().endsWith(DataFileExtension.CSV.getExtension())) {
+        if (getSource().getFile().endsWith(DataFileExtension.CSV.getExtendedExtension())) {
             return new CSVLoader();
-        } else if (getSource().getFile().endsWith(DataFileExtension.ARFF.getExtension())) {
+        } else if (getSource().getFile().endsWith(DataFileExtension.ARFF.getExtendedExtension())) {
             return new ArffLoader();
-        } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtension())) {
+        } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
             return new JSONLoader();
         } else {
             throw new IllegalArgumentException(String.format("Unexpected file format: %s", getSource().getFile()));

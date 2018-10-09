@@ -45,7 +45,12 @@ public enum DataFileExtension {
     /**
      * Docx file extension
      */
-    DOCX("docx", "Docx data files (*.docx)");
+    DOCX("docx", "Docx data files (*.docx)"),
+
+    /**
+     * Xml extension
+     */
+    XML("xml", "Xml data files (*.xml)");
 
     /**
      * File extension
@@ -69,6 +74,15 @@ public enum DataFileExtension {
      */
     public String getExtension() {
         return extension;
+    }
+
+    /**
+     * Returns extension in format: .ext
+     *
+     * @return extension in format: .ext
+     */
+    public String getExtendedExtension() {
+        return String.format(".%s", extension);
     }
 
     /**

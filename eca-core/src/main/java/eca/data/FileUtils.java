@@ -14,25 +14,28 @@ public class FileUtils {
      * Weka extensions
      */
     private static final Set<String> WEKA_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.CSV.getExtension(), DataFileExtension.ARFF.getExtension(),
-                    DataFileExtension.JSON.getExtension());
+            ImmutableSet.of(DataFileExtension.CSV.getExtendedExtension(), DataFileExtension.ARFF.getExtendedExtension(),
+                    DataFileExtension.JSON.getExtendedExtension());
 
     /**
      * Txt extensions
      */
     private static final Set<String> TXT_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.TEXT.getExtension(), DataFileExtension.DATA.getExtension());
+            ImmutableSet.of(DataFileExtension.TEXT.getExtendedExtension(),
+                    DataFileExtension.DATA.getExtendedExtension());
 
     /**
      * Xls extensions
      */
     private static final Set<String> XLS_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.XLS.getExtension(), DataFileExtension.XLSX.getExtension());
+            ImmutableSet.of(DataFileExtension.XLS.getExtendedExtension(),
+                    DataFileExtension.XLSX.getExtendedExtension());
 
     /**
      * Docx extensions
      */
-    private static final Set<String> DOCX_EXTENSIONS = Collections.singleton(DataFileExtension.DOCX.getExtension());
+    private static final Set<String> DOCX_EXTENSIONS =
+            Collections.singleton(DataFileExtension.DOCX.getExtendedExtension());
 
     /**
      * Returns true if specified file extension belongs to weka formats (csv, arff, json).
@@ -76,7 +79,7 @@ public class FileUtils {
 
     private static boolean containsExtension(String fileName, Set<String> extensions) {
         for (String extension : extensions) {
-            if (fileName.endsWith(String.format(".%s", extension))) {
+            if (fileName.endsWith(extension)) {
                 return true;
             }
         }
