@@ -56,8 +56,6 @@ public class InstancesTable extends JDataTableBase {
     private static final String DELETE_MISSING_VALUES_MENU_TEXT = "Удалить объекты с пропусками";
     private static final String REPLACE_ATTRS_VALUES_MENU_TEXT = "Замена значений атрибута";
     private static final String ARE_YOU_SURE_TEXT = "Вы уверены?";
-    private static final String INSTANCE_VALUE_TEXT = "Значения объекта:";
-    private static final String ADD_INSTANCE_TEXT = "Добавление объекта";
     private static final String OLD_VALUE_TEXT = "Старое значение:";
     private static final String NEW_VALUE_TEXT = "Новое значение:";
     private static final String REPLACE_VALUE_TEXT = "Замена значения";
