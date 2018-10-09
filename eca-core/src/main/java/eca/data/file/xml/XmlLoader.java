@@ -21,9 +21,11 @@ import java.io.InputStreamReader;
  */
 public class XmlLoader extends AbstractDataLoader<DataResource> {
 
+    private static final String UTF_8 = "UTF-8";
+
     @Override
     public Instances loadInstances() throws Exception {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getSource().openInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getSource().openInputStream(), UTF_8))) {
             XMLInstances xmlInstances = new XMLInstances();
             xmlInstances.setXML(reader);
             return xmlInstances.getInstances();
