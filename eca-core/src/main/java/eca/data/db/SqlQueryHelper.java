@@ -37,7 +37,7 @@ public class SqlQueryHelper {
     /**
      * Date value format for insert query
      */
-    private String dateValueFormat = STRING_VALUE_FORMAT;
+    private String insertDateValueFormat = STRING_VALUE_FORMAT;
 
     /**
      * Formats attribute name to database column format for create table query.
@@ -74,7 +74,7 @@ public class SqlQueryHelper {
             String val = eca.util.Utils.removeQuotes(instance.stringValue(attribute));
             return String.format(STRING_VALUE_FORMAT, truncateStringValue(val));
         } else if (attribute.isDate()) {
-            return String.format(dateValueFormat,
+            return String.format(insertDateValueFormat,
                     SIMPLE_DATE_FORMAT.format(new Date((long) instance.value(attribute))));
         } else if (attribute.isNumeric()) {
             return String.valueOf(instance.value(attribute));

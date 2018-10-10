@@ -107,7 +107,7 @@ public class DatabaseSaver implements DataSaver {
             @Override
             public Void caseOracle() {
                 sqlQueryHelper.setDateColumnType(SqlTypeUtils.DATE_TYPE);
-                sqlQueryHelper.setDateValueFormat(TO_DATE_FUNCTION_FORMAT);
+                sqlQueryHelper.setInsertDateValueFormat(TO_DATE_FUNCTION_FORMAT);
                 return null;
             }
 
