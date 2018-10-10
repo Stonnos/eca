@@ -25,7 +25,7 @@ import static eca.util.Utils.removeQuotes;
  */
 public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource> {
 
-    private static final String COLUMNS_SPLIT_REGEX = ",";
+    private static final String COLUMNS_SPLIT_REGEX = ",(?=(?:[^\']*\'[^\']*\')*[^\']*$)";
 
     @Override
     public Instances loadInstances() throws IOException {
