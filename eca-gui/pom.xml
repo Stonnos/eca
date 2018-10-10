@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.2</version>
+        <version>6.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.2</version>
+    <version>6.3</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -69,11 +69,11 @@
             <version>${mysql.version}</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.noraui</groupId>
             <artifactId>ojdbc7</artifactId>
             <version>${oracle.version}</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
