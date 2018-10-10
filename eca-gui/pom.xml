@@ -69,11 +69,11 @@
             <version>${mysql.version}</version>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>com.github.noraui</groupId>
             <artifactId>ojdbc7</artifactId>
             <version>${oracle.version}</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
