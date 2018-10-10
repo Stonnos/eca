@@ -128,8 +128,8 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             if (!isNumeric(metaData.getColumnType(i)) && !isNominal(metaData.getColumnType(i)) &&
                     !isDate(metaData.getColumnType(i))) {
-                throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
-                        metaData.getColumnTypeName(i)));
+                throw new IllegalArgumentException(
+                        String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT, metaData.getColumnTypeName(i)));
             }
 
         }
@@ -141,7 +141,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
             ColumnData columnData = resultData.getColumnData().get(i);
             if (isNumeric(columnData.getType())) {
                 attr.add(new Attribute(columnData.getName()));
-            } else if (isDate(columnData.getType())) {
+            } else if (canHandleAsDate(columnData.getType())) {
                 attr.add(new Attribute(columnData.getName(), getDateFormat()));
             } else {
                 attr.add(new Attribute(columnData.getName(), createNominalAttribute(resultData.getData(), i)));
@@ -190,7 +190,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
                     row.add(null);
                 } else if (isNumeric(metaData.getColumnType(i))) {
                     row.add(result.getDouble(i));
-                } else if (isDate(metaData.getColumnType(i))) {
+                } else if (canHandleAsDate(metaData.getColumnType(i))) {
                     switch (metaData.getColumnType(i)) {
                         case Types.DATE:
                             row.add(result.getDate(i).getTime());
@@ -202,8 +202,9 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
                             row.add(result.getTimestamp(i).getTime());
                             break;
                         default:
-                            throw new SQLException(String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
-                                    metaData.getColumnTypeName(i)));
+                            throw new IllegalArgumentException(
+                                    String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
+                                            metaData.getColumnTypeName(i)));
                     }
                 } else {
                     String stringValue = result.getObject(i).toString().trim();
@@ -217,5 +218,9 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
             data.add(row);
         }
         return data;
+    }
+
+    private boolean canHandleAsDate(int columnType) {
+        return !DataBaseType.SQLITE.equals(connectionDescriptor.getDataBaseType()) && isDate(columnType);
     }
 }
