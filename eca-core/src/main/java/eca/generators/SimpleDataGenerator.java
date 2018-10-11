@@ -1,11 +1,13 @@
 package eca.generators;
 
+import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Random;
  */
 public class SimpleDataGenerator implements DataGenerator {
 
-    private static final String RELATION_NAME_FORMAT = "GeneratedData%d";
+    private static final String DEFAULT_RELATION_NAME_FORMAT = "GeneratedData%d";
     private static final String CLASS_NAME = "class";
     private static final String CLASS_PREFIX = "c";
     private static final String ATTRIBUTE_PREFIX = "a";
@@ -39,6 +41,11 @@ public class SimpleDataGenerator implements DataGenerator {
     private static final int MIN_OBJECTS = 10;
 
     private static final int[] ATTRIBUTE_TYPES = {Attribute.NOMINAL, Attribute.NUMERIC};
+
+    /**
+     * Relation name
+     */
+    private String relationName;
 
     /**
      * Number of classes
@@ -60,6 +67,24 @@ public class SimpleDataGenerator implements DataGenerator {
     private double[] means;
 
     private double[] variances;
+
+    /**
+     * Returns relation name.
+     *
+     * @return relation name
+     */
+    public String getRelationName() {
+        return relationName;
+    }
+
+    /**
+     * Sets relation name.
+     *
+     * @param relationName - relation name
+     */
+    public void setRelationName(String relationName) {
+        this.relationName = relationName;
+    }
 
     /**
      * Returns the number of classes.
@@ -142,13 +167,13 @@ public class SimpleDataGenerator implements DataGenerator {
      * @param random {@link Random} object
      */
     public void setRandom(Random random) {
+        Objects.requireNonNull(random, "Random object isn't specified!");
         this.random = random;
     }
 
     @Override
     public Instances generate() {
-        Instances instances = new Instances(String.format(RELATION_NAME_FORMAT,
-                System.currentTimeMillis()), generateAttributes(), numInstances);
+        Instances instances = new Instances(generateRelationName(), generateAttributes(), numInstances);
         instances.setClassIndex(instances.numAttributes() - 1);
 
         for (int i = 0; i < numInstances; i++) {
@@ -169,13 +194,18 @@ public class SimpleDataGenerator implements DataGenerator {
         return instances;
     }
 
+    private String generateRelationName() {
+        return StringUtils.isEmpty(relationName) ?
+                String.format(DEFAULT_RELATION_NAME_FORMAT, System.currentTimeMillis()) : relationName;
+    }
+
     private ArrayList<Attribute> generateAttributes() {
         ArrayList<Attribute> attributes = new ArrayList<>(numAttributes);
         means = new double[numAttributes];
         variances = new double[numAttributes];
         for (int i = 0; i < numAttributes - 1; i++) {
-            means[i] = NumberGenerator.random(MIN_MEAN_THRESHOLD, MAX_MEAN_THRESHOLD);
-            variances[i] = NumberGenerator.random(MIN_VARIANCE_THRESHOLD, MAX_VARIANCE_THRESHOLD);
+            means[i] = NumberGenerator.random(random, MIN_MEAN_THRESHOLD, MAX_MEAN_THRESHOLD);
+            variances[i] = NumberGenerator.random(random, MIN_VARIANCE_THRESHOLD, MAX_VARIANCE_THRESHOLD);
             attributes.add(generateAttribute(ATTRIBUTE_PREFIX + i, random.nextInt(ATTRIBUTE_TYPES.length)));
         }
         attributes.add(createNominalAttribute(CLASS_NAME, CLASS_PREFIX, numClasses));

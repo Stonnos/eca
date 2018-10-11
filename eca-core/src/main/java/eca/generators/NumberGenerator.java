@@ -69,7 +69,7 @@ public class NumberGenerator {
      * @return the number normally distributed with defined mean and standard deviation.
      */
     public static double nextGaussianWithNoise(Random random, double mean, double variance) {
-        double noise = random(NOISE_LOWER_BOUND, NOISE_UPPER_BOUND);
+        double noise = random(random, NOISE_LOWER_BOUND, NOISE_UPPER_BOUND);
         return nextGaussian(random, mean, variance) + noise;
     }
 
