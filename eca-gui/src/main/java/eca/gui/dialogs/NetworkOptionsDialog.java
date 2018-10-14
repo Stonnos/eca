@@ -60,7 +60,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
 
     private static final String MOMENTUM_COEFFICIENT_TITLE = "Коэффициент момента:";
     private static final String RECOMMENDED_HIDDEN_LAYER_MESSAGE =
-            "Рекомендуемое число нейронов в скрытом слое:  %d <= N <= %d";
+            "<html><body>Рекомендуемое число нейронов в скрытом слое:  %d &le; N &le; %d</body></html>";
     private static final int HIDDEN_LAYER_STRING_LENGTH = 200;
 
     private static final Dimension LABEL_DIM = new Dimension(270, 20);
