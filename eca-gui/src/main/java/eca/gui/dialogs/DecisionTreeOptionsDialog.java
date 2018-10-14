@@ -30,7 +30,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
     private static final String NUM_RANDOM_ATTR_MESSAGE = "Число случайных атрибутов:";
     private static final String BINARY_TREE_TYPE_TEXT = "Бинарное дерево";
     private static final String HI_SQUARE_TEXT =
-            "<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>";
+            "<html><body>Уровень значимости для теста &chi;&sup2;</body></html>";
 
     private static final String RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE =
             "Число случайных атрибутов должно быть не больше %d";
