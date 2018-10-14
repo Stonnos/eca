@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 public class ContingencyTable implements InstancesHandler {
 
-    private static final double ALPHA_MAX_VALUE = 1.0d;
     private static final double ALPHA_MIN_VALUE = 0.0d;
+    private static final double ALPHA_MAX_VALUE = 1.0d;
 
     private final Instances data;
 
@@ -24,6 +24,11 @@ public class ContingencyTable implements InstancesHandler {
      * Significant level for chi squared criteria
      */
     private double alpha = 0.05d;
+
+    /**
+     * Use Yates correction?
+     */
+    private boolean useYates;
 
     /**
      * Creates contingency table with specified instances.
@@ -64,6 +69,24 @@ public class ContingencyTable implements InstancesHandler {
     }
 
     /**
+     * Use Yates correction?.
+     *
+     * @return {@code true} if Yates correction is used
+     */
+    public boolean isUseYates() {
+        return useYates;
+    }
+
+    /**
+     * Sets use Yates correction.
+     *
+     * @param useYates - use Yates correction?
+     */
+    public void setUseYates(boolean useYates) {
+        this.useYates = useYates;
+    }
+
+    /**
      * Computes contingency table for specified attributes.
      *
      * @param attrXIndex - first attribute
@@ -89,16 +112,24 @@ public class ContingencyTable implements InstancesHandler {
         return matrix;
     }
 
-    public ChiValueResult calculateChiSquaredResult(int attrXIndex, int attrYIndex, double[][] contingencyMatrix) {
+    /**
+     * Calculates chi-square test for estimating statistical significance between specified attributes.
+     *
+     * @param rowAttrIndex      - row attribute index
+     * @param colAttrIndex      - column attribute index
+     * @param contingencyMatrix - calculated contingency table for attributes
+     * @return chi-square test result
+     */
+    public ChiValueResult calculateChiSquaredResult(int rowAttrIndex, int colAttrIndex, double[][] contingencyMatrix) {
         Objects.requireNonNull(contingencyMatrix, "Contingency matrix isn't specified!");
-        Attribute attributeX = data.attribute(attrXIndex);
-        Attribute attributeY = data.attribute(attrYIndex);
-        if (!attributeX.isNominal() || !attributeY.isNominal()) {
+        Attribute rowAttribute = data.attribute(rowAttrIndex);
+        Attribute colAttribute = data.attribute(colAttrIndex);
+        if (!rowAttribute.isNominal() || !colAttribute.isNominal()) {
             throw new IllegalArgumentException("Attributes must be nominal!");
         }
         ChiValueResult chiValueResult = new ChiValueResult();
-        chiValueResult.setChiSquaredValue(ContingencyTables.chiVal(contingencyMatrix, false));
-        int df = (attributeX.numValues() - 1) * (attributeY.numValues() - 1);
+        chiValueResult.setChiSquaredValue(ContingencyTables.chiVal(contingencyMatrix, useYates));
+        int df = (rowAttribute.numValues() - 1) * (colAttribute.numValues() - 1);
         chiValueResult.setChiSquaredCriticalValue(Statistics.chiSquaredCriticalValue(alpha, df));
         chiValueResult.setDf(df);
         chiValueResult.setAlpha(alpha);
