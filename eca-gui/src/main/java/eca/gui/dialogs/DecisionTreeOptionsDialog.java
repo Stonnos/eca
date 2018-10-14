@@ -32,12 +32,13 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
     private static final String HI_SQUARE_TEXT =
             "<html><body>Уровень значимости для<br>статистики хи-квадрат:</body></html>";
 
-    private static final String[] AlPHA = {"0.995", "0.99", "0.975", "0.95", "0.75", "0.5", "0.25",
-            "0.1", "0.05", "0.025", "0.01", "0.005"};
     private static final String RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE =
             "Число случайных атрибутов должно быть не больше %d";
     private static final String RANDOM_SPLITS_TEXT = "Случайные расщепления атрибута";
     private static final String NUM_RANDOM_SPLITS_TEXT = "Число случайных расщеплений:";
+    private static final double ALPHA_MIN_VALUE = 0.001d;
+    private static final double ALPHA_MAX_VALUE = 0.999d;
+    private static final double ALPHA_STEP = 0.001d;
 
     private OptionsSetter optionsSetter;
 
@@ -161,22 +162,21 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
                     new GridBagConstraints(0, 7, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 
-            final JComboBox<String> values = new JComboBox<>(AlPHA);
+            final JSpinner alphaSpinner = new JSpinner();
+            alphaSpinner.setModel(
+                    new SpinnerNumberModel(((CHAID) classifier()).getAlpha(), ALPHA_MIN_VALUE, ALPHA_MAX_VALUE,
+                            ALPHA_STEP));
 
             optionsSetter = new OptionsSetter() {
-                @Override
-                void setFormOptions() {
-                    super.setFormOptions();
-                    values.setSelectedItem(String.valueOf(((CHAID) classifier()).getAlpha()));
-                }
 
                 @Override
                 void setClassifierOptions() {
                     super.setClassifierOptions();
-                    ((CHAID) classifier()).setAlpha(Double.valueOf(values.getSelectedItem().toString()));
+                    double alpha = ((SpinnerNumberModel) alphaSpinner.getModel()).getNumber().doubleValue();
+                    ((CHAID) classifier()).setAlpha(alpha);
                 }
             };
-            optionPanel.add(values, new GridBagConstraints(1, 7, 1, 1, 1, 1,
+            optionPanel.add(alphaSpinner, new GridBagConstraints(1, 7, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 10), 0, 0));
         } else {
             optionsSetter = new OptionsSetter();
