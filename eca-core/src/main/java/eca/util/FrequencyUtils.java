@@ -19,8 +19,8 @@ public class FrequencyUtils {
      * @param frequencyData {@link FrequencyData} object
      */
     public static void calculateFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
-        int frequency = (int) data.stream().filter(
-                instance -> IntervalUtils.containsIncludeRightBound(frequencyData, instance.value(attribute))).count();
+        int frequency = (int) data.stream().filter(instance -> !instance.isMissing(attribute) &&
+                IntervalUtils.containsIncludeRightBound(frequencyData, instance.value(attribute))).count();
         frequencyData.setFrequency(frequency);
     }
 
@@ -32,8 +32,8 @@ public class FrequencyUtils {
      * @param frequencyData {@link FrequencyData} object
      */
     public static void calculateFirstFrequency(Instances data, Attribute attribute, FrequencyData frequencyData) {
-        int frequency = (int) data.stream().filter(
-                instance -> IntervalUtils.contains(frequencyData, instance.value(attribute))).count();
+        int frequency = (int) data.stream().filter(instance -> !instance.isMissing(attribute) &&
+                IntervalUtils.contains(frequencyData, instance.value(attribute))).count();
         frequencyData.setFrequency(frequency);
     }
 

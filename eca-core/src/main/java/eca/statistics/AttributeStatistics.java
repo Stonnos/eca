@@ -146,7 +146,8 @@ public class AttributeStatistics {
      * @return the number of values of given attribute.
      */
     public int getValuesNum(Attribute attribute, double val) {
-        return (int) data.stream().filter(instance -> instance.value(attribute) == val).count();
+        return (int) data.stream().filter(
+                instance -> !instance.isMissing(attribute) && instance.value(attribute) == val).count();
     }
 
 }

@@ -114,7 +114,7 @@ public class ScatterDiagramsFrame extends JFrame {
 
     private JFreeChart createScatterChart(Attribute xAttr, Attribute yAttr) {
         XYSeriesCollection xySeriesCollection = createAndFillXYSeriesCollection();
-        data.forEach(instance -> {
+        data.stream().filter(instance -> !instance.isMissing(xAttr) && !instance.isMissing(yAttr)).forEach(instance -> {
             XYSeries xySeries = xySeriesCollection.getSeries((int) instance.classValue());
             xySeries.add(instance.value(xAttr), instance.value(yAttr));
         });
