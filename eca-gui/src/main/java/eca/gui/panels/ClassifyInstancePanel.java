@@ -7,7 +7,7 @@ package eca.gui.panels;
 
 import eca.config.VelocityConfigService;
 import eca.gui.PanelBorderUtils;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,7 @@ public class ClassifyInstancePanel extends JPanel {
         JScrollPane bottom = new JScrollPane(classField);
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, classifyInstanceTable.data().classAttribute().name())));
-        bottom.setToolTipText(ClassifierInputOptionsService.getAttributeStatisticsAsHtml(classifyInstanceTable.data().classAttribute(),
+        bottom.setToolTipText(ReportGenerator.getAttributeStatisticsAsHtml(classifyInstanceTable.data().classAttribute(),
                 classifyInstanceTable.getAttributeStatistics()));
         JPanel top = new JPanel(new GridBagLayout());
 

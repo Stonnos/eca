@@ -23,7 +23,7 @@ import eca.gui.dialogs.LoadDialog;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ClassifierIndexerService;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import lombok.extern.slf4j.Slf4j;
@@ -146,7 +146,7 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     private void setResults(ExperimentHistory experimentHistory) {
-        experimentResultsPane.setText(ClassifierInputOptionsService.getExperimentResultsAsHtml(experimentHistory,
+        experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
                 CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
         experimentResultsPane.setCaretPosition(0);
     }

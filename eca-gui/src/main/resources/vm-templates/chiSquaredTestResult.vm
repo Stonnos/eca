@@ -1,0 +1,17 @@
+<html>
+<head>
+    <style>
+        .result-font {
+            font-family: 'Arial';
+            font-size: 14
+        }
+    </style>
+</head>
+<body>
+<div class="result-font">
+    <p>Расчетное значение &chi;&sup2; = $chiVal</p>
+    <p>Критическое значение критерия &chi;&sup2; Пирсона при уровне значимости
+        &alpha; = $alpha и числе степеней свободы $df составляет $chiCriticalValue.</p>
+</div>
+</body>
+</html>

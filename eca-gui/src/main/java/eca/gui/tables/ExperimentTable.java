@@ -13,7 +13,7 @@ import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.logging.LoggerUtils;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
 import lombok.extern.slf4j.Slf4j;
@@ -115,7 +115,7 @@ public class ExperimentTable extends JDataTableBase {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(experimentModel()
+            this.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(experimentModel()
                     .getClassifier(row), false));
             this.setText(value.toString());
             this.setBorder(null);

@@ -22,7 +22,7 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.EnsembleTable;
@@ -149,7 +149,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     public final void setStatisticsTable(JTable table) {
         this.statTable = table;
         this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(classifier, false));
+        this.statTable.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(classifier, false));
         resultPane.setViewportView(table);
     }
 
@@ -205,7 +205,7 @@ public class ClassificationResultsFrameBase extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (inputParamInfo == null) {
                     inputParamInfo = new HtmlFrame(inputMenu.getText(),
-                            ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(classifier, true),
+                            ReportGenerator.getClassifierInputOptionsAsHtml(classifier, true),
                             ClassificationResultsFrameBase.this);
                     ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
                         @Override

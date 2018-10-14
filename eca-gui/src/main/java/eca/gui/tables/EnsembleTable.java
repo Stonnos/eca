@@ -12,7 +12,7 @@ import eca.gui.JButtonEditor;
 import eca.gui.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.logging.LoggerUtils;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.tables.models.EnsembleTableModel;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;
@@ -75,7 +75,7 @@ public class EnsembleTable extends JDataTableBase {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(
-                    ClassifierInputOptionsService.getClassifierInputOptionsAsHtml(ensembleModel().get(row), false));
+                    ReportGenerator.getClassifierInputOptionsAsHtml(ensembleModel().get(row), false));
             this.setText(value.toString());
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());

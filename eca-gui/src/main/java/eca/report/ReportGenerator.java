@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.service;
+package eca.report;
 
 import eca.config.VelocityConfigService;
 import eca.converters.model.ExperimentHistory;
@@ -16,6 +16,7 @@ import eca.ensemble.EnsembleUtils;
 import eca.ensemble.StackingClassifier;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.statistics.AttributeStatistics;
+import eca.statistics.contingency.ChiValueResult;
 import eca.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
@@ -25,15 +26,16 @@ import weka.classifiers.Classifier;
 import weka.core.Attribute;
 
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Classifier input options service.
+ * Implements reports generation.
  *
  * @author Roman Batygin
  */
-public class ClassifierInputOptionsService {
+public class ReportGenerator {
 
     /**
      * Velocity configuration
@@ -41,9 +43,13 @@ public class ClassifierInputOptionsService {
     private static final VelocityConfigService VELOCITY_CONFIGURATION =
             VelocityConfigService.getVelocityConfigService();
 
+    /**
+     * VM templates paths
+     */
     private static final String ATTRIBUTE_STATISTICS_VM = "vm-templates/attributeStatistics.vm";
     private static final String CLASSIFIER_INPUT_OPTIONS_VM = "vm-templates/classifierInputOptions.vm";
     private static final String EXPERIMENT_RESULTS_VM = "vm-templates/experimentResults.vm";
+    private static final String CHI_SQUARE_TEST_VM = "vm-templates/chiSquaredTestResult.vm";
 
     /**
      * Velocity context variables
@@ -66,7 +72,14 @@ public class ClassifierInputOptionsService {
     private static final String NUM_CLASSES = "numClasses";
     private static final String CLASS_ATTRIBUTE = "classAttribute";
     private static final String EVALUATION_METHOD = "evaluationMethod";
+    private static final String CH_VAL = "chVal";
+    private static final String CHI_CRITICAL_VALUE = "chiCriticalValue";
+    private static final String DF = "df";
+    private static final String ALPHA = "alpha";
 
+    /**
+     * Other constants
+     */
     private static final String CLASSIFIER_KEY_FORMAT = "%s №%d";
     private static final String META_CLASSIFIER_FORMAT = "Мета - классификатор: %s";
     private static final String KV_CROSS_VALIDATION = "k * V блочная кросс - проверка";
@@ -125,6 +138,38 @@ public class ClassifierInputOptionsService {
         return mergeContext(template, context);
     }
 
+    /**
+     * Returns chi-square test results as html.
+     *
+     * @param chiValueResult - chi square test result
+     * @param decimalFormat  - decimal format
+     * @return chi-square test results as html
+     */
+    public static String getChiSquareTestResultAsHtml(ChiValueResult chiValueResult, DecimalFormat decimalFormat) {
+        Template template = VELOCITY_CONFIGURATION.getTemplate(CHI_SQUARE_TEST_VM);
+        VelocityContext context = new VelocityContext();
+        context.put(CH_VAL, decimalFormat.format(chiValueResult.getChiSquaredValue()));
+        context.put(CHI_CRITICAL_VALUE, decimalFormat.format(chiValueResult.getChiSquaredCriticalValue()));
+        context.put(DF, chiValueResult.getDf());
+        context.put(ALPHA, decimalFormat.format(chiValueResult.getAlpha()));
+        return mergeContext(template, context);
+    }
+
+    /**
+     * Returns experiment results as html string.
+     *
+     * @param experimentHistory - experiment history
+     * @param resultsSize       - results size
+     * @return experiment results as html string
+     */
+    public static String getExperimentResultsAsHtml(ExperimentHistory experimentHistory, int resultsSize) {
+        Template template = VELOCITY_CONFIGURATION.getTemplate(EXPERIMENT_RESULTS_VM);
+        VelocityContext context = new VelocityContext();
+        fillExperimentInputOptions(experimentHistory, context);
+        fillExperimentBestClassifiers(experimentHistory, resultsSize, context);
+        return mergeContext(template, context);
+    }
+
     private static void fillStackingExtendedOptions(StackingClassifier stackingClassifier, VelocityContext context) {
         Map<String, Map<String, String>> inputOptionsMap = getClassifiersOptions(stackingClassifier.getClassifiers());
         inputOptionsMap.put(String.format(META_CLASSIFIER_FORMAT,
@@ -141,21 +186,6 @@ public class ClassifierInputOptionsService {
                     Utils.getClassifierInputOptionsMap((AbstractClassifier) currentClassifier));
         }
         return allOptionsMap;
-    }
-
-    /**
-     * Returns experiment results as html string.
-     *
-     * @param experimentHistory - experiment history
-     * @param resultsSize       - results size
-     * @return experiment results as html string
-     */
-    public static String getExperimentResultsAsHtml(ExperimentHistory experimentHistory, int resultsSize) {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(EXPERIMENT_RESULTS_VM);
-        VelocityContext context = new VelocityContext();
-        fillExperimentInputOptions(experimentHistory, context);
-        fillExperimentBestClassifiers(experimentHistory, resultsSize, context);
-        return mergeContext(template, context);
     }
 
     private static void fillExperimentBestClassifiers(ExperimentHistory experimentHistory, int resultsSize,

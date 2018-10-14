@@ -6,7 +6,7 @@
 package eca.gui.tables;
 
 import eca.gui.GuiUtils;
-import eca.gui.service.ClassifierInputOptionsService;
+import eca.report.ReportGenerator;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
@@ -158,7 +158,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             Instances data = getClassifyInstanceTableModel().data();
             int i = row >= data.classIndex() ? row + 1 : row;
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
-            this.setToolTipText(ClassifierInputOptionsService.getAttributeStatisticsAsHtml(data.attribute(i),
+            this.setToolTipText(ReportGenerator.getAttributeStatisticsAsHtml(data.attribute(i),
                     attributeStatistics));
             this.setText(value.toString());
             this.setBorder(null);

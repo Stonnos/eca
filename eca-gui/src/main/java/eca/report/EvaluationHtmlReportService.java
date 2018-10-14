@@ -2,7 +2,6 @@ package eca.report;
 
 import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
-import eca.gui.service.ClassifierInputOptionsService;
 import eca.util.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
@@ -53,7 +52,7 @@ public class EvaluationHtmlReportService extends AbstractReportService {
         Template template = VELOCITY_CONFIGURATION.getTemplate(VM_REPORT_TEMPLATE);
         VelocityContext context = new VelocityContext();
         context.put(STATISTICS_PARAM, getEvaluationReport().getStatisticsMap());
-        context.put(INPUT_OPTIONS_PARAM, ClassifierInputOptionsService.getClassifierInputOptionsAsHtml
+        context.put(INPUT_OPTIONS_PARAM, ReportGenerator.getClassifierInputOptionsAsHtml
                 (getEvaluationReport().getClassifier(), true));
         fillClassificationCosts(context);
         fillConfusionMatrix(context);
