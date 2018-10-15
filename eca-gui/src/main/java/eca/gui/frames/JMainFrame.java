@@ -48,6 +48,7 @@ import eca.gui.ConsoleTextArea;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
+import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
@@ -90,6 +91,8 @@ import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
+import eca.statistics.contingency.ContingencyTable;
+import eca.text.NumericFormatFactory;
 import eca.trees.C45;
 import eca.trees.CART;
 import eca.trees.CHAID;
@@ -101,6 +104,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
+import weka.core.Attribute;
 import weka.core.Instances;
 
 import javax.imageio.ImageIO;
@@ -114,6 +118,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -206,7 +211,8 @@ public class JMainFrame extends JFrame {
     private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
     private static final String SAVE_DATA_INFO_FORMAT = "Данные были успешно сохранены в таблицу '%s'";
     private static final String CONTINGENCY_TABLES_MENU_TEXT = "Таблицы сопряженности";
-    public static final String STATISICS_MENU_TEXT = "Статистика";
+    private static final String STATISTICS_MENU_TEXT = "Статистика";
+    private static final String CONTINGENCY_TABLE_LOADING_MESSAGE = "Пожалуйста подождите, идет построение таблицы...";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -724,7 +730,7 @@ public class JMainFrame extends JFrame {
         disabledMenuElementList.add(algorithmsMenu);
         JMenu dataMinerMenu = new JMenu(DATA_MINER_MENU_TEXT);
         disabledMenuElementList.add(dataMinerMenu);
-        JMenu statisticsMenu = new JMenu(STATISICS_MENU_TEXT);
+        JMenu statisticsMenu = new JMenu(STATISTICS_MENU_TEXT);
         disabledMenuElementList.add(statisticsMenu);
         JMenu optionsMenu = new JMenu(OPTIONS_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
@@ -1210,7 +1216,25 @@ public class JMainFrame extends JFrame {
                                 ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getData());
                         contingencyTableOptionsDialog.setVisible(true);
                         if (contingencyTableOptionsDialog.isDialogResult()) {
+                            int rowAttrIndex = contingencyTableOptionsDialog.gerRowAttributeIndex();
+                            int colAttrIndex = contingencyTableOptionsDialog.gerColAttributeIndex();
+                            ContingencyTable contingencyTable = new ContingencyTable(dataBuilder.getData());
+                            ContingencyTableAction contingencyTableAction =
+                                    new ContingencyTableAction(contingencyTable, rowAttrIndex, colAttrIndex);
+                            LoadDialog progress = new LoadDialog(JMainFrame.this, contingencyTableAction,
+                                    CONTINGENCY_TABLE_LOADING_MESSAGE);
 
+                            process(progress, () -> {
+                                Attribute rowAttribute = dataBuilder.getData().attribute(rowAttrIndex);
+                                Attribute colAttribute = dataBuilder.getData().attribute(colAttrIndex);
+                                DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
+                                decimalFormat.setMaximumFractionDigits(maximumFractionDigits);
+                                ContingencyTableResultFrame contingencyTableResultFrame =
+                                        new ContingencyTableResultFrame(JMainFrame.this, rowAttribute, colAttribute,
+                                                contingencyTableAction.getContingencyMatrix(),
+                                                contingencyTableAction.getResult(), decimalFormat);
+                                contingencyTableResultFrame.setVisible(true);
+                            });
                         }
                         contingencyTableOptionsDialog.dispose();
                     });

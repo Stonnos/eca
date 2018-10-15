@@ -72,7 +72,7 @@ public class ReportGenerator {
     private static final String NUM_CLASSES = "numClasses";
     private static final String CLASS_ATTRIBUTE = "classAttribute";
     private static final String EVALUATION_METHOD = "evaluationMethod";
-    private static final String CH_VAL = "chVal";
+    private static final String CH_VAL = "chiVal";
     private static final String CHI_CRITICAL_VALUE = "chiCriticalValue";
     private static final String DF = "df";
     private static final String ALPHA = "alpha";

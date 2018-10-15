@@ -8,8 +8,8 @@ import weka.core.Attribute;
  */
 public class ContingencyJTable extends JDataTableBase {
 
-    public ContingencyJTable(Attribute attributeX, Attribute attributeY, double[][] matrix) {
-        super(new ContingencyTableModel(attributeX, attributeY, matrix));
+    public ContingencyJTable(Attribute rowAttribute, Attribute colAttribute, double[][] matrix) {
+        super(new ContingencyTableModel(rowAttribute, colAttribute, matrix));
         this.setAutoResizeOff(false);
     }
 }

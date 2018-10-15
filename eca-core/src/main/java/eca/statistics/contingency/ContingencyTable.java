@@ -107,7 +107,7 @@ public class ContingencyTable implements InstancesHandler {
                     matrix[attrXVal][attrYVal]++;
                     matrix[attrXVal][attributeY.numValues()]++;
                     matrix[attributeX.numValues()][attrYVal]++;
-                    matrix[attributeX.numValues()][attributeY.numValues()] += matrix[attrXVal][attributeY.numValues()];
+                    matrix[attributeX.numValues()][attributeY.numValues()]++;
                 });
         return matrix;
     }

@@ -39,7 +39,7 @@ public class ContingencyTableModel extends AbstractTableModel {
         if (column == 0) {
             return row < getRowCount() - 1 ? rowAttribute.value(row) : SUMMARY_TEXT;
         } else {
-            return matrix[row][column - 1];
+            return (int) matrix[row][column - 1];
         }
     }
 
@@ -49,12 +49,12 @@ public class ContingencyTableModel extends AbstractTableModel {
     }
 
     private void initTitles() {
-        titles = new String[colAttribute.numValues() + 1];
+        titles = new String[colAttribute.numValues() + 2];
         titles[0] = String.format(ATTRIBUTES_COLUMN_FORMAT, rowAttribute.name(), colAttribute.name());
         for (int i = 0; i < colAttribute.numValues(); i++) {
             titles[i + 1] = colAttribute.value(i);
         }
-        titles[colAttribute.numValues()] = SUMMARY_TEXT;
+        titles[colAttribute.numValues() + 1] = SUMMARY_TEXT;
     }
 
 }

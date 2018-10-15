@@ -19,7 +19,7 @@ import java.awt.*;
  */
 public class ContingencyTableOptionsDialog extends JDialog {
 
-    private static final String TITLE = "Таблицы сопряженности (Настройки)";
+    private static final String TITLE = "Таблица сопряженности (Настройки)";
     private static final double DEFAULT_ALPHA_VALUE = 0.05d;
     private static final double ALPHA_MIN_VALUE = 0.001d;
     private static final double MAX_ALPHA_VALUE = 0.999d;
