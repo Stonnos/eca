@@ -32,7 +32,7 @@ import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
-import eca.report.AbstractReportService;
+import eca.report.AbstractEvaluationReportService;
 import eca.report.AttachmentImage;
 import eca.report.EvaluationHtmlReportService;
 import eca.report.EvaluationReport;
@@ -426,7 +426,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            AbstractReportService reportService;
+            AbstractEvaluationReportService reportService;
             if (FileUtils.isXlsExtension(file.getName())) {
                 reportService = new EvaluationXlsReportService();
             } else if (file.getName().endsWith(HTML_EXTENSION)) {

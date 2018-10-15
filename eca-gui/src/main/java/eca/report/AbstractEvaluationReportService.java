@@ -7,18 +7,27 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 
 /**
- * Report service abstract class.
+ * Evaluation report service abstract class.
  *
  * @author Roman Batygin
  */
-public abstract class AbstractReportService {
+public abstract class AbstractEvaluationReportService implements ReportService {
 
+    /**
+     * Evaluation report
+     */
     @Getter
     private EvaluationReport evaluationReport;
 
+    /**
+     * Target file
+     */
     @Getter
     private File file;
 
+    /**
+     * Decimal format
+     */
     @Getter
     private DecimalFormat decimalFormat;
 
@@ -52,11 +61,6 @@ public abstract class AbstractReportService {
         Objects.requireNonNull(decimalFormat, "Decimal format isn't specified!");
         this.decimalFormat = decimalFormat;
     }
-
-    /**
-     * Saves report.
-     */
-    public abstract void saveReport() throws Exception;
 
     /**
      * Validates specified file.

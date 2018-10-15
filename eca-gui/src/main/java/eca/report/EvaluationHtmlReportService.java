@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Roman Batygin
  */
-public class EvaluationHtmlReportService extends AbstractReportService {
+public class EvaluationHtmlReportService extends AbstractEvaluationReportService {
 
     /**
      * Velocity configuration

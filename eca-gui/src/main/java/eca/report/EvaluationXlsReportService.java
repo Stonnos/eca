@@ -6,7 +6,6 @@ import eca.data.FileUtils;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
-import lombok.Getter;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -31,17 +30,15 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Implements classification results saving into xls, xlsx file.
  *
  * @author Roman Batygin
  */
-public class EvaluationXlsReportService extends AbstractReportService {
+public class EvaluationXlsReportService extends AbstractEvaluationReportService {
 
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
