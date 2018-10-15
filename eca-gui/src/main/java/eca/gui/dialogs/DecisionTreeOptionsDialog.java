@@ -29,7 +29,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
     private static final String MAX_DEPTH_MESSAGE = "Максимальная глубина дерева:";
     private static final String NUM_RANDOM_ATTR_MESSAGE = "Число случайных атрибутов:";
     private static final String BINARY_TREE_TYPE_TEXT = "Бинарное дерево";
-    private static final String HI_SQUARE_TEXT =
+    private static final String CHI_SQUARE_TEXT =
             "<html><body>Уровень значимости для теста &chi;&sup2;</body></html>";
 
     private static final String RANDOM_ATTRS_EXCEEDED_ERROR_MESSAGE =
@@ -158,7 +158,7 @@ public class DecisionTreeOptionsDialog extends ClassifierOptionsDialogBase<Decis
 
     private void addAdditionalFormFields(JPanel optionPanel) {
         if (classifier() instanceof CHAID) {
-            optionPanel.add(new JLabel(HI_SQUARE_TEXT),
+            optionPanel.add(new JLabel(CHI_SQUARE_TEXT),
                     new GridBagConstraints(0, 7, 1, 1, 1, 1,
                             GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 

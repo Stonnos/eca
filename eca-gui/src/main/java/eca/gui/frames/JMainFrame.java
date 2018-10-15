@@ -61,6 +61,7 @@ import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
+import eca.gui.dialogs.ContingencyTableOptionsDialog;
 import eca.gui.dialogs.DataGeneratorDialog;
 import eca.gui.dialogs.DatabaseConnectionDialog;
 import eca.gui.dialogs.DatabaseSaverDialog;
@@ -204,6 +205,7 @@ public class JMainFrame extends JFrame {
     private static final String DB_SAVE_MENU_TEXT = "Сохранить данные в базу данных";
     private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
     private static final String SAVE_DATA_INFO_FORMAT = "Данные были успешно сохранены в таблицу '%s'";
+    private static final String CONTINGENCY_TABLES_MENU_TEXT = "Таблицы сопряженности";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1297,6 +1299,31 @@ public class JMainFrame extends JFrame {
             }
         });
         serviceMenu.add(scatterDiagramMenu);
+
+        JMenuItem contingencyTablesMenu = new JMenuItem(CONTINGENCY_TABLES_MENU_TEXT);
+        //scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
+        disabledMenuElementList.add(contingencyTablesMenu);
+        contingencyTablesMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
+                                ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getData());
+                        contingencyTableOptionsDialog.setVisible(true);
+                        if (contingencyTableOptionsDialog.isDialogResult()) {
+
+                        }
+                        contingencyTableOptionsDialog.dispose();
+                    });
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        serviceMenu.add(contingencyTablesMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
         loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));
