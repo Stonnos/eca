@@ -69,7 +69,7 @@ public class ContingencyTable implements InstancesHandler {
     }
 
     /**
-     * Use Yates correction?.
+     * Use Yates correction?
      *
      * @return {@code true} if Yates correction is used
      */
