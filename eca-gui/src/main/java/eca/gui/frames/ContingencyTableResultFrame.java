@@ -33,7 +33,6 @@ public class ContingencyTableResultFrame extends JFrame {
     private static final String CHI_SQUARE_RESULTS_TEXT =
             "<html><body>Результаты теста &chi;&sup2;</body></html>";
 
-
     public ContingencyTableResultFrame(JFrame parent,
                                        Attribute rowAttribute,
                                        Attribute colAttribute,
@@ -52,12 +51,12 @@ public class ContingencyTableResultFrame extends JFrame {
 
         JTextPane chiSquaredResultPane = new JTextPane();
         chiSquaredResultPane.setContentType(CONTENT_TYPE);
-        chiSquaredResultPane.setMinimumSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultPane.setPreferredSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultPane.setEditable(false);
         chiSquaredResultPane.setText(ReportGenerator.getChiSquareTestResultAsHtml(chiValueResult, decimalFormat));
         chiSquaredResultPane.setCaretPosition(0);
         JScrollPane chiSquaredResultScrollPanel = new JScrollPane(chiSquaredResultPane);
+        chiSquaredResultScrollPanel.setMinimumSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultScrollPanel.setBorder(PanelBorderUtils.createTitledBorder(CHI_SQUARE_RESULTS_TEXT));
 
         JButton closeButton = ButtonUtils.createCloseButton();

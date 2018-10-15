@@ -1219,6 +1219,8 @@ public class JMainFrame extends JFrame {
                             int rowAttrIndex = contingencyTableOptionsDialog.gerRowAttributeIndex();
                             int colAttrIndex = contingencyTableOptionsDialog.gerColAttributeIndex();
                             ContingencyTable contingencyTable = new ContingencyTable(dataBuilder.getData());
+                            contingencyTable.setAlpha(contingencyTableOptionsDialog.getAlpha());
+                            contingencyTable.setUseYates(contingencyTableOptionsDialog.isUseYates());
                             ContingencyTableAction contingencyTableAction =
                                     new ContingencyTableAction(contingencyTable, rowAttrIndex, colAttrIndex);
                             LoadDialog progress = new LoadDialog(JMainFrame.this, contingencyTableAction,

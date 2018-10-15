@@ -5,13 +5,18 @@
             font-family: 'Arial';
             font-size: 14
         }
+
+        .bold {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div class="result-font">
-    <p>Расчетное значение &chi;&sup2; = $chiVal</p>
-    <p>Критическое значение критерия &chi;&sup2; Пирсона при уровне значимости
-        &alpha; = $alpha и числе степеней свободы $df составляет $chiCriticalValue.</p>
+    <p>Расчетное значение <span class="bold">&chi;&sup2; = $chiVal</span></p>
+    <p>Критическое значение критерия <span class="bold">&chi;&sup2;</span> Пирсона при уровне значимости
+        <span class="bold">&alpha; = $alpha</span> и числе степеней свободы <span class="bold">$df</span> составляет
+        <span class="bold">$chiCriticalValue.</span></p>
 </div>
 </body>
 </html>
