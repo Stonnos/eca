@@ -206,6 +206,7 @@ public class JMainFrame extends JFrame {
     private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
     private static final String SAVE_DATA_INFO_FORMAT = "Данные были успешно сохранены в таблицу '%s'";
     private static final String CONTINGENCY_TABLES_MENU_TEXT = "Таблицы сопряженности";
+    public static final String STATISICS_MENU_TEXT = "Статистика";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -723,6 +724,8 @@ public class JMainFrame extends JFrame {
         disabledMenuElementList.add(algorithmsMenu);
         JMenu dataMinerMenu = new JMenu(DATA_MINER_MENU_TEXT);
         disabledMenuElementList.add(dataMinerMenu);
+        JMenu statisticsMenu = new JMenu(STATISICS_MENU_TEXT);
+        disabledMenuElementList.add(statisticsMenu);
         JMenu optionsMenu = new JMenu(OPTIONS_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
         windowsMenu = new JMenu(WINDOWS_MENU_TEXT);
@@ -730,12 +733,14 @@ public class JMainFrame extends JFrame {
         fillFileMenu(fileMenu);
         fillAlgorithmsMenu(algorithmsMenu);
         fillDataMinerMenu(dataMinerMenu);
+        fillStatisticsMenu(statisticsMenu);
         fillServiceMenu(serviceMenu);
         fillOptionsMenu(optionsMenu);
         fillReferenceMenu(referenceMenu);
         menu.add(fileMenu);
         menu.add(algorithmsMenu);
         menu.add(dataMinerMenu);
+        menu.add(statisticsMenu);
         menu.add(optionsMenu);
         menu.add(serviceMenu);
         menu.add(windowsMenu);
@@ -1154,6 +1159,71 @@ public class JMainFrame extends JFrame {
         dataMinerMenu.add(automatedDecisionTreeMenu);
     }
 
+    private void fillStatisticsMenu(JMenu statisticsMenu) {
+        JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
+        attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
+        attrStatisticsMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getData(),
+                                JMainFrame.this, maximumFractionDigits);
+                        frame.setVisible(true);
+                    });
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        statisticsMenu.add(attrStatisticsMenu);
+
+        JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
+        scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
+        scatterDiagramMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getData(),
+                                JMainFrame.this);
+                        scatterDiagramsFrame.setVisible(true);
+                    });
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        statisticsMenu.add(scatterDiagramMenu);
+
+        JMenuItem contingencyTablesMenu = new JMenuItem(CONTINGENCY_TABLES_MENU_TEXT);
+        contingencyTablesMenu.addActionListener(event -> {
+            if (isDataAndClassValid()) {
+                try {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
+                                ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getData());
+                        contingencyTableOptionsDialog.setVisible(true);
+                        if (contingencyTableOptionsDialog.isDialogResult()) {
+
+                        }
+                        contingencyTableOptionsDialog.dispose();
+                    });
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this,
+                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+        statisticsMenu.add(contingencyTablesMenu);
+    }
+
     private void fillServiceMenu(JMenu serviceMenu) {
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
         historyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.HISTORY_ICON)));
@@ -1257,73 +1327,6 @@ public class JMainFrame extends JFrame {
         serviceMenu.add(historyMenu);
         serviceMenu.add(experimentRequestMenu);
         serviceMenu.add(optimalClassifierMenu);
-
-        JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
-        attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
-        disabledMenuElementList.add(attrStatisticsMenu);
-        attrStatisticsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getData(),
-                                JMainFrame.this, maximumFractionDigits);
-                        frame.setVisible(true);
-                    });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        serviceMenu.add(attrStatisticsMenu);
-
-        JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
-        scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
-        disabledMenuElementList.add(scatterDiagramMenu);
-        scatterDiagramMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getData(),
-                                JMainFrame.this);
-                        scatterDiagramsFrame.setVisible(true);
-                    });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        serviceMenu.add(scatterDiagramMenu);
-
-        JMenuItem contingencyTablesMenu = new JMenuItem(CONTINGENCY_TABLES_MENU_TEXT);
-        //scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
-        disabledMenuElementList.add(contingencyTablesMenu);
-        contingencyTablesMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
-                        ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
-                                ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getData());
-                        contingencyTableOptionsDialog.setVisible(true);
-                        if (contingencyTableOptionsDialog.isDialogResult()) {
-
-                        }
-                        contingencyTableOptionsDialog.dispose();
-                    });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-        serviceMenu.add(contingencyTablesMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
         loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));
