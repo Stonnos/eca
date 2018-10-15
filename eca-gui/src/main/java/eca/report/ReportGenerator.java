@@ -25,10 +25,11 @@ import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 
-import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static eca.util.VelocityUtils.mergeContext;
 
 /**
  * Implements reports generation.
@@ -227,12 +228,6 @@ public class ReportGenerator {
                         }
                     }
                 }));
-    }
-
-    private static String mergeContext(Template template, VelocityContext context) {
-        StringWriter stringWriter = new StringWriter();
-        template.merge(context, stringWriter);
-        return stringWriter.toString();
     }
 
     private static boolean canHandleExtendedOptions(Classifier classifier, boolean extended) {

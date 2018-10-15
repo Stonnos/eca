@@ -3,7 +3,7 @@ package eca.report;
 import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
 import eca.util.Utils;
-import org.apache.commons.io.FileUtils;
+import eca.util.VelocityUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.springframework.util.CollectionUtils;
@@ -14,8 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -34,7 +32,6 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             VelocityConfigService.getVelocityConfigService();
 
     private static final String VM_REPORT_TEMPLATE = "vm-templates/evaluationResultsReport.vm";
-    private static final String CP1251 = "cp1251";
     private static final String NAN = "NaN";
     private static final String PNG = "PNG";
 
@@ -57,8 +54,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
         fillClassificationCosts(context);
         fillConfusionMatrix(context);
         fillAttachments(context);
-        String htmlString = mergeContext(template, context);
-        FileUtils.write(getFile(), htmlString, Charset.forName(CP1251));
+        VelocityUtils.write(getFile(), template, context);
     }
 
     @Override
@@ -114,7 +110,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
                 AttachmentImage attachmentImage = getEvaluationReport().getAttachmentImages().get(i);
                 try (ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream()) {
                     ImageIO.write((BufferedImage) attachmentImage.getImage(), PNG, byteArrayImg);
-                    String base64Image = Base64.getEncoder().encodeToString( byteArrayImg.toByteArray());
+                    String base64Image = Base64.getEncoder().encodeToString(byteArrayImg.toByteArray());
                     AttachmentRecord record = new AttachmentRecord();
                     record.setTitle(String.format(IMAGE_TITLE_FORMAT, i + 1, attachmentImage.getTitle()));
                     record.setBase64String(base64Image);
@@ -123,11 +119,5 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             }
             context.put(ATTACHMENTS_PARAM, attachmentRecords);
         }
-    }
-
-    private String mergeContext(Template template, VelocityContext context) {
-        StringWriter stringWriter = new StringWriter();
-        template.merge(context, stringWriter);
-        return stringWriter.toString();
     }
 }

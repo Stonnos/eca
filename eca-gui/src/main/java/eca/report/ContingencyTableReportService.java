@@ -1,15 +1,13 @@
 package eca.report;
 
 import eca.config.VelocityConfigService;
+import eca.util.VelocityUtils;
 import lombok.Getter;
-import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
@@ -27,7 +25,6 @@ public class ContingencyTableReportService implements ReportService {
             VelocityConfigService.getVelocityConfigService();
 
     private static final String VM_REPORT_TEMPLATE = "vm-templates/contingencyTableReport.vm";
-    private static final String CP1251 = "cp1251";
     private static final String HTML_EXTENSION = ".html";
 
     private static final String CHI_SQUARE_RESULT_PARAM = "chiSquareResult";
@@ -95,13 +92,6 @@ public class ContingencyTableReportService implements ReportService {
         context.put(CHI_SQUARE_RESULT_PARAM,
                 ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel.getChiValueResult(),
                         decimalFormat));
-        String htmlString = mergeContext(template, context);
-        FileUtils.write(getFile(), htmlString, Charset.forName(CP1251));
-    }
-
-    private String mergeContext(Template template, VelocityContext context) {
-        StringWriter stringWriter = new StringWriter();
-        template.merge(context, stringWriter);
-        return stringWriter.toString();
+        VelocityUtils.write(getFile(), template, context);
     }
 }
