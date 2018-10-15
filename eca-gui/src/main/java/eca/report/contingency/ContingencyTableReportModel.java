@@ -1,4 +1,4 @@
-package eca.report;
+package eca.report.contingency;
 
 import eca.statistics.contingency.ChiValueResult;
 import lombok.Data;

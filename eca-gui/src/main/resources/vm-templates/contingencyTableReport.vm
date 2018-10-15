@@ -1,0 +1,51 @@
+<html>
+<head>
+    <style>
+        .contingency-table {
+            margin: auto;
+            width: 90%;
+            overflow: scroll;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            background: #e2e2e2;
+        }
+
+        body {
+            background: rgb(198, 226, 255);
+        }
+    </style>
+</head>
+<body>
+
+<center>
+    <h2 class="title">Таблица сопряженности</h2>
+</center>
+
+<table class="contingency-table">
+    <tr>
+        <th rowspan="2">$rowAttrName</th>
+        <th colspan="$colAttrValues.size()">$colAttrName</th>
+    </tr>
+    <tr>
+        #foreach($columnName in $colAttrValues)
+            <th>columnName</th>
+        #end
+    </tr>
+    #foreach($row in $contingencyMatrix)
+        <tr>
+            #foreach($val in $row)
+                <td>$val</td>
+            #end
+        </tr>
+    #end
+</table>
+</body>
+</html>
