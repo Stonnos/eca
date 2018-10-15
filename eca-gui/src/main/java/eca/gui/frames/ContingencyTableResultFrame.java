@@ -14,6 +14,8 @@ import java.awt.*;
 import java.text.DecimalFormat;
 
 /**
+ * Implements contingency table results frame.
+ *
  * @author Roman Batygin
  */
 public class ContingencyTableResultFrame extends JFrame {
@@ -33,6 +35,16 @@ public class ContingencyTableResultFrame extends JFrame {
     private static final String CHI_SQUARE_RESULTS_TEXT =
             "<html><body>Результаты теста &chi;&sup2;</body></html>";
 
+    /**
+     * Constructor with params.
+     *
+     * @param parent            - parent frame
+     * @param rowAttribute      - row attribute
+     * @param colAttribute      - column attribute
+     * @param contingencyMatrix - contingency matrix
+     * @param chiValueResult    - chi squared test result
+     * @param decimalFormat     - decimal format
+     */
     public ContingencyTableResultFrame(JFrame parent,
                                        Attribute rowAttribute,
                                        Attribute colAttribute,

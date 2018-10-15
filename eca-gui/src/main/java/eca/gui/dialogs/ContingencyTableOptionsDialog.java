@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.dialogs;
 
 import eca.gui.ButtonUtils;
@@ -15,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Implements contingency table options dialog.
+ *
  * @author Roman Batygin
  */
 public class ContingencyTableOptionsDialog extends JDialog {
@@ -34,7 +31,7 @@ public class ContingencyTableOptionsDialog extends JDialog {
             "<html><body>Настройки теста &chi;&sup2;</body></html>";
     private static final String INVALID_ATTR_TYPE_ERROR_FORMAT = "Атрибут '%s' не является категориальным атрибутом!";
     private static final String DUPLICATE_ATTRIBUTES_ERROR_MESSAGE = "Необходимо выбрать разные атрибуты!";
-    private static Dimension COMBO_BOX_DIM = new Dimension(250, 25);
+    private static final Dimension COMBO_BOX_DIM = new Dimension(250, 25);
 
     private final Instances data;
 
@@ -113,9 +110,11 @@ public class ContingencyTableOptionsDialog extends JDialog {
         if (rowAttrIndex == colAttrIndex) {
             throw new IllegalArgumentException(DUPLICATE_ATTRIBUTES_ERROR_MESSAGE);
         } else if (!data.attribute(rowAttrIndex).isNominal()) {
-            throw new IllegalArgumentException(String.format(INVALID_ATTR_TYPE_ERROR_FORMAT, data.attribute(rowAttrIndex).name()));
+            throw new IllegalArgumentException(
+                    String.format(INVALID_ATTR_TYPE_ERROR_FORMAT, data.attribute(rowAttrIndex).name()));
         } else if (!data.attribute(colAttrIndex).isNominal()) {
-            throw new IllegalArgumentException(String.format(INVALID_ATTR_TYPE_ERROR_FORMAT, data.attribute(colAttrIndex).name()));
+            throw new IllegalArgumentException(
+                    String.format(INVALID_ATTR_TYPE_ERROR_FORMAT, data.attribute(colAttrIndex).name()));
         }
     }
 
