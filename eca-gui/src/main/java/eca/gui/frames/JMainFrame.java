@@ -91,6 +91,7 @@ import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
+import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.contingency.ContingencyTable;
 import eca.text.NumericFormatFactory;
 import eca.trees.C45;
@@ -1231,10 +1232,14 @@ public class JMainFrame extends JFrame {
                                 Attribute colAttribute = dataBuilder.getData().attribute(colAttrIndex);
                                 DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
                                 decimalFormat.setMaximumFractionDigits(maximumFractionDigits);
+                                ContingencyTableReportModel reportModel = new ContingencyTableReportModel();
+                                reportModel.setRowAttribute(rowAttribute);
+                                reportModel.setColAttribute(colAttribute);
+                                reportModel.setContingencyMatrix(contingencyTableAction.getContingencyMatrix());
+                                reportModel.setChiSquareTestResult(contingencyTableAction.getResult());
+                                reportModel.setDecimalFormat(decimalFormat);
                                 ContingencyTableResultFrame contingencyTableResultFrame =
-                                        new ContingencyTableResultFrame(JMainFrame.this, rowAttribute, colAttribute,
-                                                contingencyTableAction.getContingencyMatrix(),
-                                                contingencyTableAction.getResult(), decimalFormat);
+                                        new ContingencyTableResultFrame(JMainFrame.this, reportModel);
                                 contingencyTableResultFrame.setVisible(true);
                             });
                         }

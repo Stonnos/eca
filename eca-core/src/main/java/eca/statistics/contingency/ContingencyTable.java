@@ -120,21 +120,21 @@ public class ContingencyTable implements InstancesHandler {
      * @param contingencyMatrix - calculated contingency table for attributes
      * @return chi-square test result
      */
-    public ChiValueResult calculateChiSquaredResult(int rowAttrIndex, int colAttrIndex, double[][] contingencyMatrix) {
+    public ChiSquareTestResult calculateChiSquaredResult(int rowAttrIndex, int colAttrIndex, double[][] contingencyMatrix) {
         Objects.requireNonNull(contingencyMatrix, "Contingency matrix isn't specified!");
         Attribute rowAttribute = data.attribute(rowAttrIndex);
         Attribute colAttribute = data.attribute(colAttrIndex);
         if (!rowAttribute.isNominal() || !colAttribute.isNominal()) {
             throw new IllegalArgumentException("Attributes must be nominal!");
         }
-        ChiValueResult chiValueResult = new ChiValueResult();
-        chiValueResult.setChiSquaredValue(ContingencyTables.chiVal(contingencyMatrix, useYates));
+        ChiSquareTestResult chiSquareTestResult = new ChiSquareTestResult();
+        chiSquareTestResult.setChiSquaredValue(ContingencyTables.chiVal(contingencyMatrix, useYates));
         int df = (rowAttribute.numValues() - 1) * (colAttribute.numValues() - 1);
-        chiValueResult.setChiSquaredCriticalValue(Statistics.chiSquaredCriticalValue(alpha, df));
-        chiValueResult.setDf(df);
-        chiValueResult.setAlpha(alpha);
-        chiValueResult.setSignificant(
-                chiValueResult.getChiSquaredValue() > chiValueResult.getChiSquaredCriticalValue());
-        return chiValueResult;
+        chiSquareTestResult.setChiSquaredCriticalValue(Statistics.chiSquaredCriticalValue(alpha, df));
+        chiSquareTestResult.setDf(df);
+        chiSquareTestResult.setAlpha(alpha);
+        chiSquareTestResult.setSignificant(
+                chiSquareTestResult.getChiSquaredValue() > chiSquareTestResult.getChiSquaredCriticalValue());
+        return chiSquareTestResult;
     }
 }

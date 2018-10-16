@@ -1,12 +1,12 @@
 package eca.gui.actions;
 
-import eca.statistics.contingency.ChiValueResult;
+import eca.statistics.contingency.ChiSquareTestResult;
 import eca.statistics.contingency.ContingencyTable;
 
 /**
  * @author Roman Batygin
  */
-public class ContingencyTableAction extends AbstractCallback<ChiValueResult> {
+public class ContingencyTableAction extends AbstractCallback<ChiSquareTestResult> {
 
     private final ContingencyTable contingencyTable;
     private final int rowAttrIndex;

@@ -13,6 +13,13 @@
             margin-bottom: 20px;
         }
 
+        .chi-squares-result {
+            margin: auto;
+            width: 90%;
+            background: white;
+            border: 1px solid black;
+        }
+
         th, td {
             border: 1px solid black;
             background: #e2e2e2;
@@ -26,17 +33,18 @@
 <body>
 
 <center>
-    <h2 class="title">Таблица сопряженности</h2>
+    <h2 class="title">Таблица сопряженности для атрибутов $rowAttrName и $colAttrName</h2>
 </center>
 
 <table class="contingency-table">
     <tr>
         <th rowspan="2">$rowAttrName</th>
         <th colspan="$colAttrValues.size()">$colAttrName</th>
+        <th rowspan="2">Всего</th>
     </tr>
     <tr>
         #foreach($columnName in $colAttrValues)
-            <th>columnName</th>
+            <th>$columnName</th>
         #end
     </tr>
     #foreach($row in $contingencyMatrix)
@@ -47,5 +55,12 @@
         </tr>
     #end
 </table>
+
+<center>
+    <h2 class="title">Результаты теста &chi;&sup2;</h2>
+</center>
+<div class="chi-squares-result">
+    $chiSquareResult
+</div>
 </body>
 </html>

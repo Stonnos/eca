@@ -8,7 +8,7 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
-public class ChiValueResult {
+public class ChiSquareTestResult {
 
     /**
      * Chi squared calculated value

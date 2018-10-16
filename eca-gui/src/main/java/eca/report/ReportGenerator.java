@@ -15,8 +15,9 @@ import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.StackingClassifier;
 import eca.gui.tables.StatisticsTableBuilder;
+import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.AttributeStatistics;
-import eca.statistics.contingency.ChiValueResult;
+import eca.statistics.contingency.ChiSquareTestResult;
 import eca.util.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
@@ -77,6 +78,9 @@ public class ReportGenerator {
     private static final String CHI_CRITICAL_VALUE = "chiCriticalValue";
     private static final String DF = "df";
     private static final String ALPHA = "alpha";
+    private static final String SIGNIFICANT = "significant";
+    private static final String ROW_ATTR_NAME = "rowAttrName";
+    private static final String COL_ATTR_NAME = "colAttrName";
 
     /**
      * Other constants
@@ -142,17 +146,21 @@ public class ReportGenerator {
     /**
      * Returns chi-square test results as html.
      *
-     * @param chiValueResult - chi square test result
-     * @param decimalFormat  - decimal format
+     * @param contingencyTableReportModel - contingency table report model
      * @return chi-square test results as html
      */
-    public static String getChiSquareTestResultAsHtml(ChiValueResult chiValueResult, DecimalFormat decimalFormat) {
+    public static String getChiSquareTestResultAsHtml(ContingencyTableReportModel contingencyTableReportModel) {
         Template template = VELOCITY_CONFIGURATION.getTemplate(CHI_SQUARE_TEST_VM);
         VelocityContext context = new VelocityContext();
-        context.put(CH_VAL, decimalFormat.format(chiValueResult.getChiSquaredValue()));
-        context.put(CHI_CRITICAL_VALUE, decimalFormat.format(chiValueResult.getChiSquaredCriticalValue()));
-        context.put(DF, chiValueResult.getDf());
-        context.put(ALPHA, decimalFormat.format(chiValueResult.getAlpha()));
+        DecimalFormat decimalFormat = contingencyTableReportModel.getDecimalFormat();
+        ChiSquareTestResult chiSquareTestResult = contingencyTableReportModel.getChiSquareTestResult();
+        context.put(ROW_ATTR_NAME, contingencyTableReportModel.getRowAttribute().name());
+        context.put(COL_ATTR_NAME, contingencyTableReportModel.getColAttribute().name());
+        context.put(CH_VAL, decimalFormat.format(chiSquareTestResult.getChiSquaredValue()));
+        context.put(CHI_CRITICAL_VALUE, decimalFormat.format(chiSquareTestResult.getChiSquaredCriticalValue()));
+        context.put(DF, chiSquareTestResult.getDf());
+        context.put(ALPHA, decimalFormat.format(chiSquareTestResult.getAlpha()));
+        context.put(SIGNIFICANT, chiSquareTestResult.isSignificant());
         return mergeContext(template, context);
     }
 

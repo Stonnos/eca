@@ -12,7 +12,6 @@ import weka.core.Attribute;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,12 +47,6 @@ public class ContingencyTableReportService implements ReportService {
     private File file;
 
     /**
-     * Decimal format
-     */
-    @Getter
-    private DecimalFormat decimalFormat;
-
-    /**
      * Contingency table report model
      */
     @Getter
@@ -73,16 +66,6 @@ public class ContingencyTableReportService implements ReportService {
     }
 
     /**
-     * Sets decimal format.
-     *
-     * @param decimalFormat - decimal format
-     */
-    public void setDecimalFormat(DecimalFormat decimalFormat) {
-        Objects.requireNonNull(decimalFormat, "Decimal format isn't specified!");
-        this.decimalFormat = decimalFormat;
-    }
-
-    /**
      * Sets contingency table report model.
      *
      * @param contingencyTableReportModel - contingency table report model
@@ -93,7 +76,9 @@ public class ContingencyTableReportService implements ReportService {
         Objects.requireNonNull(contingencyTableReportModel.getColAttribute(), "Column attribute isn't specified!");
         Objects.requireNonNull(contingencyTableReportModel.getContingencyMatrix(),
                 "Contingency matrix isn't specified!");
-        Objects.requireNonNull(contingencyTableReportModel.getChiValueResult(), "Chi square result isn't specified!");
+        Objects.requireNonNull(contingencyTableReportModel.getChiSquareTestResult(),
+                "Chi square result isn't specified!");
+        Objects.requireNonNull(contingencyTableReportModel.getDecimalFormat(), "Decimal format isn't specified!");
         this.contingencyTableReportModel = contingencyTableReportModel;
     }
 
@@ -102,9 +87,7 @@ public class ContingencyTableReportService implements ReportService {
         Template template = VELOCITY_CONFIGURATION.getTemplate(VM_REPORT_TEMPLATE);
         VelocityContext context = new VelocityContext();
         fillContingencyTable(context);
-        context.put(CHI_SQUARE_RESULT_PARAM,
-                ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel.getChiValueResult(),
-                        decimalFormat));
+        context.put(CHI_SQUARE_RESULT_PARAM, ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel));
         VelocityUtils.write(getFile(), template, context);
     }
 

@@ -4,20 +4,26 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.choosers.HtmlChooser;
+import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.ContingencyJTable;
 import eca.report.ReportGenerator;
-import eca.statistics.contingency.ChiValueResult;
-import weka.core.Attribute;
+import eca.report.contingency.ContingencyTableReportModel;
+import eca.report.contingency.ContingencyTableReportService;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.DecimalFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Implements contingency table results frame.
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class ContingencyTableResultFrame extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
@@ -34,30 +40,33 @@ public class ContingencyTableResultFrame extends JFrame {
     private static final String CONTINGENCY_TABLE_TITLE = "Таблица сопряженности";
     private static final String CHI_SQUARE_RESULTS_TEXT =
             "<html><body>Результаты теста &chi;&sup2;</body></html>";
+    private static final String SELECTED_FILE_FORMAT = "%s%d";
+    private static final String CONTINGENCY_TABLE_DEFAULT_FILE_PREFIX = "ContingencyTable";
+
+    private ContingencyTableReportModel contingencyTableReportModel;
 
     /**
      * Constructor with params.
      *
-     * @param parent            - parent frame
-     * @param rowAttribute      - row attribute
-     * @param colAttribute      - column attribute
-     * @param contingencyMatrix - contingency matrix
-     * @param chiValueResult    - chi squared test result
-     * @param decimalFormat     - decimal format
+     * @param parent                      - parent frame
+     * @param contingencyTableReportModel - contingency table report model
      */
     public ContingencyTableResultFrame(JFrame parent,
-                                       Attribute rowAttribute,
-                                       Attribute colAttribute,
-                                       double[][] contingencyMatrix,
-                                       ChiValueResult chiValueResult,
-                                       DecimalFormat decimalFormat) {
+                                       ContingencyTableReportModel contingencyTableReportModel) {
+        this.contingencyTableReportModel = contingencyTableReportModel;
         this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setIconImage(parent.getIconImage());
+        this.init();
+        this.setLocationRelativeTo(parent);
+    }
 
-        JScrollPane contingencyTableScrollPanel =
-                new JScrollPane(new ContingencyJTable(rowAttribute, colAttribute, contingencyMatrix));
+    private void init() {
+        JScrollPane contingencyTableScrollPanel = new JScrollPane(
+                new ContingencyJTable(contingencyTableReportModel.getRowAttribute(),
+                        contingencyTableReportModel.getColAttribute(),
+                        contingencyTableReportModel.getContingencyMatrix()));
         contingencyTableScrollPanel.setBorder(PanelBorderUtils.createTitledBorder(CONTINGENCY_TABLE_TITLE));
         contingencyTableScrollPanel.setPreferredSize(TABLE_SCROLL_PANE_PREFERRED_SIZE);
 
@@ -65,7 +74,7 @@ public class ContingencyTableResultFrame extends JFrame {
         chiSquaredResultPane.setContentType(CONTENT_TYPE);
         chiSquaredResultPane.setPreferredSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultPane.setEditable(false);
-        chiSquaredResultPane.setText(ReportGenerator.getChiSquareTestResultAsHtml(chiValueResult, decimalFormat));
+        chiSquaredResultPane.setText(ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel));
         chiSquaredResultPane.setCaretPosition(0);
         JScrollPane chiSquaredResultScrollPanel = new JScrollPane(chiSquaredResultPane);
         chiSquaredResultScrollPanel.setMinimumSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
@@ -83,7 +92,7 @@ public class ContingencyTableResultFrame extends JFrame {
             setVisible(false);
         });
 
-        saveButton.addActionListener(e -> setVisible(false));
+        addSaveButtonListener(saveButton);
 
         this.add(contingencyTableScrollPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -91,15 +100,48 @@ public class ContingencyTableResultFrame extends JFrame {
         this.add(chiSquaredResultScrollPanel, new GridBagConstraints(0, 1, 2, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 10, 5), 0, 0));
-        this.add(closeButton, new GridBagConstraints(0, 2, 1, 1, 1, 0,
+        this.add(saveButton, new GridBagConstraints(0, 2, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE,
                 new Insets(4, 0, 10, 3), 0, 0));
-        this.add(saveButton, new GridBagConstraints(1, 2, 1, 1, 1, 0,
+        this.add(closeButton, new GridBagConstraints(1, 2, 1, 1, 1, 0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(4, 3, 10, 0), 0, 0));
 
         this.getRootPane().setDefaultButton(closeButton);
         this.pack();
-        this.setLocationRelativeTo(parent);
+    }
+
+    private void addSaveButtonListener(JButton saveButton) {
+        saveButton.addActionListener(new ActionListener() {
+
+            HtmlChooser fileChooser;
+            ContingencyTableReportService contingencyTableReportService;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (fileChooser == null) {
+                        fileChooser = new HtmlChooser();
+                    }
+                    fileChooser.setSelectedFile(new File(
+                            String.format(SELECTED_FILE_FORMAT, CONTINGENCY_TABLE_DEFAULT_FILE_PREFIX,
+                                    System.currentTimeMillis())));
+                    File file = fileChooser.getSelectedFile(ContingencyTableResultFrame.this);
+                    if (file != null) {
+                        if (contingencyTableReportService == null) {
+                            contingencyTableReportService = new ContingencyTableReportService();
+                            contingencyTableReportService.setFile(file);
+                            contingencyTableReportService.setContingencyTableReportModel(contingencyTableReportModel);
+
+                        }
+                        contingencyTableReportService.saveReport();
+                    }
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(ContingencyTableResultFrame.this, ex.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 }

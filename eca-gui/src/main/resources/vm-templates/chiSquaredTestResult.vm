@@ -9,14 +9,28 @@
         .bold {
             font-weight: bold;
         }
+
+        p {
+            margin-left: 15px;
+        }
     </style>
 </head>
 <body>
 <div class="result-font">
     <p>Расчетное значение <span class="bold">&chi;&sup2; = $chiVal</span></p>
-    <p>Критическое значение критерия <span class="bold">&chi;&sup2;</span> Пирсона при уровне значимости
+    <p>Критическое значение критерия <span class="bold">&chi;&sup2;</span> Пирсона при уровне
+        значимости
         <span class="bold">&alpha; = $alpha</span> и числе степеней свободы <span class="bold">$df</span> составляет
         <span class="bold">$chiCriticalValue.</span></p>
+    <p>
+        #if ($significant)
+            <span style="color: red"> Существует</span> статистическая связь между атрибутами <span class="bold">$rowAttrName</span>
+            и <span class="bold">$colAttrName</span> при уровне значимости <span class="bold">&alpha; = $alpha</span>
+        #else
+            Не существует статистической связи между атрибутами <span class="bold">$rowAttrName</span> и
+            <span class="bold">$colAttrName</span> при уровне значимости <span class="bold">&alpha; = $alpha</span>
+        #end
+    </p>
 </div>
 </body>
 </html>

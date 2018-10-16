@@ -1,8 +1,10 @@
 package eca.report.contingency;
 
-import eca.statistics.contingency.ChiValueResult;
+import eca.statistics.contingency.ChiSquareTestResult;
 import lombok.Data;
 import weka.core.Attribute;
+
+import java.text.DecimalFormat;
 
 /**
  * Contingency table report model.
@@ -30,5 +32,10 @@ public class ContingencyTableReportModel {
     /**
      * Chi squared test result
      */
-    private ChiValueResult chiValueResult;
+    private ChiSquareTestResult chiSquareTestResult;
+
+    /**
+     * Decimal format
+     */
+    private DecimalFormat decimalFormat;
 }
