@@ -86,8 +86,8 @@ public class ScatterDiagramsFrame extends JFrame {
         xAttributeBox.setSelectedIndex(0);
         yAttributeBox.setSelectedIndex(0);
 
-        JButton okButton = ButtonUtils.createOkButton();
-        okButton.addActionListener(e -> setVisible(false));
+        JButton closeButton = ButtonUtils.createCloseButton();
+        closeButton.addActionListener(e -> setVisible(false));
 
         JPanel plotPanel = new JPanel(new GridBagLayout());
         plotPanel.add(scatterChartPanel, new GridBagConstraints(0, 0, 4, 1, 1, 1,
@@ -106,10 +106,10 @@ public class ScatterDiagramsFrame extends JFrame {
         this.add(plotPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(10, 10, 10, 10), 0, 0));
-        this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+        this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 10, 0), 0, 0));
-        this.getRootPane().setDefaultButton(okButton);
+        this.getRootPane().setDefaultButton(closeButton);
     }
 
     private JFreeChart createScatterChart(Attribute xAttr, Attribute yAttr) {

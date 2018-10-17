@@ -306,12 +306,12 @@ public class ROCCurvePanel extends JPanel {
             this.setIconImage(parentFrame.getIconImage());
             ROCThresholdTable table = new ROCThresholdTable(data, digits, className);
             JScrollPane scrollPanel = new JScrollPane(table);
-            JButton okButton = ButtonUtils.createOkButton();
-            okButton.addActionListener(evt -> setVisible(false));
+            JButton closeButton = ButtonUtils.createCloseButton();
+            closeButton.addActionListener(evt -> setVisible(false));
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
             this.pack();

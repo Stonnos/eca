@@ -44,14 +44,14 @@ public class HtmlFrame extends JFrame {
         inputOptionsPane.setEditable(false);
         inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
         JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
-        JButton okButton = ButtonUtils.createOkButton();
+        JButton closeButton = ButtonUtils.createCloseButton();
 
-        okButton.addActionListener(e -> setVisible(false));
+        closeButton.addActionListener(e -> setVisible(false));
         //----------------------------------------
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
+        this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
         //---------------------------------------
@@ -86,7 +86,7 @@ public class HtmlFrame extends JFrame {
         this.setJMenuBar(menu);
         inputOptionsPane.setText(text);
         inputOptionsPane.setCaretPosition(0);
-        this.getRootPane().setDefaultButton(okButton);
+        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
         this.setLocationRelativeTo(parent);
     }

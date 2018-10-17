@@ -30,15 +30,15 @@ public class InstancesFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
-        JButton okButton = ButtonUtils.createOkButton();
-        okButton.addActionListener(e -> setVisible(false));
+        JButton closeButton = ButtonUtils.createCloseButton();
+        closeButton.addActionListener(e -> setVisible(false));
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
-        this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
+        this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
-        this.getRootPane().setDefaultButton(okButton);
+        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
         this.setLocationRelativeTo(parent);
     }

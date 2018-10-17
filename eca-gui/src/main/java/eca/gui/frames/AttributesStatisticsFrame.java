@@ -144,9 +144,9 @@ public class AttributesStatisticsFrame extends JFrame {
         JScrollPane scrollPane = new JScrollPane(statisticsTable);
         scrollPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TITLE));
 
-        JButton okButton = ButtonUtils.createOkButton();
+        JButton closeButton = ButtonUtils.createCloseButton();
 
-        okButton.addActionListener(e -> setVisible(false));
+        closeButton.addActionListener(e -> setVisible(false));
 
         attributesBox.setSelectedIndex(0);
         showFrequencyDiagramPlot(0);
@@ -190,11 +190,11 @@ public class AttributesStatisticsFrame extends JFrame {
         this.add(plotPanel, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 5, 5), 0, 0));
-        this.add(okButton, new GridBagConstraints(0, 1, 2, 1, 0, 0,
+        this.add(closeButton, new GridBagConstraints(0, 1, 2, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 10, 0), 0, 0));
 
-        this.getRootPane().setDefaultButton(okButton);
+        this.getRootPane().setDefaultButton(closeButton);
         this.setLocationRelativeTo(parent);
     }
 

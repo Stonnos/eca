@@ -210,20 +210,20 @@ public class NetworkVisualizer extends JPanel {
         //-----------------------------------
         textView.addActionListener(new ActionListener() {
 
-            NetworkInfo networkModelinfo;
+            NetworkInfo networkModelInfo;
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (networkModelinfo == null) {
-                    networkModelinfo = new NetworkInfo();
+                if (networkModelInfo == null) {
+                    networkModelInfo = new NetworkInfo();
                     frame.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent evt) {
-                            networkModelinfo.dispose();
+                            networkModelInfo.dispose();
                         }
                     });
                 }
-                networkModelinfo.setVisible(true);
+                networkModelInfo.setVisible(true);
             }
         });
         //-----------------------------------
@@ -286,18 +286,18 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setCaretPosition(0);
             //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
-            JButton okButton = ButtonUtils.createOkButton();
+            JButton closeButton = ButtonUtils.createCloseButton();
             //-----------------------------------
-            okButton.addActionListener(evt -> setVisible(false));
+            closeButton.addActionListener(evt -> setVisible(false));
             //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
+            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
             //----------------------------------------
-            this.getRootPane().setDefaultButton(okButton);
+            this.getRootPane().setDefaultButton(closeButton);
             this.pack();
             this.setLocationRelativeTo(frame);
         }
@@ -342,18 +342,18 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setCaretPosition(0);
             //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
-            JButton okButton = ButtonUtils.createOkButton();
+            JButton closeButton = ButtonUtils.createCloseButton();
             //-----------------------------------
-            okButton.addActionListener(evt -> setVisible(false));
+            closeButton.addActionListener(evt -> setVisible(false));
             //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
             //----------------------------------------
-            this.getRootPane().setDefaultButton(okButton);
+            this.getRootPane().setDefaultButton(closeButton);
             this.setResizable(false);
             this.pack();
             this.setLocationRelativeTo(frame);
