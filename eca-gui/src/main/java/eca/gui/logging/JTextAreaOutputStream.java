@@ -4,7 +4,6 @@ import org.springframework.util.Assert;
 
 import javax.swing.*;
 import javax.swing.text.Document;
-import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -20,11 +19,11 @@ public class JTextAreaOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(int b) throws IOException {
+    public void write(int b) {
     }
 
     @Override
-    public void write(byte b[], int off, int len) throws IOException {
+    public void write(byte b[], int off, int len) {
         Assert.notNull(b, "Buffer is not Specified!");
         if ((off < 0) || (off > b.length) || (len < 0) ||
                 ((off + len) > b.length) || ((off + len) < 0)) {

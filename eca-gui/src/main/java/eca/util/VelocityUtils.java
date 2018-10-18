@@ -29,7 +29,7 @@ public class VelocityUtils {
      * @param context  - velocity context
      * @throws IOException in case of an I/O error
      */
-    public static void write(File file, Template template, VelocityContext context) throws IOException {
+    public static void mergeAndWrite(File file, Template template, VelocityContext context) throws IOException {
         String htmlString = mergeContext(template, context);
         FileUtils.write(file, htmlString, Charset.forName(CP1251));
     }

@@ -1,7 +1,7 @@
 package eca.exception;
 
 /**
- * Config exception
+ * Config exception.
  *
  * @author Roman Batygin
  */

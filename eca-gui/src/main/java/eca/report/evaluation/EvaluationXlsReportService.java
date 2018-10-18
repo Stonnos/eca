@@ -1,4 +1,4 @@
-package eca.report;
+package eca.report.evaluation;
 
 import eca.core.evaluation.Evaluation;
 import eca.data.DataFileExtension;

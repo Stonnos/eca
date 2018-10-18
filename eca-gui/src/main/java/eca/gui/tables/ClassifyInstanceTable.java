@@ -6,11 +6,11 @@
 package eca.gui.tables;
 
 import eca.gui.GuiUtils;
-import eca.report.ReportGenerator;
 import eca.gui.tables.models.ClassifyInstanceTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
+import eca.report.ReportGenerator;
 import eca.statistics.AttributeStatistics;
 import eca.text.NumericFormatFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Enumeration;
 
 import static eca.gui.service.ValidationService.isNumericOverflow;
@@ -101,7 +100,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
         return getClassifyInstanceTableModel().data();
     }
 
-    public Instance buildInstance() throws ParseException {
+    public Instance buildInstance() {
         Object[] vector = getClassifyInstanceTableModel().values();
         Instances data = data();
         Enumeration<Attribute> attributeEnumeration = data.enumerateAttributes();

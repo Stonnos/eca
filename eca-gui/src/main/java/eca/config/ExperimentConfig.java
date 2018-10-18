@@ -10,5 +10,8 @@ import lombok.Data;
 @Data
 public class ExperimentConfig {
 
+    /**
+     * Number of best classifier models to show
+     */
     private Integer numBestResults;
 }

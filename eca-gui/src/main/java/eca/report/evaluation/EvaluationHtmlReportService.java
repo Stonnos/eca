@@ -1,7 +1,8 @@
-package eca.report;
+package eca.report.evaluation;
 
 import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
+import eca.report.ReportGenerator;
 import eca.util.Utils;
 import eca.util.VelocityUtils;
 import org.apache.velocity.Template;
@@ -54,7 +55,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
         fillClassificationCosts(context);
         fillConfusionMatrix(context);
         fillAttachments(context);
-        VelocityUtils.write(getFile(), template, context);
+        VelocityUtils.mergeAndWrite(getFile(), template, context);
     }
 
     @Override

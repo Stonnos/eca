@@ -1,5 +1,6 @@
-package eca.report;
+package eca.report.evaluation;
 
+import eca.report.ReportService;
 import lombok.Getter;
 
 import java.io.File;

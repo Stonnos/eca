@@ -1,4 +1,4 @@
-package eca.report;
+package eca.report.evaluation;
 
 import lombok.Data;
 

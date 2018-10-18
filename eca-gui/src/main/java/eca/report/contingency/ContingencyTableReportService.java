@@ -88,7 +88,7 @@ public class ContingencyTableReportService implements ReportService {
         VelocityContext context = new VelocityContext();
         fillContingencyTable(context);
         context.put(CHI_SQUARE_RESULT_PARAM, ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel));
-        VelocityUtils.write(getFile(), template, context);
+        VelocityUtils.mergeAndWrite(getFile(), template, context);
     }
 
     private void fillContingencyTable(VelocityContext context) {
