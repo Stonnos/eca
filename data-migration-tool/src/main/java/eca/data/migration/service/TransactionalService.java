@@ -25,7 +25,7 @@ public class TransactionalService {
      * Constructor with spring dependency injection.
      *
      * @param jdbcTemplate   - jdbc template bean
-     * @param sqlQueryHelper - sql auery helper bean
+     * @param sqlQueryHelper - sql query helper bean
      */
     @Inject
     public TransactionalService(JdbcTemplate jdbcTemplate, SqlQueryHelper sqlQueryHelper) {
