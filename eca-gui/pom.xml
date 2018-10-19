@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.3</version>
+        <version>6.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.3</version>
+    <version>6.4</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,6 +26,8 @@
         <mssql.version>6.1.0.jre8</mssql.version>
         <unaccess.version>4.0.1</unaccess.version>
         <sqllite.version>3.16.1</sqllite.version>
+        <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+        <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -69,11 +71,11 @@
             <version>${mysql.version}</version>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.noraui</groupId>
             <artifactId>ojdbc7</artifactId>
             <version>${oracle.version}</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
@@ -117,6 +119,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -161,6 +164,7 @@
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
+                <version>${launch4j-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>l4j-clui</id>
