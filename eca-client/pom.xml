@@ -14,9 +14,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <spring.version>4.3.9.RELEASE</spring.version>
-        <jackson.version>2.9.1</jackson.version>
-        <jackson.databind.version>2.9.1</jackson.databind.version>
+        <spring.version>5.1.1.RELEASE</spring.version>
+        <jackson.version>2.9.7</jackson.version>
+        <jackson.databind.version>2.9.7</jackson.databind.version>
     </properties>
 
     <dependencies>

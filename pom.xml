@@ -11,9 +11,8 @@
 
     <modules>
         <module>eca-core</module>
-        <module>eca-gui</module>
         <module>eca-client</module>
-        <module>data-migration-tool</module>
+        <module>eca-gui</module>
     </modules>
 
     <properties>
