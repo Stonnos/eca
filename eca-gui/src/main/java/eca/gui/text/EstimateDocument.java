@@ -28,7 +28,8 @@ public class EstimateDocument extends LengthDocument {
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         Content c = this.getContent();
-        if (format(c.getString(0, c.length() - 1) + str)) {
+        String resultStr = offs > 0 ? c.getString(0, c.length() - 1) + str : str + c.getString(0, c.length() - 1);
+        if (format(resultStr)) {
             super.insertString(offs, str, a);
         }
     }
