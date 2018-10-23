@@ -28,7 +28,9 @@ public class DoubleDocument extends LengthDocument {
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         Content c = this.getContent();
-        if (format(c.getString(0, c.length() - 1) + str)) {
+        StringBuilder stringBuilder = new StringBuilder(c.getString(0, c.length() - 1));
+        String resultStr = stringBuilder.insert(offs, str).toString();
+        if (format(resultStr)) {
             super.insertString(offs, str, a);
         }
     }
