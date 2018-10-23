@@ -20,9 +20,10 @@ public class Utils {
     /**
      * Validates response for Http status with 200 code.
      *
-     * @param response - response
+     * @param response - response entity
+     * @param <T>      - response body generic type
      */
-    public static void validateResponse(ResponseEntity response) {
+    public static <T> void validateResponse(ResponseEntity<T> response) {
         if (!Optional.ofNullable(response).map(ResponseEntity::getBody).isPresent()) {
             throw new EcaServiceException(EMPTY_RESPONSE_MESSAGE);
         }
