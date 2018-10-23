@@ -5,6 +5,8 @@
  */
 package eca.gui.text;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import java.util.regex.Pattern;
@@ -28,7 +30,8 @@ public class EstimateDocument extends LengthDocument {
     @Override
     public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
         Content c = this.getContent();
-        String resultStr = offs > 0 ? c.getString(0, c.length() - 1) + str : str + c.getString(0, c.length() - 1);
+        StringBuilder stringBuilder = new StringBuilder(c.getString(0, c.length() - 1));
+        String resultStr = stringBuilder.insert(offs, str).toString();
         if (format(resultStr)) {
             super.insertString(offs, str, a);
         }
