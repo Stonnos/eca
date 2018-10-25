@@ -38,6 +38,12 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         return new AutomatedStackingBuilder();
     }
 
+    @Override
+    public int getNumIterations() {
+        int classifiersSize = getClassifier().getClassifiers().size();
+        return classifiersSize * ExperimentUtil.getNumClassifiersCombinations(classifiersSize);
+    }
+
     /**
      * Automated stacking iterative builder.
      */
@@ -48,15 +54,34 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         static final int NEXT_PERMUTATION_STATE = 2;
         static final int MODEL_LEARNING_STATE = 3;
 
+        /**
+         * Current iteration
+         */
         int index;
+        /**
+         * Machine current state
+         */
         int state;
-        int it;
-        int metaClsIndex;
-        ClassifiersSet set = getClassifier().getClassifiers();
+        /**
+         * Individual classifiers number using by ensemble algorithms
+         */
+        int numIndividualClassifiers;
+        /**
+         * Meta classifier index
+         */
+        int metaClassifierIndex;
+        /**
+         * Initial individual classifiers set
+         */
+        ClassifiersSet classifiersSet = getClassifier().getClassifiers();
         ClassifiersSet currentSet = new ClassifiersSet();
+        /**
+         * Marks array for individual classifiers set using by next_permutation algorithm.
+         * 1 means that classifier will be include in individual classifiers set, 0 - otherwise
+         */
         int[] marks = new int[getClassifier().getClassifiers().size()];
-        PermutationsSearcher permutationsSearch = new PermutationsSearcher();
-        int numCombinations = getNumCombinations();
+        final PermutationsSearcher permutationsSearch = new PermutationsSearcher();
+        final int numCombinations = getNumIterations();
 
         AutomatedStackingBuilder() {
             clearHistory();
@@ -85,20 +110,18 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         public EvaluationResults nextState() throws Exception {
             switch (state) {
                 case META_MODEL_SELECTION_STATE: {
-                    Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClsIndex);
+                    Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClassifierIndex);
                     getClassifier().setMetaClassifier(metaClassifier);
                     state = INIT_STATE;
                     break;
                 }
                 case INIT_STATE: {
-                    if (it == marks.length) {
-                        metaClsIndex++;
-                        it = 0;
+                    if (numIndividualClassifiers == marks.length) {
+                        metaClassifierIndex++;
+                        numIndividualClassifiers = 0;
                         state = META_MODEL_SELECTION_STATE;
                     } else {
-                        for (int j = 0; j < marks.length; j++) {
-                            marks[j] = j <= it ? 1 : 0;
-                        }
+                        fillMarks();
                         permutationsSearch.setValues(marks);
                         state = NEXT_PERMUTATION_STATE;
                     }
@@ -106,15 +129,10 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                 }
                 case NEXT_PERMUTATION_STATE: {
                     if (permutationsSearch.nextPermutation()) {
-                        currentSet.clear();
-                        for (int k = 0; k < marks.length; k++) {
-                            if (marks[k] == 1) {
-                                currentSet.addClassifier(set.getClassifier(k));
-                            }
-                        }
+                        initializeClassifiersSet();
                         state = MODEL_LEARNING_STATE;
                     } else {
-                        it++;
+                        numIndividualClassifiers++;
                         state = INIT_STATE;
                     }
                     break;
@@ -131,10 +149,20 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
             return null;
         }
 
-        int getNumCombinations() {
-            return set.size() * ExperimentUtil.getNumClassifiersCombinations(set.size());
+        void fillMarks() {
+            for (int j = 0; j < marks.length; j++) {
+                marks[j] = j <= numIndividualClassifiers ? 1 : 0;
+            }
         }
 
+        void initializeClassifiersSet() {
+            currentSet.clear();
+            for (int k = 0; k < marks.length; k++) {
+                if (marks[k] == 1) {
+                    currentSet.addClassifier(classifiersSet.getClassifier(k));
+                }
+            }
+        }
     }
 
 }
