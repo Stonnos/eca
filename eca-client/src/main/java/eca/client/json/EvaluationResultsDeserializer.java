@@ -23,7 +23,7 @@ public class EvaluationResultsDeserializer extends JsonDeserializer<EvaluationRe
         JsonNode jsonNode = parser.getCodec().readTree(parser);
         if (!jsonNode.isNull()) {
             byte[] bytes = Base64.getDecoder().decode(jsonNode.textValue());
-            return  (EvaluationResults) SerializationUtils.deserialize(bytes);
+            return (EvaluationResults) SerializationUtils.deserialize(bytes);
         }
         return null;
     }

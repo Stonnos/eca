@@ -81,7 +81,7 @@ public class ConfigurationService {
     /**
      * Saves eca - service config into file.
      *
-     * @throws IOException
+     * @throws IOException in case an I/O error
      */
     public void saveEcaServiceConfig() throws IOException {
         if (!Boolean.TRUE.equals(getApplicationConfig().getProduction())) {

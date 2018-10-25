@@ -7,6 +7,11 @@ package eca.client.exception;
  */
 public class EcaServiceException extends RuntimeException {
 
+    /**
+     * Constructor with message.
+     *
+     * @param message - error message
+     */
     public EcaServiceException(String message) {
         super(message);
     }
