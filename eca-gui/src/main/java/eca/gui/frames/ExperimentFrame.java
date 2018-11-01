@@ -10,7 +10,6 @@ import eca.converters.ModelConverter;
 import eca.converters.model.EvaluationParams;
 import eca.converters.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethod;
-import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.IterativeExperiment;
@@ -23,9 +22,9 @@ import eca.gui.dialogs.LoadDialog;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ClassifierIndexerService;
-import eca.report.ReportGenerator;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
+import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -177,20 +176,17 @@ public abstract class ExperimentFrame extends JFrame {
         foldsSpinner.setEnabled(false);
         validationsSpinner.setEnabled(false);
 
-        getExperiment().getEvaluationMethod().accept(new EvaluationMethodVisitor<Void>() {
-
-            @Override
-            public Void evaluateModel() {
+        switch (getExperiment().getEvaluationMethod()) {
+            case TRAINING_DATA:
                 useTrainingSet.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void crossValidateModel() {
+                break;
+            case CROSS_VALIDATION:
                 useTestingSet.setSelected(true);
-                return null;
-            }
-        });
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unexpected evaluation method [%s]!", getExperiment().getEvaluationMethod()));
+        }
 
         useTestingSet.addItemListener(e -> {
             foldsSpinner.setEnabled(useTestingSet.isSelected());

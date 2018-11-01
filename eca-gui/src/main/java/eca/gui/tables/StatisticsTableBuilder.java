@@ -34,39 +34,40 @@ import java.util.TimeZone;
 public class StatisticsTableBuilder {
 
     private static final String[] TITLE = {"Статистика", "Значение"};
-    public static final String INITIAL_DATA_TEXT = "Исходные данные";
-    public static final String NUMBER_OF_INSTANCES_TEXT = "Число объектов";
-    public static final String NUMBER_OF_ATTRIBUTES_TEXT = "Число атрибутов";
-    public static final String NUMBER_OF_CLASSES_TEXT = "Число классов";
-    public static final String CLASSIFIER_NAME_TEXT = "Классификатор";
-    public static final String EVALUATION_METHOD_TEXT = "Метод оценки точности";
-    public static final String TRAINING_DATA_METHOD_TEXT = "Использование обучающей выборки";
-    public static final String NUMBER_OF_TEST_INSTANCES = "Число объектов тестовых данных";
-    public static final String CORRECTLY_CLASSIFIED_INSTANCES_TEXT = "Число правильно классифицированных объектов";
-    public static final String INCORRECTLY_CLASSIFIED_INSTANCES_TEXT = "Число неправильно классифицированных объектов";
-    public static final String CLASSIFIER_ACCURACY_TEXT = "Точность классификатора, %";
-    public static final String CLASSIFIER_ERROR_TEXT = "Ошибка классификатора, %";
-    public static final String CLASSIFIER_MEAN_ERROR_TEXT = "Средняя абсолютная ошибка классификации";
-    public static final String ROOT_MEAN_SQUARED_ERROR_TEXT = "Среднеквадратическая ошибка классификации";
-    public static final String VARIANCE_ERROR_TEXT = "Дисперсия ошибки классификатора";
-    public static final String ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT =
+    private static final String INITIAL_DATA_TEXT = "Исходные данные";
+    private static final String NUMBER_OF_INSTANCES_TEXT = "Число объектов";
+    private static final String NUMBER_OF_ATTRIBUTES_TEXT = "Число атрибутов";
+    private static final String NUMBER_OF_CLASSES_TEXT = "Число классов";
+    private static final String CLASSIFIER_NAME_TEXT = "Классификатор";
+    private static final String EVALUATION_METHOD_TEXT = "Метод оценки точности";
+    private static final String TRAINING_DATA_METHOD_TEXT = "Использование обучающей выборки";
+    private static final String NUMBER_OF_TEST_INSTANCES = "Число объектов тестовых данных";
+    private static final String CORRECTLY_CLASSIFIED_INSTANCES_TEXT = "Число правильно классифицированных объектов";
+    private static final String INCORRECTLY_CLASSIFIED_INSTANCES_TEXT = "Число неправильно классифицированных объектов";
+    private static final String CLASSIFIER_ACCURACY_TEXT = "Точность классификатора, %";
+    private static final String CLASSIFIER_ERROR_TEXT = "Ошибка классификатора, %";
+    private static final String CLASSIFIER_MEAN_ERROR_TEXT = "Средняя абсолютная ошибка классификации";
+    private static final String ROOT_MEAN_SQUARED_ERROR_TEXT = "Среднеквадратическая ошибка классификации";
+    private static final String VARIANCE_ERROR_TEXT = "Дисперсия ошибки классификатора";
+    private static final String ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT =
             "95% доверительный интервал ошибки классификатора";
-    public static final String NUMBER_OF_NODES_TEXT = "Число узлов";
-    public static final String NUMBER_OF_LEAVES_TEXT = "Число листьев";
-    public static final String TREE_DEPTH_TEXT = "Глубина дерева";
-    public static final String CLASSIFIERS_IN_ENSEMBLE_TEXT = "Число классификаторов в ансамбле";
-    public static final String DISTANCE_FUNCTION_TEXT = "Функция расстояния";
-    public static final String META_CLASSIFIER_NAME_TEXT = "Мета-классификатор";
-    public static final String IN_LAYER_NEURONS_NUM_TEXT = "Число нейронов во входном слое";
-    public static final String OUT_LAYER_NEURONS_NUM_TEXT = "Число нейронов в выходном слое";
-    public static final String HIDDEN_LAYERS_NUM_TEXT = "Число скрытых слоев";
-    public static final String HIDDEN_LAYER_STRUCTURE_TEXT = "Структура скрытого слоя";
-    public static final String LINKS_NUM_TEXT = "Число связей";
-    public static final String AF_OF_HIDDEN_LAYER_TEXT = "Активационная функция нейронов скрытого слоя";
-    public static final String AF_OF_OUT_LAYER_TEXT = "Активационная функция нейронов выходного слоя";
-    public static final String LEARNING_ALGORITHM_TEXT = "Алгоритм обучения";
-    public static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
-    public static final String TOTAL_TIME_TEXT = "Затраченное время";
+    private static final String NUMBER_OF_NODES_TEXT = "Число узлов";
+    private static final String NUMBER_OF_LEAVES_TEXT = "Число листьев";
+    private static final String TREE_DEPTH_TEXT = "Глубина дерева";
+    private static final String CLASSIFIERS_IN_ENSEMBLE_TEXT = "Число классификаторов в ансамбле";
+    private static final String DISTANCE_FUNCTION_TEXT = "Функция расстояния";
+    private static final String META_CLASSIFIER_NAME_TEXT = "Мета-классификатор";
+    private static final String IN_LAYER_NEURONS_NUM_TEXT = "Число нейронов во входном слое";
+    private static final String OUT_LAYER_NEURONS_NUM_TEXT = "Число нейронов в выходном слое";
+    private static final String HIDDEN_LAYERS_NUM_TEXT = "Число скрытых слоев";
+    private static final String HIDDEN_LAYER_STRUCTURE_TEXT = "Структура скрытого слоя";
+    private static final String LINKS_NUM_TEXT = "Число связей";
+    private static final String AF_OF_HIDDEN_LAYER_TEXT = "Активационная функция нейронов скрытого слоя";
+    private static final String AF_OF_OUT_LAYER_TEXT = "Активационная функция нейронов выходного слоя";
+    private static final String LEARNING_ALGORITHM_TEXT = "Алгоритм обучения";
+    private static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
+    private static final String TOTAL_TIME_TEXT = "Затраченное время";
+    private static final String INTERVAL_FORMAT = "[%s; %s]";
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
@@ -111,7 +112,7 @@ public class StatisticsTableBuilder {
                 results.add(new Entry<>(VARIANCE_ERROR_TEXT, decimalFormat.format(e.varianceError())));
                 double[] x = e.errorConfidenceInterval();
                 results.add(new Entry<>(ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT,
-                        String.format("[%s; %s]", decimalFormat.format(x[0]), decimalFormat.format(x[1]))));
+                        String.format(INTERVAL_FORMAT, decimalFormat.format(x[0]), decimalFormat.format(x[1]))));
             }
             if (e.getTotalTimeMillis() != null) {
                 results.add(new Entry<>(TOTAL_TIME_TEXT, DATE_FORMAT.format(new Date(e.getTotalTimeMillis()))));

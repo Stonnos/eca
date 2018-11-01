@@ -12,8 +12,8 @@ public enum EvaluationMethod {
      **/
     TRAINING_DATA(EvaluationMethodDictionary.INITIAL_METHOD_TITLE) {
         @Override
-        public <T> T accept(EvaluationMethodVisitor<T> evaluationMethodVisitor) {
-            return evaluationMethodVisitor.evaluateModel();
+        public void accept(EvaluationMethodVisitor evaluationMethodVisitor) throws Exception {
+            evaluationMethodVisitor.evaluateModel();
         }
     },
 
@@ -22,8 +22,8 @@ public enum EvaluationMethod {
      **/
     CROSS_VALIDATION(EvaluationMethodDictionary.CV_METHOD_TITLE) {
         @Override
-        public <T> T accept(EvaluationMethodVisitor<T> evaluationMethodVisitor) {
-            return evaluationMethodVisitor.crossValidateModel();
+        public void accept(EvaluationMethodVisitor evaluationMethodVisitor) throws Exception {
+            evaluationMethodVisitor.crossValidateModel();
         }
     };
 
@@ -35,6 +35,7 @@ public enum EvaluationMethod {
 
     /**
      * Returns evaluation method description.
+     *
      * @return evaluation method description
      */
     public String getDescription() {
@@ -60,8 +61,6 @@ public enum EvaluationMethod {
      * Visitor pattern common method
      *
      * @param evaluationMethodVisitor visitor class
-     * @param <T>                     generic class
-     * @return generic class
      */
-    public abstract <T> T accept(EvaluationMethodVisitor<T> evaluationMethodVisitor);
+    public abstract void accept(EvaluationMethodVisitor evaluationMethodVisitor) throws Exception;
 }

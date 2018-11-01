@@ -7,7 +7,6 @@ package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
 import eca.core.evaluation.EvaluationMethod;
-import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.dictionary.CommonDictionary;
@@ -51,19 +50,17 @@ public class EvaluationMethodOptionsDialog extends JDialog {
     }
 
     public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
-        evaluationMethod.accept(new EvaluationMethodVisitor<Void>() {
-            @Override
-            public Void evaluateModel() {
+        switch (evaluationMethod) {
+            case TRAINING_DATA:
                 useTrainingSetRadioButton.setSelected(true);
-                return null;
-            }
-
-            @Override
-            public Void crossValidateModel() {
+                break;
+            case CROSS_VALIDATION:
                 useTestingSetRadioButton.setSelected(true);
-                return null;
-            }
-        });
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unexpected evaluation method [%s]!", evaluationMethod));
+        }
     }
 
     private void setParams() {

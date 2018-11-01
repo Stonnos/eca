@@ -7,14 +7,12 @@ package eca.report;
 
 import eca.config.VelocityConfigService;
 import eca.converters.model.ExperimentHistory;
-import eca.core.evaluation.EvaluationMethodVisitor;
 import eca.core.evaluation.EvaluationResults;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.StackingClassifier;
-import eca.gui.tables.StatisticsTableBuilder;
 import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.AttributeStatistics;
 import eca.statistics.contingency.ChiSquareTestResult;
@@ -87,6 +85,8 @@ public class ReportGenerator {
      */
     private static final String CLASSIFIER_KEY_FORMAT = "%s №%d";
     private static final String META_CLASSIFIER_FORMAT = "Мета - классификатор: %s";
+    private static final String TRAINING_DATA_METHOD_TEXT = "Использование обучающей выборки";
+    private static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
     private static final String KV_CROSS_VALIDATION = "k * V блочная кросс - проверка";
 
 
@@ -216,26 +216,27 @@ public class ReportGenerator {
         velocityContext.put(NUM_ATTRIBUTES, experimentHistory.getDataSet().numAttributes());
         velocityContext.put(NUM_CLASSES, experimentHistory.getDataSet().numClasses());
         velocityContext.put(CLASS_ATTRIBUTE, experimentHistory.getDataSet().classAttribute().name());
-        velocityContext.put(EVALUATION_METHOD,
-                experimentHistory.getEvaluationMethod().accept(new EvaluationMethodVisitor<String>() {
 
-                    @Override
-                    public String evaluateModel() {
-                        return StatisticsTableBuilder.TRAINING_DATA_METHOD_TEXT;
-                    }
+        switch (experimentHistory.getEvaluationMethod()) {
+            case TRAINING_DATA:
+                velocityContext.put(EVALUATION_METHOD, TRAINING_DATA_METHOD_TEXT);
+                break;
+            case CROSS_VALIDATION:
+                if (experimentHistory.getEvaluationParams() == null) {
+                    velocityContext.put(EVALUATION_METHOD, KV_CROSS_VALIDATION);
+                } else {
+                    String evaluationMethod = String.format(CROSS_VALIDATION_METHOD_FORMAT,
+                            (experimentHistory.getEvaluationParams().getNumTests() > 1 ?
+                                    experimentHistory.getEvaluationParams().getNumTests() + "*" : StringUtils.EMPTY),
+                            experimentHistory.getEvaluationParams().getNumFolds());
+                    velocityContext.put(EVALUATION_METHOD, evaluationMethod);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unexpected evaluation method [%s]!", experimentHistory.getEvaluationMethod()));
+        }
 
-                    @Override
-                    public String crossValidateModel() {
-                        if (experimentHistory.getEvaluationParams() == null) {
-                            return KV_CROSS_VALIDATION;
-                        } else {
-                            return String.format(StatisticsTableBuilder.CROSS_VALIDATION_METHOD_FORMAT,
-                                    (experimentHistory.getEvaluationParams().getNumTests() > 1 ?
-                                            experimentHistory.getEvaluationParams().getNumTests() + "*" :
-                                            StringUtils.EMPTY), experimentHistory.getEvaluationParams().getNumFolds());
-                        }
-                    }
-                }));
     }
 
     private static boolean canHandleExtendedOptions(Classifier classifier, boolean extended) {
