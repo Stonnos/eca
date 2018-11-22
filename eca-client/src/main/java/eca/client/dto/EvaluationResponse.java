@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eca.client.json.EvaluationResultsDeserializer;
 import eca.core.evaluation.EvaluationResults;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Evaluation response model.
@@ -11,6 +12,7 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class EvaluationResponse extends EcaResponse {
 
     /**
