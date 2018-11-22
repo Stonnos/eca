@@ -66,7 +66,12 @@ ECA v6.4
 
 1. Необходимо собрать проект с помощью команды:
     
-   mvn clean install
+   mvn clean install -Pprofile
+   
+   Где profile может принимать одно из значений:
+   
+   * dev - режим разработки
+   * prod - режим production
    
 2. Запустить приложение с помощью exe-файла ECA.exe, расположенного в папке /eca-gui/target.
    

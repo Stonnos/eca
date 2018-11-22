@@ -30,6 +30,25 @@
         <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <production>false</production>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>prod</id>
+            <properties>
+                <production>true</production>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
 
         <dependency>
