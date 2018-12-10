@@ -1,8 +1,14 @@
-package eca.report.evaluation;
+package eca.report.evaluation.html;
 
 import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
 import eca.report.ReportGenerator;
+import eca.report.evaluation.AbstractEvaluationReportService;
+import eca.report.evaluation.AttachmentImage;
+import eca.report.evaluation.html.model.AttachmentRecord;
+import eca.report.evaluation.html.model.ClassificationCostRecord;
+import eca.report.evaluation.html.model.ConfusionMatrixRecord;
+import eca.report.evaluation.html.model.ConfusionMatrixReport;
 import eca.util.Utils;
 import eca.util.VelocityUtils;
 import org.apache.velocity.Template;

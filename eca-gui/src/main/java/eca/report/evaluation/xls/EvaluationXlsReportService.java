@@ -1,4 +1,4 @@
-package eca.report.evaluation;
+package eca.report.evaluation.xls;
 
 import eca.core.evaluation.Evaluation;
 import eca.data.DataFileExtension;
@@ -6,6 +6,8 @@ import eca.data.FileUtils;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
+import eca.report.evaluation.AbstractEvaluationReportService;
+import eca.report.evaluation.AttachmentImage;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
