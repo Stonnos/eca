@@ -12,6 +12,9 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,22 @@ public class XmlInstancesConverter {
             instances.setClass(instances.attribute(xmlInstances.getClassName()));
         }
         return instances;
+    }
+
+    /**
+     * Converts instances to xml string
+     *
+     * @param data - instances
+     * @return instances xml string
+     * @throws Exception in case of error
+     */
+    public String toXmlString(Instances data) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        StringWriter stringWriter = new StringWriter();
+        marshaller.marshal(convert(data), stringWriter);
+        return stringWriter.toString();
     }
 
     private XmlInstance convertInstance(Instance instance) {
