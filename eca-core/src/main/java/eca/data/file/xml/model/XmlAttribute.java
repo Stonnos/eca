@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
+ * Xml attribute model.
+ *
  * @author Roman Batygin
  */
 @Data
@@ -23,16 +25,28 @@ import java.util.List;
 })
 public class XmlAttribute {
 
+    /**
+     * Attribute name
+     */
     @XmlElement
     private String name;
 
+    /**
+     * Attribute type
+     */
     @XmlElement
     @XmlSchemaType(name = "string")
     private AttributeType type;
 
+    /**
+     * Date format for date attribute
+     */
     @XmlElement
     private String dateFormat;
 
+    /**
+     * Nominal attribute values
+     */
     @XmlElement(name = "value")
     @XmlElementWrapper
     private List<String> values;

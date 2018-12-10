@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
+ * Xml instance model.
+ *
  * @author Roman Batygin
  */
 @Data
@@ -17,6 +19,9 @@ import java.util.List;
 @XmlType(name = "xmlInstance", propOrder = "values")
 public class XmlInstance {
 
+    /**
+     * Values list
+     */
     @XmlElement(name = "value")
     @XmlElementWrapper
     private List<String> values;

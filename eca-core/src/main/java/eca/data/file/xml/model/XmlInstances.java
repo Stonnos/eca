@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
+ * Xml instances model.
+ *
  * @author Roman Batygin
  */
 @Data
@@ -24,16 +26,28 @@ import java.util.List;
 @XmlRootElement(name = "xmlInstances")
 public class XmlInstances {
 
+    /**
+     * Relation name
+     */
     @XmlElement
     private String relationName;
 
+    /**
+     * Class attribute name
+     */
     @XmlElement
     private String className;
 
+    /**
+     * Attributes list
+     */
     @XmlElement(name = "attribute")
     @XmlElementWrapper
     private List<XmlAttribute> attributes;
 
+    /**
+     * Data list
+     */
     @XmlElement(name = "instance")
     @XmlElementWrapper
     private List<XmlInstance> instances;

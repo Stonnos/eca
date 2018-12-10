@@ -8,9 +8,12 @@ package eca.data.file.xml;
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
 import eca.data.file.resource.DataResource;
+import eca.data.file.xml.converter.XmlInstancesConverter;
+import eca.data.file.xml.model.XmlInstances;
 import weka.core.Instances;
-import weka.core.xml.XMLInstances;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
@@ -23,12 +26,15 @@ public class XmlLoader extends AbstractDataLoader<DataResource> {
 
     private static final String UTF_8 = "UTF-8";
 
+    private XmlInstancesConverter xmlInstancesConverter = new XmlInstancesConverter();
+
     @Override
     public Instances loadInstances() throws Exception {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(getSource().openInputStream(), UTF_8))) {
-            XMLInstances xmlInstances = new XMLInstances();
-            xmlInstances.setXML(reader);
-            return xmlInstances.getInstances();
+            JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            XmlInstances xmlInstances = (XmlInstances) unmarshaller.unmarshal(reader);
+            return xmlInstancesConverter.convert(xmlInstances);
         }
     }
 

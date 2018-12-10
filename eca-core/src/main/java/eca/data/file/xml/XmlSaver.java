@@ -5,7 +5,6 @@ import eca.data.DataFileExtension;
 import eca.data.file.xml.converter.XmlInstancesConverter;
 import eca.data.file.xml.model.XmlInstances;
 import weka.core.Instances;
-import weka.core.xml.XMLInstances;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -16,16 +15,13 @@ import java.io.File;
  */
 public class XmlSaver extends AbstractDataSaver {
 
+    private XmlInstancesConverter xmlInstancesConverter = new XmlInstancesConverter();
 
     @Override
     public void write(Instances data) throws Exception {
-       // XMLInstances xmlInstances = new XMLInstances();
-       // xmlInstances.setInstances(data);
-      //  xmlInstances.write(getFile());
         JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        XmlInstancesConverter xmlInstancesConverter = new XmlInstancesConverter();
         marshaller.marshal(xmlInstancesConverter.convert(data), getFile());
     }
 

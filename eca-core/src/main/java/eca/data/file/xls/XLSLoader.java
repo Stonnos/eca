@@ -59,7 +59,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                     if (cell == null) {
                         newInstance.setValue(j, Utils.missingValue());
                     } else {
-                        switch (cell.getCellTypeEnum()) {
+                        switch (cell.getCellType()) {
                             case NUMERIC:
                                 if (data.attribute(j).isDate()) {
                                     newInstance.setValue(j, cell.getDateCellValue().getTime());
@@ -122,8 +122,8 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
             int attributeType = Attribute.NUMERIC;
             for (int j = 1; j < sheet.getPhysicalNumberOfRows(); j++) {
                 Cell cell = sheet.getRow(j).getCell(i);
-                if (cell != null && !cell.getCellTypeEnum().equals(CellType.BLANK)) {
-                    CellType cellType = cell.getCellTypeEnum();
+                if (cell != null && !cell.getCellType().equals(CellType.BLANK)) {
+                    CellType cellType = cell.getCellType();
                     if (cellType.equals(CellType.STRING)) {
                         String stringValue = cell.getStringCellValue().trim();
                         if (!StringUtils.isEmpty(stringValue) && !values.contains(stringValue)) {
@@ -174,7 +174,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                 }
                 Cell cell = row.getCell(i);
                 if (cell != null) {
-                    CellType cellTypeEnum = cell.getCellTypeEnum();
+                    CellType cellTypeEnum = cell.getCellType();
                     if (!AVAILABLE_CELL_TYPES.contains(cellTypeEnum)) {
                         throw new IllegalArgumentException(FileDataDictionary.BAD_CELL_VALUES);
                     }
@@ -182,7 +182,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                         throw new IllegalArgumentException(String.format(
                                 FileDataDictionary.DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT, i));
                     } else {
-                        cellType = cell.getCellTypeEnum();
+                        cellType = cell.getCellType();
                     }
                 }
             }
