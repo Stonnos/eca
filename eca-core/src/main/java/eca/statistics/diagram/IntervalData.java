@@ -1,8 +1,6 @@
 package eca.statistics.diagram;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Interval model.
@@ -10,11 +8,32 @@ import lombok.NoArgsConstructor;
  * @author Roman Batygin
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class IntervalData {
 
+    /**
+     * Interval lower bound
+     */
     private double lowerBound;
 
+    /**
+     * Interval upper bound
+     */
     private double upperBound;
+
+    /**
+     * Default constructor
+     */
+    public IntervalData() {
+    }
+
+    /**
+     * Constructor with params.
+     *
+     * @param lowerBound - interval lower bound
+     * @param upperBound - interval upper bound
+     */
+    public IntervalData(double lowerBound, double upperBound) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
 }

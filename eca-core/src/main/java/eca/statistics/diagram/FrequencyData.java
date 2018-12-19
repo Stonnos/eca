@@ -1,9 +1,7 @@
 package eca.statistics.diagram;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Frequency interval model.
@@ -12,14 +10,31 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
 public class FrequencyData extends IntervalData {
 
+    /**
+     * Is numeric interval?
+     */
     private boolean numeric;
 
+    /**
+     * Frequency value
+     */
     private int frequency;
 
-    @Builder
+    /**
+     * Default constructor
+     */
+    public FrequencyData() {
+    }
+
+    /**
+     * Constructor with params.
+     *
+     * @param lowerBound - interval lower bound
+     * @param upperBound - interval upper bound
+     * @param numeric    - is numeric interval?
+     */
     public FrequencyData(double lowerBound, double upperBound, boolean numeric) {
         super(lowerBound, upperBound);
         this.numeric = numeric;
