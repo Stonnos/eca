@@ -105,6 +105,7 @@ public class ROCCurvePanel extends JPanel {
         plotBox.setSelectedIndex(plots.length - 1);
 
         optThresholdCheckBox = new JCheckBox(OPTIMAL_THRESHOLD_POINT);
+        optThresholdCheckBox.setEnabled(false);
         optThresholdCheckBox.addActionListener(evt -> {
             int i = plotBox.getSelectedIndex();
             if (i < plots.length - 1) {
@@ -127,9 +128,11 @@ public class ROCCurvePanel extends JPanel {
         plotBox.addActionListener(evt -> {
             int selectedIndex = plotBox.getSelectedIndex();
             JFreeChart chart = plots[selectedIndex];
-            if (selectedIndex < plots.length - 1) {
+            boolean singlePlot = selectedIndex < plots.length - 1;
+            if (singlePlot) {
                 displayPlot((XYPlot) chart.getPlot());
             }
+            optThresholdCheckBox.setEnabled(singlePlot);
             chartPanel.setChart(chart);
         });
 
