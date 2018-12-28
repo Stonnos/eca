@@ -76,6 +76,7 @@ public class ROCCurvePanel extends JPanel {
     private JFreeChart[] plots;
     private JFrame[] dataFrames;
     private JComboBox<String> plotBox;
+    private JCheckBox optThresholdCheckBox;
     private final JFrame parentFrame;
 
     /**
@@ -103,6 +104,14 @@ public class ROCCurvePanel extends JPanel {
         plotBox.addItem(ALL_CLASSES_TEXT);
         plotBox.setSelectedIndex(plots.length - 1);
 
+        optThresholdCheckBox = new JCheckBox(OPTIMAL_THRESHOLD_POINT);
+        optThresholdCheckBox.addActionListener(evt -> {
+            int i = plotBox.getSelectedIndex();
+            if (i < plots.length - 1) {
+                displayPlot((XYPlot) plots[i].getPlot());
+            }
+        });
+
         JMenuItem dataMenu = new JMenuItem(SHOW_DATA_MENU_TEXT);
         dataMenu.addActionListener(evt -> {
             int i = plotBox.getSelectedIndex();
@@ -115,35 +124,13 @@ public class ROCCurvePanel extends JPanel {
             }
         });
 
-        JCheckBoxMenuItem optThresholdMenu = new JCheckBoxMenuItem(OPTIMAL_THRESHOLD_POINT);
-        optThresholdMenu.addActionListener(evt -> {
-            int i = plotBox.getSelectedIndex();
-            if (i < plots.length - 1) {
-                XYPlot xyPlot = (XYPlot) plots[i].getPlot();
-                XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
-                renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, optThresholdMenu.getState());
-                renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, optThresholdMenu.getState());
-                if (optThresholdMenu.getState()) {
-                    renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, tooltipGenerator);
-                    renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, null);
-                } else {
-                    renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, null);
-                    renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
-                }
-                xyPlot.setRenderer(renderer);
-            }
-        });
-
         plotBox.addActionListener(evt -> {
-            JFreeChart chart = plots[plotBox.getSelectedIndex()];
-            XYPlot xyPlot = (XYPlot) chart.getPlot();
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
-            renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, false);
-            renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, false);
-            renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, null);
-            renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
+            int selectedIndex = plotBox.getSelectedIndex();
+            JFreeChart chart = plots[selectedIndex];
+            if (selectedIndex < plots.length - 1) {
+                displayPlot((XYPlot) chart.getPlot());
+            }
             chartPanel.setChart(chart);
-            optThresholdMenu.setState(false);
         });
 
         chartPanel.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
@@ -152,7 +139,6 @@ public class ROCCurvePanel extends JPanel {
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
                 boolean enabled = plotBox.getSelectedIndex() < plots.length - 1;
                 dataMenu.setEnabled(enabled);
-                optThresholdMenu.setEnabled(enabled);
             }
 
             @Override
@@ -166,7 +152,6 @@ public class ROCCurvePanel extends JPanel {
             }
         });
         chartPanel.getPopupMenu().add(dataMenu);
-        chartPanel.getPopupMenu().add(optThresholdMenu);
         parentFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -179,8 +164,28 @@ public class ROCCurvePanel extends JPanel {
         });
         this.add(chartPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        this.add(plotBox, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+        JPanel optionsPanel = new JPanel(new GridBagLayout());
+        optionsPanel.add(plotBox, new GridBagConstraints(0, 0, 1, 1, 0, 0,
+                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 0), 0, 0));
+        optionsPanel.add(optThresholdCheckBox, new GridBagConstraints(1, 0, 1, 1, 0, 0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 10, 5, 0), 0, 0));
+        this.add(optionsPanel, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 5, 0), 0, 0));
+    }
+
+    private void displayPlot(XYPlot xyPlot) {
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) xyPlot.getRenderer();
+        boolean state = optThresholdCheckBox.isSelected();
+        renderer.setSeriesShapesVisible(THRESHOLD_SERIES_INDEX, state);
+        renderer.setSeriesVisibleInLegend(THRESHOLD_SERIES_INDEX, state);
+        if (state) {
+            renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, tooltipGenerator);
+            renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, null);
+        } else {
+            renderer.setSeriesToolTipGenerator(THRESHOLD_SERIES_INDEX, null);
+            renderer.setSeriesToolTipGenerator(ROC_CURVE_SERIES_INDEX, tooltipGenerator);
+        }
+        xyPlot.setRenderer(renderer);
     }
 
     private void createFrames() {
