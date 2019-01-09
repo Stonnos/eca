@@ -1292,8 +1292,8 @@ public class JMainFrame extends JFrame {
                                         public Void caseSuccessStatus() {
                                             JOptionPane.showMessageDialog(JMainFrame.this,
                                                     String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT,
-                                                            experimentRequestDto.getExperimentType()), null,
-                                                    JOptionPane.INFORMATION_MESSAGE);
+                                                            experimentRequestDto.getExperimentType().getDescription()),
+                                                    null, JOptionPane.INFORMATION_MESSAGE);
                                             return null;
                                         }
 
