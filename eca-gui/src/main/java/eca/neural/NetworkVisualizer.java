@@ -54,9 +54,9 @@ public class NetworkVisualizer extends JPanel {
 
     private static final double MIN_SIZE = 20;
     private static final double MAX_SIZE = 80;
-    private static final double STEP_BETWEEN_LEVELS = 200.0;
-    private static final double STEP_BETWEEN_NODES = 40.0;
-    private static final double STEP_SIZE = 10.0;
+    private static final double STEP_BETWEEN_LEVELS = 200.0d;
+    private static final double STEP_BETWEEN_NODES = 40.0d;
+    private static final double STEP_SIZE = 5.0d;
     private static final String MODEL_TEXT_MENU = "Текстовое представление модели";
     private static final String SAVE_IMAGE_MENU_TEXT = "Сохранить изображение";
     private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
@@ -68,7 +68,7 @@ public class NetworkVisualizer extends JPanel {
     private static final int SCREEN_HEIGHT_MARGIN = 200;
     private static final String ARIAL = "Arial";
 
-    private double neuronDiam = 25.0;
+    private double neuronDiam = 25.0d;
 
     private Template nodeTemplate;
     private VelocityContext nodeContext;
@@ -108,6 +108,7 @@ public class NetworkVisualizer extends JPanel {
         this.createNodes();
         this.createPopupMenu();
         this.setLayout(null);
+        this.registerMouseWheelListener();
     }
 
     public Image getImage() {
@@ -120,6 +121,39 @@ public class NetworkVisualizer extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         drawNet((Graphics2D) g);
+    }
+
+    public void increaseImage() {
+        neuronDiam += STEP_SIZE;
+        if (neuronDiam > MAX_SIZE) {
+            neuronDiam = MAX_SIZE;
+        }
+        nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
+        resizeNetwork();
+    }
+
+    public void decreaseImage() {
+        neuronDiam -= STEP_SIZE;
+        if (neuronDiam < MIN_SIZE) {
+            neuronDiam = MIN_SIZE;
+        }
+        nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
+        resizeNetwork();
+    }
+
+    private void registerMouseWheelListener() {
+        this.addMouseWheelListener(event -> {
+            if (event.isControlDown()) {
+                if (event.getWheelRotation() < 0) {
+                    increaseImage();
+                } else {
+                    decreaseImage();
+                }
+            } else {
+                //Scroll panel otherwise
+                getParent().dispatchEvent(event);
+            }
+        });
     }
 
     private void drawNet(Graphics2D g2d) {
@@ -156,23 +190,9 @@ public class NetworkVisualizer extends JPanel {
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
         decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
 
-        increase.addActionListener(evt -> {
-            neuronDiam += STEP_SIZE;
-            if (neuronDiam > MAX_SIZE) {
-                neuronDiam = MAX_SIZE;
-            }
-            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
-            resizeNetwork();
-        });
+        increase.addActionListener(evt -> increaseImage());
         //-----------------------------------
-        decrease.addActionListener(evt -> {
-            neuronDiam -= STEP_SIZE;
-            if (neuronDiam < MIN_SIZE) {
-                neuronDiam = MIN_SIZE;
-            }
-            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
-            resizeNetwork();
-        });
+        decrease.addActionListener(evt -> decreaseImage());
         options.addActionListener(evt -> {
             NeuronOptions dialog = new NeuronOptions(frame);
             dialog.setVisible(true);

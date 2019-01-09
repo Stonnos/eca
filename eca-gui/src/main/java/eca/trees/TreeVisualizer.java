@@ -55,7 +55,7 @@ public class TreeVisualizer extends JPanel {
     private static final double MAX_SIZE = 100;
     private static final int MIN_STROKE = 1;
     private static final int MAX_STROKE = 6;
-    private static final double STEP_SIZE = 10.0;
+    private static final double STEP_SIZE = 5.0d;
     private static final String SAVE_IMAGE_MENU_TITLE = "Сохранить изображение";
     private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
     private static final String OPTIONS_MENU_TEXT = "Настройки";
@@ -68,8 +68,8 @@ public class TreeVisualizer extends JPanel {
     private static final int SCREEN_WIDTH_MARGIN = 100;
     private static final String ARIAL = "Arial";
 
-    private double nodeWidth = 25.0;
-    private double nodeHeight = 25.0;
+    private double nodeWidth = 25.0d;
+    private double nodeHeight = 25.0d;
 
     private DecisionTreeClassifier tree;
     private ArrayList<NodeDescriptor> treeNodes;
@@ -92,8 +92,8 @@ public class TreeVisualizer extends JPanel {
     private Font ruleFont = new Font(ARIAL, Font.BOLD, 11);
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
-    private double screenWidth = 100.0;
-    private double stepBetweenLevels = 100.0;
+    private double screenWidth = 100.0d;
+    private double stepBetweenLevels = 100.0d;
 
     private Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 
@@ -102,6 +102,33 @@ public class TreeVisualizer extends JPanel {
         this.setTree(tree);
         this.createPopupMenu();
         this.setLayout(null);
+        this.registerMouseWheelListener();
+    }
+
+    public void increaseImage() {
+        nodeWidth += STEP_SIZE;
+        nodeHeight += STEP_SIZE;
+        if (nodeWidth > MAX_SIZE) {
+            nodeWidth = MAX_SIZE;
+        }
+        if (nodeHeight > MAX_SIZE) {
+            nodeHeight = MAX_SIZE;
+        }
+        nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
+        resizeTree();
+    }
+
+    public void decreaseImage() {
+        nodeWidth -= STEP_SIZE;
+        nodeHeight -= STEP_SIZE;
+        if (nodeWidth < MIN_SIZE) {
+            nodeWidth = MIN_SIZE;
+        }
+        if (nodeHeight < MIN_SIZE) {
+            nodeHeight = MIN_SIZE;
+        }
+        nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
+        resizeTree();
     }
 
     public void setTree(DecisionTreeClassifier tree) {
@@ -135,6 +162,21 @@ public class TreeVisualizer extends JPanel {
         Image img = this.createImage(getMinimumSize().width, getMinimumSize().height);
         drawTree((Graphics2D) img.getGraphics());
         return img;
+    }
+
+    private void registerMouseWheelListener() {
+        this.addMouseWheelListener(event -> {
+            if (event.isControlDown()) {
+                if (event.getWheelRotation() < 0) {
+                    increaseImage();
+                } else {
+                    decreaseImage();
+                }
+            } else {
+                //Scroll panel otherwise
+                getParent().dispatchEvent(event);
+            }
+        });
     }
 
     private void createPopupMenu() {
@@ -172,31 +214,9 @@ public class TreeVisualizer extends JPanel {
             frame.dispose();
         });
         //-----------------------------------
-        increase.addActionListener(evt -> {
-            nodeWidth += STEP_SIZE;
-            nodeHeight += STEP_SIZE;
-            if (nodeWidth > MAX_SIZE) {
-                nodeWidth = MAX_SIZE;
-            }
-            if (nodeHeight > MAX_SIZE) {
-                nodeHeight = MAX_SIZE;
-            }
-            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
-            resizeTree();
-        });
+        increase.addActionListener(evt -> increaseImage());
         //-----------------------------------
-        decrease.addActionListener(evt -> {
-            nodeWidth -= STEP_SIZE;
-            nodeHeight -= STEP_SIZE;
-            if (nodeWidth < MIN_SIZE) {
-                nodeWidth = MIN_SIZE;
-            }
-            if (nodeHeight < MIN_SIZE) {
-                nodeHeight = MIN_SIZE;
-            }
-            nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
-            resizeTree();
-        });
+        decrease.addActionListener(evt -> decreaseImage());
         //-----------------------------------
         copyImage.addActionListener(new ActionListener() {
             ImageCopier copier = new ImageCopier();
