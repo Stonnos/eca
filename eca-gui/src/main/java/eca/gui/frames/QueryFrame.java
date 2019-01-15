@@ -11,6 +11,7 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.InstancesSetTable;
+import eca.sql.AnsiSqlKeywords;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
@@ -26,9 +27,11 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Frame for execution database queries.
@@ -52,11 +55,16 @@ public class QueryFrame extends JFrame {
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
     private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
-    private static final Dimension SQL_EDITOR_PREFERRED_SIZE = new Dimension(400, 150);
+    private static final Dimension SQL_EDITOR_PREFERRED_SIZE = new Dimension(400, 200);
     private static final String BLUE_STYLE_NAME = "blue";
     private static final String DEFAULT_STYLE_NAME = "default";
+    private static final String SPACE_REGEX = "\\s";
+    private static final char COMMA_SEPARATOR = ',';
+    private static final Color HIGHLIGHT_COLOR = Color.BLUE;
 
     private final JdbcQueryExecutor connection;
+
+    private Set<String> sql2003KeyWords;
 
     private JTextPane queryArea;
     private JProgressBar progress;
@@ -72,6 +80,7 @@ public class QueryFrame extends JFrame {
     public QueryFrame(JMainFrame parentFrame, JdbcQueryExecutor connection) {
         this.parentFrame = parentFrame;
         this.connection = connection;
+        this.initializeSql2003KeyWords();
         this.setLayout(new GridBagLayout());
         this.setIconImage(parentFrame.getIconImage());
         this.setResizable(false);
@@ -229,22 +238,37 @@ public class QueryFrame extends JFrame {
         DefaultStyledDocument styledDocument = (DefaultStyledDocument) queryArea.getStyledDocument();
         //Adding styles
         Style style = styledDocument.addStyle(BLUE_STYLE_NAME, null);
-        StyleConstants.setForeground(style, Color.BLUE);
+        StyleConstants.setForeground(style, HIGHLIGHT_COLOR);
         styledDocument.setDocumentFilter(new SqlHighlightFilter());
     }
 
-    private void highlight() {
+    private void initializeSql2003KeyWords() {
+        sql2003KeyWords = new HashSet<>();
+        try {
+            AnsiSqlKeywords ansiSqlKeywords = AnsiSqlKeywords.getAnsiSqlKeywords();
+            ansiSqlKeywords.getSql2003Keywords().forEach(
+                    sql2003KeyWord -> sql2003KeyWords.add(sql2003KeyWord.toLowerCase()));
+            DatabaseMetaData databaseMetaData = connection.getConnection().getMetaData();
+            String[] notAnsiSql2003Keywords = StringUtils.split(databaseMetaData.getSQLKeywords(), COMMA_SEPARATOR);
+            for (String notAnsiSql2003Keyword : notAnsiSql2003Keywords) {
+                sql2003KeyWords.add(notAnsiSql2003Keyword.toLowerCase());
+            }
+        } catch (Exception ex) {
+            log.error("There was an error in sql 2003 keywords initialization: {}", ex.getMessage());
+        }
+    }
+
+    private void highlightSqlWords() {
         SwingUtilities.invokeLater(() -> {
             try {
-                List<String> keywords = Arrays.asList("select", "from");
                 StyledDocument document = queryArea.getStyledDocument();
                 String content = document.getText(0, document.getLength()).toLowerCase();
                 int next = 0;
-                for (String word : content.split("\\s")) {
+                for (String word : content.split(SPACE_REGEX)) {
                     next = content.indexOf(word, next);
                     int end = next + word.length();
                     document.setCharacterAttributes(next, end,
-                            queryArea.getStyle(keywords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                            queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
                             true);
                     next = end;
                 }
@@ -310,7 +334,7 @@ public class QueryFrame extends JFrame {
                 fb.insertString(offset, string, attr);
             } else {
                 super.insertString(fb, offset, string, attr);
-                highlight();
+                highlightSqlWords();
             }
         }
 
@@ -320,7 +344,7 @@ public class QueryFrame extends JFrame {
                 fb.remove(offset, length);
             } else {
                 super.remove(fb, offset, length);
-                highlight();
+                highlightSqlWords();
             }
         }
 
@@ -331,7 +355,7 @@ public class QueryFrame extends JFrame {
                 fb.replace(offset, length, text, attrs);
             } else {
                 super.replace(fb, offset, length, text, attrs);
-                highlight();
+                highlightSqlWords();
             }
         }
     }

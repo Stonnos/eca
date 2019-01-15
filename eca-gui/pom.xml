@@ -172,6 +172,7 @@
                                         <exclude>db-config.json</exclude>
                                         <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
+                                        <exclude>sql2003-keywords.txt</exclude>
                                     </excludes>
                                 </resource>
                             </resources>

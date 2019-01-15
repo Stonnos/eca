@@ -73,6 +73,15 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     }
 
     /**
+     * Gets connection.
+     *
+     * @return connection object
+     */
+    public Connection getConnection() {
+        return connection;
+    }
+
+    /**
      * Returns <tt>ConnectionDescriptor</tt> object.
      *
      * @return <tt>ConnectionDescriptor</tt> object
