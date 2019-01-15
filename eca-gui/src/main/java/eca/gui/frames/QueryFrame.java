@@ -16,10 +16,18 @@ import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,12 +52,13 @@ public class QueryFrame extends JFrame {
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
     private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
-    private static final int QUERY_TEXT_ROWS = 10;
-    private static final int QUERY_TEXT_COLUMNS = 20;
+    private static final Dimension SQL_EDITOR_PREFERRED_SIZE = new Dimension(400, 150);
+    private static final String BLUE_STYLE_NAME = "blue";
+    private static final String DEFAULT_STYLE_NAME = "default";
 
     private final JdbcQueryExecutor connection;
 
-    private JTextArea queryArea;
+    private JTextPane queryArea;
     private JProgressBar progress;
     private JButton executeButton;
     private JButton interruptButton;
@@ -130,10 +139,7 @@ public class QueryFrame extends JFrame {
         //-----------------------------------------------------
         JPanel queryPanel = new JPanel(new GridBagLayout());
         queryPanel.setBorder(PanelBorderUtils.createTitledBorder(QUERY_TITLE));
-        queryArea = new JTextArea(QUERY_TEXT_ROWS, QUERY_TEXT_COLUMNS);
-        queryArea.setWrapStyleWord(true);
-        queryArea.setLineWrap(true);
-        queryArea.setFont(QUERY_AREA_FONT);
+        createSqlPaneEditor();
         JScrollPane scrollPanel = new JScrollPane(queryArea);
         executeButton = new JButton(START_BUTTON_TEXT);
         JButton clearButton = new JButton(CLEAR_BUTTON_TEXT);
@@ -216,6 +222,38 @@ public class QueryFrame extends JFrame {
         this.getRootPane().setDefaultButton(okButton);
     }
 
+    private void createSqlPaneEditor() {
+        queryArea = new JTextPane();
+        queryArea.setPreferredSize(SQL_EDITOR_PREFERRED_SIZE);
+        queryArea.setFont(QUERY_AREA_FONT);
+        DefaultStyledDocument styledDocument = (DefaultStyledDocument) queryArea.getStyledDocument();
+        //Adding styles
+        Style style = styledDocument.addStyle(BLUE_STYLE_NAME, null);
+        StyleConstants.setForeground(style, Color.BLUE);
+        styledDocument.setDocumentFilter(new SqlHighlightFilter());
+    }
+
+    private void highlight() {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                List<String> keywords = Arrays.asList("select", "from");
+                StyledDocument document = queryArea.getStyledDocument();
+                String content = document.getText(0, document.getLength()).toLowerCase();
+                int next = 0;
+                for (String word : content.split("\\s")) {
+                    next = content.indexOf(word, next);
+                    int end = next + word.length();
+                    document.setCharacterAttributes(next, end,
+                            queryArea.getStyle(keywords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                            true);
+                    next = end;
+                }
+            } catch (BadLocationException ex) {
+                log.error(ex.getMessage());
+            }
+        });
+    }
+
     /**
      * Database query worker.
      */
@@ -260,4 +298,41 @@ public class QueryFrame extends JFrame {
 
     } //End of class SwingWorkerConstruction
 
+    /**
+     * Implements SQL keywords highlight filter.
+     */
+    private class SqlHighlightFilter extends DocumentFilter {
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            if (StringUtils.isEmpty(string)) {
+                fb.insertString(offset, string, attr);
+            } else {
+                super.insertString(fb, offset, string, attr);
+                highlight();
+            }
+        }
+
+        @Override
+        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+            if (length == 0) {
+                fb.remove(offset, length);
+            } else {
+                super.remove(fb, offset, length);
+                highlight();
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                throws BadLocationException {
+            if (length == 0 && StringUtils.isEmpty(text)) {
+                fb.replace(offset, length, text, attrs);
+            } else {
+                super.replace(fb, offset, length, text, attrs);
+                highlight();
+            }
+        }
+    }
 }
