@@ -26,12 +26,14 @@ public class DocxSaver extends AbstractDataSaver {
             XWPFParagraph paragraph = document.createParagraph();
             XWPFRun run = paragraph.createRun();
             run.setText(createHeader(data));
-            run.addBreak();
-            for (int i = 0; i < data.numInstances() - 1; i++) {
-                run.setText(data.instance(i).toString());
+            if (!data.isEmpty()) {
                 run.addBreak();
+                for (int i = 0; i < data.numInstances() - 1; i++) {
+                    run.setText(data.instance(i).toString());
+                    run.addBreak();
+                }
+                run.setText(data.lastInstance().toString());
             }
-            run.setText(data.lastInstance().toString());
             document.write(out);
         }
     }
