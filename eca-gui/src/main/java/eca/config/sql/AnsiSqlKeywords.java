@@ -1,4 +1,4 @@
-package eca.sql;
+package eca.config.sql;
 
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 public class AnsiSqlKeywords {
 
-    private static final String FILE_NAME = "sql2003-keywords.txt";
+    private static final String SQL2003_KEYWORDS_TXT = "sql2003-keywords.txt";
 
     private static AnsiSqlKeywords ansiSqlKeywords;
 
@@ -47,11 +47,11 @@ public class AnsiSqlKeywords {
     }
 
     private List<String> loadSql2003Keywords() {
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_NAME)) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(SQL2003_KEYWORDS_TXT)) {
             List<String> words = IOUtils.readLines(inputStream, Charsets.UTF_8);
             return Collections.unmodifiableList(words);
         } catch (Exception ex) {
-            log.error("There was an error while loading data from file {}: {}", FILE_NAME, ex.getMessage());
+            log.error("There was an error while loading data from file {}: {}", SQL2003_KEYWORDS_TXT, ex.getMessage());
         }
         return Collections.emptyList();
     }

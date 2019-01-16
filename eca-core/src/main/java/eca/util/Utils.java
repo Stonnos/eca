@@ -17,12 +17,12 @@ import java.util.function.BiPredicate;
  *
  * @author Roman Batygin
  */
-
 public class Utils {
 
     private static final String MISSING_VALUE = "?";
     private static final String QUOTE = "'";
     private static final char POINT = '.';
+    private static final char COMMA_SEPARATOR = ',';
 
     /**
      * Check value in list by specified predicate.
@@ -179,5 +179,15 @@ public class Utils {
             names[i] = data.attribute(i).name();
         }
         return names;
+    }
+
+    /**
+     * Splits string into words separated by commas.
+     *
+     * @param str - string to split
+     * @return words array
+     */
+    public static String[] commaSeparatorSplit(String str) {
+        return StringUtils.split(str, COMMA_SEPARATOR);
     }
 }

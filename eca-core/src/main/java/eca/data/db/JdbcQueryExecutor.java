@@ -14,6 +14,7 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -27,6 +28,7 @@ import java.util.Objects;
 import static eca.data.db.SqlTypeUtils.isDate;
 import static eca.data.db.SqlTypeUtils.isNominal;
 import static eca.data.db.SqlTypeUtils.isNumeric;
+import static eca.util.Utils.commaSeparatorSplit;
 
 /**
  * Implements loading data from database.
@@ -73,12 +75,14 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     }
 
     /**
-     * Gets connection.
+     * Retrieves list of all of this database's SQL keywords that are NOT also SQL:2003 keywords.
      *
-     * @return connection object
+     * @return the list of this database's keywords that are not also SQL:2003 keywords
+     * @exception SQLException if a database access error occurs
      */
-    public Connection getConnection() {
-        return connection;
+    public String[] getSqlKeywords() throws SQLException {
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return commaSeparatorSplit(databaseMetaData.getSQLKeywords());
     }
 
     /**

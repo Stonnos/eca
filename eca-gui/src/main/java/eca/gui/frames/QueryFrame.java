@@ -5,13 +5,13 @@
  */
 package eca.gui.frames;
 
+import eca.config.sql.AnsiSqlKeywords;
 import eca.data.db.JdbcQueryExecutor;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.InstancesSetTable;
-import eca.sql.AnsiSqlKeywords;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
@@ -27,7 +27,6 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +58,6 @@ public class QueryFrame extends JFrame {
     private static final String BLUE_STYLE_NAME = "blue";
     private static final String DEFAULT_STYLE_NAME = "default";
     private static final String SPACE_REGEX = "\\s";
-    private static final char COMMA_SEPARATOR = ',';
     private static final Color HIGHLIGHT_COLOR = Color.BLUE;
 
     private final JdbcQueryExecutor connection;
@@ -248,9 +246,7 @@ public class QueryFrame extends JFrame {
             AnsiSqlKeywords ansiSqlKeywords = AnsiSqlKeywords.getAnsiSqlKeywords();
             ansiSqlKeywords.getSql2003Keywords().forEach(
                     sql2003KeyWord -> sql2003KeyWords.add(sql2003KeyWord.toLowerCase()));
-            DatabaseMetaData databaseMetaData = connection.getConnection().getMetaData();
-            String[] notAnsiSql2003Keywords = StringUtils.split(databaseMetaData.getSQLKeywords(), COMMA_SEPARATOR);
-            for (String notAnsiSql2003Keyword : notAnsiSql2003Keywords) {
+            for (String notAnsiSql2003Keyword : connection.getSqlKeywords()) {
                 sql2003KeyWords.add(notAnsiSql2003Keyword.toLowerCase());
             }
         } catch (Exception ex) {
