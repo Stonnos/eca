@@ -63,7 +63,6 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
         Class.forName(connectionDescriptor.getDriver());
         connection = DriverManager.getConnection(connectionDescriptor.getUrl(),
                 connectionDescriptor.getLogin(), connectionDescriptor.getPassword());
-        System.out.println(connection.getMetaData().getSQLKeywords());
     }
 
 
