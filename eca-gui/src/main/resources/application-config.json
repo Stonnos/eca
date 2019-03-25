@@ -4,7 +4,7 @@
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
     "version": "${project.version}",
-    "releaseDate": "29.01.2019",
+    "releaseDate": "29.03.2019",
     "author": "Roman Batygin",
     "authorEmail": "roman.batygin@mail.ru"
   },

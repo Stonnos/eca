@@ -5,12 +5,14 @@
  */
 package eca.ensemble;
 
+import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements ensemble classification results aggregating for
@@ -23,16 +25,16 @@ public class SubspacesAggregator extends Aggregator {
     /**
      * Instances list
      **/
-    private ArrayList<Instances> instances;
+    private ArrayList<Instances> instancesList;
 
     /**
      * Creates <tt>SubspacesAggregator</tt> object.
      *
-     * @param classifier <tt>IterativeEnsembleClassifier</tt> object
+     * @param classifiers - classifiers list
      */
-    public SubspacesAggregator(IterativeEnsembleClassifier classifier) {
-        super(classifier);
-        instances = new ArrayList<>(classifier.getNumIterations());
+    public SubspacesAggregator(List<Classifier> classifiers, Instances instances) {
+        super(classifiers, instances);
+        this.instancesList = new ArrayList<>();
     }
 
     /**
@@ -40,8 +42,8 @@ public class SubspacesAggregator extends Aggregator {
      *
      * @param ins <tt>Instances</tt> object
      */
-    public void setInstances(Instances ins) {
-        instances.add(ins);
+    public void addInstances(Instances ins) {
+        instancesList.add(ins);
     }
 
     /**
@@ -51,29 +53,29 @@ public class SubspacesAggregator extends Aggregator {
      * @return tt>Instances</tt> object at the specified position in this collection
      */
     public Instances getInstances(int i) {
-        return instances.get(i);
+        return instancesList.get(i);
     }
 
     @Override
     public double classifyInstance(int i, Instance obj) throws Exception {
         Instance o = getObject(obj, i);
-        return classifier().classifiers.get(i).classifyInstance(o);
+        return getClassifiers().get(i).classifyInstance(o);
     }
 
     @Override
     public double[] distributionForInstance(int i, Instance obj) throws Exception {
         Instance o = getObject(obj, i);
-        return classifier().classifiers.get(i).distributionForInstance(o);
+        return getClassifiers().get(i).distributionForInstance(o);
     }
 
     private Instance getObject(Instance obj, int i) {
-        Instances sample = instances.get(i);
-        Instance o = new DenseInstance(sample.numAttributes());
-        o.setDataset(sample);
+        Instances sample = instancesList.get(i);
+        Instance newInstance = new DenseInstance(sample.numAttributes());
+        newInstance.setDataset(sample);
         for (int j = 0; j < sample.numAttributes(); j++) {
             Attribute a = sample.attribute(j);
-            o.setValue(a, obj.value(classifier().getData().attribute(a.name())));
+            newInstance.setValue(a, obj.value(getInstances().attribute(a.name())));
         }
-        return o;
+        return newInstance;
     }
 }
