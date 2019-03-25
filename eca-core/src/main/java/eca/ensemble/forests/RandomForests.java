@@ -181,7 +181,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
         if (numRandomAttr > filteredData.numAttributes() - 1) {
             setNumRandomAttr(0);
         }
-        votes = new MajorityVoting(new Aggregator(this));
+        votes = new MajorityVoting(new Aggregator(classifiers, filteredData));
     }
 
     @Override

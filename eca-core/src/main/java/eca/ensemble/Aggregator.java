@@ -6,9 +6,12 @@
 package eca.ensemble;
 
 import eca.util.Utils;
+import weka.classifiers.Classifier;
 import weka.core.Instance;
+import weka.core.Instances;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implements ensemble classification results aggregating.
@@ -20,24 +23,39 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Iterative ensemble model
      **/
-    private IterativeEnsembleClassifier classifier;
+    private List<Classifier> classifiers;
 
     /**
-     * Creates <tt>Aggregator</tt> object.
-     *
-     * @param classifier <tt>IterativeEnsembleClassifier</tt> object
+     * Instances model
      */
-    public Aggregator(IterativeEnsembleClassifier classifier) {
-        this.classifier = classifier;
+    private Instances instances;
+
+    /**
+     * Creates aggregator object.
+     *
+     * @param classifiers - classifiers list
+     */
+    public Aggregator(List<Classifier> classifiers, Instances instances) {
+        this.classifiers = classifiers;
+        this.instances = instances;
     }
 
     /**
-     * Returns <tt>IterativeEnsembleClassifier</tt> object.
+     * Gets classifiers list.
      *
-     * @return <tt>IterativeEnsembleClassifier</tt> object
+     * @return classifiers list
      */
-    public IterativeEnsembleClassifier classifier() {
-        return classifier;
+    public List<Classifier> getClassifiers() {
+        return classifiers;
+    }
+
+    /**
+     * Gets instances (training data).
+     *
+     * @return instances object
+     */
+    public Instances getInstances() {
+        return instances;
     }
 
     /**
@@ -46,10 +64,10 @@ public class Aggregator implements java.io.Serializable {
      * @param i   index of the classifier
      * @param obj instance object
      * @return class value
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double classifyInstance(int i, Instance obj) throws Exception {
-        return classifier.classifiers.get(i).classifyInstance(obj);
+        return classifiers.get(i).classifyInstance(obj);
     }
 
     /**
@@ -58,10 +76,10 @@ public class Aggregator implements java.io.Serializable {
      * @param i   index of the classifier
      * @param obj instance object
      * @return the array of classes probabilities
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double[] distributionForInstance(int i, Instance obj) throws Exception {
-        return classifier.classifiers.get(i).distributionForInstance(obj);
+        return classifiers.get(i).distributionForInstance(obj);
     }
 
     /**
@@ -70,7 +88,7 @@ public class Aggregator implements java.io.Serializable {
      *
      * @param obj instance object
      * @return class value
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double aggregate(Instance obj) throws Exception {
         return aggregate(obj, null);
@@ -81,7 +99,7 @@ public class Aggregator implements java.io.Serializable {
      *
      * @param obj instance object
      * @return the array of classes probabilities
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double[] distributionForInstance(Instance obj) throws Exception {
         return distributionForInstance(obj, null);
@@ -90,18 +108,18 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Returns the array of classes probabilities.
      *
-     * @param obj     instance object
-     * @param weights classifiers weight
+     * @param obj     - instance object
+     * @param weights - classifiers weight
      * @return the array of classes probabilities
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double[] distributionForInstance(Instance obj, List<Double> weights) throws Exception {
         double[] sums;
-        if (classifier.classifiers.size() == 1) {
-            return classifier.classifiers.get(0).distributionForInstance(obj);
+        if (classifiers.size() == 1) {
+            return classifiers.get(0).distributionForInstance(obj);
         } else if (weights == null) {
-            sums = new double[classifier.filteredData.numClasses()];
-            for (int i = 0; i < classifier.classifiers.size(); i++) {
+            sums = new double[instances.numClasses()];
+            for (int i = 0; i < classifiers.size(); i++) {
                 double[] distr = distributionForInstance(i, obj);
                 for (int j = 0; j < distr.length; j++) {
                     sums[j] += distr[j];
@@ -117,14 +135,14 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Returns the voices array for given instance.
      *
-     * @param obj     instance object
-     * @param weights classifiers weight
+     * @param obj     -instance object
+     * @param weights -classifiers weight
      * @return the voices array for given instance
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double[] getVoices(Instance obj, List<Double> weights) throws Exception {
         double[] voices = new double[obj.numClasses()];
-        for (int i = 0; i < classifier.classifiers.size(); i++) {
+        for (int i = 0; i < classifiers.size(); i++) {
             int classIndex = (int) classifyInstance(i, obj);
             voices[classIndex] += weights == null ? 1.0 : weights.get(i);
         }
@@ -138,12 +156,10 @@ public class Aggregator implements java.io.Serializable {
      * @param obj     instance object
      * @param weights instance object
      * @return class value
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public double aggregate(Instance obj, List<Double> weights) throws Exception {
-        if (obj == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(obj, "Instance isn't specified!");
         double[] voices = getVoices(obj, weights);
         double classValue = 0.0, maxVoices = 0.0;
         for (int i = 0; i < voices.length; i++) {

@@ -95,7 +95,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     protected void initializeOptions() {
-        votes = new WeightedVoting(new Aggregator(this), getNumIterations());
+        votes = new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations());
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }

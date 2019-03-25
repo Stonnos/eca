@@ -94,7 +94,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     protected void initializeOptions() {
-        votes = new WeightedVoting(new Aggregator(this), getNumIterations());
+        votes = new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations());
     }
 
     @Override
