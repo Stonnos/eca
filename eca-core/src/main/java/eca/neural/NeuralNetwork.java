@@ -271,7 +271,6 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
                 throw new NoSuchElementException();
             }
             index = iterativeBuilder.next();
-            step = iterativeBuilder.step();
             return index;
         }
 

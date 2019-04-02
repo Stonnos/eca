@@ -22,15 +22,10 @@ public abstract class IterativeBuilder {
     protected int index;
 
     /**
-     * Step between iterations
-     **/
-    protected int step = 1;
-
-    /**
      * Performs the next iteration.
      *
      * @return the next iteration index
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public abstract int next() throws Exception;
 
@@ -53,7 +48,7 @@ public abstract class IterativeBuilder {
      * already build, null otherwise.
      *
      * @return <tt>Evaluation</tt> object
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public abstract Evaluation evaluation() throws Exception;
 
@@ -64,15 +59,6 @@ public abstract class IterativeBuilder {
      */
     public int index() {
         return index;
-    }
-
-    /**
-     * Returns the value of step between iterations.
-     *
-     * @return the value of step between iterations
-     */
-    public int step() {
-        return step;
     }
 
     /**

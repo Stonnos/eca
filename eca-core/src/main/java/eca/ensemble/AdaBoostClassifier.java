@@ -130,7 +130,6 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 throw new NoSuchElementException();
             }
             if (!nextIteration(index)) {
-                step = getNumIterations() - index;
                 index = getNumIterations() - 1;
             }
             if (index == getNumIterations() - 1) {

@@ -111,7 +111,7 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @param numInNeurons  the number of neurons in input layer
      * @param numOutNeurons the number of neurons in output layer
-     * @param function           the neurons activation function in hidden layer
+     * @param function      the neurons activation function in hidden layer
      */
     public MultilayerPerceptron(int numInNeurons, int numOutNeurons,
                                 ActivationFunction function) {
@@ -404,7 +404,6 @@ public class MultilayerPerceptron implements java.io.Serializable {
     public class IterativeBuilder {
 
         private int i;
-        private int step = 1;
         private final double[][] input;
         private final double[][] output;
 
@@ -431,19 +430,10 @@ public class MultilayerPerceptron implements java.io.Serializable {
         }
 
         /**
-         * Returns the value of step between iterations.
-         *
-         * @return the value of step between iterations
-         */
-        public int step() {
-            return step;
-        }
-
-        /**
          * Performs the next iteration and returns its number.
          *
          * @return the number of next iteration.
-         * @throws Exception
+         * @throws Exception in case of error
          */
         public int next() throws Exception {
             if (!isNext()) {
@@ -452,7 +442,6 @@ public class MultilayerPerceptron implements java.io.Serializable {
             int j = i % input.length;
             double[] y = computeOutputVector(input[j]);
             if (NeuralNetworkUtil.error(y, output[j]) < minError || i > numIterations) {
-                step = numIterations - i;
                 i = numIterations - 1;
             } else {
                 algorithm.train(y, output[j]);
@@ -530,7 +519,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
     private void checkValue(int value) {
         if (value < MINIMUM_NUMBER_OF_NEURONS_IN_LAYER) {
             throw new IllegalArgumentException(
-                    String.format(NeuralNetworkDictionary.BAD_NEURONS_NUM_ERROR_FORMAT, MINIMUM_NUMBER_OF_NEURONS_IN_LAYER));
+                    String.format(NeuralNetworkDictionary.BAD_NEURONS_NUM_ERROR_FORMAT,
+                            MINIMUM_NUMBER_OF_NEURONS_IN_LAYER));
         }
     }
 
