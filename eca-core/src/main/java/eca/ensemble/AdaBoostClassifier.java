@@ -14,6 +14,7 @@ import weka.core.Randomizable;
 import weka.core.Utils;
 
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * Implements AdaBoost algorithm. For more information see <p>
@@ -40,6 +41,11 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
      * Instances weights
      **/
     private double[] weights;
+
+    /**
+     * Random instance for resampling
+     */
+    private Random sampleRandom;
 
     /**
      * Creates <tt>AdaBoostClassifier</tt> object.
@@ -95,23 +101,24 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     @Override
     protected void initializeOptions() {
+        sampleRandom = new Random(getSeed());
         votes = new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations());
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
 
     @Override
-    protected Instances createSample(int iteration) throws Exception {
+    protected Instances createSample(int iteration) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
+    protected Classifier buildNextClassifier(int iteration, Instances data) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void addClassifier(Classifier classifier, Instances data) throws Exception {
+    protected void addClassifier(Classifier classifier, Instances data) {
         throw new UnsupportedOperationException();
     }
 
@@ -139,7 +146,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         }
 
         boolean nextIteration(int t) throws Exception {
-            Instances sample = filteredData.resampleWithWeights(random, weights);
+            Instances sample = filteredData.resampleWithWeights(sampleRandom, weights);
             Classifier model = null;
             double minError = Double.MAX_VALUE;
             for (int i = 0; i < getClassifiersSet().size(); i++) {
