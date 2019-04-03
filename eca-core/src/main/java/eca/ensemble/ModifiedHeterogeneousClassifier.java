@@ -86,7 +86,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
             classifiers.add(classifier);
             aggregator.addInstances(data);
             if (getUseWeightedVotes()) {
-                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
+                ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(error));
             }
         }
     }

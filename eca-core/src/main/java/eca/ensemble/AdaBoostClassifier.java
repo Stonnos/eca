@@ -163,7 +163,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
             }
             if (minError > getMinError() && minError < getMaxError()) {
                 classifiers.add(model);
-                ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(minError));
+                ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(minError));
                 updateWeights(t);
                 return true;
             } else {

@@ -37,7 +37,7 @@ public class WeightedVoting extends VotingMethod {
      *
      * @param weight the weight value
      */
-    public void setWeight(double weight) {
+    public void addWeight(double weight) {
         weights.add(weight);
     }
 

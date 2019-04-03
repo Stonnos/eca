@@ -126,7 +126,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
         double error = Evaluation.error(classifier, data);
         if (error > getMinError() && error < getMaxError()) {
             classifiers.add(classifier);
-            ((WeightedVoting) votes).setWeight(EnsembleUtils.getClassifierWeight(error));
+            ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(error));
         }
     }
 
