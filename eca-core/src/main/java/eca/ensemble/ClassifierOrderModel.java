@@ -1,6 +1,5 @@
 package eca.ensemble;
 
-import lombok.Builder;
 import lombok.Data;
 import weka.classifiers.Classifier;
 
@@ -10,7 +9,6 @@ import weka.classifiers.Classifier;
  * @author Roman Batygin
  */
 @Data
-@Builder
 public class ClassifierOrderModel {
 
     /**
