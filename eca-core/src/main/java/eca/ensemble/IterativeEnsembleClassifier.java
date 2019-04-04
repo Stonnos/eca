@@ -17,6 +17,7 @@ import weka.core.Instances;
 import weka.core.Randomizable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -67,7 +68,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     /**
      * Classifiers list
      **/
-    protected ArrayList<Classifier> classifiers;
+    protected ArrayList<ClassifierOrderModel> classifiers;
 
     /**
      * Voting object
@@ -174,15 +175,14 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     @Override
     public List<Classifier> getStructure() throws Exception {
         ArrayList<Classifier> copies = new ArrayList<>(classifiers.size());
-        for (Classifier classifier : classifiers) {
-            copies.add(AbstractClassifier.makeCopy(classifier));
+        for (ClassifierOrderModel classifierOrderModel : classifiers) {
+            copies.add(AbstractClassifier.makeCopy(classifierOrderModel.getClassifier()));
         }
         return copies;
     }
 
     /**
      * Initialized classifier options before building.
-     *
      */
     protected abstract void initializeOptions();
 
@@ -196,8 +196,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     /**
      * Builds the next classifier model.
      *
-     * @param iteration iteration number
-     * @param data      {@link Instances} object
+     * @param iteration - iteration number
+     * @param data      - {@link Instances} object
      * @return {@link Classifier} object
      */
     protected abstract Classifier buildNextClassifier(int iteration, Instances data) throws Exception;
@@ -205,10 +205,11 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     /**
      * Adds classifier to ensemble.
      *
-     * @param classifier {@link Classifier} object
-     * @param data       {@link Instances} object
+     * @param iteration  - iteration number
+     * @param classifier - {@link Classifier} object
+     * @param data       - {@link Instances} object
      */
-    protected abstract void addClassifier(Classifier classifier, Instances data) throws Exception;
+    protected abstract void addClassifier(int iteration, Classifier classifier, Instances data) throws Exception;
 
     protected void checkModelForEmpty() throws Exception {
         if (classifiers.isEmpty()) {
@@ -220,10 +221,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         initialData = data;
         filteredData = filter.filterInstances(initialData);
         classifiers = new ArrayList<>(numIterations);
-        random = new Random(seed);
     }
 
     private void initializeSeeds() {
+        random = new Random(seed);
         seeds = new int[getNumIterations()];
         NumberGenerator.fillRandom(seeds, random);
     }
@@ -231,8 +232,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     /**
      * Implements concurrent algorithm for ensemble building.
      *
-     * @param data {@link Instances} object
-     * @throws Exception
+     * @param data - {@link Instances} object
+     * @throws Exception in case of error
      */
     private void concurrentBuildClassifier(Instances data) throws Exception {
         initializeData(data);
@@ -246,7 +247,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
                 try {
                     Instances sample = createSample(iteration);
                     Classifier classifier = buildNextClassifier(iteration, sample);
-                    addClassifier(classifier, sample);
+                    addClassifier(iteration, classifier, sample);
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 } finally {
@@ -257,6 +258,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         finishedLatch.await();
         executorService.shutdownNow();
         checkModelForEmpty();
+        //Sorts classifiers in order of its iteration number
+        classifiers.sort(Comparator.comparing(ClassifierOrderModel::getOrder));
     }
 
     /**
@@ -292,7 +295,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             }
             Instances sample = createSample(index);
             Classifier classifier = buildNextClassifier(index, sample);
-            addClassifier(classifier, sample);
+            addClassifier(index, classifier, sample);
             if (index == getNumIterations() - 1) {
                 checkModelForEmpty();
             }

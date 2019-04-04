@@ -94,11 +94,11 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     protected void initializeOptions() {
-        votes = new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations());
+        votes = new WeightedVoting(new Aggregator(classifiers, filteredData));
     }
 
     @Override
-    protected Instances createSample(int iteration) throws Exception {
+    protected Instances createSample(int iteration) {
         return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random(getSeed() + iteration)) :
                 Sampler.initial(filteredData);
     }
@@ -122,11 +122,10 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
     }
 
     @Override
-    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
+    protected synchronized void addClassifier(int iteration, Classifier classifier, Instances data) throws Exception {
         double error = Evaluation.error(classifier, data);
         if (error > getMinError() && error < getMaxError()) {
-            classifiers.add(classifier);
-            ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(error));
+            classifiers.add(new ClassifierOrderModel(classifier, iteration, EnsembleUtils.getClassifierWeight(error)));
         }
     }
 

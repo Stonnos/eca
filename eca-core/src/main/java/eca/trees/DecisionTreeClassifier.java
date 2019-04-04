@@ -159,7 +159,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
     public final void setMinObj(int minObj) {
-        Assert.notNegative(minObj);
+        Assert.notNegative(minObj, "Negative value for min obj. per leaf!");
         this.minObj = minObj;
     }
 
@@ -188,7 +188,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
     public void setMaxDepth(int maxDepth) {
-        Assert.notNegative(maxDepth);
+        Assert.notNegative(maxDepth, "Negative value for max depth!");
         this.maxDepth = maxDepth;
     }
 
@@ -294,7 +294,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
     public final void setNumRandomAttr(int numRandomAttr) {
-        Assert.notNegative(numRandomAttr);
+        Assert.notNegative(numRandomAttr, "Negative value for num. random attributes!");
         this.numRandomAttr = numRandomAttr;
     }
 

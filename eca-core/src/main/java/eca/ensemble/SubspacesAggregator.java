@@ -5,13 +5,12 @@
  */
 package eca.ensemble;
 
-import weka.classifiers.Classifier;
+import eca.core.InstancesHandler;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,53 +22,28 @@ import java.util.List;
 public class SubspacesAggregator extends Aggregator {
 
     /**
-     * Instances list
-     **/
-    private ArrayList<Instances> instancesList;
-
-    /**
      * Creates <tt>SubspacesAggregator</tt> object.
      *
      * @param classifiers - classifiers list
      */
-    public SubspacesAggregator(List<Classifier> classifiers, Instances instances) {
+    public SubspacesAggregator(List<ClassifierOrderModel> classifiers, Instances instances) {
         super(classifiers, instances);
-        this.instancesList = new ArrayList<>();
-    }
-
-    /**
-     * Adds <tt>Instances</tt> object to collection.
-     *
-     * @param ins <tt>Instances</tt> object
-     */
-    public void addInstances(Instances ins) {
-        instancesList.add(ins);
-    }
-
-    /**
-     * Return <tt>Instances</tt> object at the specified position in this collection.
-     *
-     * @param i index of the element
-     * @return tt>Instances</tt> object at the specified position in this collection
-     */
-    public Instances getInstances(int i) {
-        return instancesList.get(i);
     }
 
     @Override
     public double classifyInstance(int i, Instance obj) throws Exception {
-        Instance o = getObject(obj, i);
-        return getClassifiers().get(i).classifyInstance(o);
+        Instance o = transformToSubspaceInstance(obj, i);
+        return getClassifiers().get(i).getClassifier().classifyInstance(o);
     }
 
     @Override
     public double[] distributionForInstance(int i, Instance obj) throws Exception {
-        Instance o = getObject(obj, i);
-        return getClassifiers().get(i).distributionForInstance(o);
+        Instance subspaceInstance = transformToSubspaceInstance(obj, i);
+        return getClassifiers().get(i).getClassifier().distributionForInstance(subspaceInstance);
     }
 
-    private Instance getObject(Instance obj, int i) {
-        Instances sample = instancesList.get(i);
+    private Instance transformToSubspaceInstance(Instance obj, int i) {
+        Instances sample = ((InstancesHandler) getClassifiers().get(i).getClassifier()).getData();
         Instance newInstance = new DenseInstance(sample.numAttributes());
         newInstance.setDataset(sample);
         for (int j = 0; j < sample.numAttributes(); j++) {

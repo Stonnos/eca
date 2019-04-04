@@ -152,13 +152,12 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         if (SamplingMethod.INITIAL.equals(getSamplingMethod())) {
             setNumIterations(getClassifiersSet().size());
         }
-        votes = getUseWeightedVotes() ?
-                new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations()) :
-                new MajorityVoting(new Aggregator(classifiers, filteredData));
+        Aggregator aggregator = new Aggregator(classifiers, filteredData);
+        votes = getUseWeightedVotes() ? new WeightedVoting(aggregator) : new MajorityVoting(aggregator);
     }
 
     @Override
-    protected Instances createSample(int iteration) throws Exception {
+    protected Instances createSample(int iteration) {
         return Sampler.instances(samplingMethod, filteredData, new Random(getSeed() + iteration));
     }
 
@@ -177,13 +176,14 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
     }
 
     @Override
-    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
+    protected synchronized void addClassifier(int iteration, Classifier classifier, Instances data) throws Exception {
         double error = Evaluation.error(classifier, data);
         if (error > getMinError() && error < getMaxError()) {
-            classifiers.add(classifier);
+            ClassifierOrderModel classifierOrderModel = new ClassifierOrderModel(classifier, iteration);
             if (getUseWeightedVotes()) {
-                ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(error));
+                classifierOrderModel.setWeight(EnsembleUtils.getClassifierWeight(error));
             }
+            classifiers.add(classifierOrderModel);
         }
     }
 

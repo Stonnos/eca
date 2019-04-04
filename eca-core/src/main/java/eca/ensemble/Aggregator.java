@@ -5,8 +5,8 @@
  */
 package eca.ensemble;
 
+import eca.core.Assert;
 import eca.util.Utils;
-import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -21,9 +21,14 @@ import java.util.Objects;
 public class Aggregator implements java.io.Serializable {
 
     /**
+     * Default weight
+     */
+    private static final double DEFAULT_WEIGHT = 1d;
+
+    /**
      * Iterative ensemble model
      **/
-    private List<Classifier> classifiers;
+    private List<ClassifierOrderModel> classifiers;
 
     /**
      * Instances model
@@ -35,7 +40,7 @@ public class Aggregator implements java.io.Serializable {
      *
      * @param classifiers - classifiers list
      */
-    public Aggregator(List<Classifier> classifiers, Instances instances) {
+    public Aggregator(List<ClassifierOrderModel> classifiers, Instances instances) {
         this.classifiers = classifiers;
         this.instances = instances;
     }
@@ -45,7 +50,7 @@ public class Aggregator implements java.io.Serializable {
      *
      * @return classifiers list
      */
-    public List<Classifier> getClassifiers() {
+    public List<ClassifierOrderModel> getClassifiers() {
         return classifiers;
     }
 
@@ -61,72 +66,49 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Classify instance by classifier at the specified position.
      *
-     * @param i   index of the classifier
-     * @param obj instance object
+     * @param i        - index of the classifier
+     * @param instance - instance object
      * @return class value
      * @throws Exception in case of error
      */
-    public double classifyInstance(int i, Instance obj) throws Exception {
-        return classifiers.get(i).classifyInstance(obj);
+    public double classifyInstance(int i, Instance instance) throws Exception {
+        return classifiers.get(i).getClassifier().classifyInstance(instance);
     }
 
     /**
      * Returns the array of classes probabilities.
      *
-     * @param i   index of the classifier
-     * @param obj instance object
+     * @param i        - index of the classifier
+     * @param instance - instance object
      * @return the array of classes probabilities
      * @throws Exception in case of error
      */
-    public double[] distributionForInstance(int i, Instance obj) throws Exception {
-        return classifiers.get(i).distributionForInstance(obj);
-    }
-
-    /**
-     * Aggregate classification results of individual models
-     * using majority votes method.
-     *
-     * @param obj instance object
-     * @return class value
-     * @throws Exception in case of error
-     */
-    public double aggregate(Instance obj) throws Exception {
-        return aggregate(obj, null);
+    public double[] distributionForInstance(int i, Instance instance) throws Exception {
+        return classifiers.get(i).getClassifier().distributionForInstance(instance);
     }
 
     /**
      * Returns the array of classes probabilities.
      *
-     * @param obj instance object
+     * @param instance   - instance object
+     * @param useWeights - is use classifiers weights
      * @return the array of classes probabilities
      * @throws Exception in case of error
      */
-    public double[] distributionForInstance(Instance obj) throws Exception {
-        return distributionForInstance(obj, null);
-    }
-
-    /**
-     * Returns the array of classes probabilities.
-     *
-     * @param obj     - instance object
-     * @param weights - classifiers weight
-     * @return the array of classes probabilities
-     * @throws Exception in case of error
-     */
-    public double[] distributionForInstance(Instance obj, List<Double> weights) throws Exception {
+    public double[] distributionForInstance(Instance instance, boolean useWeights) throws Exception {
         double[] sums;
         if (classifiers.size() == 1) {
-            return classifiers.get(0).distributionForInstance(obj);
-        } else if (weights == null) {
+            return classifiers.get(0).getClassifier().distributionForInstance(instance);
+        } else if (!useWeights) {
             sums = new double[instances.numClasses()];
             for (int i = 0; i < classifiers.size(); i++) {
-                double[] distr = distributionForInstance(i, obj);
-                for (int j = 0; j < distr.length; j++) {
-                    sums[j] += distr[j];
+                double[] distributionForInstance = distributionForInstance(i, instance);
+                for (int j = 0; j < distributionForInstance.length; j++) {
+                    sums[j] += distributionForInstance[j];
                 }
             }
         } else {
-            sums = getVoices(obj, weights);
+            sums = getVoices(instance, true);
         }
         Utils.normalize(sums);
         return sums;
@@ -135,16 +117,24 @@ public class Aggregator implements java.io.Serializable {
     /**
      * Returns the voices array for given instance.
      *
-     * @param obj     -instance object
-     * @param weights -classifiers weight
+     * @param instance   -instance object
+     * @param useWeights - is use classifiers weights
      * @return the voices array for given instance
      * @throws Exception in case of error
      */
-    public double[] getVoices(Instance obj, List<Double> weights) throws Exception {
-        double[] voices = new double[obj.numClasses()];
+    public double[] getVoices(Instance instance, boolean useWeights) throws Exception {
+        double[] voices = new double[instance.numClasses()];
         for (int i = 0; i < classifiers.size(); i++) {
-            int classIndex = (int) classifyInstance(i, obj);
-            voices[classIndex] += weights == null ? 1.0 : weights.get(i);
+            int classIndex = (int) classifyInstance(i, instance);
+            double weight;
+            if (useWeights) {
+                ClassifierOrderModel classifierOrderModel = classifiers.get(i);
+                checkClassifierWeight(classifierOrderModel, i);
+                weight = classifierOrderModel.getWeight();
+            } else {
+                weight = DEFAULT_WEIGHT;
+            }
+            voices[classIndex] += weight;
         }
         return voices;
     }
@@ -153,14 +143,26 @@ public class Aggregator implements java.io.Serializable {
      * Aggregate classification results of individual models
      * using weighted votes method.
      *
-     * @param obj     instance object
-     * @param weights instance object
+     * @param instance   - instance object
+     * @param useWeights - is use classifiers weights
      * @return class value
      * @throws Exception in case of error
      */
-    public double aggregate(Instance obj, List<Double> weights) throws Exception {
-        Objects.requireNonNull(obj, "Instance isn't specified!");
-        double[] voices = getVoices(obj, weights);
+    public double aggregate(Instance instance, boolean useWeights) throws Exception {
+        double[] voices = getVoices(instance, useWeights);
+        return classValue(voices);
+    }
+
+    private void checkClassifierWeight(ClassifierOrderModel classifierOrderModel, int classifierIndex) {
+        Objects.requireNonNull(classifierOrderModel.getWeight(),
+                String.format("Weight isn't specified for classifier [%s] at index [%d]!",
+                        classifierOrderModel.getClassifier().getClass().getSimpleName(), classifierIndex));
+        Assert.notNegative(classifierOrderModel.getWeight(),
+                String.format("Found negative weight value for classifier [%s] at index [%d]!",
+                        classifierOrderModel.getClassifier().getClass().getSimpleName(), classifierIndex));
+    }
+
+    private double classValue(double[] voices) {
         double classValue = 0.0, maxVoices = 0.0;
         for (int i = 0; i < voices.length; i++) {
             if (voices[i] > maxVoices) {
@@ -170,5 +172,4 @@ public class Aggregator implements java.io.Serializable {
         }
         return classValue;
     }
-
 }

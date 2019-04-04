@@ -26,12 +26,12 @@ public class MajorityVoting extends VotingMethod {
 
     @Override
     public double classifyInstance(Instance obj) throws Exception {
-        return aggregator().aggregate(obj);
+        return aggregator().aggregate(obj, false);
     }
 
     @Override
     public double[] distributionForInstance(Instance obj) throws Exception {
-        return aggregator().distributionForInstance(obj);
+        return aggregator().distributionForInstance(obj, false);
     }
 
 }

@@ -7,6 +7,7 @@ package eca.ensemble.forests;
 
 import eca.core.ListOptionsHandler;
 import eca.ensemble.Aggregator;
+import eca.ensemble.ClassifierOrderModel;
 import eca.ensemble.EnsembleDictionary;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.IterativeEnsembleClassifier;
@@ -85,7 +86,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of random attributes number is less than zero
      */
     public void setNumRandomAttr(int numRandomAttr) {
-        eca.core.Assert.notNegative(numRandomAttr);
+        eca.core.Assert.notNegative(numRandomAttr, "Negative value for num. random attributes!");
         this.numRandomAttr = numRandomAttr;
     }
 
@@ -105,7 +106,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of minimum objects per leaf is less than zero
      */
     public void setMinObj(int minObj) {
-        eca.core.Assert.notNegative(minObj);
+        eca.core.Assert.notNegative(minObj, "Negative value for min obj. per leaf!");
         this.minObj = minObj;
     }
 
@@ -116,7 +117,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
      * @throws IllegalArgumentException if the value of maximum tree depth is less than zero
      */
     public void setMaxDepth(int maxDepth) {
-        eca.core.Assert.notNegative(maxDepth);
+        eca.core.Assert.notNegative(maxDepth, "Negative value for max depth!");
         this.maxDepth = maxDepth;
     }
 
@@ -198,8 +199,8 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     }
 
     @Override
-    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
-        classifiers.add(classifier);
+    protected synchronized void addClassifier(int iteration, Classifier classifier, Instances data) {
+        classifiers.add(new ClassifierOrderModel(classifier, iteration));
     }
 
     protected DecisionTreeClassifier createDecisionTree(int iteration) {

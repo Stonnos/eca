@@ -13,9 +13,9 @@ public abstract class ThresholdClassifier extends IterativeEnsembleClassifier {
 
     public static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
-    public static final double MIN_ERROR_THRESHOLD = 0.0;
+    public static final double MIN_ERROR_THRESHOLD = 0.0d;
 
-    public static final double MAX_ERROR_THRESHOLD = 0.5;
+    public static final double MAX_ERROR_THRESHOLD = 0.5d;
 
     /**
      * Minimum error threshold

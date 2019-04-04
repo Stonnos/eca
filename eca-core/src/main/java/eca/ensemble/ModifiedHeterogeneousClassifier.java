@@ -5,7 +5,6 @@
  */
 package eca.ensemble;
 
-import eca.core.evaluation.Evaluation;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import eca.ensemble.voting.WeightedVoting;
@@ -37,8 +36,6 @@ import java.util.Random;
  */
 public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
-    private SubspacesAggregator aggregator;
-
     /**
      * Creates <tt>ModifiedHeterogeneousClassifier</tt> object.
      */
@@ -57,13 +54,12 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     protected void initializeOptions() {
-        aggregator = new SubspacesAggregator(classifiers, filteredData);
-        votes = getUseWeightedVotes() ? new WeightedVoting(aggregator, getNumIterations()) :
-                new MajorityVoting(aggregator);
+        SubspacesAggregator aggregator = new SubspacesAggregator(classifiers, filteredData);
+        votes = getUseWeightedVotes() ? new WeightedVoting(aggregator) : new MajorityVoting(aggregator);
     }
 
     @Override
-    protected Instances createSample(int iteration) throws Exception {
+    protected Instances createSample(int iteration) {
         Random random = new Random(getSeed() + iteration);
         return Sampler.instances(getSamplingMethod(), filteredData,
                 random.nextInt(filteredData.numAttributes() - 1) + 1, random);
@@ -76,18 +72,6 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
                     seeds[iteration]);
         } else {
             return ClassifierBuilder.builtOptimalClassifier(getClassifiersSet(), data, seeds[iteration]);
-        }
-    }
-
-    @Override
-    protected synchronized void addClassifier(Classifier classifier, Instances data) throws Exception {
-        double error = Evaluation.error(classifier, data);
-        if (error > getMinError() && error < getMaxError()) {
-            classifiers.add(classifier);
-            aggregator.addInstances(data);
-            if (getUseWeightedVotes()) {
-                ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(error));
-            }
         }
     }
 

@@ -46,7 +46,7 @@ public class EnsembleUtils {
      * @return {@code true} if classifier implements parallel algorithm
      */
     public static boolean isConcurrentClassifier(Classifier classifier) {
-        if (classifier != null && classifier instanceof ConcurrentClassifier) {
+        if (classifier instanceof ConcurrentClassifier) {
             ConcurrentClassifier parallelClassifier = (ConcurrentClassifier) classifier;
             return parallelClassifier.getNumThreads() != null && parallelClassifier.getNumThreads() != 1;
         }

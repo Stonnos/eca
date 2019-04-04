@@ -102,7 +102,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     @Override
     protected void initializeOptions() {
         sampleRandom = new Random(getSeed());
-        votes = new WeightedVoting(new Aggregator(classifiers, filteredData), getNumIterations());
+        votes = new WeightedVoting(new Aggregator(classifiers, filteredData));
         weights = new double[filteredData.numInstances()];
         initializeWeights();
     }
@@ -118,7 +118,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
     }
 
     @Override
-    protected void addClassifier(Classifier classifier, Instances data) {
+    protected void addClassifier(int iteration, Classifier classifier, Instances data) {
         throw new UnsupportedOperationException();
     }
 
@@ -162,8 +162,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 }
             }
             if (minError > getMinError() && minError < getMaxError()) {
-                classifiers.add(model);
-                ((WeightedVoting) votes).addWeight(EnsembleUtils.getClassifierWeight(minError));
+                classifiers.add(new ClassifierOrderModel(model, t, EnsembleUtils.getClassifierWeight(minError)));
                 updateWeights(t);
                 return true;
             } else {
@@ -173,11 +172,11 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
         void updateWeights(int t) throws Exception {
             double sumWeights = 0.0;
-            WeightedVoting v = (WeightedVoting) votes;
             for (int i = 0; i < weights.length; i++) {
                 Instance obj = filteredData.instance(i);
-                int sign = obj.classValue() == classifiers.get(t).classifyInstance(obj) ? 1 : -1;
-                weights[i] = weights[i] * Math.exp(-v.getWeight(t) * sign);
+                ClassifierOrderModel classifierOrderModel = classifiers.get(t);
+                int sign = obj.classValue() == classifierOrderModel.getClassifier().classifyInstance(obj) ? 1 : -1;
+                weights[i] = weights[i] * Math.exp(-classifierOrderModel.getWeight() * sign);
                 sumWeights += weights[i];
             }
             Utils.normalize(weights, sumWeights);
