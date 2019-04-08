@@ -8,10 +8,7 @@ package eca.roc;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.evaluation.ThresholdCurve;
-import weka.core.Instance;
 import weka.core.Instances;
-
-import java.util.Optional;
 
 /**
  * Class for providing ROC - curve results.
@@ -68,11 +65,11 @@ public class RocCurve implements InstancesHandler {
     /**
      * Finds optimal threshold value for specified class.
      *
-     * @param classIndex - class index
+     * @param rocCurveData - calculated roc curve data for specified class
      * @return optimal threshold value
      */
-    public ThresholdModel findOptimalThreshold(int classIndex) {
-        return getROCCurve(classIndex).stream().max(((o1, o2) -> {
+    public ThresholdModel findOptimalThreshold(Instances rocCurveData) {
+        return rocCurveData.stream().max(((o1, o2) -> {
             double x = 1.0 - o1.value(SPECIFICITY_INDEX) + o1.value(SENSITIVITY_INDEX);
             double y = 1.0 - o2.value(SPECIFICITY_INDEX) + o2.value(SENSITIVITY_INDEX);
             return Double.compare(x, y);

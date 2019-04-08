@@ -199,12 +199,12 @@ public class ROCCurvePanel extends JPanel {
         plots = new JFreeChart[rocCurve.getData().numClasses() + 1];
         XYSeriesCollection allPlots = new XYSeriesCollection();
         for (int i = 0; i < rocCurve.getData().numClasses(); i++) {
-            Instances rocSet = rocCurve.getROCCurve(i);
+            Instances rocCurveData = rocCurve.getROCCurve(i);
             XYSeriesCollection plot = new XYSeriesCollection();
             RocCurveSeries points = new RocCurveSeries(rocCurve.getData().classAttribute().value(i));
-            rocSet.forEach(obj -> points.add(obj.value(RocCurve.SPECIFICITY_INDEX) * 100,
+            rocCurveData.forEach(obj -> points.add(obj.value(RocCurve.SPECIFICITY_INDEX) * 100,
                     obj.value(RocCurve.SENSITIVITY_INDEX) * 100, obj.value(RocCurve.THRESHOLD_INDEX)));
-            calculateOptimalThreshold(plot, i);
+            calculateOptimalThreshold(plot, rocCurveData);
             plot.addSeries(points);
             allPlots.addSeries(points);
             createChart(plot, i);
@@ -234,8 +234,8 @@ public class ROCCurvePanel extends JPanel {
         xyPlot.setRenderer(renderer);
     }
 
-    private void calculateOptimalThreshold(XYSeriesCollection xySeriesCollection, int classIndex) {
-        ThresholdModel thresholdModel = rocCurve.findOptimalThreshold(classIndex);
+    private void calculateOptimalThreshold(XYSeriesCollection xySeriesCollection, Instances rocCurveData) {
+        ThresholdModel thresholdModel = rocCurve.findOptimalThreshold(rocCurveData);
         RocCurveSeries points = new RocCurveSeries(OPTIMAL_THRESHOLD);
         points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100, thresholdModel.getThresholdValue());
         xySeriesCollection.addSeries(points);
