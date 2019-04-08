@@ -370,9 +370,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @param input  input values
      * @param output output values
-     * @throws Exception
      */
-    public void train(double[][] input, double[][] output) throws Exception {
+    public void train(double[][] input, double[][] output) {
         checkInputVectors(input, output);
         int i = 0;
         algorithm.initializeWeights();
@@ -433,9 +432,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
          * Performs the next iteration and returns its number.
          *
          * @return the number of next iteration.
-         * @throws Exception in case of error
          */
-        public int next() throws Exception {
+        public int next() {
             if (!isNext()) {
                 throw new NoSuchElementException();
             }

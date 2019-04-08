@@ -188,6 +188,7 @@ public class StackingClassifier extends AbstractClassifier
         Random random = new Random(seed);
         if (getUseCrossValidation()) {
             Instances newData = new Instances(filteredData);
+            newData.randomize(random);
             newData.stratify(numFolds);
             ClassifiersSet copies = new ClassifiersSet(classifiers);
             for (int i = 0; i < numFolds; i++) {
