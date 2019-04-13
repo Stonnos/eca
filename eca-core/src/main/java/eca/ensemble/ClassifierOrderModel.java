@@ -3,13 +3,15 @@ package eca.ensemble;
 import lombok.Data;
 import weka.classifiers.Classifier;
 
+import java.io.Serializable;
+
 /**
  * Classifier order model.
  *
  * @author Roman Batygin
  */
 @Data
-public class ClassifierOrderModel {
+public class ClassifierOrderModel implements Serializable {
 
     /**
      * Classifier model
