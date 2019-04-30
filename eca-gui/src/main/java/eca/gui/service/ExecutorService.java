@@ -16,7 +16,7 @@ public class ExecutorService {
      * @param progress      <tt>ExecutorDialog</tt> object.
      * @param successAction callback function for success execution
      * @param failAction    callback function for failed execution
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static void process(ExecutorDialog progress,
                                CallbackAction successAction,

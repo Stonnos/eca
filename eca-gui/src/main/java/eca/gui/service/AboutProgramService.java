@@ -27,16 +27,16 @@ public class AboutProgramService {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String TEMPLATE_FILE_NAME = "vm-templates/aboutProgramTemplate.vm";
 
     private static String aboutProgramHtmlString;
 
+    private AboutProgramService() {
+    }
+
     static {
         try {
-            Template template = VELOCITY_CONFIGURATION.getTemplate(TEMPLATE_FILE_NAME);
+            Template template = VelocityConfigService.getTemplate(TEMPLATE_FILE_NAME);
             VelocityContext context = new VelocityContext();
             ProjectInfo projectInfo = CONFIG_SERVICE.getApplicationConfig().getProjectInfo();
             context.put(TITLE, projectInfo.getTitle());

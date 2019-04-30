@@ -43,11 +43,6 @@ public class TreeVisualizer extends JPanel {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
 
     private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/optionsTable.vm";
 
@@ -420,7 +415,7 @@ public class TreeVisualizer extends JPanel {
 
         String getNodeInfoAsHtml() {
             if (template == null) {
-                template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_DECISION_TREE_NODE_VM);
+                template = VelocityConfigService.getTemplate(VM_TEMPLATES_DECISION_TREE_NODE_VM);
             }
             if (context == null) {
                 context = new VelocityContext();

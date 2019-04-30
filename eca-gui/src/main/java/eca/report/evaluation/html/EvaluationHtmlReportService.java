@@ -32,12 +32,6 @@ import java.util.List;
  */
 public class EvaluationHtmlReportService extends AbstractEvaluationReportService {
 
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String VM_REPORT_TEMPLATE = "vm-templates/evaluationResultsReport.vm";
     private static final String NAN = "NaN";
     private static final String PNG = "PNG";
@@ -53,7 +47,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
     @Override
     public void saveReport() throws Exception {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(VM_REPORT_TEMPLATE);
+        Template template = VelocityConfigService.getTemplate(VM_REPORT_TEMPLATE);
         VelocityContext context = new VelocityContext();
         context.put(STATISTICS_PARAM, getEvaluationReport().getStatisticsMap());
         context.put(INPUT_OPTIONS_PARAM, ReportGenerator.getClassifierInputOptionsAsHtml

@@ -27,12 +27,6 @@ import java.io.StringWriter;
 @Slf4j
 public class ClassifyInstancePanel extends JPanel {
 
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String VM_TEMPLATES_CLASSIFY_OBJECT_VM = "vm-templates/classifyObject.vm";
 
     private static final String CLASSIFY_INFO = "Классифицировать новый пример";
@@ -127,7 +121,7 @@ public class ClassifyInstancePanel extends JPanel {
         int i = (int) classifier.classifyInstance(obj);
         double probability = classifier.distributionForInstance(obj)[i];
         if (template == null) {
-            template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_CLASSIFY_OBJECT_VM);
+            template = VelocityConfigService.getTemplate(VM_TEMPLATES_CLASSIFY_OBJECT_VM);
         }
         if (velocityContext == null) {
             velocityContext = new VelocityContext();

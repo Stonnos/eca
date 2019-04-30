@@ -23,12 +23,6 @@ import java.util.Objects;
  */
 public class ContingencyTableReportService implements ReportService {
 
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String VM_REPORT_TEMPLATE = "vm-templates/contingencyTableReport.vm";
     private static final String HTML_EXTENSION = ".html";
 
@@ -84,7 +78,7 @@ public class ContingencyTableReportService implements ReportService {
 
     @Override
     public void saveReport() throws IOException {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(VM_REPORT_TEMPLATE);
+        Template template = VelocityConfigService.getTemplate(VM_REPORT_TEMPLATE);
         VelocityContext context = new VelocityContext();
         fillContingencyTable(context);
         context.put(CHI_SQUARE_RESULT_PARAM, ReportGenerator.getChiSquareTestResultAsHtml(contingencyTableReportModel));

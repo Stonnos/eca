@@ -16,6 +16,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Class for loading xml files.
@@ -24,13 +25,13 @@ import java.io.InputStreamReader;
  */
 public class XmlLoader extends AbstractDataLoader<DataResource> {
 
-    private static final String UTF_8 = "UTF-8";
 
     private XmlInstancesConverter xmlInstancesConverter = new XmlInstancesConverter();
 
     @Override
     public Instances loadInstances() throws Exception {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getSource().openInputStream(), UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(getSource().openInputStream(), StandardCharsets.UTF_8))) {
             JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             XmlInstances xmlInstances = (XmlInstances) unmarshaller.unmarshal(reader);

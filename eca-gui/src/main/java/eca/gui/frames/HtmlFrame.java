@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Frame showing text information.
@@ -29,7 +30,6 @@ public class HtmlFrame extends JFrame {
     private static final String SAVE_MENU_TEXT = "Сохранить";
     private static final Dimension OPTIONS_PANE_PREFERRED_SIZE = new Dimension(475, 200);
     private static final String CONTENT_TYPE = "text/html";
-    private static final String UTF_8 = "UTF-8";
     private JTextPane inputOptionsPane = new JTextPane();
 
     public HtmlFrame(String title, String text, JFrame parent) {
@@ -74,7 +74,7 @@ public class HtmlFrame extends JFrame {
                     }
                     File file = fileChooser.getSelectedFile(HtmlFrame.this);
                     if (file != null) {
-                        FileUtils.write(file, inputOptionsPane.getText(), UTF_8);
+                        FileUtils.write(file, inputOptionsPane.getText(), StandardCharsets.UTF_8);
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);

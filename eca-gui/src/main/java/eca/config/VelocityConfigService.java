@@ -6,6 +6,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Velocity configuration.
  *
@@ -16,7 +18,6 @@ public class VelocityConfigService {
 
     private static final String CLASSPATH_PROPERTY = "classpath";
     private static final String CLASSPATH_RESOURCE_LOADER_PROPERTY = "classpath.resource.loader.class";
-    private static final String UTF_8 = "UTF-8";
 
     private static VelocityConfigService velocityConfiguration;
     private static VelocityEngine velocityEngine;
@@ -32,16 +33,7 @@ public class VelocityConfigService {
         }
     }
 
-    /**
-     * Returns {@link VelocityConfigService} instance.
-     *
-     * @return {@link VelocityConfigService} instance
-     */
-    public static VelocityConfigService getVelocityConfigService() {
-        if (velocityConfiguration == null) {
-            velocityConfiguration = new VelocityConfigService();
-        }
-        return velocityConfiguration;
+    private VelocityConfigService() {
     }
 
     /**
@@ -50,7 +42,7 @@ public class VelocityConfigService {
      * @param name velocity template name
      * @return {@link Template} object
      */
-    public Template getTemplate(String name) {
-        return velocityEngine.getTemplate(name, UTF_8);
+    public static Template getTemplate(String name) {
+        return velocityEngine.getTemplate(name, StandardCharsets.UTF_8.name());
     }
 }

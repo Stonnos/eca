@@ -38,12 +38,6 @@ import static eca.util.VelocityUtils.mergeContext;
 public class ReportGenerator {
 
     /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
-    /**
      * VM templates paths
      */
     private static final String ATTRIBUTE_STATISTICS_VM = "vm-templates/attributeStatistics.vm";
@@ -98,7 +92,7 @@ public class ReportGenerator {
      * @return attribute statistics html string
      */
     public static String getAttributeStatisticsAsHtml(Attribute attribute, AttributeStatistics attributeStatistics) {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(ATTRIBUTE_STATISTICS_VM);
+        Template template = VelocityConfigService.getTemplate(ATTRIBUTE_STATISTICS_VM);
         VelocityContext context = new VelocityContext();
         context.put(ATTR_NAME, attribute.name());
         context.put(ATTR_TYPE, attribute.isNumeric());
@@ -124,7 +118,7 @@ public class ReportGenerator {
      * @return classifier input options html string
      */
     public static String getClassifierInputOptionsAsHtml(Classifier classifier, boolean extended) {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(CLASSIFIER_INPUT_OPTIONS_VM);
+        Template template = VelocityConfigService.getTemplate(CLASSIFIER_INPUT_OPTIONS_VM);
         VelocityContext context = new VelocityContext();
         context.put(OPTIONS_MAP, Utils.getClassifierInputOptionsMap((AbstractClassifier) classifier));
         boolean canHandleExtendedOptions = canHandleExtendedOptions(classifier, extended);
@@ -150,7 +144,7 @@ public class ReportGenerator {
      * @return chi-square test results as html
      */
     public static String getChiSquareTestResultAsHtml(ContingencyTableReportModel contingencyTableReportModel) {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(CHI_SQUARE_TEST_VM);
+        Template template = VelocityConfigService.getTemplate(CHI_SQUARE_TEST_VM);
         VelocityContext context = new VelocityContext();
         DecimalFormat decimalFormat = contingencyTableReportModel.getDecimalFormat();
         ChiSquareTestResult chiSquareTestResult = contingencyTableReportModel.getChiSquareTestResult();
@@ -172,7 +166,7 @@ public class ReportGenerator {
      * @return experiment results as html string
      */
     public static String getExperimentResultsAsHtml(ExperimentHistory experimentHistory, int resultsSize) {
-        Template template = VELOCITY_CONFIGURATION.getTemplate(EXPERIMENT_RESULTS_VM);
+        Template template = VelocityConfigService.getTemplate(EXPERIMENT_RESULTS_VM);
         VelocityContext context = new VelocityContext();
         fillExperimentInputOptions(experimentHistory, context);
         fillExperimentBestClassifiers(experimentHistory, resultsSize, context);

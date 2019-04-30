@@ -6,6 +6,7 @@ import eca.data.file.resource.DataResource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +18,6 @@ import java.util.List;
  * @author Roman Batygin
  */
 public class DATALoader extends AbstractTextLoader {
-
-    private static final String UTF_8 = "UTF-8";
 
     @Override
     protected void validateSource(DataResource resource) {
@@ -35,7 +34,7 @@ public class DATALoader extends AbstractTextLoader {
         int columnSize = 0;
         int rowIdx = 1;
         try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getSource().openInputStream(), UTF_8))) {
+                new InputStreamReader(getSource().openInputStream(), StandardCharsets.UTF_8))) {
             while ((line = reader.readLine()) != null) {
                 List<String> row = parseLine(line, columnSize, rowIdx);
                 data.add(row);

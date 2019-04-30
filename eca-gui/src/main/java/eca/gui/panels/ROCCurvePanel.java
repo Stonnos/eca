@@ -46,12 +46,6 @@ import java.util.Map;
  */
 public class ROCCurvePanel extends JPanel {
 
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String VM_TEMPLATES_ROC_CURVE_VM = "vm-templates/optionsTable.vm";
 
     private static final String TITLE = "График ROC кривой";
@@ -279,7 +273,7 @@ public class ROCCurvePanel extends JPanel {
         @Override
         public String generateToolTip(XYDataset xyDataset, int series, int item) {
             if (template == null) {
-                template = VELOCITY_CONFIGURATION.getTemplate(VM_TEMPLATES_ROC_CURVE_VM);
+                template = VelocityConfigService.getTemplate(VM_TEMPLATES_ROC_CURVE_VM);
             }
             if (context == null) {
                 context = new VelocityContext();

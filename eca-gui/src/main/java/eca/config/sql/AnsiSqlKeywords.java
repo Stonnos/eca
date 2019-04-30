@@ -1,10 +1,10 @@
 package eca.config.sql;
 
-import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +21,9 @@ public class AnsiSqlKeywords {
     private static AnsiSqlKeywords ansiSqlKeywords;
 
     private List<String> sql2003Keywords;
+
+    private AnsiSqlKeywords() {
+    }
 
     /**
      * Creates singleton instance.
@@ -48,7 +51,7 @@ public class AnsiSqlKeywords {
 
     private List<String> loadSql2003Keywords() {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(SQL2003_KEYWORDS_TXT)) {
-            List<String> words = IOUtils.readLines(inputStream, Charsets.UTF_8);
+            List<String> words = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
             return Collections.unmodifiableList(words);
         } catch (Exception ex) {
             log.error("There was an error while loading data from file {}: {}", SQL2003_KEYWORDS_TXT, ex.getMessage());

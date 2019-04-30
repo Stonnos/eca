@@ -43,12 +43,6 @@ public class NetworkVisualizer extends JPanel {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
-    /**
-     * Velocity configuration
-     */
-    private static final VelocityConfigService VELOCITY_CONFIGURATION =
-            VelocityConfigService.getVelocityConfigService();
-
     private static final String NEURON_OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
     private static final String NETWORK_MODEL_VM = "vm-templates/neuralNetworkModel.vm";
 
@@ -323,7 +317,7 @@ public class NetworkVisualizer extends JPanel {
         }
 
         String getNeuralNetworkStructureAsHtml() {
-            Template modelTemplate = VELOCITY_CONFIGURATION.getTemplate(NETWORK_MODEL_VM);
+            Template modelTemplate = VelocityConfigService.getTemplate(NETWORK_MODEL_VM);
             VelocityContext modelContext = new VelocityContext();
             Map<String, Map<String, String>> inputOptionsMap = new LinkedHashMap<>();
             for (NeuronNode neuronNode : nodes) {
@@ -418,7 +412,7 @@ public class NetworkVisualizer extends JPanel {
 
         String getNeuronInfoAsHtml() {
             if (nodeTemplate == null) {
-                nodeTemplate = VELOCITY_CONFIGURATION.getTemplate(NEURON_OPTIONS_TABLE_VM);
+                nodeTemplate = VelocityConfigService.getTemplate(NEURON_OPTIONS_TABLE_VM);
             }
             if (nodeContext == null) {
                 nodeContext = new VelocityContext();

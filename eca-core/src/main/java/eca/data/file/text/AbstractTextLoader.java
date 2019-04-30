@@ -60,7 +60,7 @@ public abstract class AbstractTextLoader extends AbstractDataLoader<DataResource
      * Reads data from specified resource.
      *
      * @return data as list
-     * @throws IOException
+     * @throws IOException in case of error
      */
     protected abstract List<List<String>> readDataFromResource() throws IOException;
 
