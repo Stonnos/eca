@@ -34,9 +34,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -240,15 +240,15 @@ public class ROCCurvePanel extends JPanel {
      */
     private static class RocCurveSeries extends XYSeries {
 
-        LinkedList<Double> thresholdValues = new LinkedList<>();
+       java.util.List<Double> thresholdValues = new ArrayList<>();
 
         RocCurveSeries(Comparable key) {
-            super(key);
+            super(key, false);
         }
 
         void add(double x, double y, double threshold) {
             add(x, y);
-            thresholdValues.addFirst(threshold);
+            thresholdValues.add(threshold);
         }
 
         double getThreshold(int i) {
