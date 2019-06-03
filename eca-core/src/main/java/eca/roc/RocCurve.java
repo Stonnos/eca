@@ -69,6 +69,9 @@ public class RocCurve implements InstancesHandler {
      * @return optimal threshold value
      */
     public ThresholdModel findOptimalThreshold(Instances rocCurveData) {
+        if (rocCurveData == null || rocCurveData.isEmpty()) {
+            return null;
+        }
         return rocCurveData.stream().max(((o1, o2) -> {
             double x = 1.0 - o1.value(SPECIFICITY_INDEX) + o1.value(SENSITIVITY_INDEX);
             double y = 1.0 - o2.value(SPECIFICITY_INDEX) + o2.value(SENSITIVITY_INDEX);

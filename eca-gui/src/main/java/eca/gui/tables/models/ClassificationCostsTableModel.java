@@ -8,6 +8,7 @@ package eca.gui.tables.models;
 import eca.core.evaluation.Evaluation;
 import eca.text.NumericFormatFactory;
 import weka.core.Instances;
+import weka.core.Utils;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
@@ -28,7 +29,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
     public ClassificationCostsTableModel(Evaluation ev, int digits) {
         this.ev = ev;
         format.setMaximumFractionDigits(digits);
-        this.makeMatrix();
+        this.createMatrix();
     }
 
     public DecimalFormat getFormat() {
@@ -55,7 +56,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
         return TITLES[column];
     }
 
-    private void makeMatrix() {
+    private void createMatrix() {
         Instances data = ev.getData();
         values = new Object[data.numClasses()][TITLES.length - 1];
         for (int i = 0; i < data.numClasses(); i++) {
@@ -67,7 +68,7 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
             values[i][5] = format.format(ev.precision(i));
             values[i][6] = format.format(ev.fMeasure(i));
             double auc = ev.areaUnderROC(i);
-            values[i][7] = Double.isNaN(auc) ? NAN : format.format(auc);
+            values[i][7] = Utils.isMissingValue(auc) ? NAN : format.format(auc);
         }
     }
 
