@@ -601,7 +601,7 @@ public class JMainFrame extends JFrame {
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
         ecaServiceClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        ecaServiceClient.setEvaluationUrl(CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl());
+        ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
         if (EvaluationMethod.CROSS_VALIDATION.equals(ecaServiceClient.getEvaluationMethod())) {
             ecaServiceClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             ecaServiceClient.setNumTests(evaluationMethodOptionsDialog.numTests());
@@ -1271,7 +1271,7 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (isDataAndClassValid()) {
                     try {
-                        ecaServiceClient.setExperimentUrl(CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl());
+                        ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, () -> {
                             ExperimentRequestDialog experimentRequestDialog =
@@ -1330,8 +1330,7 @@ public class JMainFrame extends JFrame {
         optimalClassifierMenu.addActionListener(event -> {
             if (isDataAndClassValid()) {
                 try {
-                    ecaServiceClient.setOptimalClassifierUrl(
-                            CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl());
+                    ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
                     final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
                         @Override
                         public void apply() throws Exception {

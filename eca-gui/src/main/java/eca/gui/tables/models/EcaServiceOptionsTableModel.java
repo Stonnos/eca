@@ -64,11 +64,6 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     private void init() {
         options.add(new Entry<>(CommonDictionary.ECA_SERVICE_ENABLED,
                 CONFIG_SERVICE.getEcaServiceConfig().getEnabled().toString()));
-        options.add(
-                new Entry<>(CommonDictionary.ECA_SERVICE_URL, CONFIG_SERVICE.getEcaServiceConfig().getEvaluationUrl()));
-        options.add(new Entry<>(CommonDictionary.ECA_SERVICE_EXPERIMENT_URL,
-                CONFIG_SERVICE.getEcaServiceConfig().getExperimentUrl()));
-        options.add(new Entry<>(CommonDictionary.ECA_SERVICE_OPTIMAL_CLASSIFIER_URL,
-                CONFIG_SERVICE.getEcaServiceConfig().getOptimalClassifierUrl()));
+        options.add(new Entry<>(CommonDictionary.ECA_API_URL, CONFIG_SERVICE.getEcaServiceConfig().getApiUrl()));
     }
 }

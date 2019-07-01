@@ -1,6 +1,4 @@
 {
   "enabled": false,
-  "evaluationUrl": "http://localhost:8080/eca-server/evaluation/execute",
-  "experimentUrl": "http://localhost:8080/eca-server/experiment/create",
-  "optimalClassifierUrl": "http://localhost:8080/eca-server/evaluation/optimize"
+  "apiUrl": "http://localhost:8080/eca-server/eca-api"
 }

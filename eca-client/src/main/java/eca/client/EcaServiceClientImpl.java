@@ -32,20 +32,16 @@ public class EcaServiceClientImpl implements EcaServiceClient {
 
     private static final String TIMEOUT_MESSAGE = "There was a timeout.";
 
-    /**
-     * Eca - service evaluation url
-     */
-    private String evaluationUrl;
+    private static final String EVALUATION_URL_FORMAT = "%s/evaluation/execute";
+
+    private static final String OPTIMIZER_URL_FORMAT = "%s/evaluation/optimize";
+
+    private static final String EXPERIMENT_URL_FORMAT = "%s/experiment/create";
 
     /**
-     * Eca - service experiment url
+     * Eca - service api url
      */
-    private String experimentUrl;
-
-    /**
-     * Eca - service url for evaluation with optimal classifier options
-     */
-    private String optimalClassifierUrl;
+    private String apiUrl;
 
     /**
      * Evaluation test method
@@ -148,57 +144,19 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     }
 
     /**
-     * Returns eca - service classifier evaluation API URL.
-     *
-     * @return eca - service classifier evaluation API URL
+     * Sets eca - service API URL.
      */
-    public String getEvaluationUrl() {
-        return evaluationUrl;
+    public void setApiUrl(String apiUrl) {
+        this.apiUrl = apiUrl;
     }
 
     /**
-     * Sets eca - service classifier evaluation API URL.
+     * Returns eca - service API URL.
      *
-     * @param evaluationUrl - evaluation URL
+     * @return eca - service API URL
      */
-    public void setEvaluationUrl(String evaluationUrl) {
-        this.evaluationUrl = evaluationUrl;
-    }
-
-    /**
-     * Returns eca - service classifier experiment API URL.
-     *
-     * @return eca - service classifier experiment API URL
-     */
-    public String getExperimentUrl() {
-        return experimentUrl;
-    }
-
-    /**
-     * Sets eca - service classifier experiment API URL
-     *
-     * @param experimentUrl - experiment URL
-     */
-    public void setExperimentUrl(String experimentUrl) {
-        this.experimentUrl = experimentUrl;
-    }
-
-    /**
-     * Returns url for evaluation with optimal classifier options.
-     *
-     * @return url for evaluation with optimal classifier options
-     */
-    public String getOptimalClassifierUrl() {
-        return optimalClassifierUrl;
-    }
-
-    /**
-     * Sets url for evaluation with optimal classifier options.
-     *
-     * @param optimalClassifierUrl - url for evaluation with optimal classifier options
-     */
-    public void setOptimalClassifierUrl(String optimalClassifierUrl) {
-        this.optimalClassifierUrl = optimalClassifierUrl;
+    public String getApiUrl() {
+        return apiUrl;
     }
 
     @Override
@@ -208,6 +166,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         log.info("Starting to send request into eca - service for model '{}', data '{}'.",
                 classifier.getClass().getSimpleName(), data.relationName());
         EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, data);
+        String evaluationUrl = String.format(EVALUATION_URL_FORMAT, apiUrl);
         ResponseEntity<EvaluationResponse> response = restTemplate.postForEntity(evaluationUrl,
                 evaluationRequestDto, EvaluationResponse.class);
         validateResponse(response);
@@ -223,6 +182,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         Assert.notNull(experimentRequestDto, "Experiment request is not specified!");
         log.info("Starting to send request into eca - service for experiment '{}', data '{}'.",
                 experimentRequestDto.getExperimentType(), experimentRequestDto.getData().relationName());
+        String experimentUrl = String.format(EXPERIMENT_URL_FORMAT, apiUrl);
         ResponseEntity<EcaResponse> response =
                 restTemplate.postForEntity(experimentUrl, experimentRequestDto, EcaResponse.class);
         validateResponse(response);
@@ -236,6 +196,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     public EvaluationResults performRequest(Instances data) {
         Assert.notNull(data, "Instances must be specified!");
         log.info("Starting to send request into eca - service for data '{}'.", data.relationName());
+        String optimalClassifierUrl = String.format(OPTIMIZER_URL_FORMAT, apiUrl);
         ResponseEntity<EvaluationResponse> response =
                 restTemplate.postForEntity(optimalClassifierUrl, new InstancesRequest(data), EvaluationResponse.class);
         validateResponse(response);

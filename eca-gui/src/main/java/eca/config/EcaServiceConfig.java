@@ -14,16 +14,9 @@ public class EcaServiceConfig {
      * Eca - service enabled?
      */
     private Boolean enabled;
+
     /**
-     * Evaluation url
+     * Api url
      */
-    private String evaluationUrl;
-    /**
-     * Experiment url
-     */
-    private String experimentUrl;
-    /**
-     * Eca - service url for evaluation with optimal classifier options
-     */
-    private String optimalClassifierUrl;
+    private String apiUrl;
 }
