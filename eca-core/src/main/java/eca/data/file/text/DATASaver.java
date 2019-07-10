@@ -6,6 +6,7 @@ import weka.core.Instances;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class DATASaver extends AbstractDataSaver {
     @Override
     public void write(Instances data) throws IOException {
         List<String> rows = createRows(data);
-        org.apache.commons.io.FileUtils.writeLines(getFile(), rows);
+        org.apache.commons.io.FileUtils.writeLines(getFile(), StandardCharsets.UTF_8.name(), rows);
     }
 
     @Override
