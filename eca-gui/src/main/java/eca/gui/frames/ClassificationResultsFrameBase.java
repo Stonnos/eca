@@ -5,7 +5,6 @@
  */
 package eca.gui.frames;
 
-import eca.Reference;
 import eca.config.ApplicationConfig;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
@@ -18,11 +17,11 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
 import eca.gui.dictionary.ClassificationModelDictionary;
+import eca.gui.listeners.ReferenceListener;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
-import eca.report.ReportGenerator;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.EnsembleTable;
@@ -32,10 +31,11 @@ import eca.gui.tables.SignificantAttributesTable;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
+import eca.report.ReportGenerator;
 import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.AttachmentImage;
-import eca.report.evaluation.html.EvaluationHtmlReportService;
 import eca.report.evaluation.EvaluationReport;
+import eca.report.evaluation.html.EvaluationHtmlReportService;
 import eca.report.evaluation.xls.EvaluationXlsReportService;
 import eca.roc.AttributesSelection;
 import eca.roc.RocCurve;
@@ -217,27 +217,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 inputParamInfo.setVisible(true);
             }
         });
-        //--------------------------------------------
-        refMenu.addActionListener(new ActionListener() {
-
-            Reference ref;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (ref == null) {
-                        ref = new Reference();
-                    }
-                    ref.openReference();
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-
-            }
-        });
-        //-------------------------------------------------
+        refMenu.addActionListener(new ReferenceListener(ClassificationResultsFrameBase.this));
         dataMenu.addActionListener(new ActionListener() {
 
             InstancesFrame dataFrame;

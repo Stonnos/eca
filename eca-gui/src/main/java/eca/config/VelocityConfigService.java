@@ -19,7 +19,6 @@ public class VelocityConfigService {
     private static final String CLASSPATH_PROPERTY = "classpath";
     private static final String CLASSPATH_RESOURCE_LOADER_PROPERTY = "classpath.resource.loader.class";
 
-    private static VelocityConfigService velocityConfiguration;
     private static VelocityEngine velocityEngine;
 
     static {

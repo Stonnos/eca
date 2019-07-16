@@ -5,7 +5,6 @@
  */
 package eca.gui.frames;
 
-import eca.Reference;
 import eca.client.EcaServiceClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
@@ -83,6 +82,7 @@ import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.dictionary.CommonDictionary;
+import eca.gui.listeners.ReferenceListener;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
@@ -1379,24 +1379,7 @@ public class JMainFrame extends JFrame {
             }
         });
 
-        reference.addActionListener(new ActionListener() {
-
-            Reference ref;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (ref == null) {
-                        ref = new Reference();
-                    }
-                    ref.openReference();
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
+        reference.addActionListener(new ReferenceListener(JMainFrame.this));
         referenceMenu.add(aboutProgramMenu);
         referenceMenu.add(reference);
     }
