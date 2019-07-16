@@ -20,7 +20,7 @@ public class UrlLoader extends AbstractCallback<Instances> {
     }
 
     @Override
-    public void apply() throws Exception {
-        result = loader.loadInstances();
+    protected Instances performAndGetResult() throws Exception {
+        return loader.loadInstances();
     }
 }

@@ -25,7 +25,7 @@ public class ExperimentRequestSender extends AbstractCallback<EcaResponse> {
     }
 
     @Override
-    public void apply() throws Exception {
-        result = ecaServiceClient.createExperimentRequest(experimentRequestDto);
+    protected EcaResponse performAndGetResult() {
+        return ecaServiceClient.createExperimentRequest(experimentRequestDto);
     }
 }

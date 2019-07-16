@@ -20,8 +20,7 @@ public class InstancesLoader extends AbstractCallback<Instances> {
     }
 
     @Override
-    public void apply() throws Exception {
-        result = dataLoader.loadInstances();
+    protected Instances performAndGetResult() throws Exception {
+        return dataLoader.loadInstances();
     }
-
 }

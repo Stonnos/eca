@@ -30,7 +30,7 @@ public class EvaluationRequestSender extends AbstractCallback<EvaluationResults>
     }
 
     @Override
-    public void apply() throws Exception {
-        result = ecaServiceClient.performRequest(classifier, data);
+    protected EvaluationResults performAndGetResult() {
+        return ecaServiceClient.performRequest(classifier, data);
     }
 }

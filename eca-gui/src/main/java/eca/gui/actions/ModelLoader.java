@@ -22,7 +22,7 @@ public class ModelLoader extends AbstractCallback<ClassificationModel> {
     }
 
     @Override
-    public void apply() throws Exception {
-        result = (ClassificationModel) ModelConverter.loadModel(file);
+    protected ClassificationModel performAndGetResult() throws Exception {
+        return (ClassificationModel) ModelConverter.loadModel(file);
     }
 }

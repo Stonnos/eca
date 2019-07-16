@@ -21,9 +21,9 @@ public class ContingencyTableAction extends AbstractCallback<ChiSquareTestResult
     }
 
     @Override
-    public void apply() {
+    protected ChiSquareTestResult performAndGetResult() {
         contingencyMatrix = contingencyTable.computeContingencyMatrix(rowAttrIndex, colAttrIndex);
-        result = contingencyTable.calculateChiSquaredResult(rowAttrIndex, colAttrIndex, contingencyMatrix);
+        return contingencyTable.calculateChiSquaredResult(rowAttrIndex, colAttrIndex, contingencyMatrix);
     }
 
     public double[][] getContingencyMatrix() {

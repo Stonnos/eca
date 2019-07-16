@@ -507,11 +507,10 @@ public class JMainFrame extends JFrame {
     /**
      * Classifier model builder.
      */
-    private class ModelBuilder implements CallbackAction {
+    private class ModelBuilder extends AbstractCallback<Evaluation> {
 
         Classifier model;
         Instances data;
-        Evaluation evaluation;
 
         ModelBuilder(Classifier model, Instances data) {
             this.model = model;
@@ -519,25 +518,17 @@ public class JMainFrame extends JFrame {
         }
 
         @Override
-        public void apply() throws Exception {
-            evaluation =
-                    EvaluationService.evaluateModel(model, data, evaluationMethodOptionsDialog.getEvaluationMethod(),
-                            evaluationMethodOptionsDialog.numFolds(), evaluationMethodOptionsDialog.numTests(),
-                            new Random(seed));
+        protected Evaluation performAndGetResult() throws Exception {
+            return EvaluationService.evaluateModel(model, data, evaluationMethodOptionsDialog.getEvaluationMethod(),
+                    evaluationMethodOptionsDialog.numFolds(), evaluationMethodOptionsDialog.numTests(),
+                    new Random(seed));
         }
-
-        Evaluation evaluation() {
-            return evaluation;
-        }
-
     } //End of class ModelBuilder
 
     /**
      * Training data builder callback.
      */
-    private class DataBuilder implements CallbackAction {
-
-        Instances data;
+    private class DataBuilder extends AbstractCallback<Instances> {
 
         /**
          * Filter instances using {@link eca.filter.ConstantAttributesFilter}?
@@ -552,12 +543,8 @@ public class JMainFrame extends JFrame {
         }
 
         @Override
-        public void apply() throws Exception {
-            data = filter ? selectedPanel().getFilteredData() : selectedPanel().getSimpleData();
-        }
-
-        Instances getData() {
-            return data;
+        protected Instances performAndGetResult() throws Exception {
+            return filter ? selectedPanel().getFilteredData() : selectedPanel().getSimpleData();
         }
     }
 
@@ -645,9 +632,9 @@ public class JMainFrame extends JFrame {
                 builder, MODEL_BUILDING_MESSAGE);
 
         process(progress, () -> {
-            builder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
+            builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
             resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
-                    builder.evaluation(), maximumFractionDigits);
+                    builder.getResult(), maximumFractionDigits);
         });
     }
 
@@ -795,7 +782,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
                         J48OptionsDialog frame = new J48OptionsDialog(JMainFrame.this,
-                                ClassifiersNamesDictionary.J48, new J48(), dataBuilder.getData());
+                                ClassifiersNamesDictionary.J48, new J48(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
                 } catch (Exception e) {
@@ -821,7 +808,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
-                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), dataBuilder.getData());
+                                ClassifiersNamesDictionary.LOGISTIC, new Logistic(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
                 } catch (Exception e) {
@@ -840,12 +827,12 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getData());
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
                         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         neuralNetwork.setSeed(seed);
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
                                 ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork,
-                                dataBuilder.getData());
+                                dataBuilder.getResult());
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     });
                 } catch (Exception e) {
@@ -867,7 +854,7 @@ public class JMainFrame extends JFrame {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                         kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this,
-                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, dataBuilder.getData());
+                                ClassifiersNamesDictionary.KNN, kNearestNeighbours, dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
                 } catch (Exception e) {
@@ -912,11 +899,11 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        RandomForests randomForests = new RandomForests(dataBuilder.getData());
+                        RandomForests randomForests = new RandomForests(dataBuilder.getResult());
                         randomForests.setSeed(seed);
                         RandomForestsOptionDialog frame =
                                 new RandomForestsOptionDialog(JMainFrame.this,
-                                        EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests, dataBuilder.getData());
+                                        EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests, dataBuilder.getResult());
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
                 } catch (Exception e) {
@@ -934,10 +921,10 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier(dataBuilder.getData());
+                        ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier(dataBuilder.getResult());
                         extraTreesClassifier.setSeed(seed);
                         RandomForestsOptionDialog frame = new RandomForestsOptionDialog(JMainFrame.this,
-                                EnsemblesNamesDictionary.EXTRA_TREES, extraTreesClassifier, dataBuilder.getData());
+                                EnsemblesNamesDictionary.EXTRA_TREES, extraTreesClassifier, dataBuilder.getResult());
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
                 } catch (Exception e) {
@@ -958,7 +945,7 @@ public class JMainFrame extends JFrame {
                         StackingClassifier stackingClassifier = new StackingClassifier();
                         stackingClassifier.setSeed(seed);
                         StackingOptionsDialog frame = new StackingOptionsDialog(JMainFrame.this,
-                                EnsemblesNamesDictionary.STACKING, stackingClassifier, dataBuilder.getData(),
+                                EnsemblesNamesDictionary.STACKING, stackingClassifier, dataBuilder.getResult(),
                                 maximumFractionDigits);
                         executeSimpleBuilding(frame);
                     });
@@ -983,7 +970,7 @@ public class JMainFrame extends JFrame {
                         RandomNetworkOptionsDialog networkOptionsDialog =
                                 new RandomNetworkOptionsDialog(JMainFrame.this,
                                         EnsemblesNamesDictionary.RANDOM_NETWORKS, randomNetworks,
-                                        dataBuilder.getData());
+                                        dataBuilder.getResult());
                         executeIterativeBuilding(networkOptionsDialog,
                                 ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
@@ -1013,10 +1000,10 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getData());
+                        NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
                         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedNeuralNetwork automatedNeuralNetwork =
-                                new AutomatedNeuralNetwork(dataBuilder.getData(), neuralNetwork);
+                                new AutomatedNeuralNetwork(dataBuilder.getResult(), neuralNetwork);
                         automatedNeuralNetwork.setSeed(seed);
                         ExperimentFrame experimentFrame =
                                 new AutomatedNeuralNetworkFrame(automatedNeuralNetwork, JMainFrame.this,
@@ -1038,7 +1025,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new ModifiedHeterogeneousClassifier(),
-                                    modifiedHeteroEnsMenu.getText(), dataBuilder.getData()));
+                                    modifiedHeteroEnsMenu.getText(), dataBuilder.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1053,7 +1040,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(),
-                                    dataBuilder.getData()));
+                                    dataBuilder.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1068,7 +1055,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
-                                    dataBuilder.getData()));
+                                    dataBuilder.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1083,7 +1070,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder,
                             () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
-                                    dataBuilder.getData()));
+                                    dataBuilder.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1100,7 +1087,7 @@ public class JMainFrame extends JFrame {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                         kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedKNearestNeighbours automatedKNearestNeighbours =
-                                new AutomatedKNearestNeighbours(dataBuilder.getData(), kNearestNeighbours);
+                                new AutomatedKNearestNeighbours(dataBuilder.getResult(), kNearestNeighbours);
                         automatedKNearestNeighbours.setSeed(seed);
                         AutomatedKNearestNeighboursFrame automatedKNearestNeighboursFrame =
                                 new AutomatedKNearestNeighboursFrame(automatedKNearestNeighbours,
@@ -1121,7 +1108,7 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
                         AutomatedRandomForests automatedRandomForests =
-                                new AutomatedRandomForests(dataBuilder.getData());
+                                new AutomatedRandomForests(dataBuilder.getResult());
                         automatedRandomForests.setSeed(seed);
                         AutomatedRandomForestsFrame automatedRandomForestsFrame =
                                 new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
@@ -1141,7 +1128,7 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getData());
+                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getResult());
                         automatedDecisionTree.setSeed(seed);
                         AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
                                 (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
@@ -1174,7 +1161,7 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getData(),
+                        AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getResult(),
                                 JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
                     });
@@ -1194,7 +1181,7 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getData(),
+                        ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getResult(),
                                 JMainFrame.this);
                         scatterDiagramsFrame.setVisible(true);
                     });
@@ -1214,12 +1201,12 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
                         ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
-                                ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getData());
+                                ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getResult());
                         contingencyTableOptionsDialog.setVisible(true);
                         if (contingencyTableOptionsDialog.isDialogResult()) {
                             int rowAttrIndex = contingencyTableOptionsDialog.gerRowAttributeIndex();
                             int colAttrIndex = contingencyTableOptionsDialog.gerColAttributeIndex();
-                            ContingencyTable contingencyTable = new ContingencyTable(dataBuilder.getData());
+                            ContingencyTable contingencyTable = new ContingencyTable(dataBuilder.getResult());
                             contingencyTable.setAlpha(contingencyTableOptionsDialog.getAlpha());
                             contingencyTable.setUseYates(contingencyTableOptionsDialog.isUseYates());
                             ContingencyTableAction contingencyTableAction =
@@ -1228,8 +1215,8 @@ public class JMainFrame extends JFrame {
                                     CONTINGENCY_TABLE_LOADING_MESSAGE);
 
                             process(progress, () -> {
-                                Attribute rowAttribute = dataBuilder.getData().attribute(rowAttrIndex);
-                                Attribute colAttribute = dataBuilder.getData().attribute(colAttrIndex);
+                                Attribute rowAttribute = dataBuilder.getResult().attribute(rowAttrIndex);
+                                Attribute colAttribute = dataBuilder.getResult().attribute(colAttrIndex);
                                 DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
                                 decimalFormat.setMaximumFractionDigits(maximumFractionDigits);
                                 ContingencyTableReportModel reportModel = new ContingencyTableReportModel();
@@ -1279,7 +1266,7 @@ public class JMainFrame extends JFrame {
                             experimentRequestDialog.showDialog(experimentRequestDto);
                             if (experimentRequestDialog.isDialogResult()) {
                                 experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
-                                experimentRequestDto.setData(dataBuilder.getData());
+                                experimentRequestDto.setData(dataBuilder.getResult());
                                 ExperimentRequestSender experimentRequestSender =
                                         new ExperimentRequestSender(ecaServiceClient, experimentRequestDto);
                                 LoadDialog progress = new LoadDialog(JMainFrame.this,
@@ -1332,9 +1319,10 @@ public class JMainFrame extends JFrame {
                 try {
                     ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
                     final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
+
                         @Override
-                        public void apply() throws Exception {
-                            this.result = ecaServiceClient.performRequest(selectedPanel().getFilteredData());
+                        protected EvaluationResults performAndGetResult() throws Exception {
+                            return ecaServiceClient.performRequest(selectedPanel().getFilteredData());
                         }
                     };
                     LoadDialog progress = new LoadDialog(JMainFrame.this, callback, MODEL_BUILDING_MESSAGE);
@@ -1505,11 +1493,11 @@ public class JMainFrame extends JFrame {
                             if (fileChooser == null) {
                                 fileChooser = new SaveDataFileChooser();
                             }
-                            fileChooser.setSelectedFile(new File(dataBuilder.getData().relationName()));
+                            fileChooser.setSelectedFile(new File(dataBuilder.getResult().relationName()));
                             File file = fileChooser.getSelectedFile(JMainFrame.this);
                             if (file != null) {
                                 dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                dataSaver.saveData(file, dataBuilder.getData());
+                                dataSaver.saveData(file, dataBuilder.getResult());
                             }
                         });
                     }
@@ -1562,14 +1550,14 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder(false);
                     createTrainingData(dataBuilder, () -> {
                         DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
-                        databaseSaverDialog.setTableName(dataBuilder.getData().relationName());
+                        databaseSaverDialog.setTableName(dataBuilder.getResult().relationName());
                         databaseSaverDialog.setVisible(true);
                         if (databaseSaverDialog.dialogResult()) {
                             DatabaseSaver databaseSaver =
                                     new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
                             databaseSaver.setTableName(databaseSaverDialog.getTableName());
                             LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getData()),
+                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getResult()),
                                     DB_SAVE_PROGRESS_MESSAGE_TEXT);
                             process(progress, () -> {
                                 JOptionPane.showMessageDialog(JMainFrame.this,
@@ -1765,7 +1753,7 @@ public class JMainFrame extends JFrame {
             createTrainingData(dataBuilder, () -> {
                 tree.setSeed(seed);
                 DecisionTreeOptionsDialog frame
-                        = new DecisionTreeOptionsDialog(JMainFrame.this, title, tree, dataBuilder.getData());
+                        = new DecisionTreeOptionsDialog(JMainFrame.this, title, tree, dataBuilder.getResult());
                 executeSimpleBuilding(frame);
             });
         } catch (Exception e) {
@@ -1784,7 +1772,7 @@ public class JMainFrame extends JFrame {
             createTrainingData(dataBuilder, () -> {
                 heterogeneousClassifier.setSeed(seed);
                 EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
-                        title, heterogeneousClassifier, dataBuilder.getData(), maximumFractionDigits);
+                        title, heterogeneousClassifier, dataBuilder.getResult(), maximumFractionDigits);
                 frame.setSampleEnabled(sample);
                 executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
             });
