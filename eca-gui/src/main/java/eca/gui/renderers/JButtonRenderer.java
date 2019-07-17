@@ -1,4 +1,6 @@
-package eca.gui;
+package eca.gui.renderers;
+
+import eca.gui.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

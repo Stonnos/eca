@@ -9,7 +9,7 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.filter.ConstantAttributesFilter;
 import eca.filter.FilterDictionary;
-import eca.gui.MissingCellRenderer;
+import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;

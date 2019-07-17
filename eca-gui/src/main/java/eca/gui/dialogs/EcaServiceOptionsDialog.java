@@ -23,7 +23,6 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
-    private static final String INVALID_PROPERTY_ERROR_FORMAT = "Недопустимое значение свойства '%s'";
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
 
     private final EcaServiceOptionsTableModel ecaServiceOptionsTableModel = new EcaServiceOptionsTableModel();
@@ -75,13 +74,6 @@ public class EcaServiceOptionsDialog extends JDialog {
             if (StringUtils.isEmpty(entry.getValue())) {
                 throw new IllegalArgumentException(
                         String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
-            }
-
-            if (entry.getKey().equals(CommonDictionary.ECA_SERVICE_ENABLED) &&
-                    !entry.getValue().equalsIgnoreCase(Boolean.FALSE.toString().toLowerCase()) &&
-                    !entry.getValue().equalsIgnoreCase(Boolean.TRUE.toString().toLowerCase())) {
-                throw new IllegalArgumentException(
-                        String.format(INVALID_PROPERTY_ERROR_FORMAT, entry.getKey()));
             }
             setOptions(entry);
         }

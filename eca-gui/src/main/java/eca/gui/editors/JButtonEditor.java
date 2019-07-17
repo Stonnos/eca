@@ -1,4 +1,6 @@
-package eca.gui;
+package eca.gui.editors;
+
+import eca.gui.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,12 +24,7 @@ public abstract class JButtonEditor extends DefaultCellEditor {
         button = new JButton(text);
         button.setOpaque(true);
         button.setCursor(HAND_CURSOR);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
-            }
-        });
+        button.addActionListener(e -> fireEditingStopped());
     }
 
     @Override
