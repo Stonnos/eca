@@ -1,4 +1,9 @@
 {
   "enabled": false,
-  "apiUrl": "http://localhost:8080/eca-server/eca-api"
+  "apiUrl": "http://localhost:8080/eca-server/eca-api",
+  "tokenUrl": "http://localhost:8080/auth-server",
+  "clientId": "eca",
+  "clientSecret": "eca_secret",
+  "userName": "eca",
+  "password": "eca"
 }

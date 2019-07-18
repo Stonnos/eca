@@ -1,19 +1,18 @@
-package eca.config;
+package eca.client;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Eca - service api config.
+ * Eca - service details model.
  *
  * @author Roman Batygin
  */
 @Data
-public class EcaServiceConfig {
-
-    /**
-     * Eca - service enabled?
-     */
-    private Boolean enabled;
+@NoArgsConstructor
+@AllArgsConstructor
+public class EcaServiceDetails {
 
     /**
      * Api url

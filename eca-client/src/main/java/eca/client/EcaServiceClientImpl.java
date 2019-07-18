@@ -11,10 +11,14 @@ import eca.client.exception.EcaServiceException;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.util.Utils;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
@@ -31,132 +35,66 @@ import static eca.client.util.Utils.validateResponse;
 public class EcaServiceClientImpl implements EcaServiceClient {
 
     private static final String TIMEOUT_MESSAGE = "There was a timeout.";
-
     private static final String EVALUATION_URL_FORMAT = "%s/evaluation/execute";
-
     private static final String OPTIMIZER_URL_FORMAT = "%s/evaluation/optimize";
-
     private static final String EXPERIMENT_URL_FORMAT = "%s/experiment/create";
+    private static final String TOKEN_URL_FORMAT = "%s/oauth/token";
 
     /**
-     * Eca - service api url
+     * Eca - service details
      */
-    private String apiUrl;
+    @Getter
+    private EcaServiceDetails ecaServiceDetails = new EcaServiceDetails();
 
     /**
      * Evaluation test method
      **/
+    @Getter
+    @Setter
     private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
 
     /**
      * Number of folds
      **/
+    @Getter
+    @Setter
     private Integer numFolds;
 
     /**
      * Number of tests
      **/
+    @Getter
+    @Setter
     private Integer numTests;
 
     /**
      * Seed value for random generator
      */
+    @Getter
+    @Setter
     private Integer seed;
 
     /**
      * Rest template object
      */
-    private final RestTemplate restTemplate = new RestTemplate();
+    private OAuth2RestTemplate restTemplate;
 
     /**
-     * Return the evaluation method type.
-     *
-     * @return the evaluation method type
+     * Default constructor.
      */
-    public EvaluationMethod getEvaluationMethod() {
-        return evaluationMethod;
+    public EcaServiceClientImpl() {
+        initializeOauth2RestTemplate();
     }
 
     /**
-     * Sets the evaluation method type
+     * Sets eca - service details.
      *
-     * @param evaluationMethod the evaluation method type
-     * @throws IllegalArgumentException if the specified method type
-     *                                  is invalid
+     * @param ecaServiceDetails - eca - service details
      */
-    public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
-        Assert.notNull(evaluationMethod, "Evaluation method is not specified!");
-        this.evaluationMethod = evaluationMethod;
-    }
-
-    /**
-     * Returns the number of folds.
-     *
-     * @return the number of folds
-     */
-    public Integer getNumFolds() {
-        return numFolds;
-    }
-
-    /**
-     * Sets the number of folds.
-     *
-     * @param numFolds the number of folds
-     */
-    public void setNumFolds(Integer numFolds) {
-        this.numFolds = numFolds;
-    }
-
-    /**
-     * Returns the number of validations.
-     *
-     * @return the number of validations
-     */
-    public Integer getNumTests() {
-        return numTests;
-    }
-
-    /**
-     * Sets the number of validations.
-     *
-     * @param numTests the number of validations
-     */
-    public void setNumTests(Integer numTests) {
-        this.numTests = numTests;
-    }
-
-    /**
-     * Returns seed value.
-     *
-     * @return seed value
-     */
-    public Integer getSeed() {
-        return seed;
-    }
-
-    /**
-     * Sets seed value.
-     *
-     * @param seed - seed value
-     */
-    public void setSeed(Integer seed) {
-        this.seed = seed;
-    }
-
-    /**
-     * Sets eca - service API URL.
-     */
-    public void setApiUrl(String apiUrl) {
-        this.apiUrl = apiUrl;
-    }
-
-    /**
-     * Returns eca - service API URL.
-     *
-     * @return eca - service API URL
-     */
-    public String getApiUrl() {
-        return apiUrl;
+    public void setEcaServiceDetails(EcaServiceDetails ecaServiceDetails) {
+        Assert.notNull(ecaServiceDetails, "Eca - service details must be specified!");
+        this.ecaServiceDetails = ecaServiceDetails;
+        initializeOauth2RestTemplate();
     }
 
     @Override
@@ -166,7 +104,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         log.info("Starting to send request into eca - service for model '{}', data '{}'.",
                 classifier.getClass().getSimpleName(), data.relationName());
         EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, data);
-        String evaluationUrl = String.format(EVALUATION_URL_FORMAT, apiUrl);
+        String evaluationUrl = String.format(EVALUATION_URL_FORMAT, ecaServiceDetails.getApiUrl());
         ResponseEntity<EvaluationResponse> response = restTemplate.postForEntity(evaluationUrl,
                 evaluationRequestDto, EvaluationResponse.class);
         validateResponse(response);
@@ -182,7 +120,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         Assert.notNull(experimentRequestDto, "Experiment request is not specified!");
         log.info("Starting to send request into eca - service for experiment '{}', data '{}'.",
                 experimentRequestDto.getExperimentType(), experimentRequestDto.getData().relationName());
-        String experimentUrl = String.format(EXPERIMENT_URL_FORMAT, apiUrl);
+        String experimentUrl = String.format(EXPERIMENT_URL_FORMAT, ecaServiceDetails.getApiUrl());
         ResponseEntity<EcaResponse> response =
                 restTemplate.postForEntity(experimentUrl, experimentRequestDto, EcaResponse.class);
         validateResponse(response);
@@ -196,7 +134,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     public EvaluationResults performRequest(Instances data) {
         Assert.notNull(data, "Instances must be specified!");
         log.info("Starting to send request into eca - service for data '{}'.", data.relationName());
-        String optimalClassifierUrl = String.format(OPTIMIZER_URL_FORMAT, apiUrl);
+        String optimalClassifierUrl = String.format(OPTIMIZER_URL_FORMAT, ecaServiceDetails.getApiUrl());
         ResponseEntity<EvaluationResponse> response =
                 restTemplate.postForEntity(optimalClassifierUrl, new InstancesRequest(data), EvaluationResponse.class);
         validateResponse(response);
@@ -204,6 +142,17 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         log.info("Received response from eca - service with id [{}], status [{}] for data '{}'.",
                 evaluationResponse.getRequestId(), evaluationResponse.getStatus(), data.relationName());
         return handleEvaluationResponse(evaluationResponse);
+    }
+
+    private void initializeOauth2RestTemplate() {
+        ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();
+        resourceDetails.setClientId(ecaServiceDetails.getClientId());
+        resourceDetails.setClientSecret(ecaServiceDetails.getClientSecret());
+        resourceDetails.setAccessTokenUri(String.format(TOKEN_URL_FORMAT, ecaServiceDetails.getTokenUrl()));
+        resourceDetails.setUsername(ecaServiceDetails.getUserName());
+        resourceDetails.setPassword(ecaServiceDetails.getPassword());
+        restTemplate = new OAuth2RestTemplate(resourceDetails);
+        restTemplate.setAccessTokenProvider(new ResourceOwnerPasswordAccessTokenProvider());
     }
 
     private EvaluationResults handleEvaluationResponse(final EvaluationResponse evaluationResponse) {
