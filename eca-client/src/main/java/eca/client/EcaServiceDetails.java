@@ -2,6 +2,7 @@ package eca.client;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Eca - service details model.
@@ -9,6 +10,7 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
+@NoArgsConstructor
 @Builder
 public class EcaServiceDetails {
 
