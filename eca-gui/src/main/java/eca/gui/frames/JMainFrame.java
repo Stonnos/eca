@@ -599,14 +599,14 @@ public class JMainFrame extends JFrame {
                 new EvaluationRequestSender(ecaServiceClient, (AbstractClassifier) frame.classifier(), frame.data());
         LoadDialog progress = new LoadDialog(JMainFrame.this,
                 requestSender, MODEL_BUILDING_MESSAGE);
-        process(progress, () -> {
+        processAsyncTask(progress, () -> {
             EvaluationResults evaluationResults = requestSender.getResult();
             resultsHistory.createResultFrame(frame.getTitle(), evaluationResults.getClassifier(),
                     frame.data(), evaluationResults.getEvaluation(), maximumFractionDigits);
         });
     }
 
-    private void process(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
+    private void processAsyncTask(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
         ExecutorService.process(executorDialog, successAction,
                 () -> JOptionPane.showMessageDialog(JMainFrame.this,
                         executorDialog.getErrorMessageText(), null,
@@ -633,7 +633,7 @@ public class JMainFrame extends JFrame {
         LoadDialog progress = new LoadDialog(JMainFrame.this,
                 builder, MODEL_BUILDING_MESSAGE);
 
-        process(progress, () -> {
+        processAsyncTask(progress, () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
             resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
                     builder.getResult(), maximumFractionDigits);
@@ -643,7 +643,7 @@ public class JMainFrame extends JFrame {
     private void createTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
         LoadDialog progress = new LoadDialog(JMainFrame.this, dataBuilder,
                 BUILD_TRAINING_DATA_LOADING_MESSAGE);
-        process(progress, callbackAction);
+        processAsyncTask(progress, callbackAction);
     }
 
     private DataInternalFrame selectedPanel() {
@@ -1218,7 +1218,7 @@ public class JMainFrame extends JFrame {
                             LoadDialog progress = new LoadDialog(JMainFrame.this, contingencyTableAction,
                                     CONTINGENCY_TABLE_LOADING_MESSAGE);
 
-                            process(progress, () -> {
+                            processAsyncTask(progress, () -> {
                                 Attribute rowAttribute = dataBuilder.getResult().attribute(rowAttrIndex);
                                 Attribute colAttribute = dataBuilder.getResult().attribute(colAttrIndex);
                                 DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
@@ -1275,7 +1275,7 @@ public class JMainFrame extends JFrame {
                                 LoadDialog progress = new LoadDialog(JMainFrame.this,
                                         experimentRequestSender, EXPERIMENT_REQUEST_LOADING_MESSAGE);
 
-                                process(progress, () -> {
+                                processAsyncTask(progress, () -> {
                                     EcaResponse ecaResponse = experimentRequestSender.getResult();
                                     ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                                         @Override
@@ -1328,7 +1328,7 @@ public class JMainFrame extends JFrame {
                         }
                     };
                     LoadDialog progress = new LoadDialog(JMainFrame.this, callback, MODEL_BUILDING_MESSAGE);
-                    process(progress, () -> {
+                    processAsyncTask(progress, () -> {
                         EvaluationResults evaluationResults = callback.getResult();
                         resultsHistory.createResultFrame(
                                 evaluationResults.getClassifier().getClass().getSimpleName(),
@@ -1458,7 +1458,7 @@ public class JMainFrame extends JFrame {
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        process(progress, () -> createDataFrame(loader.getResult()));
+                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -1522,7 +1522,7 @@ public class JMainFrame extends JFrame {
                             new DataBaseConnectionAction(connection),
                             DB_CONNECTION_WAITING_MESSAGE);
 
-                    process(progress, () -> {
+                    processAsyncTask(progress, () -> {
                         QueryFrame queryFrame = new QueryFrame(JMainFrame.this, connection);
                         queryFrame.setVisible(true);
                     });
@@ -1555,7 +1555,7 @@ public class JMainFrame extends JFrame {
                             LoadDialog progress = new LoadDialog(JMainFrame.this,
                                     new DatabaseSaverAction(databaseSaver, dataBuilder.getResult()),
                                     DB_SAVE_PROGRESS_MESSAGE_TEXT);
-                            process(progress, () -> {
+                            processAsyncTask(progress, () -> {
                                 JOptionPane.showMessageDialog(JMainFrame.this,
                                         String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
                                         JOptionPane.INFORMATION_MESSAGE);
@@ -1591,7 +1591,7 @@ public class JMainFrame extends JFrame {
                     UrlLoader loader = new UrlLoader(dataLoader);
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
                             loader, DATA_LOADING_MESSAGE);
-                    process(progress, () -> createDataFrame(loader.getResult()));
+                    processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
@@ -1621,7 +1621,7 @@ public class JMainFrame extends JFrame {
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, MODEL_BUILDING_MESSAGE);
 
-                        process(progress, () -> {
+                        processAsyncTask(progress, () -> {
                             ClassificationModel model = loader.getResult();
                             String description;
                             int digits;
@@ -1666,7 +1666,7 @@ public class JMainFrame extends JFrame {
                     DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
                     LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
                             DATA_GENERATION_LOADING_MESSAGE);
-                    process(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
+                    processAsyncTask(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
@@ -1718,7 +1718,7 @@ public class JMainFrame extends JFrame {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        process(progress, () -> resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
+        processAsyncTask(progress, () -> resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
                 frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
