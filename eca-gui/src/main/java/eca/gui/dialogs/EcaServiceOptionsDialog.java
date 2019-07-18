@@ -42,11 +42,11 @@ public class EcaServiceOptionsDialog extends JDialog {
 
         okButton.addActionListener(evt -> {
             if (!isValidOptions()) {
+                dialogResult = false;
+            } else {
                 setEcaServiceOptions();
                 dialogResult = true;
                 setVisible(false);
-            } else {
-                dialogResult = false;
             }
         });
 
