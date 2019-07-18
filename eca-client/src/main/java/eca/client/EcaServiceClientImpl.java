@@ -44,7 +44,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      * Eca - service details
      */
     @Getter
-    private EcaServiceDetails ecaServiceDetails = new EcaServiceDetails();
+    private EcaServiceDetails ecaServiceDetails = EcaServiceDetails.builder().build();
 
     /**
      * Evaluation test method
