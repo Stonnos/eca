@@ -6,7 +6,7 @@ import eca.util.Entry;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -57,8 +57,8 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
         return TITLE[column];
     }
 
-    public Iterator<Entry<String, String>> getOptions() {
-        return options.iterator();
+    public List<Entry<String, String>> getOptions() {
+        return options;
     }
 
     private void init() {

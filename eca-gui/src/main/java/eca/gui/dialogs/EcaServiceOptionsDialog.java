@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * @author Roman Batygin
@@ -24,6 +22,8 @@ public class EcaServiceOptionsDialog extends JDialog {
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
     private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
+
+    private boolean dialogResult;
 
     private final EcaServiceOptionsTableModel ecaServiceOptionsTableModel = new EcaServiceOptionsTableModel();
 
@@ -41,16 +41,19 @@ public class EcaServiceOptionsDialog extends JDialog {
         JButton cancelButton = ButtonUtils.createCancelButton();
 
         okButton.addActionListener(evt -> {
-            try {
-                saveEcaServiceOptions();
+            if (!isValidOptions()) {
+                setEcaServiceOptions();
+                dialogResult = true;
                 setVisible(false);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
-                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            } else {
+                dialogResult = false;
             }
         });
 
-        cancelButton.addActionListener(e -> setVisible(false));
+        cancelButton.addActionListener(e -> {
+            dialogResult = false;
+            setVisible(false);
+        });
 
         this.add(scrollPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -67,17 +70,23 @@ public class EcaServiceOptionsDialog extends JDialog {
         this.setLocationRelativeTo(parent);
     }
 
-    private void saveEcaServiceOptions() throws IOException {
-        for (Iterator<Entry<String, String>> iterator = ecaServiceOptionsTableModel.getOptions();
-             iterator.hasNext(); ) {
-            Entry<String, String> entry = iterator.next();
+    public boolean isDialogResult() {
+        return dialogResult;
+    }
+
+    private boolean isValidOptions() {
+        for (Entry<String, String> entry : ecaServiceOptionsTableModel.getOptions()) {
             if (StringUtils.isEmpty(entry.getValue())) {
-                throw new IllegalArgumentException(
-                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()));
+                JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
+                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()), null, JOptionPane.WARNING_MESSAGE);
+                return false;
             }
-            setOptions(entry);
         }
-        CONFIG_SERVICE.saveEcaServiceConfig();
+        return true;
+    }
+
+    private void setEcaServiceOptions() {
+        ecaServiceOptionsTableModel.getOptions().forEach(this::setOptions);
     }
 
     private void setOptions(Entry<String, String> entry) {

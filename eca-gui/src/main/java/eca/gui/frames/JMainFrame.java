@@ -6,10 +6,12 @@
 package eca.gui.frames;
 
 import eca.client.EcaServiceClientImpl;
+import eca.client.EcaServiceDetails;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.config.ConfigurationService;
+import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -261,6 +263,7 @@ public class JMainFrame extends JFrame {
             ToolTipManager.sharedInstance().setDismissDelay(
                     Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
                             CommonDictionary.TOOLTIP_DISMISS));
+            updateEcaServiceClientDetails();
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -588,7 +591,6 @@ public class JMainFrame extends JFrame {
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
         ecaServiceClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
         if (EvaluationMethod.CROSS_VALIDATION.equals(ecaServiceClient.getEvaluationMethod())) {
             ecaServiceClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             ecaServiceClient.setNumTests(evaluationMethodOptionsDialog.numTests());
@@ -903,7 +905,8 @@ public class JMainFrame extends JFrame {
                         randomForests.setSeed(seed);
                         RandomForestsOptionDialog frame =
                                 new RandomForestsOptionDialog(JMainFrame.this,
-                                        EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests, dataBuilder.getResult());
+                                        EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests,
+                                        dataBuilder.getResult());
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
                 } catch (Exception e) {
@@ -1128,7 +1131,8 @@ public class JMainFrame extends JFrame {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
                     createTrainingData(dataBuilder, () -> {
-                        AutomatedDecisionTree automatedDecisionTree = new AutomatedDecisionTree(dataBuilder.getResult());
+                        AutomatedDecisionTree automatedDecisionTree =
+                                new AutomatedDecisionTree(dataBuilder.getResult());
                         automatedDecisionTree.setSeed(seed);
                         AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
                                 (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
@@ -1258,7 +1262,6 @@ public class JMainFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 if (isDataAndClassValid()) {
                     try {
-                        ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
                         final DataBuilder dataBuilder = new DataBuilder();
                         createTrainingData(dataBuilder, () -> {
                             ExperimentRequestDialog experimentRequestDialog =
@@ -1317,7 +1320,6 @@ public class JMainFrame extends JFrame {
         optimalClassifierMenu.addActionListener(event -> {
             if (isDataAndClassValid()) {
                 try {
-                    ecaServiceClient.setApiUrl(CONFIG_SERVICE.getEcaServiceConfig().getApiUrl());
                     final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
 
                         @Override
@@ -1419,6 +1421,17 @@ public class JMainFrame extends JFrame {
         ecaServiceOptionsMenu.addActionListener(e -> {
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
+            if (ecaServiceOptionsDialog.isDialogResult()) {
+                try {
+                    CONFIG_SERVICE.saveEcaServiceConfig();
+                    updateEcaServiceClientDetails();
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
+                            null, JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            ecaServiceOptionsDialog.dispose();
         });
         optionsMenu.add(ecaServiceOptionsMenu);
     }
@@ -1800,6 +1813,19 @@ public class JMainFrame extends JFrame {
         AutomatedStackingFrame frame
                 = new AutomatedStackingFrame(title, automatedStacking, this, maximumFractionDigits);
         frame.setVisible(true);
+    }
+
+    private void updateEcaServiceClientDetails() {
+        EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+        EcaServiceDetails details = EcaServiceDetails.builder()
+                .apiUrl(ecaServiceConfig.getApiUrl())
+                .tokenUrl(ecaServiceConfig.getTokenUrl())
+                .clientId(ecaServiceConfig.getClientId())
+                .clientSecret(ecaServiceConfig.getClientSecret())
+                .userName(ecaServiceConfig.getUserName())
+                .password(ecaServiceConfig.getPassword())
+                .build();
+        ecaServiceClient.setEcaServiceDetails(details);
     }
 
 }
