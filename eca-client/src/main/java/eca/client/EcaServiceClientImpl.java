@@ -145,14 +145,19 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     }
 
     private void initializeOauth2RestTemplate() {
+        ResourceOwnerPasswordResourceDetails resourceDetails = resourceOwnerPasswordResourceDetails();
+        restTemplate = new OAuth2RestTemplate(resourceDetails);
+        restTemplate.setAccessTokenProvider(new ResourceOwnerPasswordAccessTokenProvider());
+    }
+
+    private ResourceOwnerPasswordResourceDetails resourceOwnerPasswordResourceDetails(){
         ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();
         resourceDetails.setClientId(ecaServiceDetails.getClientId());
         resourceDetails.setClientSecret(ecaServiceDetails.getClientSecret());
         resourceDetails.setAccessTokenUri(String.format(TOKEN_URL_FORMAT, ecaServiceDetails.getTokenUrl()));
         resourceDetails.setUsername(ecaServiceDetails.getUserName());
         resourceDetails.setPassword(ecaServiceDetails.getPassword());
-        restTemplate = new OAuth2RestTemplate(resourceDetails);
-        restTemplate.setAccessTokenProvider(new ResourceOwnerPasswordAccessTokenProvider());
+        return resourceDetails;
     }
 
     private EvaluationResults handleEvaluationResponse(final EvaluationResponse evaluationResponse) {
