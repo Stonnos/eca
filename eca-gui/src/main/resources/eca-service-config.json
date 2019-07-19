@@ -3,7 +3,5 @@
   "apiUrl": "http://localhost:8080/eca-server/eca-api",
   "tokenUrl": "http://localhost:8080/auth-server",
   "clientId": "eca",
-  "clientSecret": "eca_secret",
-  "userName": "eca",
-  "password": "2017610788"
+  "clientSecret": "eca_secret"
 }

@@ -34,14 +34,4 @@ public class EcaServiceConfig {
      * Application secret
      */
     private String clientSecret;
-
-    /**
-     * User login
-     */
-    private String userName;
-
-    /**
-     * User password
-     */
-    private String password;
 }
