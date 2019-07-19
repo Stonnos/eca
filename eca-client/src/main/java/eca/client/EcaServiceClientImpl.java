@@ -16,8 +16,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
-import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
@@ -83,7 +83,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      * Default constructor.
      */
     public EcaServiceClientImpl() {
-        initializeOauth2RestTemplate();
+        updateOauth2RestTemplateResourceDetails();
     }
 
     /**
@@ -94,7 +94,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     public void setEcaServiceDetails(EcaServiceDetails ecaServiceDetails) {
         Assert.notNull(ecaServiceDetails, "Eca - service details must be specified!");
         this.ecaServiceDetails = ecaServiceDetails;
-        initializeOauth2RestTemplate();
+        updateOauth2RestTemplateResourceDetails();
     }
 
     @Override
@@ -144,20 +144,18 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         return handleEvaluationResponse(evaluationResponse);
     }
 
-    private void initializeOauth2RestTemplate() {
-        ResourceOwnerPasswordResourceDetails resourceDetails = resourceOwnerPasswordResourceDetails();
-        restTemplate = new OAuth2RestTemplate(resourceDetails);
-        restTemplate.setAccessTokenProvider(new ResourceOwnerPasswordAccessTokenProvider());
-    }
-
-    private ResourceOwnerPasswordResourceDetails resourceOwnerPasswordResourceDetails(){
-        ResourceOwnerPasswordResourceDetails resourceDetails = new ResourceOwnerPasswordResourceDetails();
+    private ClientCredentialsResourceDetails clientCredentialsResourceDetails(){
+        ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
         resourceDetails.setClientId(ecaServiceDetails.getClientId());
         resourceDetails.setClientSecret(ecaServiceDetails.getClientSecret());
         resourceDetails.setAccessTokenUri(String.format(TOKEN_URL_FORMAT, ecaServiceDetails.getTokenUrl()));
-        resourceDetails.setUsername(ecaServiceDetails.getUserName());
-        resourceDetails.setPassword(ecaServiceDetails.getPassword());
         return resourceDetails;
+    }
+
+    private void updateOauth2RestTemplateResourceDetails() {
+        ClientCredentialsResourceDetails resourceDetails = clientCredentialsResourceDetails();
+        restTemplate = new OAuth2RestTemplate(resourceDetails);
+        restTemplate.setAccessTokenProvider(new ClientCredentialsAccessTokenProvider());
     }
 
     private EvaluationResults handleEvaluationResponse(final EvaluationResponse evaluationResponse) {

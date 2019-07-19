@@ -44,6 +44,4 @@ public class CommonDictionary {
     public static final String ECA_TOKEN_URL = "eca.service.tokenUrl";
     public static final String ECA_CLIENT_ID = "eca.service.clientId";
     public static final String ECA_CLIENT_SECRET = "eca.service.clientSecret";
-    public static final String ECA_USERNAME = "eca.service.username";
-    public static final String ECA_PASSWORD = "eca.service.password";
 }

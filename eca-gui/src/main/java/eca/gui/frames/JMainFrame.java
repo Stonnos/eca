@@ -1822,8 +1822,6 @@ public class JMainFrame extends JFrame {
                 .tokenUrl(ecaServiceConfig.getTokenUrl())
                 .clientId(ecaServiceConfig.getClientId())
                 .clientSecret(ecaServiceConfig.getClientSecret())
-                .userName(ecaServiceConfig.getUserName())
-                .password(ecaServiceConfig.getPassword())
                 .build();
         ecaServiceClient.setEcaServiceDetails(details);
     }

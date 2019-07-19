@@ -106,12 +106,6 @@ public class EcaServiceOptionsDialog extends JDialog {
             case CommonDictionary.ECA_CLIENT_SECRET:
                 CONFIG_SERVICE.getEcaServiceConfig().setClientSecret(entry.getValue());
                 break;
-            case CommonDictionary.ECA_USERNAME:
-                CONFIG_SERVICE.getEcaServiceConfig().setUserName(entry.getValue());
-                break;
-            case CommonDictionary.ECA_PASSWORD:
-                CONFIG_SERVICE.getEcaServiceConfig().setPassword(entry.getValue());
-                break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));
         }
