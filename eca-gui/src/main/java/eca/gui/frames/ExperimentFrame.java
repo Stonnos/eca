@@ -26,6 +26,7 @@ import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +38,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -74,6 +76,7 @@ public abstract class ExperimentFrame extends JFrame {
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
     private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Недопустимая история эксперимента!";
+    private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
@@ -288,18 +291,23 @@ public abstract class ExperimentFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveModelChooser();
-                    }
-                    fileChooser.setSelectedFile(
-                            new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
-                    File file = fileChooser.getSelectedFile(ExperimentFrame.this);
-                    if (file != null) {
-                        ModelConverter.saveModel(file,
-                                new ExperimentHistory(experiment.getExperimentType(),
-                                        experimentTable.experimentModel().getExperiment(),
-                                        experiment.getData(), experiment.getEvaluationMethod(),
-                                        createEvaluationParams()));
+                    List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
+                    if (CollectionUtils.isEmpty(experimentHistory)) {
+                        JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
+                                JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        if (fileChooser == null) {
+                            fileChooser = new SaveModelChooser();
+                        }
+                        fileChooser.setSelectedFile(
+                                new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
+                        File file = fileChooser.getSelectedFile(ExperimentFrame.this);
+                        if (file != null) {
+                            ModelConverter.saveModel(file,
+                                    new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
+                                            experiment.getData(), experiment.getEvaluationMethod(),
+                                            createEvaluationParams()));
+                        }
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
