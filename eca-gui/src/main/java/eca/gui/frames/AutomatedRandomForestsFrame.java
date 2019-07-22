@@ -25,8 +25,7 @@ import java.awt.event.ActionListener;
  */
 public class AutomatedRandomForestsFrame extends ExperimentFrame {
 
-    public AutomatedRandomForestsFrame(String title, AbstractExperiment experiment,
-                                       JFrame parent, int digits) throws Exception {
+    public AutomatedRandomForestsFrame(String title, AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(title);
     }

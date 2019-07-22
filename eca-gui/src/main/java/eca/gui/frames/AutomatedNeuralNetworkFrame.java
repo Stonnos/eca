@@ -21,7 +21,7 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 10000;
 
-    public AutomatedNeuralNetworkFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
+    public AutomatedNeuralNetworkFrame(AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(TITLE_TEXT);
     }

@@ -185,6 +185,15 @@ public abstract class AbstractExperiment<T extends Classifier>
         return experiment;
     }
 
+    /**
+     * Gets experiment type to identify experiment algorithm.
+     *
+     * @return experiment type
+     */
+    public String getExperimentType() {
+        return getClass().getSimpleName();
+    }
+
     protected final EvaluationResults evaluateModel(Classifier model) throws Exception {
         Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
                 getEvaluationMethod(), getNumFolds(), getNumTests(), new Random(seed));

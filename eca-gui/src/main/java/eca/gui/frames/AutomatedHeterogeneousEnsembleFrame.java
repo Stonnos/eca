@@ -9,7 +9,6 @@ import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.ensemble.ClassifiersSet;
 import eca.gui.dialogs.EnsembleOptionsDialog;
-import eca.gui.logging.LoggerUtils;
 
 import javax.swing.*;
 
@@ -20,8 +19,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
 
     private static final String OPTIONS_TITLE = "Настройки параметров";
 
-    public AutomatedHeterogeneousEnsembleFrame(String title, AbstractExperiment experiment,
-                                               JFrame parent, int digits) throws Exception {
+    public AutomatedHeterogeneousEnsembleFrame(String title, AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(title);
     }

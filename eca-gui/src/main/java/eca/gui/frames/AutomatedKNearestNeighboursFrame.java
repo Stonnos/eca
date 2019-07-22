@@ -16,7 +16,7 @@ public class AutomatedKNearestNeighboursFrame extends ExperimentFrame {
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 1000000;
 
-    public AutomatedKNearestNeighboursFrame(AbstractExperiment experiment, JFrame parent, int digits) throws Exception {
+    public AutomatedKNearestNeighboursFrame(AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(TITLE_TEXT);
     }

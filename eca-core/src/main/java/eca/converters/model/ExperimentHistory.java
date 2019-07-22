@@ -25,6 +25,11 @@ import java.util.List;
 public class ExperimentHistory implements java.io.Serializable {
 
     /**
+     * Experiment type
+     */
+    private String type;
+
+    /**
      * Experiment history
      */
     private List<EvaluationResults> experiment;

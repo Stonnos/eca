@@ -266,7 +266,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         }
 
         @Override
-        public int next() throws Exception {
+        public int next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }

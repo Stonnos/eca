@@ -73,6 +73,7 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
+    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Недопустимая история эксперимента!";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
@@ -294,11 +295,11 @@ public abstract class ExperimentFrame extends JFrame {
                             new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
-
                         ModelConverter.saveModel(file,
-                                new ExperimentHistory(experimentTable.experimentModel().getExperiment(),
-                                        experiment.getData(),
-                                        experiment.getEvaluationMethod(), createEvaluationParams()));
+                                new ExperimentHistory(experiment.getExperimentType(),
+                                        experimentTable.experimentModel().getExperiment(),
+                                        experiment.getData(), experiment.getEvaluationMethod(),
+                                        createEvaluationParams()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -325,10 +326,15 @@ public abstract class ExperimentFrame extends JFrame {
                                 loader, LOAD_EXPERIMENT_TITLE);
 
                         ExecutorService.process(loadDialog, () -> {
-                            experimentTable.setRenderer(Color.RED);
                             ExperimentHistory history = loader.getExperiment();
-                            experimentTable.setExperiment(history.getExperiment());
-                            setResults(history);
+                            if (!experiment.getExperimentType().equals(history.getType())) {
+                                JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE,
+                                        null, JOptionPane.WARNING_MESSAGE);
+                            } else {
+                                experimentTable.setRenderer(Color.RED);
+                                experimentTable.setExperiment(history.getExperiment());
+                                setResults(history);
+                            }
                         }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
                                 loadDialog.getErrorMessageText(),
                                 null, JOptionPane.WARNING_MESSAGE));
@@ -496,9 +502,9 @@ public abstract class ExperimentFrame extends JFrame {
             setStateForOptions(true);
             experimentTable.sort();
             if (!error) {
-                setResults(
-                        new ExperimentHistory(experimentTable.experimentModel().getExperiment(), experiment.getData(),
-                                experiment.getEvaluationMethod(), createEvaluationParams()));
+                setResults(new ExperimentHistory(experiment.getExperimentType(),
+                        experimentTable.experimentModel().getExperiment(), experiment.getData(),
+                        experiment.getEvaluationMethod(), createEvaluationParams()));
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }

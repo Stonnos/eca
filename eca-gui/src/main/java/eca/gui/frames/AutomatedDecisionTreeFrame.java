@@ -15,8 +15,7 @@ public class AutomatedDecisionTreeFrame extends ExperimentFrame {
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 1000000;
 
-    public AutomatedDecisionTreeFrame(String title, AbstractExperiment experiment, JFrame parent, int digits)
-            throws Exception {
+    public AutomatedDecisionTreeFrame(String title, AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(title);
     }

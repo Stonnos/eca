@@ -19,8 +19,7 @@ public class AutomatedStackingFrame extends ExperimentFrame {
 
     private static final String OPTIONS_TITLE = "Настройка параметров";
 
-    public AutomatedStackingFrame(String title, AbstractExperiment experiment,
-                                  JFrame parent, int digits) throws Exception {
+    public AutomatedStackingFrame(String title, AbstractExperiment experiment, JFrame parent, int digits) {
         super(experiment, parent, digits);
         this.setTitle(title);
     }
