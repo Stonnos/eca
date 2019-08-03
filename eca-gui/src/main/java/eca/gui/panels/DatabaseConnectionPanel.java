@@ -10,6 +10,7 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.util.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -58,7 +59,7 @@ public class DatabaseConnectionPanel extends JPanel {
 
     private void init() {
         this.setBorder(PanelBorderUtils.createTitledBorder(CONNECTION_PARAMS_TITLE));
-        dataBases = new JComboBox<>(DataBaseType.getDescriptions());
+        dataBases = new JComboBox<>(EnumUtils.getDescriptions(DataBaseType.class));
         hostField = new JTextField(TEXT_LENGTH);
         hostField.setDocument(new LengthDocument(FIELD_LENGTH));
         hostField.setInputVerifier(new TextFieldInputVerifier());
@@ -73,7 +74,8 @@ public class DatabaseConnectionPanel extends JPanel {
         passwordField = new JPasswordField(TEXT_LENGTH);
         passwordField.setDocument(new LengthDocument(FIELD_LENGTH));
         dataBases.addItemListener(evt -> {
-            DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
+            DataBaseType dataBaseType =
+                    EnumUtils.fromDescription(dataBases.getSelectedItem().toString(), DataBaseType.class);
             setConnectionDescriptor(dataBaseType);
         });
         dataBases.setSelectedItem(DEFAULT_DATA_BASE_TYPE.getDescription());
@@ -105,7 +107,8 @@ public class DatabaseConnectionPanel extends JPanel {
     }
 
     public ConnectionDescriptor getConnectionDescriptor() {
-        DataBaseType dataBaseType = DataBaseType.findByDescription(dataBases.getSelectedItem().toString());
+        DataBaseType dataBaseType =
+                EnumUtils.fromDescription(dataBases.getSelectedItem().toString(), DataBaseType.class);
         ConnectionDescriptor connectionDescriptor = dataBaseType.handle(CONNECTION_DESCRIPTOR_BUILDER);
         connectionDescriptor.setHost(hostField.getText().trim());
         if (!connectionDescriptor.getDataBaseType().isEmbedded()) {

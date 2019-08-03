@@ -11,6 +11,7 @@ import eca.gui.validators.EmailValidator;
 import eca.gui.validators.FirstNameValidator;
 import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.validators.Validator;
+import eca.util.EnumUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,7 +81,7 @@ public class ExperimentRequestDialog extends JDialog {
         emailTextField.setDocument(new LengthDocument(FIELD_LENGTH));
         emailTextField.setInputVerifier(new TextFieldInputVerifier());
 
-        experimentTypeBox = new JComboBox<>(ExperimentType.getDescriptions());
+        experimentTypeBox = new JComboBox<>(EnumUtils.getDescriptions(ExperimentType.class));
 
         evaluationMethodsGroup = new ButtonGroup();
         JRadioButton useTrainingDataRadioButton = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
@@ -154,10 +155,9 @@ public class ExperimentRequestDialog extends JDialog {
         experimentRequestDto.setFirstName(firstNameTextField.getText().trim());
         experimentRequestDto.setEmail(emailTextField.getText().trim());
         String selectedText = GuiUtils.searchSelectedButtonText(evaluationMethodsGroup);
-        EvaluationMethod evaluationMethod = EvaluationMethod.findByDescription(selectedText);
+        EvaluationMethod evaluationMethod = EnumUtils.fromDescription(selectedText, EvaluationMethod.class);
         experimentRequestDto.setEvaluationMethod(evaluationMethod);
-        ExperimentType experimentType =
-                ExperimentType.findByDescription(experimentTypeBox.getSelectedItem().toString());
+        ExperimentType experimentType = EnumUtils.fromDescription(experimentTypeBox.getSelectedItem().toString(), ExperimentType.class);
         experimentRequestDto.setExperimentType(experimentType);
 
         return experimentRequestDto;

@@ -23,6 +23,7 @@ import eca.neural.functions.ActivationFunction;
 import eca.neural.functions.ActivationFunctionBuilder;
 import eca.neural.functions.ActivationFunctionType;
 import eca.text.NumericFormatFactory;
+import eca.util.EnumUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -206,7 +207,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     private JPanel createActivationFunctionPanel() {
         JPanel activationFuncPanel = new JPanel(new GridBagLayout());
         activationFuncPanel.setBorder(PanelBorderUtils.createTitledBorder(ACTIVATION_FUNCTION_TITLE));
-        activationFunctionsBox = new JComboBox<>(ActivationFunctionType.getDescriptions());
+        activationFunctionsBox = new JComboBox<>(EnumUtils.getDescriptions(ActivationFunctionType.class));
         JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
         coefficientLabel.setPreferredSize(LABEL_DIM);
         coefficientLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -299,7 +300,8 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
 
     private ActivationFunction getSelectedActivationFunction() {
         ActivationFunctionType activationFunctionType =
-                ActivationFunctionType.findByDescription(activationFunctionsBox.getSelectedItem().toString());
+                EnumUtils.fromDescription(activationFunctionsBox.getSelectedItem().toString(),
+                        ActivationFunctionType.class);
         return activationFunctionType.handle(activationFunctionBuilder);
     }
 

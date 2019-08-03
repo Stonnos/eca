@@ -15,6 +15,7 @@ import eca.metrics.KNearestNeighbours;
 import eca.metrics.distances.DistanceBuilder;
 import eca.metrics.distances.DistanceType;
 import eca.text.NumericFormatFactory;
+import eca.util.EnumUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -58,7 +59,7 @@ public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbo
         weightTextField.setDocument(new DoubleDocument(INT_FIELD_LENGTH));
         weightTextField.setInputVerifier(new TextFieldInputVerifier());
         //--------------------------------------------
-        metricBox = new JComboBox<>(DistanceType.getDescriptions());
+        metricBox = new JComboBox<>(EnumUtils.getDescriptions(DistanceType.class));
         optionPanel.add(new JLabel(NUM_NEIGHBOURS_MESSAGE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -96,12 +97,9 @@ public class KNNOptionDialog extends ClassifierOptionsDialogBase<KNearestNeighbo
                     classifier().setWeight(estimateFormat.parse(weightTextField.getText().trim()).doubleValue());
                     focus = numNeighboursTextField;
                     classifier().setNumNeighbours(Integer.parseInt(numNeighboursTextField.getText().trim()));
-
                     DistanceType distanceType =
-                            DistanceType.findByDescription(metricBox.getSelectedItem().toString());
-
+                            EnumUtils.fromDescription(metricBox.getSelectedItem().toString(), DistanceType.class);
                     classifier().setDistance(distanceType.handle(distanceBuilder));
-
                     dialogResult = true;
                     setVisible(false);
                 } catch (Exception e) {

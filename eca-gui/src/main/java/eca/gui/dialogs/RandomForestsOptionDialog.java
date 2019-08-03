@@ -16,6 +16,7 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.text.IntegerDocument;
 import eca.gui.validators.TextFieldInputVerifier;
+import eca.util.EnumUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -232,7 +233,7 @@ public class RandomForestsOptionDialog extends ClassifierOptionsDialogBase<Rando
             classifier().setMaxDepth(Integer.parseInt(maxDepthTextField.getText().trim()));
             classifier().setNumRandomAttr(Integer.parseInt(numRandomAttrTextField.getText().trim()));
             String decisionTreeAlgorithm = treeAlgorithmBox.getSelectedItem().toString();
-            classifier().setDecisionTreeType(DecisionTreeType.findByDescription(decisionTreeAlgorithm));
+            classifier().setDecisionTreeType(EnumUtils.fromDescription(decisionTreeAlgorithm, DecisionTreeType.class));
             classifier().setNumThreads(((SpinnerNumberModel) threadsSpinner.getModel()).getNumber().intValue());
         }
 
