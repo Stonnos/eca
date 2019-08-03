@@ -35,6 +35,7 @@ public class EnumUtils {
      * @return enum constants descriptions
      */
     public static <E extends Enum<E> & DescriptiveEnum> String[] getDescriptions(Class<E> enumClass) {
-        return Stream.of(enumClass.getEnumConstants()).map(DescriptiveEnum::getDescription).toArray(String[]::new);
+        return Stream.of(enumClass.getEnumConstants()).map(DescriptiveEnum.class::cast).map(
+                DescriptiveEnum::getDescription).toArray(String[]::new);
     }
 }
