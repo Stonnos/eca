@@ -1,11 +1,13 @@
 package eca.gui.diagram;
 
+import eca.core.DescriptiveEnum;
+
 /**
  * Diagram type enum.
  *
  * @author Roman Batygin
  */
-public enum DiagramType {
+public enum DiagramType implements DescriptiveEnum {
 
     /**
      * Frequency diagram
@@ -48,6 +50,7 @@ public enum DiagramType {
      *
      * @return diagram description
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -64,21 +67,6 @@ public enum DiagramType {
             descriptions[i] = values[i].getDescription();
         }
         return descriptions;
-    }
-
-    /**
-     * Finds diagram type by description
-     *
-     * @param description description string.
-     * @return {@link DiagramType} object
-     */
-    public static DiagramType findByDescription(String description) {
-        for (DiagramType distanceType : values()) {
-            if (distanceType.getDescription().equals(description)) {
-                return distanceType;
-            }
-        }
-        return null;
     }
 
     public abstract <T> T handle(DiagramTypeVisitor<T> diagramTypeVisitor);

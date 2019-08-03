@@ -1,13 +1,14 @@
 package eca.client.dto;
 
 import eca.client.dictionary.ExperimentTypeDictionary;
+import eca.core.DescriptiveEnum;
 
 /**
  * Experiment type.
  *
  * @author Roman Batygin
  */
-public enum ExperimentType {
+public enum ExperimentType implements DescriptiveEnum {
 
     /**
      * Optimal options automatic selection for neural networks.
@@ -66,36 +67,8 @@ public enum ExperimentType {
      *
      * @return experiment type description
      */
+    @Override
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Returns experiment type description.
-     * @return experiment type description
-     */
-    public static String[] getDescriptions() {
-        ExperimentType[] values = values();
-        String[] descriptions = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            descriptions[i] = values[i].getDescription();
-        }
-        return descriptions;
-    }
-
-    /**
-     * Finds experiment type type by description
-     *
-     * @param description description string.
-     * @return {@link ExperimentType} object
-     */
-    public static ExperimentType findByDescription(String description) {
-        for (ExperimentType experimentType : values()) {
-            if (experimentType.getDescription().equals(description)) {
-                return experimentType;
-            }
-        }
-        return null;
     }
 }

@@ -1,12 +1,14 @@
 package eca.data.db;
 
+import eca.core.DescriptiveEnum;
+
 /**
  * Data base type enum.
  *
  * @author Roman Batygin
  */
 
-public enum DataBaseType {
+public enum DataBaseType implements DescriptiveEnum {
 
     /**
      * MySQL data base.
@@ -87,6 +89,7 @@ public enum DataBaseType {
      *
      * @return data base description
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -98,36 +101,6 @@ public enum DataBaseType {
      */
     public boolean isEmbedded() {
         return embedded;
-    }
-
-    /**
-     * Returns data bases description.
-     *
-     * @return data bases description
-     */
-    public static String[] getDescriptions() {
-        DataBaseType[] values = values();
-        String[] descriptions = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            descriptions[i] = values[i].getDescription();
-        }
-        return descriptions;
-    }
-
-    /**
-     * Finds distance function type by description
-     *
-     * @param description description string.
-     * @return {@link DataBaseType} object
-     */
-    public static DataBaseType findByDescription(String description) {
-        for (DataBaseType dataBaseType : values()) {
-            if (dataBaseType.getDescription().equals(description)) {
-                return dataBaseType;
-            }
-        }
-        return null;
     }
 
     /**

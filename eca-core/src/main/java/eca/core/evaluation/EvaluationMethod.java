@@ -1,11 +1,13 @@
 package eca.core.evaluation;
 
+import eca.core.DescriptiveEnum;
+
 /**
  * Classifiers evaluation type.
  *
  * @author Roman Batygin
  */
-public enum EvaluationMethod {
+public enum EvaluationMethod implements DescriptiveEnum {
 
     /**
      * Use training data
@@ -38,23 +40,9 @@ public enum EvaluationMethod {
      *
      * @return evaluation method description
      */
+    @Override
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Finds evaluation method type by description
-     *
-     * @param description description string.
-     * @return {@link EvaluationMethod} object
-     */
-    public static EvaluationMethod findByDescription(String description) {
-        for (EvaluationMethod evaluationMethod : values()) {
-            if (evaluationMethod.getDescription().equals(description)) {
-                return evaluationMethod;
-            }
-        }
-        return null;
     }
 
     /**

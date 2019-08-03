@@ -16,6 +16,7 @@ import eca.statistics.AttributeStatistics;
 import eca.statistics.diagram.FrequencyData;
 import eca.statistics.diagram.FrequencyDiagramBuilder;
 import eca.text.NumericFormatFactory;
+import eca.util.EnumUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -203,7 +204,7 @@ public class AttributesStatisticsFrame extends JFrame {
         plotBox.addActionListener(event -> {
             int attrIndex = attributesBox.getSelectedIndex();
             String selectedDiagram = plotBox.getSelectedItem().toString();
-            DiagramType diagramType = DiagramType.findByDescription(selectedDiagram);
+            DiagramType diagramType = EnumUtils.fromDescription(selectedDiagram, DiagramType.class);
             FrequencyDiagramModel frequencyDiagramModel = frequencyDiagramModels[attrIndex];
             frequencyDiagramModel.setCurrentDiagramType(diagramType);
             if (!frequencyDiagramModel.getDiagramMap().containsKey(diagramType)) {

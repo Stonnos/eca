@@ -1,12 +1,14 @@
 package eca.neural.functions;
 
+import eca.core.DescriptiveEnum;
+
 /**
  * Activation function type.
  *
  * @author Roman Batygin
  */
 
-public enum ActivationFunctionType {
+public enum ActivationFunctionType implements DescriptiveEnum {
 
     /**
      * Logistic function.
@@ -102,6 +104,7 @@ public enum ActivationFunctionType {
      *
      * @return activation function description
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -122,36 +125,6 @@ public enum ActivationFunctionType {
      */
     public String getFormulaFormat() {
         return formulaFormat;
-    }
-
-    /**
-     * Finds activation function type by description
-     *
-     * @param description description string.
-     * @return {@link ActivationFunctionType} object
-     */
-    public static ActivationFunctionType findByDescription(String description) {
-        for (ActivationFunctionType activationFunctionType : values()) {
-            if (activationFunctionType.getDescription().equals(description)) {
-                return activationFunctionType;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns activation functions description.
-     *
-     * @return activation functions description
-     */
-    public static String[] getDescriptions() {
-        ActivationFunctionType[] values = values();
-        String[] descriptions = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            descriptions[i] = values[i].getDescription();
-        }
-        return descriptions;
     }
 
     /**

@@ -1,11 +1,13 @@
 package eca.metrics.distances;
 
+import eca.core.DescriptiveEnum;
+
 /**
  * Distance function type.
+ *
  * @author Roman Batygin
  */
-
-public enum DistanceType {
+public enum DistanceType implements DescriptiveEnum {
 
     /**
      * Euclid distance
@@ -58,44 +60,16 @@ public enum DistanceType {
      *
      * @return distance function description
      */
+    @Override
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Returns distance functions description.
-     * @return distance functions description
-     */
-    public static String[] getDescriptions() {
-        DistanceType[] values = values();
-        String[] descriptions = new String[values.length];
-
-        for (int i = 0; i < values.length; i++) {
-            descriptions[i] = values[i].getDescription();
-        }
-        return descriptions;
-    }
-
-    /**
-     * Finds distance function type by description
-     *
-     * @param description description string.
-     * @return {@link DistanceType} object
-     */
-    public static DistanceType findByDescription(String description) {
-        for (DistanceType distanceType : values()) {
-            if (distanceType.getDescription().equals(description)) {
-                return distanceType;
-            }
-        }
-        return null;
     }
 
     /**
      * Visitor pattern common method
      *
      * @param distanceTypeVisitor visitor class
-     * @param <T> generic class
+     * @param <T>                 generic class
      * @return generic class
      */
     public abstract <T> T handle(DistanceTypeVisitor<T> distanceTypeVisitor);

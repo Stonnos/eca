@@ -1,5 +1,6 @@
 package eca.ensemble.forests;
 
+import eca.core.DescriptiveEnum;
 import eca.dictionary.ClassifiersNamesDictionary;
 
 /**
@@ -7,7 +8,7 @@ import eca.dictionary.ClassifiersNamesDictionary;
  *
  * @author Roman Batygin
  */
-public enum DecisionTreeType {
+public enum DecisionTreeType implements DescriptiveEnum {
 
     /**
      * CART algorithm.
@@ -69,22 +70,8 @@ public enum DecisionTreeType {
      *
      * @return algorithm description
      */
+    @Override
     public String getDescription() {
         return description;
-    }
-
-    /**
-     * Finds decision tree type by description
-     *
-     * @param description description string.
-     * @return {@link DecisionTreeType} object
-     */
-    public static DecisionTreeType findByDescription(String description) {
-        for (DecisionTreeType treeType : values()) {
-            if (treeType.getDescription().equals(description)) {
-                return treeType;
-            }
-        }
-        return null;
     }
 }
