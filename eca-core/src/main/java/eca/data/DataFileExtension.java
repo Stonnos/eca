@@ -1,11 +1,15 @@
 package eca.data;
 
+import eca.core.DescriptiveEnum;
+
+import java.util.stream.Stream;
+
 /**
  * File extension for input data.
  *
  * @author Roman Batygin
  */
-public enum DataFileExtension {
+public enum DataFileExtension implements DescriptiveEnum {
 
     /**
      * Xls file extension
@@ -90,6 +94,7 @@ public enum DataFileExtension {
      *
      * @return extension description
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -100,11 +105,6 @@ public enum DataFileExtension {
      * @return files extensions
      */
     public static String[] getExtensions() {
-        DataFileExtension[] values = values();
-        String[] extensions = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-            extensions[i] = values[i].getExtension();
-        }
-        return extensions;
+        return Stream.of(values()).map(DataFileExtension::getExtension).toArray(String[]::new);
     }
 }
