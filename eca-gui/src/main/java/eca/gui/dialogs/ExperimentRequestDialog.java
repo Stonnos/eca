@@ -24,7 +24,8 @@ import java.awt.*;
 public class ExperimentRequestDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 15;
-    private static final int FIELD_LENGTH = 50;
+    private static final int FIRST_NAME_MAX_LENGTH = 30;
+    private static final int EMAIL_MAX_LENGTH = 50;
 
     private static final String TITLE_TEXT = "Создание заявки на эксперимент";
     private static final String FIRST_NAME_TEXT = "Ваше имя:";
@@ -74,11 +75,11 @@ public class ExperimentRequestDialog extends JDialog {
         mainOptionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
 
         firstNameTextField = new JTextField(TEXT_LENGTH);
-        firstNameTextField.setDocument(new LengthDocument(FIELD_LENGTH));
+        firstNameTextField.setDocument(new LengthDocument(FIRST_NAME_MAX_LENGTH));
         firstNameTextField.setInputVerifier(new TextFieldInputVerifier());
 
         emailTextField = new JTextField(TEXT_LENGTH);
-        emailTextField.setDocument(new LengthDocument(FIELD_LENGTH));
+        emailTextField.setDocument(new LengthDocument(EMAIL_MAX_LENGTH));
         emailTextField.setInputVerifier(new TextFieldInputVerifier());
 
         experimentTypeBox = new JComboBox<>(EnumUtils.getDescriptions(ExperimentType.class));
