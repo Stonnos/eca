@@ -1817,12 +1817,8 @@ public class JMainFrame extends JFrame {
 
     private void updateEcaServiceClientDetails() {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
-        EcaServiceDetails details = EcaServiceDetails.builder()
-                .apiUrl(ecaServiceConfig.getApiUrl())
-                .tokenUrl(ecaServiceConfig.getTokenUrl())
-                .clientId(ecaServiceConfig.getClientId())
-                .clientSecret(ecaServiceConfig.getClientSecret())
-                .build();
+        EcaServiceDetails details = new EcaServiceDetails(ecaServiceConfig.getApiUrl(), ecaServiceConfig.getTokenUrl(),
+                ecaServiceConfig.getClientId(), ecaServiceConfig.getClientSecret());
         ecaServiceClient.setEcaServiceDetails(details);
     }
 

@@ -43,8 +43,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
     /**
      * Eca - service details
      */
-    @Getter
-    private EcaServiceDetails ecaServiceDetails = EcaServiceDetails.builder().build();
+    private EcaServiceDetails ecaServiceDetails = new EcaServiceDetails();
 
     /**
      * Evaluation test method
@@ -93,8 +92,19 @@ public class EcaServiceClientImpl implements EcaServiceClient {
      */
     public void setEcaServiceDetails(EcaServiceDetails ecaServiceDetails) {
         Assert.notNull(ecaServiceDetails, "Eca - service details must be specified!");
-        this.ecaServiceDetails = ecaServiceDetails;
+        this.ecaServiceDetails = new EcaServiceDetails(ecaServiceDetails.getApiUrl(), ecaServiceDetails.getTokenUrl(),
+                ecaServiceDetails.getClientId(), ecaServiceDetails.getClientSecret());
         updateOauth2RestTemplateResourceDetails();
+    }
+
+    /**
+     * Returns eca - service details clone, because details object is immutable.
+     *
+     * @return eca - service details clone
+     */
+    public EcaServiceDetails getEcaServiceDetails() {
+        return new EcaServiceDetails(ecaServiceDetails.getApiUrl(), ecaServiceDetails.getTokenUrl(),
+                ecaServiceDetails.getClientId(), ecaServiceDetails.getClientSecret());
     }
 
     @Override
@@ -144,7 +154,7 @@ public class EcaServiceClientImpl implements EcaServiceClient {
         return handleEvaluationResponse(evaluationResponse);
     }
 
-    private ClientCredentialsResourceDetails clientCredentialsResourceDetails(){
+    private ClientCredentialsResourceDetails clientCredentialsResourceDetails() {
         ClientCredentialsResourceDetails resourceDetails = new ClientCredentialsResourceDetails();
         resourceDetails.setClientId(ecaServiceDetails.getClientId());
         resourceDetails.setClientSecret(ecaServiceDetails.getClientSecret());
