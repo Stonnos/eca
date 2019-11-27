@@ -31,6 +31,8 @@
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.global.server>github</github.global.server>
+        <github.maven-plugin>0.12</github.maven-plugin>
     </properties>
 
     <dependencies>
@@ -92,6 +94,41 @@
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <altDeploymentRepository>eca.repo::default::file://${project.build.directory}/mvn-repo
+                    </altDeploymentRepository>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>${github.maven-plugin}</version>
+                <configuration>
+                    <message>Maven artifacts for ${project.version}</message>
+                    <noJekyll>true</noJekyll>
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
+                    <branch>refs/heads/mvn-repo</branch>
+                    <merge>true</merge>
+                    <includes>
+                        <include>**/*</include>
+                    </includes>
+                    <repositoryName>eca</repositoryName>
+                    <repositoryOwner>Stonnos</repositoryOwner>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
                     </execution>
                 </executions>
             </plugin>
