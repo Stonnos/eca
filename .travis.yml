@@ -1,11 +1,11 @@
 stages:
-  - name: test
+  - name: build
   - name: deploy
 
 jobs:
   include:
-    - stage: test
-      script: mvn clean test
+    - stage: build
+      script: mvn clean install
     - stage: deploy
       before_script:
         - cp settings.xml $HOME/.m2/
