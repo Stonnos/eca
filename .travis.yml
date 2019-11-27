@@ -6,6 +6,8 @@ stages:
   - name: deploy
     if: branch = master
 
+install: true
+
 jobs:
   include:
     - stage: test
