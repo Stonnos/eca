@@ -18,11 +18,6 @@ public class ConnectionDescriptorBuilder implements DataBaseTypeVisitor<Connecti
     }
 
     @Override
-    public ConnectionDescriptor caseOracle() {
-        return new OracleConnectionDescriptor();
-    }
-
-    @Override
     public ConnectionDescriptor caseMSAccess() {
         return new MSAccessConnectionDescriptor();
     }

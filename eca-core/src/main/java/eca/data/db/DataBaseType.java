@@ -31,16 +31,6 @@ public enum DataBaseType implements DescriptiveEnum {
     },
 
     /**
-     * Oracle data base.
-     */
-    ORACLE(DataBaseDictionaryTypes.ORACLE, false) {
-        @Override
-        public <T> T handle(DataBaseTypeVisitor<T> dataBaseTypeVisitor) {
-            return dataBaseTypeVisitor.caseOracle();
-        }
-    },
-
-    /**
      * Microsoft Access data base.
      */
     MS_ACCESS(DataBaseDictionaryTypes.MS_ACCESS, true) {

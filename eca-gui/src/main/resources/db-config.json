@@ -15,14 +15,6 @@
     "login": "",
     "password": ""
   },
-  "ORACLE": {
-    "driver": "oracle.jdbc.driver.OracleDriver",
-    "host": "localhost",
-    "port": 1521,
-    "dataBaseName": "XE",
-    "login": "",
-    "password": ""
-  },
   "MS_ACCESS": {
     "driver": "net.ucanaccess.jdbc.UcanaccessDriver",
     "host": "D:/",

@@ -23,13 +23,6 @@ public interface DataBaseTypeVisitor<T> {
     T casePostgreSQL();
 
     /**
-     * Method executed in case if data base type is ORACLE.
-     *
-     * @return generic object
-     */
-    T caseOracle();
-
-    /**
      * Method executed in case if data base type is MS_ACCESS.
      *
      * @return generic object

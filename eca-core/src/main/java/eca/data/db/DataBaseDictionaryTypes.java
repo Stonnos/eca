@@ -2,14 +2,12 @@ package eca.data.db;
 
 /**
  * Data base dictionary types.
+ *
  * @author Roman Batygin
  */
-
 public class DataBaseDictionaryTypes {
 
     public static final String MYSQL = "MySQL";
-
-    public static final String ORACLE = "Oracle";
 
     public static final String POSTGRESQL = "PostgreSQL";
 
