@@ -4,11 +4,12 @@ jdk: openjdk8
 stages:
   - name: test
   - name: deploy
+    if: branch = master
 
 jobs:
   include:
     - stage: test
-      script: mvn clean test
+      script: mvn clean install
     - stage: deploy
       before_script:
         - cp settings.xml $HOME/.m2/
