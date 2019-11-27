@@ -1,11 +1,14 @@
+language: java
+jdk: openjdk8
+
 stages:
-  - name: build
+  - name: test
   - name: deploy
 
 jobs:
   include:
-    - stage: build
-      script: mvn clean install
+    - stage: test
+      script: mvn clean test
     - stage: deploy
       before_script:
         - cp settings.xml $HOME/.m2/
