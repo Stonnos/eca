@@ -9,7 +9,7 @@ stages:
 jobs:
   include:
     - stage: test
-      script: mvn clean install
+      script: mvn clean test
     - stage: deploy
       before_script:
         - cp settings.xml $HOME/.m2/
