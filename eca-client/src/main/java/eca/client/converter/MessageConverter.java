@@ -20,8 +20,9 @@ public interface MessageConverter {
      * Converts message bytes to object.
      *
      * @param message - message bytes array
+     * @param clazz   - target class
      * @param <T>     - message generic type
      * @return message object
      */
-    <T> T fromMessage(byte[] message);
+    <T> T fromMessage(byte[] message, Class<T> clazz);
 }

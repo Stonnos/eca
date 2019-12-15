@@ -4,39 +4,32 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+
+import static eca.client.util.RabbitUtils.closeChannel;
+import static eca.client.util.RabbitUtils.closeConnection;
 
 /**
  * Rabbit MQ connection manager.
  *
  * @author Roman Batygin
  */
-public class ConnectionManager {
+@RequiredArgsConstructor
+public class ConnectionManager implements AutoCloseable {
 
-    /**
-     * Retry to connect if connection attempt failed?
-     */
-    @Getter
     @Setter
-    private boolean retryToConnect;
-
     @Getter
-    @Setter
-    private long connectionAttemptIntervalMillis = 10000L;
-
-    @Getter
-    @Setter
-    private ConnectionFactory connectionFactory;
-
+    private final ConnectionFactory connectionFactory;
 
     private Channel channel;
     private Connection connection;
 
     /**
-     * Gets channel associated with current connection.
+     * Gets channel. Also opens connection if closed.
      *
      * @return channel object
      * @throws IOException      in case of I/O error
@@ -44,7 +37,7 @@ public class ConnectionManager {
      */
     public synchronized Channel getChannel() throws IOException, TimeoutException {
         if (connection == null) {
-            createConnection();
+            connection = connectionFactory.newConnection();
         }
         if (channel == null) {
             channel = connection.createChannel();
@@ -52,31 +45,9 @@ public class ConnectionManager {
         return channel;
     }
 
-    private void createConnection() throws IOException, TimeoutException {
-        if (connection == null) {
-            if (retryToConnect) {
-                tryToConnect();
-            } else {
-                connection = connectionFactory.newConnection();
-            }
-        }
-    }
-
-    private void tryToConnect() {
-        do {
-            try {
-                connection = connectionFactory.newConnection();
-            } catch (Exception ex) {
-                waitForNextAttempt();
-            }
-        } while (connection == null);
-    }
-
-    private void waitForNextAttempt() {
-        try {
-            wait(connectionAttemptIntervalMillis);
-        } catch (InterruptedException e) {
-            //ignored
-        }
+    @Override
+    public void close() throws Exception {
+        closeChannel(channel);
+        closeConnection(connection);
     }
 }

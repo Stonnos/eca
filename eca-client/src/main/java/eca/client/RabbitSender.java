@@ -4,7 +4,9 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import eca.client.converter.MessageConverter;
 import eca.client.exception.EcaServiceException;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Roman Batygin
  */
+@Getter
+@Setter
 @RequiredArgsConstructor
 public class RabbitSender {
 

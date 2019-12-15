@@ -1,7 +1,6 @@
 package eca.client.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -25,10 +24,9 @@ public class JsonMessageConverter implements MessageConverter {
     }
 
     @Override
-    public <T> T fromMessage(byte[] message) {
+    public <T> T fromMessage(byte[] message, Class<T> clazz) {
         try {
-            return objectMapper.readValue(message, 0, message.length, new TypeReference<T>() {
-            });
+            return objectMapper.readValue(message, 0, message.length, clazz);
         } catch (IOException ex) {
             throw new IllegalStateException(ex.getMessage());
         }

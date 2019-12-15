@@ -7,12 +7,16 @@ package eca.gui.frames;
 
 import eca.client.EcaServiceClientImpl;
 import eca.client.EcaServiceDetails;
+import eca.client.RabbitClient;
+import eca.client.RabbitClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
+import eca.client.listener.MessageListenerContainer;
 import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.config.IconType;
+import eca.config.RabbitConfiguration;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
@@ -129,6 +133,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Implements the main application frame.
@@ -240,6 +245,10 @@ public class JMainFrame extends JFrame {
 
     private EcaServiceClientImpl ecaServiceClient = new EcaServiceClientImpl();
 
+    private RabbitClientImpl rabbitClient;
+
+    private MessageListenerContainer messageListenerContainer;
+
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
@@ -264,6 +273,8 @@ public class JMainFrame extends JFrame {
                     Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
                             CommonDictionary.TOOLTIP_DISMISS));
             updateEcaServiceClientDetails();
+            configureRabbitClient();
+            configureMessageListenerContainer();
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -590,7 +601,7 @@ public class JMainFrame extends JFrame {
     }
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
-        ecaServiceClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
+       /* ecaServiceClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
         if (EvaluationMethod.CROSS_VALIDATION.equals(ecaServiceClient.getEvaluationMethod())) {
             ecaServiceClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             ecaServiceClient.setNumTests(evaluationMethodOptionsDialog.numTests());
@@ -603,6 +614,19 @@ public class JMainFrame extends JFrame {
             EvaluationResults evaluationResults = requestSender.getResult();
             resultsHistory.createResultFrame(frame.getTitle(), evaluationResults.getClassifier(),
                     frame.data(), evaluationResults.getEvaluation(), maximumFractionDigits);
+        });*/
+        rabbitClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
+        if (EvaluationMethod.CROSS_VALIDATION.equals(rabbitClient.getEvaluationMethod())) {
+            rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
+            rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
+        }
+        CallbackAction callbackAction = () -> {
+          rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(),
+                  messageListenerContainer.getEvaluationResultsQueue(), UUID.randomUUID().toString());
+        };
+        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
+        processAsyncTask(progress, () -> {
+            log.info("Sent");
         });
     }
 
@@ -1822,4 +1846,31 @@ public class JMainFrame extends JFrame {
         ecaServiceClient.setEcaServiceDetails(details);
     }
 
+    private void configureRabbitClient() {
+        EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+        rabbitClient = RabbitConfiguration.getRabbitConfiguration().configureRabbitClient(ecaServiceConfig);
+    }
+
+    private void configureMessageListenerContainer() {
+        EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+        messageListenerContainer =
+                RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
+        addEvaluationResultsListener();
+        messageListenerContainer.start();
+    }
+
+    private void addEvaluationResultsListener() {
+        messageListenerContainer.setEvaluationResultsConsumer(evaluationResponse -> {
+            try {
+                EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
+                resultsHistory.createResultFrame(evaluationResults.getClassifier().getClass().getSimpleName(),
+                        evaluationResults.getClassifier(), evaluationResults.getEvaluation().getData(),
+                        evaluationResults.getEvaluation(), maximumFractionDigits);
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
+                        null, JOptionPane.WARNING_MESSAGE);
+            }
+        });
+    }
 }

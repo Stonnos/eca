@@ -1,10 +1,15 @@
 package eca.client.util;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MimeTypeUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Rabbit utility class.
@@ -27,5 +32,41 @@ public class RabbitUtils {
                 .correlationId(correlationId)
                 .contentEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MimeTypeUtils.APPLICATION_JSON.toString()).build();
+    }
+
+    /**
+     * Close rabbit connection.
+     *
+     * @param connection - connection object
+     * @throws IOException in case of I/O error
+     */
+    public static void closeConnection(Connection connection) throws IOException {
+        if (connection != null) {
+            connection.close();
+        }
+    }
+
+    /**
+     * Close channel.
+     *
+     * @param channel - channel object
+     * @throws IOException      in case of I/O error
+     * @throws TimeoutException in case og timeout error
+     */
+    public static void closeChannel(Channel channel) throws IOException, TimeoutException {
+        if (channel != null) {
+            channel.close();
+        }
+    }
+
+    /**
+     * Declares reply to queue.
+     *
+     * @param channel - channel object
+     * @return generated queue name
+     * @throws IOException in case of I/O error
+     */
+    public static String declareReplyToQueue(Channel channel) throws IOException {
+        return channel.queueDeclare(StringUtils.EMPTY, false, true, true, null).getQueue();
     }
 }
