@@ -3,7 +3,6 @@ package eca.config;
 import com.rabbitmq.client.ConnectionFactory;
 import eca.client.ConnectionManager;
 import eca.client.RabbitClient;
-import eca.client.RabbitClientImpl;
 import eca.client.RabbitSender;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.converter.MessageConverter;
@@ -21,7 +20,7 @@ public class RabbitConfiguration {
 
     private final MessageConverter messageConverter = new JsonMessageConverter();
 
-    private RabbitClientImpl rabbitClient;
+    private RabbitClient rabbitClient;
     private MessageListenerContainer messageListenerContainer;
 
     private RabbitConfiguration() {
@@ -45,10 +44,10 @@ public class RabbitConfiguration {
      * @param ecaServiceConfig - eca - service config
      * @return rabbit client
      */
-    public RabbitClientImpl configureRabbitClient(EcaServiceConfig ecaServiceConfig) {
+    public RabbitClient configureRabbitClient(EcaServiceConfig ecaServiceConfig) {
         if (rabbitClient == null) {
             RabbitSender rabbitSender = rabbitSender(ecaServiceConfig);
-            rabbitClient = new RabbitClientImpl(rabbitSender);
+            rabbitClient = new RabbitClient(rabbitSender);
         }
         return rabbitClient;
     }

@@ -8,7 +8,6 @@ package eca.gui.frames;
 import eca.client.EcaServiceClientImpl;
 import eca.client.EcaServiceDetails;
 import eca.client.RabbitClient;
-import eca.client.RabbitClientImpl;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
@@ -57,7 +56,6 @@ import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
-import eca.gui.actions.EvaluationRequestSender;
 import eca.gui.actions.ExperimentRequestSender;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
@@ -245,7 +243,7 @@ public class JMainFrame extends JFrame {
 
     private EcaServiceClientImpl ecaServiceClient = new EcaServiceClientImpl();
 
-    private RabbitClientImpl rabbitClient;
+    private RabbitClient rabbitClient;
 
     private MessageListenerContainer messageListenerContainer;
 
