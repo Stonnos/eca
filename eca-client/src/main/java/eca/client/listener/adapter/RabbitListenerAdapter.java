@@ -25,17 +25,17 @@ public class RabbitListenerAdapter {
     /**
      * Setup consumer for outbound messages.
      *
-     * @param channel       - channel object
-     * @param queueName     - queue name to listen
-     * @param callback      - callback invokes when message is delivered and converted
-     * @param responseClazz - response class
-     * @param <T>           - message generic type
+     * @param channel      - channel object
+     * @param queueName    - queue name to listen
+     * @param callback     - callback invokes when message is delivered and converted
+     * @param messageClazz - message class
+     * @param <T>          - message generic type
      * @throws IOException in case of I/O error
      */
-    public <T> void basicConsume(Channel channel, String queueName, Consumer<T> callback, Class<T> responseClazz)
+    public <T> void basicConsume(Channel channel, String queueName, Consumer<T> callback, Class<T> messageClazz)
             throws IOException {
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            T message = messageConverter.fromMessage(delivery.getBody(), responseClazz);
+            T message = messageConverter.fromMessage(delivery.getBody(), messageClazz);
             callback.accept(message);
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         };
