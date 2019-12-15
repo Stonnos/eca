@@ -7,6 +7,7 @@ import eca.client.converter.JsonMessageConverter;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
 import eca.client.listener.adapter.RabbitListenerAdapter;
+import eca.client.util.RabbitUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,8 +21,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import static eca.client.util.RabbitUtils.closeChannel;
-import static eca.client.util.RabbitUtils.closeConnection;
 import static eca.client.util.RabbitUtils.declareReplyToQueue;
 
 /**
@@ -82,8 +81,8 @@ public class MessageListenerContainer {
     public void stop() {
         futureTask.cancel(true);
         executorService.shutdown();
-        closeAndResetChannel();
-        closeAndResetConnection();
+        closeChannel();
+        closeConnection();
         log.info("OK");
     }
 
@@ -99,9 +98,9 @@ public class MessageListenerContainer {
         }
     }
 
-    private void closeAndResetChannel() {
+    private void closeChannel() {
         try {
-            closeChannel(channel);
+            RabbitUtils.closeChannel(channel);
         } catch (IOException | TimeoutException ex) {
             log.error(ex.getMessage());
             //ignored
@@ -109,9 +108,9 @@ public class MessageListenerContainer {
         channel = null;
     }
 
-    private void closeAndResetConnection() {
+    private void closeConnection() {
         try {
-            closeConnection(connection);
+            RabbitUtils.closeConnection(connection);
         } catch (IOException ex) {
             log.error(ex.getMessage());
             //ignored
