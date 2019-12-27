@@ -103,6 +103,7 @@ public class MessageListenerContainer {
             try {
                 log.info("Attempting connect to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
                 connection = connectionFactory.newConnection();
+                log.info("Connected to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
             } catch (Exception ex) {
                 log.error(ex.getMessage());
                 waitForNextAttempt();
