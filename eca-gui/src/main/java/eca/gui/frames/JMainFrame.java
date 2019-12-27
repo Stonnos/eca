@@ -639,8 +639,7 @@ public class JMainFrame extends JFrame {
             rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(), evaluationQueue,
                     correlationId);
             EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                    .name(frame.classifier().getClass().getSimpleName())
-                    .description(frame.getTitle())
+                    .header(frame.getTitle())
                     .correlationId(correlationId)
                     .build();
             ecaServiceTracks.add(ecaServiceTrack);
@@ -1325,7 +1324,7 @@ public class JMainFrame extends JFrame {
                                             correlationId);
                                     EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                             .correlationId(correlationId)
-                                            .description(experimentRequestDto.getExperimentType().getDescription())
+                                            .header(experimentRequestDto.getExperimentType().getDescription())
                                             .build();
                                     ecaServiceTracks.add(ecaServiceTrack);
                                 };
@@ -1935,7 +1934,7 @@ public class JMainFrame extends JFrame {
                 EvaluationResults evaluationResults = getEvaluationResults(evaluationResponse);
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 String title =
-                        !StringUtils.isBlank(ecaServiceTrack.getDescription()) ? ecaServiceTrack.getDescription() :
+                        !StringUtils.isBlank(ecaServiceTrack.getHeader()) ? ecaServiceTrack.getHeader() :
                                 evaluationResults.getClassifier().getClass().getSimpleName();
                 resultsHistory.createResultFrame(title, evaluationResults.getClassifier(),
                         evaluationResults.getEvaluation().getData(), evaluationResults.getEvaluation(),
@@ -1956,7 +1955,7 @@ public class JMainFrame extends JFrame {
                     @Override
                     public Void caseSuccessStatus() {
                         JOptionPane.showMessageDialog(JMainFrame.this,
-                                String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDescription()),
+                                String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getHeader()),
                                 null, JOptionPane.INFORMATION_MESSAGE);
                         return null;
                     }

@@ -20,14 +20,9 @@ public class EcaServiceTrack {
     private String correlationId;
 
     /**
-     * Track name
+     * Header info
      */
-    private String name;
-
-    /**
-     * Description string
-     */
-    private String description;
+    private String header;
 
     /**
      * Additional data map
