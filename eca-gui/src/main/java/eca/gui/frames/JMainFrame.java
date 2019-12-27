@@ -228,6 +228,7 @@ public class JMainFrame extends JFrame {
 
     private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
     private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
+    private static final String TIMEOUT_MESSAGE = "Произошел таймаут";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1931,7 +1932,7 @@ public class JMainFrame extends JFrame {
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
         return (evaluationResponse, basicProperties) -> {
             try {
-                EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
+                EvaluationResults evaluationResults = getEvaluationResults(evaluationResponse);
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getDescription()) ? ecaServiceTrack.getDescription() :
@@ -1990,5 +1991,24 @@ public class JMainFrame extends JFrame {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(
                         String.format("Can't find eca - service track with correlation id [%s]", correlationId)));
+    }
+
+    private EvaluationResults getEvaluationResults(final EvaluationResponse evaluationResponse) {
+        return evaluationResponse.getStatus().handle(new TechnicalStatusVisitor<EvaluationResults>() {
+            @Override
+            public EvaluationResults caseSuccessStatus() {
+                return evaluationResponse.getEvaluationResults();
+            }
+
+            @Override
+            public EvaluationResults caseErrorStatus() {
+                throw new IllegalStateException(evaluationResponse.getErrorMessage());
+            }
+
+            @Override
+            public EvaluationResults caseTimeoutStatus() {
+                throw new IllegalStateException(TIMEOUT_MESSAGE);
+            }
+        });
     }
 }
