@@ -96,6 +96,7 @@ import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
+import eca.model.EcaServiceTrack;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.report.contingency.ContingencyTableReportModel;
@@ -257,6 +258,8 @@ public class JMainFrame extends JFrame {
 
     private String evaluationQueue;
     private String experimentQueue;
+
+    private final List<EcaServiceTrack> ecaServiceTracks = newArrayList();
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -630,9 +633,17 @@ public class JMainFrame extends JFrame {
             rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
         }
-        CallbackAction callbackAction =
-                () -> rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(),
-                        evaluationQueue, UUID.randomUUID().toString());
+        CallbackAction callbackAction = () -> {
+            String correlationId = UUID.randomUUID().toString();
+            rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(), evaluationQueue,
+                    correlationId);
+            EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                    .name(frame.classifier().getClass().getSimpleName())
+                    .description(frame.getTitle())
+                    .correlationId(correlationId)
+                    .build();
+            ecaServiceTracks.add(ecaServiceTrack);
+        };
         LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
         processAsyncTask(progress, () -> {
             log.info("Sent");
@@ -1353,7 +1364,7 @@ public class JMainFrame extends JFrame {
         optimalClassifierMenu.addActionListener(event -> {
             if (isDataAndClassValid()) {
                 try {
-                    final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
+                   /* final AbstractCallback<EvaluationResults> callback = new AbstractCallback<EvaluationResults>() {
 
                         @Override
                         protected EvaluationResults performAndGetResult() throws Exception {
@@ -1367,6 +1378,19 @@ public class JMainFrame extends JFrame {
                                 evaluationResults.getClassifier().getClass().getSimpleName(),
                                 evaluationResults.getClassifier(), callback.getResult().getEvaluation().getData(),
                                 evaluationResults.getEvaluation(), maximumFractionDigits);
+                    });*/
+                    CallbackAction callbackAction = () -> {
+                        String correlationId = UUID.randomUUID().toString();
+                        rabbitClient.sendEvaluationRequest(selectedPanel().getFilteredData(), evaluationQueue,
+                                correlationId);
+                        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                .correlationId(correlationId)
+                                .build();
+                        ecaServiceTracks.add(ecaServiceTrack);
+                    };
+                    LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
+                    processAsyncTask(progress, () -> {
+                        log.info("Sent");
                     });
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -1718,9 +1742,8 @@ public class JMainFrame extends JFrame {
     /**
      * Executes iterative classifier building.
      *
-     * @param frame           {@link ClassifierOptionsDialogBase} object
-     * @param progressMessage progress message
-     * @throws Exception
+     * @param frame           - classifier options dialog base object
+     * @param progressMessage - progress message
      */
     private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame, String progressMessage) {
         frame.showDialog();
@@ -1885,9 +1908,18 @@ public class JMainFrame extends JFrame {
         return (evaluationResponse, basicProperties) -> {
             try {
                 EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
-                resultsHistory.createResultFrame(evaluationResults.getClassifier().getClass().getSimpleName(),
-                        evaluationResults.getClassifier(), evaluationResults.getEvaluation().getData(),
-                        evaluationResults.getEvaluation(), maximumFractionDigits);
+                EcaServiceTrack ecaServiceTrack = ecaServiceTracks.stream()
+                        .filter(track -> track.getCorrelationId().equals(basicProperties.getCorrelationId()))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException(
+                                String.format("Can't find eca - service track with correlation id [%s]",
+                                        basicProperties.getCorrelationId())));
+                String title =
+                        !StringUtils.isBlank(ecaServiceTrack.getDescription()) ? ecaServiceTrack.getDescription() :
+                                evaluationResults.getClassifier().getClass().getSimpleName();
+                resultsHistory.createResultFrame(title, evaluationResults.getClassifier(),
+                        evaluationResults.getEvaluation().getData(), evaluationResults.getEvaluation(),
+                        maximumFractionDigits);
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
                 JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
