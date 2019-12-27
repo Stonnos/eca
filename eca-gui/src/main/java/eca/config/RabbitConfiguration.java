@@ -7,7 +7,7 @@ import eca.client.RabbitSender;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.converter.MessageConverter;
 import eca.client.listener.MessageListenerContainer;
-import eca.client.listener.adapter.RabbitListenerAdapter;
+import lombok.Getter;
 
 /**
  * Rabbit configuration.
@@ -18,10 +18,11 @@ public class RabbitConfiguration {
 
     private static RabbitConfiguration rabbitConfiguration;
 
-    private final MessageConverter messageConverter = new JsonMessageConverter();
-
     private RabbitClient rabbitClient;
     private MessageListenerContainer messageListenerContainer;
+
+    @Getter
+    private final MessageConverter messageConverter = new JsonMessageConverter();
 
     private RabbitConfiguration() {
     }
@@ -60,8 +61,9 @@ public class RabbitConfiguration {
      */
     public MessageListenerContainer configureMessageListenerContainer(EcaServiceConfig ecaServiceConfig) {
         if (messageListenerContainer == null) {
+            messageListenerContainer = new MessageListenerContainer();
             ConnectionFactory connectionFactory = connectionFactory(ecaServiceConfig);
-            messageListenerContainer = new MessageListenerContainer(connectionFactory, rabbitListenerAdapter());
+            messageListenerContainer.setConnectionFactory(connectionFactory);
         }
         return messageListenerContainer;
     }
@@ -69,10 +71,6 @@ public class RabbitConfiguration {
     private ConnectionFactory connectionFactory(EcaServiceConfig ecaServiceConfig) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         return connectionFactory;
-    }
-
-    private RabbitListenerAdapter rabbitListenerAdapter() {
-        return new RabbitListenerAdapter(messageConverter);
     }
 
     private ConnectionManager connectionManager(EcaServiceConfig ecaServiceConfig) {

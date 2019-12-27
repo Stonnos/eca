@@ -4,7 +4,6 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.MimeTypeUtils;
 
 import java.io.IOException;
@@ -62,11 +61,12 @@ public class RabbitUtils {
     /**
      * Declares reply to queue.
      *
+     * @param queue   - queue name
      * @param channel - channel object
      * @return generated queue name
      * @throws IOException in case of I/O error
      */
-    public static String declareReplyToQueue(Channel channel) throws IOException {
-        return channel.queueDeclare(StringUtils.EMPTY, false, true, true, null).getQueue();
+    public static String declareReplyToQueue(String queue, Channel channel) throws IOException {
+        return channel.queueDeclare(queue, false, true, true, null).getQueue();
     }
 }

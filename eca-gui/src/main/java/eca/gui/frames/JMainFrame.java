@@ -9,9 +9,12 @@ import eca.client.EcaServiceClientImpl;
 import eca.client.EcaServiceDetails;
 import eca.client.RabbitClient;
 import eca.client.dto.EcaResponse;
+import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.listener.MessageListenerContainer;
+import eca.client.listener.adapter.EvaluationListenerAdapter;
+import eca.client.messaging.MessageHandler;
 import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.config.IconType;
@@ -133,6 +136,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 /**
  * Implements the main application frame.
  *
@@ -220,6 +225,9 @@ public class JMainFrame extends JFrame {
     private static final String STATISTICS_MENU_TEXT = "Статистика";
     private static final String CONTINGENCY_TABLE_LOADING_MESSAGE = "Пожалуйста подождите, идет построение таблицы...";
 
+    private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
+    private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
+
     private final JDesktopPane dataPanels = new JDesktopPane();
 
     private JMenu windowsMenu;
@@ -236,7 +244,7 @@ public class JMainFrame extends JFrame {
 
     private ClassificationResultHistoryFrame resultHistoryFrame;
 
-    private List<AbstractButton> disabledMenuElementList = new ArrayList<>();
+    private List<AbstractButton> disabledMenuElementList = newArrayList();
 
     private final SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
@@ -246,6 +254,9 @@ public class JMainFrame extends JFrame {
     private RabbitClient rabbitClient;
 
     private MessageListenerContainer messageListenerContainer;
+
+    private String evaluationQueue;
+    private String experimentQueue;
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -270,6 +281,7 @@ public class JMainFrame extends JFrame {
             ToolTipManager.sharedInstance().setDismissDelay(
                     Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
                             CommonDictionary.TOOLTIP_DISMISS));
+            generateQueueNames();
             updateEcaServiceClientDetails();
             configureRabbitClient();
             configureMessageListenerContainer();
@@ -618,10 +630,9 @@ public class JMainFrame extends JFrame {
             rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
         }
-        CallbackAction callbackAction = () -> {
-          rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(),
-                  messageListenerContainer.getEvaluationResultsQueue(), UUID.randomUUID().toString());
-        };
+        CallbackAction callbackAction =
+                () -> rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(),
+                        evaluationQueue, UUID.randomUUID().toString());
         LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
         processAsyncTask(progress, () -> {
             log.info("Sent");
@@ -1853,12 +1864,25 @@ public class JMainFrame extends JFrame {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
-        addEvaluationResultsListener();
+        addEvaluationListenerAdapter();
         messageListenerContainer.start();
     }
 
-    private void addEvaluationResultsListener() {
-        messageListenerContainer.setEvaluationResultsConsumer(evaluationResponse -> {
+    private void generateQueueNames() {
+        evaluationQueue = String.format(EVALUATION_RESULTS_QUEUE_FORMAT, UUID.randomUUID().toString());
+        experimentQueue = String.format(EXPERIMENT_QUEUE_FORMAT, UUID.randomUUID().toString());
+    }
+
+    private void addEvaluationListenerAdapter() {
+        MessageHandler<EvaluationResponse> evaluationResponseMessageHandler = createEvaluationResultsMessageHandler();
+        EvaluationListenerAdapter evaluationListenerAdapter =
+                new EvaluationListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
+                        evaluationResponseMessageHandler);
+        messageListenerContainer.getRabbitListenerAdapters().put(evaluationQueue, evaluationListenerAdapter);
+    }
+
+    private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
+        return (evaluationResponse, basicProperties) -> {
             try {
                 EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
                 resultsHistory.createResultFrame(evaluationResults.getClassifier().getClass().getSimpleName(),
@@ -1869,6 +1893,6 @@ public class JMainFrame extends JFrame {
                 JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                         null, JOptionPane.WARNING_MESSAGE);
             }
-        });
+        };
     }
 }

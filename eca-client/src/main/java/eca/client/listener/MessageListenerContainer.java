@@ -3,24 +3,22 @@ package eca.client.listener;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import eca.client.converter.JsonMessageConverter;
-import eca.client.dto.EcaResponse;
-import eca.client.dto.EvaluationResponse;
-import eca.client.listener.adapter.RabbitListenerAdapter;
+import eca.client.listener.adapter.AbstractRabbitListenerAdapter;
 import eca.client.util.RabbitUtils;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static eca.client.util.RabbitUtils.declareReplyToQueue;
 
 /**
@@ -29,26 +27,28 @@ import static eca.client.util.RabbitUtils.declareReplyToQueue;
  * @author Roman Batygin
  */
 @Slf4j
-@RequiredArgsConstructor
 public class MessageListenerContainer {
 
+    /**
+     * Connection factory
+     */
     @Getter
-    private final ConnectionFactory connectionFactory;
+    @Setter
+    private ConnectionFactory connectionFactory;
 
+    /**
+     * Rabbit listeners adapters map, where key is queue name
+     */
     @Getter
-    private final RabbitListenerAdapter rabbitListenerAdapter;
+    @Setter
+    private Map<String, AbstractRabbitListenerAdapter> rabbitListenerAdapters = newHashMap();
 
+    /**
+     * Connection attempt interval in millis
+     */
     @Getter
     @Setter
     private long connectionAttemptIntervalMillis = 5000L;
-
-    @Getter
-    @Setter
-    private Consumer<EcaResponse> experimentResponseConsumer;
-
-    @Getter
-    @Setter
-    private Consumer<EvaluationResponse> evaluationResultsConsumer;
 
     private Connection connection;
 
@@ -58,16 +58,25 @@ public class MessageListenerContainer {
 
     private FutureTask<Void> futureTask;
 
-    @Getter
-    private String evaluationResultsQueue;
+    private AtomicBoolean started = new AtomicBoolean();
+
+    /**
+     * Default constructor.
+     */
+    public MessageListenerContainer() {
+        executorService = Executors.newSingleThreadExecutor();
+    }
 
     /**
      * Starts message listener container.
      */
-    public void start() {
-        executorService = Executors.newSingleThreadExecutor();
+    public synchronized void start() {
+        if (started.get()) {
+            throw new IllegalStateException();
+        }
+        started.set(true);
         Callable<Void> callable = () -> {
-            doConnect();
+            openConnection();
             setupConsumers();
             return null;
         };
@@ -78,15 +87,18 @@ public class MessageListenerContainer {
     /**
      * Stop message listener container.
      */
-    public void stop() {
+    public synchronized void stop() {
+        if (!started.get()) {
+            throw new IllegalStateException();
+        }
         futureTask.cancel(true);
-        executorService.shutdown();
         closeChannel();
         closeConnection();
+        started.set(false);
         log.info("OK");
     }
 
-    private void doConnect() {
+    private void openConnection() {
         while (!futureTask.isCancelled() && connection == null) {
             try {
                 log.info("Attempting connect to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
@@ -122,11 +134,10 @@ public class MessageListenerContainer {
         if (!futureTask.isCancelled()) {
             try {
                 channel = connection.createChannel();
-                evaluationResultsQueue = declareReplyToQueue(channel);
-                rabbitListenerAdapter.basicConsume(channel, declareReplyToQueue(channel), experimentResponseConsumer,
-                        EcaResponse.class);
-                rabbitListenerAdapter.basicConsume(channel, evaluationResultsQueue, evaluationResultsConsumer,
-                        EvaluationResponse.class);
+                for (Map.Entry<String, AbstractRabbitListenerAdapter> adapterEntry : rabbitListenerAdapters.entrySet()) {
+                    String queue = declareReplyToQueue(adapterEntry.getKey(), channel);
+                    adapterEntry.getValue().basicConsume(channel, queue);
+                }
                 log.info("Consumers initialization has been finished");
             } catch (IOException ex) {
                 log.error("There was an error while initialize consumers: {}", ex.getMessage());
@@ -140,15 +151,5 @@ public class MessageListenerContainer {
         } catch (InterruptedException e) {
             //ignored
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        RabbitListenerAdapter adapter = new RabbitListenerAdapter(new JsonMessageConverter());
-        MessageListenerContainer container = new MessageListenerContainer(new ConnectionFactory(), adapter);
-        container.start();
-        Thread.sleep(20000L);
-        log.info("cancel");
-        container.stop();
-        Thread.sleep(50000000L);
     }
 }
