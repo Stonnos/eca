@@ -14,6 +14,7 @@ import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
+import eca.client.listener.adapter.ExperimentListenerAdapter;
 import eca.client.messaging.MessageHandler;
 import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
@@ -59,7 +60,6 @@ import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
-import eca.gui.actions.ExperimentRequestSender;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
 import eca.gui.actions.UrlLoader;
@@ -1312,15 +1312,27 @@ public class JMainFrame extends JFrame {
                                     new ExperimentRequestDialog(JMainFrame.this);
                             experimentRequestDialog.showDialog(experimentRequestDto);
                             if (experimentRequestDialog.isDialogResult()) {
-                                experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
+                               /* experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
                                 experimentRequestDto.setData(dataBuilder.getResult());
                                 ExperimentRequestSender experimentRequestSender =
-                                        new ExperimentRequestSender(ecaServiceClient, experimentRequestDto);
-                                LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                        experimentRequestSender, EXPERIMENT_REQUEST_LOADING_MESSAGE);
+                                        new ExperimentRequestSender(ecaServiceClient, experimentRequestDto);*/
+                                experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
+                                experimentRequestDto.setData(dataBuilder.getResult());
+                                CallbackAction callbackAction = () -> {
+                                    String correlationId = UUID.randomUUID().toString();
+                                    rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
+                                            correlationId);
+                                    EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                            .correlationId(correlationId)
+                                            .description(experimentRequestDto.getExperimentType().getDescription())
+                                            .build();
+                                    ecaServiceTracks.add(ecaServiceTrack);
+                                };
+                                LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction,
+                                        EXPERIMENT_REQUEST_LOADING_MESSAGE);
 
                                 processAsyncTask(progress, () -> {
-                                    EcaResponse ecaResponse = experimentRequestSender.getResult();
+                                 /*   EcaResponse ecaResponse = experimentRequestSender.getResult();
                                     ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                                         @Override
                                         public Void caseSuccessStatus() {
@@ -1346,7 +1358,7 @@ public class JMainFrame extends JFrame {
                                                     JOptionPane.ERROR_MESSAGE);
                                             return null;
                                         }
-                                    });
+                                    });*/
                                 });
                             }
                         });
@@ -1379,18 +1391,21 @@ public class JMainFrame extends JFrame {
                                 evaluationResults.getClassifier(), callback.getResult().getEvaluation().getData(),
                                 evaluationResults.getEvaluation(), maximumFractionDigits);
                     });*/
-                    CallbackAction callbackAction = () -> {
-                        String correlationId = UUID.randomUUID().toString();
-                        rabbitClient.sendEvaluationRequest(selectedPanel().getFilteredData(), evaluationQueue,
-                                correlationId);
-                        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                                .correlationId(correlationId)
-                                .build();
-                        ecaServiceTracks.add(ecaServiceTrack);
-                    };
-                    LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
-                    processAsyncTask(progress, () -> {
-                        log.info("Sent");
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    createTrainingData(dataBuilder, () -> {
+                        CallbackAction callbackAction = () -> {
+                            String correlationId = UUID.randomUUID().toString();
+                            rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
+                                    correlationId);
+                            EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                    .correlationId(correlationId)
+                                    .build();
+                            ecaServiceTracks.add(ecaServiceTrack);
+                        };
+                        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
+                        processAsyncTask(progress, () -> {
+                            log.info("Sent");
+                        });
                     });
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -1888,6 +1903,7 @@ public class JMainFrame extends JFrame {
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
         addEvaluationListenerAdapter();
+        addExperimentListenerAdapter();
         messageListenerContainer.start();
     }
 
@@ -1904,16 +1920,19 @@ public class JMainFrame extends JFrame {
         messageListenerContainer.getRabbitListenerAdapters().put(evaluationQueue, evaluationListenerAdapter);
     }
 
+    private void addExperimentListenerAdapter() {
+        MessageHandler<EcaResponse> experimentMessageHandler = createExperimentMessageHandler();
+        ExperimentListenerAdapter experimentListenerAdapter =
+                new ExperimentListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
+                        experimentMessageHandler);
+        messageListenerContainer.getRabbitListenerAdapters().put(experimentQueue, experimentListenerAdapter);
+    }
+
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
         return (evaluationResponse, basicProperties) -> {
             try {
                 EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
-                EcaServiceTrack ecaServiceTrack = ecaServiceTracks.stream()
-                        .filter(track -> track.getCorrelationId().equals(basicProperties.getCorrelationId()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException(
-                                String.format("Can't find eca - service track with correlation id [%s]",
-                                        basicProperties.getCorrelationId())));
+                EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getDescription()) ? ecaServiceTrack.getDescription() :
                                 evaluationResults.getClassifier().getClass().getSimpleName();
@@ -1926,5 +1945,50 @@ public class JMainFrame extends JFrame {
                         null, JOptionPane.WARNING_MESSAGE);
             }
         };
+    }
+
+    private MessageHandler<EcaResponse> createExperimentMessageHandler() {
+        return (ecaResponse, basicProperties) -> {
+            try {
+                EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
+                ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
+                    @Override
+                    public Void caseSuccessStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDescription()),
+                                null, JOptionPane.INFORMATION_MESSAGE);
+                        return null;
+                    }
+
+                    @Override
+                    public Void caseErrorStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                ecaResponse.getErrorMessage(),
+                                null, JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+
+                    @Override
+                    public Void caseTimeoutStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this,
+                                EXPERIMENT_TIMEOUT_MESSAGE, null,
+                                JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+                });
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(JMainFrame.this,
+                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            }
+        };
+    }
+
+    private EcaServiceTrack getEcaServiceTrack(String correlationId) {
+        return ecaServiceTracks.stream()
+                .filter(track -> track.getCorrelationId().equals(correlationId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        String.format("Can't find eca - service track with correlation id [%s]", correlationId)));
     }
 }
