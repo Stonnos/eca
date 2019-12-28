@@ -62,9 +62,9 @@ public class RabbitConfiguration {
     public MessageListenerContainer configureMessageListenerContainer(EcaServiceConfig ecaServiceConfig) {
         if (messageListenerContainer == null) {
             messageListenerContainer = new MessageListenerContainer();
-            ConnectionFactory connectionFactory = connectionFactory(ecaServiceConfig);
-            messageListenerContainer.setConnectionFactory(connectionFactory);
         }
+        ConnectionFactory connectionFactory = connectionFactory(ecaServiceConfig);
+        messageListenerContainer.setConnectionFactory(connectionFactory);
         return messageListenerContainer;
     }
 

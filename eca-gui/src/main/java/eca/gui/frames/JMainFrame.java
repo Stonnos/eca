@@ -239,7 +239,7 @@ public class JMainFrame extends JFrame {
     private int maximumFractionDigits;
     private int seed;
 
-    private boolean isStarted;
+    private boolean started;
 
     private final EvaluationMethodOptionsDialog evaluationMethodOptionsDialog =
             new EvaluationMethodOptionsDialog(this);
@@ -259,6 +259,8 @@ public class JMainFrame extends JFrame {
 
     private String evaluationQueue;
     private String experimentQueue;
+
+    private boolean rabbitConfigured;
 
     private final List<EcaServiceTrack> ecaServiceTracks = newArrayList();
 
@@ -286,16 +288,15 @@ public class JMainFrame extends JFrame {
                     Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
                             CommonDictionary.TOOLTIP_DISMISS));
             generateQueueNames();
-            updateEcaServiceClientDetails();
-            configureRabbitClient();
-            configureMessageListenerContainer();
+            //updateEcaServiceClientDetails();
+            updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
     }
 
     private void closeWindow() {
-        if (isStarted) {
+        if (started) {
             int exitResult = JOptionPane.showConfirmDialog(JMainFrame.this, ON_EXIT_TEXT, null,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (exitResult == JOptionPane.YES_OPTION) {
@@ -744,7 +745,7 @@ public class JMainFrame extends JFrame {
         dataInternalFrame.setVisible(true);
         setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
-        isStarted = true;
+        started = true;
     }
 
     public void createDataFrame(Instances data) throws Exception {
@@ -1491,12 +1492,14 @@ public class JMainFrame extends JFrame {
 
         JMenuItem ecaServiceOptionsMenu = new JMenuItem(ECA_SERVICE_MENU_TEXT);
         ecaServiceOptionsMenu.addActionListener(e -> {
+            EcaServiceConfig oldCOnfig = CONFIG_SERVICE.getEcaServiceConfig();
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
             if (ecaServiceOptionsDialog.isDialogResult()) {
                 try {
                     CONFIG_SERVICE.saveEcaServiceConfig();
-                    updateEcaServiceClientDetails();
+                    //updateEcaServiceClientDetails();
+                    updateMessageListenerContainerConfiguration(oldCOnfig);
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
@@ -1898,13 +1901,34 @@ public class JMainFrame extends JFrame {
         rabbitClient = RabbitConfiguration.getRabbitConfiguration().configureRabbitClient(ecaServiceConfig);
     }
 
-    private void configureMessageListenerContainer() {
+    private void configureAndStartMessageListenerContainer() {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
-        addEvaluationListenerAdapter();
-        addExperimentListenerAdapter();
+        addEvaluationListenerAdapterIfAbsent();
+        addExperimentListenerAdapterIfAbsent();
         messageListenerContainer.start();
+    }
+
+    private void updateMessageListenerContainerConfiguration(EcaServiceConfig prevConfig) throws Exception {
+        EcaServiceConfig currentConfig = CONFIG_SERVICE.getEcaServiceConfig();
+        if (currentConfig.getEnabled()) {
+            if (!rabbitConfigured || !prevConfig.equals(currentConfig)) {
+                resetRabbitConfiguration(prevConfig);
+                configureAndStartMessageListenerContainer();
+                configureRabbitClient();
+                rabbitConfigured = true;
+            }
+        } else {
+            resetRabbitConfiguration(prevConfig);
+        }
+    }
+
+    private void resetRabbitConfiguration(EcaServiceConfig prevConfig) throws Exception {
+        if (rabbitConfigured && prevConfig.getEnabled()) {
+            messageListenerContainer.stop();
+            rabbitClient.getRabbitSender().getConnectionManager().close();
+        }
     }
 
     private void generateQueueNames() {
@@ -1912,20 +1936,25 @@ public class JMainFrame extends JFrame {
         experimentQueue = String.format(EXPERIMENT_QUEUE_FORMAT, UUID.randomUUID().toString());
     }
 
-    private void addEvaluationListenerAdapter() {
-        MessageHandler<EvaluationResponse> evaluationResponseMessageHandler = createEvaluationResultsMessageHandler();
-        EvaluationListenerAdapter evaluationListenerAdapter =
-                new EvaluationListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
-                        evaluationResponseMessageHandler);
-        messageListenerContainer.getRabbitListenerAdapters().put(evaluationQueue, evaluationListenerAdapter);
+    private void addEvaluationListenerAdapterIfAbsent() {
+        if (!messageListenerContainer.getRabbitListenerAdapters().containsKey(evaluationQueue)) {
+            MessageHandler<EvaluationResponse> evaluationResponseMessageHandler =
+                    createEvaluationResultsMessageHandler();
+            EvaluationListenerAdapter evaluationListenerAdapter =
+                    new EvaluationListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
+                            evaluationResponseMessageHandler);
+            messageListenerContainer.getRabbitListenerAdapters().put(evaluationQueue, evaluationListenerAdapter);
+        }
     }
 
-    private void addExperimentListenerAdapter() {
-        MessageHandler<EcaResponse> experimentMessageHandler = createExperimentMessageHandler();
-        ExperimentListenerAdapter experimentListenerAdapter =
-                new ExperimentListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
-                        experimentMessageHandler);
-        messageListenerContainer.getRabbitListenerAdapters().put(experimentQueue, experimentListenerAdapter);
+    private void addExperimentListenerAdapterIfAbsent() {
+        if (!messageListenerContainer.getRabbitListenerAdapters().containsKey(experimentQueue)) {
+            MessageHandler<EcaResponse> experimentMessageHandler = createExperimentMessageHandler();
+            ExperimentListenerAdapter experimentListenerAdapter =
+                    new ExperimentListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
+                            experimentMessageHandler);
+            messageListenerContainer.getRabbitListenerAdapters().put(experimentQueue, experimentListenerAdapter);
+        }
     }
 
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
