@@ -1,10 +1,11 @@
 package eca.gui.tables;
 
-import eca.gui.renderers.CheckboxRenderer;
 import eca.gui.editors.CustomCellEditor;
+import eca.gui.renderers.CheckboxRenderer;
 import eca.gui.renderers.CustomCellRenderer;
 import eca.gui.renderers.TextFieldRenderer;
 import eca.gui.tables.models.EcaServiceOptionsTableModel;
+import eca.gui.text.IntegerDocument;
 import eca.gui.text.LengthDocument;
 
 import javax.swing.*;
@@ -22,7 +23,9 @@ public class EcaServicePropertiesTable extends JDataTableBase {
 
     private static final int FIELD_LENGTH = 15;
     private static final int MAX_FIELD_LENGTH = 255;
+    private static final int PORT_LENGTH = 4;
     private static final int ENABLED_ROW = 0;
+    private static final int PORT_ROW = 2;
 
     public EcaServicePropertiesTable(EcaServiceOptionsTableModel model) {
         super(model);
@@ -33,10 +36,13 @@ public class EcaServicePropertiesTable extends JDataTableBase {
     private void initialize() {
         TableColumn column = this.getColumnModel().getColumn(1);
         //Sets editors
-        JTextField text = new JTextField(FIELD_LENGTH);
-        text.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
-        CustomCellEditor customCellEditor = new CustomCellEditor(this, new DefaultCellEditor(text));
+        JTextField textField = new JTextField(FIELD_LENGTH);
+        textField.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
+        JTextField portTextField = new JTextField(FIELD_LENGTH);
+        portTextField.setDocument(new IntegerDocument(PORT_LENGTH));
+        CustomCellEditor customCellEditor = new CustomCellEditor(this, new DefaultCellEditor(textField));
         customCellEditor.setEditorAt(ENABLED_ROW, new DefaultCellEditor(new JCheckBox()));
+        customCellEditor.setEditorAt(PORT_ROW, new DefaultCellEditor(portTextField));
         column.setCellEditor(customCellEditor);
         //Sets renderer
         CustomCellRenderer customCellRenderer = new CustomCellRenderer(new TextFieldRenderer());

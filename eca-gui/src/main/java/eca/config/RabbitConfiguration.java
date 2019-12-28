@@ -47,9 +47,12 @@ public class RabbitConfiguration {
      */
     public RabbitClient configureRabbitClient(EcaServiceConfig ecaServiceConfig) {
         if (rabbitClient == null) {
-            RabbitSender rabbitSender = rabbitSender(ecaServiceConfig);
+            RabbitSender rabbitSender = new RabbitSender();
+            rabbitSender.setMessageConverter(messageConverter);
             rabbitClient = new RabbitClient(rabbitSender);
         }
+        ConnectionManager connectionManager = connectionManager(ecaServiceConfig);
+        rabbitClient.getRabbitSender().setConnectionManager(connectionManager);
         return rabbitClient;
     }
 
@@ -70,16 +73,15 @@ public class RabbitConfiguration {
 
     private ConnectionFactory connectionFactory(EcaServiceConfig ecaServiceConfig) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(ecaServiceConfig.getHost());
+        connectionFactory.setPort(ecaServiceConfig.getPort());
+        connectionFactory.setUsername(ecaServiceConfig.getUsername());
+        connectionFactory.setPassword(ecaServiceConfig.getPassword());
         return connectionFactory;
     }
 
     private ConnectionManager connectionManager(EcaServiceConfig ecaServiceConfig) {
         ConnectionFactory connectionFactory = connectionFactory(ecaServiceConfig);
         return new ConnectionManager(connectionFactory);
-    }
-
-    private RabbitSender rabbitSender(EcaServiceConfig ecaServiceConfig) {
-        ConnectionManager connectionManager = connectionManager(ecaServiceConfig);
-        return new RabbitSender(messageConverter, connectionManager);
     }
 }

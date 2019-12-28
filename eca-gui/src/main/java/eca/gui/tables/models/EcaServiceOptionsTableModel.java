@@ -64,10 +64,10 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     private void init() {
         options.add(new Entry<>(CommonDictionary.ECA_SERVICE_ENABLED,
                 CONFIG_SERVICE.getEcaServiceConfig().getEnabled().toString()));
-        options.add(new Entry<>(CommonDictionary.ECA_API_URL, CONFIG_SERVICE.getEcaServiceConfig().getApiUrl()));
-        options.add(new Entry<>(CommonDictionary.ECA_TOKEN_URL, CONFIG_SERVICE.getEcaServiceConfig().getTokenUrl()));
-        options.add(new Entry<>(CommonDictionary.ECA_CLIENT_ID, CONFIG_SERVICE.getEcaServiceConfig().getClientId()));
-        options.add(new Entry<>(CommonDictionary.ECA_CLIENT_SECRET,
-                CONFIG_SERVICE.getEcaServiceConfig().getClientSecret()));
+        options.add(new Entry<>(CommonDictionary.RABBIT_HOST, CONFIG_SERVICE.getEcaServiceConfig().getHost()));
+        options.add(new Entry<>(CommonDictionary.RABBIT_PORT,
+                String.valueOf(CONFIG_SERVICE.getEcaServiceConfig().getPort())));
+        options.add(new Entry<>(CommonDictionary.RABBIT_USERNAME, CONFIG_SERVICE.getEcaServiceConfig().getUsername()));
+        options.add(new Entry<>(CommonDictionary.RABBIT_PASSWORD, CONFIG_SERVICE.getEcaServiceConfig().getPassword()));
     }
 }

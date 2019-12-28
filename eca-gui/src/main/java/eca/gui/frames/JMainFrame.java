@@ -6,7 +6,6 @@
 package eca.gui.frames;
 
 import eca.client.EcaServiceClientImpl;
-import eca.client.EcaServiceDetails;
 import eca.client.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
@@ -260,7 +259,7 @@ public class JMainFrame extends JFrame {
     private String evaluationQueue;
     private String experimentQueue;
 
-    private boolean rabbitConfigured;
+    private boolean rabbitStarted;
 
     private final List<EcaServiceTrack> ecaServiceTracks = newArrayList();
 
@@ -1492,14 +1491,16 @@ public class JMainFrame extends JFrame {
 
         JMenuItem ecaServiceOptionsMenu = new JMenuItem(ECA_SERVICE_MENU_TEXT);
         ecaServiceOptionsMenu.addActionListener(e -> {
-            EcaServiceConfig oldCOnfig = CONFIG_SERVICE.getEcaServiceConfig();
+            EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
+            EcaServiceConfig oldConfig = new EcaServiceConfig(ecaServiceConfig.getEnabled(), ecaServiceConfig.getHost(),
+                    ecaServiceConfig.getPort(), ecaServiceConfig.getUsername(), ecaServiceConfig.getPassword());
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
             if (ecaServiceOptionsDialog.isDialogResult()) {
                 try {
                     CONFIG_SERVICE.saveEcaServiceConfig();
                     //updateEcaServiceClientDetails();
-                    updateMessageListenerContainerConfiguration(oldCOnfig);
+                    updateMessageListenerContainerConfiguration(oldConfig);
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
@@ -1889,12 +1890,12 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private void updateEcaServiceClientDetails() {
+    /*private void updateEcaServiceClientDetails() {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         EcaServiceDetails details = new EcaServiceDetails(ecaServiceConfig.getApiUrl(), ecaServiceConfig.getTokenUrl(),
                 ecaServiceConfig.getClientId(), ecaServiceConfig.getClientSecret());
         ecaServiceClient.setEcaServiceDetails(details);
-    }
+    }*/
 
     private void configureRabbitClient() {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
@@ -1913,21 +1914,22 @@ public class JMainFrame extends JFrame {
     private void updateMessageListenerContainerConfiguration(EcaServiceConfig prevConfig) throws Exception {
         EcaServiceConfig currentConfig = CONFIG_SERVICE.getEcaServiceConfig();
         if (currentConfig.getEnabled()) {
-            if (!rabbitConfigured || !prevConfig.equals(currentConfig)) {
-                resetRabbitConfiguration(prevConfig);
+            if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
+                resetRabbitConfiguration();
                 configureAndStartMessageListenerContainer();
                 configureRabbitClient();
-                rabbitConfigured = true;
+                rabbitStarted = true;
             }
         } else {
-            resetRabbitConfiguration(prevConfig);
+            resetRabbitConfiguration();
         }
     }
 
-    private void resetRabbitConfiguration(EcaServiceConfig prevConfig) throws Exception {
-        if (rabbitConfigured && prevConfig.getEnabled()) {
+    private void resetRabbitConfiguration() throws Exception {
+        if (rabbitStarted) {
             messageListenerContainer.stop();
             rabbitClient.getRabbitSender().getConnectionManager().close();
+            rabbitStarted = false;
         }
     }
 

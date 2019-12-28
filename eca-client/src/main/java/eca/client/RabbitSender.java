@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import eca.client.converter.MessageConverter;
 import eca.client.exception.EcaServiceException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,11 +18,10 @@ import java.util.concurrent.TimeoutException;
  */
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class RabbitSender {
 
-    private final MessageConverter messageConverter;
-    private final ConnectionManager connectionManager;
+    private MessageConverter messageConverter;
+    private ConnectionManager connectionManager;
 
     /**
      * Sends message to specified queue.
