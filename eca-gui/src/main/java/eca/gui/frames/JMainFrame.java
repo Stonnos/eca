@@ -594,19 +594,18 @@ public class JMainFrame extends JFrame {
                                       Instances data,
                                       Evaluation evaluation,
                                       int digits) throws Exception {
-            ClassificationResultsFrameBase res = new ClassificationResultsFrameBase(JMainFrame.this,
-                    title, classifier, data, evaluation,
-                    digits);
+            ClassificationResultsFrameBase classificationResultsFrameBase =
+                    new ClassificationResultsFrameBase(JMainFrame.this, title, classifier, data, evaluation, digits);
             StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-            res.setStatisticsTable(stat.createStatistics(classifier, evaluation));
-            ClassificationResultsFrameBase.createResults(res, digits);
-            add(res);
-            res.setVisible(true);
+            classificationResultsFrameBase.setStatisticsTable(stat.createStatistics(classifier, evaluation));
+            ClassificationResultsFrameBase.createResults(classificationResultsFrameBase, digits);
+            add(classificationResultsFrameBase);
+            classificationResultsFrameBase.setVisible(true);
             log.info("Evaluation for classifier {} has been successfully finished!",
                     classifier.getClass().getSimpleName());
         }
 
-        public void add(ClassificationResultsFrameBase resultsFrameBase) {
+        public synchronized void add(ClassificationResultsFrameBase resultsFrameBase) {
             resultsFrameBases.add(resultsFrameBase);
             addElement(String.format(HISTORY_FORMAT, simpleDateFormat.format(resultsFrameBase.getCreationDate()),
                     resultsFrameBase.classifier().getClass().getSimpleName()));
