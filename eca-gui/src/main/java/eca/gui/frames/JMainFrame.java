@@ -170,7 +170,7 @@ public class JMainFrame extends JFrame {
     private static final String NUMBER_FORMAT_TITLE = "Формат чисел";
     private static final String DECIMAL_PLACES_TITLE = "Количество десятичных знаков:";
     private static final String ECA_SERVICE_OPTIONS_MENU_TEXT = "Настройки сервиса ECA";
-    private static final String ECA_SERVICE_MENU_TEXT = "Eca - service";
+    private static final String ECA_SERVICE_MENU_TEXT = "Сервис ECA";
     private static final String SAVE_FILE_MENU_TEXT = "Сохранить...";
     private static final String DB_CONNECTION_MENU_TEXT = "Подключиться к базе данных";
     private static final String DB_CONNECTION_WAITING_MESSAGE =
