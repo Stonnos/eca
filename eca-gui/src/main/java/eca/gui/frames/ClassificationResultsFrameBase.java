@@ -28,6 +28,7 @@ import eca.gui.tables.EnsembleTable;
 import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.SignificantAttributesTable;
+import eca.gui.tables.StatisticsTableBuilder;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -103,11 +104,11 @@ public class ClassificationResultsFrameBase extends JFrame {
     private final Classifier classifier;
     private final Instances data;
     private final Evaluation evaluation;
+    private final int digits;
     private JTabbedPane pane;
     private JScrollPane resultPane;
 
     private JTable statTable;
-    private JTable misMatrix;
     private ClassificationCostsMatrix costMatrix;
     private JFrame parentFrame;
 
@@ -121,8 +122,9 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.parentFrame = parent;
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
-        this.createGUI(digits);
-        this.createMenu(digits);
+        this.digits = digits;
+        this.createGUI();
+        this.createMenu();
         this.setLocationRelativeTo(parent);
     }
 
@@ -153,7 +155,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         resultPane.setViewportView(table);
     }
 
-    private void createMenu(final int digits) {
+    private void createMenu() {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
@@ -167,9 +169,9 @@ public class ClassificationResultsFrameBase extends JFrame {
         dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
-        //--------------------------------------------
+
         saveModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
-        //--------------------------------------------
+
         saveModelMenu.addActionListener(new ActionListener() {
 
             SaveModelChooser fileChooser;
@@ -236,7 +238,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 dataFrame.setVisible(true);
             }
         });
-        //-------------------------------------------------
+
         statMenu.addActionListener(new ActionListener() {
 
             AttributesStatisticsFrame frame;
@@ -249,7 +251,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 frame.setVisible(true);
             }
         });
-        //--------------------------------------------
+
         fileMenu.add(saveModelMenu);
         serviceMenu.add(dataMenu);
         serviceMenu.add(inputMenu);
@@ -265,72 +267,78 @@ public class ClassificationResultsFrameBase extends JFrame {
         return parentFrame;
     }
 
-    public static void createResults(ClassificationResultsFrameBase resultsFrameBase, int digits) throws Exception {
-        if (resultsFrameBase != null) {
-            if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
-                JScrollPane pane
-                        = new JScrollPane(
-                        new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(), digits));
-                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
-                JScrollBar bar = pane.getHorizontalScrollBar();
-                bar.setValue(bar.getMaximum());
-            } else if (resultsFrameBase.classifier() instanceof NeuralNetwork) {
-                NeuralNetwork net = (NeuralNetwork) resultsFrameBase.classifier();
-                JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, resultsFrameBase, digits));
-                resultsFrameBase.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
-            } else if (resultsFrameBase.classifier() instanceof Logistic) {
-                LogisticCoefficientsTable table
-                        =
-                        new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
-                                digits);
-                JScrollPane pane = new JScrollPane(table);
-                resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
-
-                AttributesSelection attributesSelection = new AttributesSelection(resultsFrameBase.data());
-                attributesSelection.setAucThresholdValue(APPLICATION_CONFIG.getAucThresholdValue());
-                attributesSelection.calculate();
-                SignificantAttributesTable signTable
-                        = new SignificantAttributesTable(attributesSelection, digits);
-                JScrollPane signPane = new JScrollPane(signTable);
-                resultsFrameBase.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
-            } else if (resultsFrameBase.classifier() instanceof EnsembleClassifier) {
-                EnsembleClassifier ensembleClassifier = (EnsembleClassifier) resultsFrameBase.classifier();
-                EnsembleTable table = new EnsembleTable(ensembleClassifier.getStructure(),
-                        resultsFrameBase.getParentFrame(), digits);
-                JScrollPane pane = new JScrollPane(table);
-                resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
-            } else if (resultsFrameBase.classifier() instanceof J48) {
-                J48 j48 = (J48) resultsFrameBase.classifier();
-                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, new weka.gui.treevisualizer.TreeVisualizer(null,
-                        j48.graph(), new PlaceNode2()));
-            }
+    public void populateAdditionalResults() throws Exception {
+        if (classifier instanceof DecisionTreeClassifier) {
+            JScrollPane pane
+                    = new JScrollPane(
+                    new TreeVisualizer((DecisionTreeClassifier) classifier, digits));
+            addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
+            JScrollBar bar = pane.getHorizontalScrollBar();
+            bar.setValue(bar.getMaximum());
+        } else if (classifier instanceof NeuralNetwork) {
+            NeuralNetwork net = (NeuralNetwork) classifier;
+            JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, this, digits));
+            addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
+        } else if (classifier instanceof Logistic) {
+            LogisticCoefficientsTable logisticCoefficientsTable =
+                    new LogisticCoefficientsTable((Logistic) classifier, data, digits);
+            JScrollPane pane = new JScrollPane(logisticCoefficientsTable);
+            addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
+            AttributesSelection attributesSelection = new AttributesSelection(data);
+            attributesSelection.setAucThresholdValue(APPLICATION_CONFIG.getAucThresholdValue());
+            attributesSelection.calculate();
+            SignificantAttributesTable signTable
+                    = new SignificantAttributesTable(attributesSelection, digits);
+            JScrollPane signPane = new JScrollPane(signTable);
+            addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
+        } else if (classifier instanceof EnsembleClassifier) {
+            EnsembleClassifier ensembleClassifier = (EnsembleClassifier) classifier;
+            EnsembleTable ensembleTable =
+                    new EnsembleTable(ensembleClassifier.getStructure(), getParentFrame(), digits);
+            JScrollPane pane = new JScrollPane(ensembleTable);
+            addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
+        } else if (classifier instanceof J48) {
+            J48 j48 = (J48) classifier;
+            addPanel(TREE_STRUCTURE_TAB_TITLE,
+                    new weka.gui.treevisualizer.TreeVisualizer(null, j48.graph(), new PlaceNode2()));
         }
     }
 
-    private void createGUI(final int digits) {
+    public static ClassificationResultsFrameBase buildClassificationResultsFrameBase(JFrame parentFrame, String title,
+                                                                                     Classifier classifier,
+                                                                                     Instances data,
+                                                                                     Evaluation evaluation, int digits)
+            throws Exception {
+        ClassificationResultsFrameBase classificationResultsFrameBase =
+                new ClassificationResultsFrameBase(parentFrame, title, classifier, data, evaluation, digits);
+        StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
+        classificationResultsFrameBase.setStatisticsTable(stat.createStatistics(classifier, evaluation));
+        classificationResultsFrameBase.populateAdditionalResults();
+        return classificationResultsFrameBase;
+    }
+
+    private void createGUI() {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         pane = new JTabbedPane();
         JPanel resultPanel = new JPanel(new GridBagLayout());
-        //------------------------------------------------------
         resultPane = new JScrollPane();
         resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
-        //------------------------------------------------------
-        misMatrix = new MisClassificationMatrix(evaluation);
-        JScrollPane misClassPane = new JScrollPane(misMatrix);
+        MisClassificationMatrix misClassificationMatrix = new MisClassificationMatrix(evaluation);
+        JScrollPane misClassPane = new JScrollPane(misClassificationMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
-        //----------------------------------------
+
         costMatrix = new ClassificationCostsMatrix(evaluation, digits);
         JScrollPane costsPane = new JScrollPane(costMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));
-        //---------------------------------
+
         resultPanel.add(resultPane, new GridBagConstraints(0, 0, 1, 1, 1, 0.5,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         resultPanel.add(costsPane, new GridBagConstraints(0, 1, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        //-----------------------------------
+
         JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
         saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         Dimension dim = new Dimension(150, 25);
@@ -338,7 +346,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveButton.setMinimumSize(dim);
         resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
-        //----------------------------------
+
         saveButton.addActionListener(new SaveReportListener());
 
         rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);

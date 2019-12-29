@@ -9,11 +9,11 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
-import eca.gui.renderers.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.logging.LoggerUtils;
-import eca.report.ReportGenerator;
+import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
+import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -107,13 +107,11 @@ public class EnsembleTable extends JDataTableBase {
             try {
                 if (classificationResultsFrameBases[index] == null) {
                     Instances data = ((InstancesHandler) classifier).getData();
-                    Evaluation e = new Evaluation(data);
-                    e.evaluateModel(classifier, data);
-                    ClassificationResultsFrameBase result = new ClassificationResultsFrameBase(parentFrame,
-                            classifier.getClass().getSimpleName(), classifier, data, e, digits);
-                    ClassificationResultsFrameBase.createResults(result, digits);
-                    StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-                    result.setStatisticsTable(stat.createStatistics(classifier, e));
+                    Evaluation evaluation = new Evaluation(data);
+                    evaluation.evaluateModel(classifier, data);
+                    ClassificationResultsFrameBase result =
+                            ClassificationResultsFrameBase.buildClassificationResultsFrameBase(parentFrame,
+                                    classifier.getClass().getSimpleName(), classifier, data, evaluation, digits);
                     classificationResultsFrameBases[index] = result;
                 }
                 classificationResultsFrameBases[index].setVisible(true);

@@ -10,12 +10,12 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
-import eca.gui.renderers.JButtonRenderer;
 import eca.gui.frames.ClassificationResultsFrameBase;
 import eca.gui.logging.LoggerUtils;
-import eca.report.ReportGenerator;
+import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
+import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
@@ -150,14 +150,10 @@ public class ExperimentTable extends JDataTableBase {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
                     ClassificationResultsFrameBase result =
-                            new ClassificationResultsFrameBase(parentFrame,
-                                    classifierDescriptor.getClassifier().getClass()
-                                            .getSimpleName(), classifierDescriptor.getClassifier(), dataSet,
-                                    classifierDescriptor.getEvaluation(), model.digits());
-                    ClassificationResultsFrameBase.createResults(result, model.digits());
-                    StatisticsTableBuilder stat = new StatisticsTableBuilder(model.digits());
-                    result.setStatisticsTable(stat.createStatistics(classifierDescriptor.getClassifier(),
-                            classifierDescriptor.getEvaluation()));
+                            ClassificationResultsFrameBase.buildClassificationResultsFrameBase(parentFrame,
+                                    classifierDescriptor.getClassifier().getClass().getSimpleName(),
+                                    classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
+                                    model.digits());
                     classificationResultsFrameBases.set(index, result);
                 }
                 classificationResultsFrameBases.get(index).setVisible(true);

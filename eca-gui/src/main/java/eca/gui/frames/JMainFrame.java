@@ -52,6 +52,7 @@ import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
 import eca.gui.ConsoleTextArea;
+import eca.gui.EvaluationResultsHistoryModel;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
@@ -93,7 +94,6 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
-import eca.gui.tables.StatisticsTableBuilder;
 import eca.metrics.KNearestNeighbours;
 import eca.model.EcaServiceTrack;
 import eca.neural.NeuralNetwork;
@@ -127,8 +127,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -237,8 +235,6 @@ public class JMainFrame extends JFrame {
 
     private JMenu windowsMenu;
 
-    private ResultsHistory resultsHistory = new ResultsHistory();
-
     private int maximumFractionDigits;
     private int seed;
 
@@ -250,9 +246,6 @@ public class JMainFrame extends JFrame {
     private ClassificationResultHistoryFrame resultHistoryFrame;
 
     private List<AbstractButton> disabledMenuElementList = newArrayList();
-
-    private final SimpleDateFormat simpleDateFormat =
-            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private EcaServiceClientImpl ecaServiceClient = new EcaServiceClientImpl();
 
@@ -271,7 +264,7 @@ public class JMainFrame extends JFrame {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
-        this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, resultsHistory);
+        this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
@@ -580,41 +573,16 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    /**
-     * Classification results history model.
-     */
-    public class ResultsHistory extends DefaultListModel<String> {
-
-        private static final String HISTORY_FORMAT = "%s %s";
-
-        private ArrayList<ClassificationResultsFrameBase> resultsFrameBases = new ArrayList<>();
-
-        public void createResultFrame(String title,
-                                      Classifier classifier,
-                                      Instances data,
-                                      Evaluation evaluation,
-                                      int digits) throws Exception {
-            ClassificationResultsFrameBase classificationResultsFrameBase =
-                    new ClassificationResultsFrameBase(JMainFrame.this, title, classifier, data, evaluation, digits);
-            StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-            classificationResultsFrameBase.setStatisticsTable(stat.createStatistics(classifier, evaluation));
-            ClassificationResultsFrameBase.createResults(classificationResultsFrameBase, digits);
-            add(classificationResultsFrameBase);
-            classificationResultsFrameBase.setVisible(true);
-            log.info("Evaluation for classifier {} has been successfully finished!",
-                    classifier.getClass().getSimpleName());
-        }
-
-        public synchronized void add(ClassificationResultsFrameBase resultsFrameBase) {
-            resultsFrameBases.add(resultsFrameBase);
-            addElement(String.format(HISTORY_FORMAT, simpleDateFormat.format(resultsFrameBase.getCreationDate()),
-                    resultsFrameBase.classifier().getClass().getSimpleName()));
-        }
-
-        public ClassificationResultsFrameBase getFrame(int i) {
-            return resultsFrameBases.get(i);
-        }
-
+    private ClassificationResultsFrameBase createEvaluationResults(String title,
+                                                                   Classifier classifier,
+                                                                   Instances data,
+                                                                   Evaluation evaluation,
+                                                                   int digits) throws Exception {
+        ClassificationResultsFrameBase classificationResultsFrameBase =
+                ClassificationResultsFrameBase.buildClassificationResultsFrameBase(JMainFrame.this, title, classifier,
+                        data, evaluation, digits);
+        resultHistoryFrame.add(classificationResultsFrameBase);
+        return classificationResultsFrameBase;
     }
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
@@ -629,7 +597,7 @@ public class JMainFrame extends JFrame {
                 requestSender, MODEL_BUILDING_MESSAGE);
         processAsyncTask(progress, () -> {
             EvaluationResults evaluationResults = requestSender.getResult();
-            resultsHistory.createResultFrame(frame.getTitle(), evaluationResults.getClassifier(),
+            resultsHistory.addEvaluationResults(frame.getTitle(), evaluationResults.getClassifier(),
                     frame.data(), evaluationResults.getEvaluation(), maximumFractionDigits);
         });*/
         rabbitClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
@@ -682,7 +650,7 @@ public class JMainFrame extends JFrame {
 
         processAsyncTask(progress, () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
-            resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(), frame.data(),
+            createEvaluationResults(frame.getTitle(), frame.classifier(), frame.data(),
                     builder.getResult(), maximumFractionDigits);
         });
     }
@@ -1454,8 +1422,9 @@ public class JMainFrame extends JFrame {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        processAsyncTask(progress, () -> resultsHistory.createResultFrame(frame.getTitle(), frame.classifier(),
-                frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
+        processAsyncTask(progress,
+                () -> createEvaluationResults(frame.getTitle(), frame.classifier(),
+                        frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
     private boolean isDataAndClassValid() {
@@ -1628,7 +1597,7 @@ public class JMainFrame extends JFrame {
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getHeader()) ? ecaServiceTrack.getHeader() :
                                 evaluationResults.getClassifier().getClass().getSimpleName();
-                resultsHistory.createResultFrame(title, evaluationResults.getClassifier(),
+                createEvaluationResults(title, evaluationResults.getClassifier(),
                         evaluationResults.getEvaluation().getData(), evaluationResults.getEvaluation(),
                         maximumFractionDigits);
             } catch (Exception ex) {
@@ -1801,7 +1770,7 @@ public class JMainFrame extends JFrame {
                     LoadDialog progress = new LoadDialog(JMainFrame.this, callback, MODEL_BUILDING_MESSAGE);
                     processAsyncTask(progress, () -> {
                         EvaluationResults evaluationResults = callback.getResult();
-                        resultsHistory.createResultFrame(
+                        resultsHistory.addEvaluationResults(
                                 evaluationResults.getClassifier().getClass().getSimpleName(),
                                 evaluationResults.getClassifier(), callback.getResult().getEvaluation().getData(),
                                 evaluationResults.getEvaluation(), maximumFractionDigits);
@@ -2062,9 +2031,7 @@ public class JMainFrame extends JFrame {
                                 digits = maximumFractionDigits;
                             }
 
-                            resultsHistory.createResultFrame(description,
-                                    model.getClassifier(),
-                                    model.getData(),
+                            createEvaluationResults(description, model.getClassifier(), model.getData(),
                                     model.getEvaluation(), digits);
                         });
 

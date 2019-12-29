@@ -1,6 +1,7 @@
 package eca.gui.frames;
 
 import eca.gui.ButtonUtils;
+import eca.gui.EvaluationResultsHistoryModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,13 +18,13 @@ public class ClassificationResultHistoryFrame extends JFrame {
 
     private static final String TITLE_TEXT = "История классификаторов";
 
-    private JMainFrame.ResultsHistory historyModel;
+    private EvaluationResultsHistoryModel evaluationResultsHistory;
 
     private JList<String> historyList;
 
-    public ClassificationResultHistoryFrame(JFrame parent, JMainFrame.ResultsHistory historyModel) {
+    public ClassificationResultHistoryFrame(JFrame parent, EvaluationResultsHistoryModel evaluationResultsHistory) {
         this.setIconImage(parent.getIconImage());
-        this.historyModel = historyModel;
+        this.evaluationResultsHistory = evaluationResultsHistory;
         this.createGUI();
         this.setLocationRelativeTo(parent);
     }
@@ -34,7 +35,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         JPanel infoPanel = new JPanel();
         Dimension dim = new Dimension(430, 300);
-        historyList = new JList<>(historyModel);
+        historyList = new JList<>(evaluationResultsHistory);
         historyList.setMinimumSize(dim);
         historyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane historyPane = new JScrollPane(historyList);
@@ -45,9 +46,9 @@ public class ClassificationResultHistoryFrame extends JFrame {
         historyList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && !historyModel.isEmpty()) {
+                if (e.getClickCount() == 2 && !evaluationResultsHistory.isEmpty()) {
                     int i = historyList.locationToIndex(e.getPoint());
-                    historyModel.getFrame(i).setVisible(true);
+                    evaluationResultsHistory.getClassificationResultsFrame(i).setVisible(true);
                 }
             }
 
