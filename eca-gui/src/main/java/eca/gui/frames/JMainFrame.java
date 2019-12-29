@@ -1433,7 +1433,7 @@ public class JMainFrame extends JFrame {
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
             try {
-                if (CONFIG_SERVICE.getEcaServiceConfig().getEnabled()) {
+                if (Boolean.TRUE.equals(CONFIG_SERVICE.getEcaServiceConfig().getEnabled())) {
                     executeWithEcaService(frame);
                 } else {
                     if (EnsembleUtils.isConcurrentClassifier(frame.classifier())) {
