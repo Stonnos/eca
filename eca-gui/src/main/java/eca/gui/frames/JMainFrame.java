@@ -223,6 +223,8 @@ public class JMainFrame extends JFrame {
     private static final String CONTINGENCY_TABLES_MENU_TEXT = "Таблицы сопряженности";
     private static final String STATISTICS_MENU_TEXT = "Статистика";
     private static final String CONTINGENCY_TABLE_LOADING_MESSAGE = "Пожалуйста подождите, идет построение таблицы...";
+    private static final String EVALUATION_RESULTS_LOADER_MESSAGE =
+            "Пожалуйста подождите, идет подготовка результатов классификации...";
 
     private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
     private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
@@ -280,15 +282,19 @@ public class JMainFrame extends JFrame {
             this.seed = Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getSeed(),
                     CommonDictionary.MIN_SEED);
             this.setIconImage(ImageIO.read(CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON)));
-            ToolTipManager.sharedInstance().setDismissDelay(
-                    Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
-                            CommonDictionary.TOOLTIP_DISMISS));
+            initTooltipDismissDelay();
             generateQueueNames();
             //updateEcaServiceClientDetails();
             updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
+    }
+
+    private void initTooltipDismissDelay() {
+        ToolTipManager.sharedInstance().setDismissDelay(
+                Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getTooltipDismissTime(),
+                        CommonDictionary.TOOLTIP_DISMISS));
     }
 
     private void closeWindow() {
@@ -581,8 +587,24 @@ public class JMainFrame extends JFrame {
         ClassificationResultsFrameBase classificationResultsFrameBase =
                 ClassificationResultsFrameBase.buildClassificationResultsFrameBase(JMainFrame.this, title, classifier,
                         data, evaluation, digits);
-        resultHistoryFrame.add(classificationResultsFrameBase);
+        resultHistoryFrame.addItem(classificationResultsFrameBase);
         return classificationResultsFrameBase;
+    }
+
+    private void createEvaluationResultsAsync(String title,
+                                              Classifier classifier,
+                                              Instances data,
+                                              Evaluation evaluation,
+                                              int digits) throws Exception {
+        AbstractCallback<ClassificationResultsFrameBase> callback =
+                new AbstractCallback<ClassificationResultsFrameBase>() {
+                    @Override
+                    protected ClassificationResultsFrameBase performAndGetResult() throws Exception {
+                        return createEvaluationResults(title, classifier, data, evaluation, digits);
+                    }
+                };
+        LoadDialog progress = new LoadDialog(JMainFrame.this, callback, EVALUATION_RESULTS_LOADER_MESSAGE);
+        processAsyncTask(progress, () -> callback.getResult().setVisible(true));
     }
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
@@ -650,7 +672,7 @@ public class JMainFrame extends JFrame {
 
         processAsyncTask(progress, () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
-            createEvaluationResults(frame.getTitle(), frame.classifier(), frame.data(),
+            createEvaluationResultsAsync(frame.getTitle(), frame.classifier(), frame.data(),
                     builder.getResult(), maximumFractionDigits);
         });
     }
@@ -1423,7 +1445,7 @@ public class JMainFrame extends JFrame {
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
         processAsyncTask(progress,
-                () -> createEvaluationResults(frame.getTitle(), frame.classifier(),
+                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifier(),
                         frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
@@ -1597,9 +1619,11 @@ public class JMainFrame extends JFrame {
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getHeader()) ? ecaServiceTrack.getHeader() :
                                 evaluationResults.getClassifier().getClass().getSimpleName();
-                createEvaluationResults(title, evaluationResults.getClassifier(),
-                        evaluationResults.getEvaluation().getData(), evaluationResults.getEvaluation(),
-                        maximumFractionDigits);
+                ClassificationResultsFrameBase classificationResultsFrameBase =
+                        createEvaluationResults(title, evaluationResults.getClassifier(),
+                                evaluationResults.getEvaluation().getData(), evaluationResults.getEvaluation(),
+                                maximumFractionDigits);
+                classificationResultsFrameBase.setVisible(true);
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
                 JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
@@ -2031,7 +2055,7 @@ public class JMainFrame extends JFrame {
                                 digits = maximumFractionDigits;
                             }
 
-                            createEvaluationResults(description, model.getClassifier(), model.getData(),
+                            createEvaluationResultsAsync(description, model.getClassifier(), model.getData(),
                                     model.getEvaluation(), digits);
                         });
 

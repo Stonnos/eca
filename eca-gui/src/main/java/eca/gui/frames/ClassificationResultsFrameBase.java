@@ -311,8 +311,9 @@ public class ClassificationResultsFrameBase extends JFrame {
             throws Exception {
         ClassificationResultsFrameBase classificationResultsFrameBase =
                 new ClassificationResultsFrameBase(parentFrame, title, classifier, data, evaluation, digits);
-        StatisticsTableBuilder stat = new StatisticsTableBuilder(digits);
-        classificationResultsFrameBase.setStatisticsTable(stat.createStatistics(classifier, evaluation));
+        StatisticsTableBuilder statisticsTableBuilder = new StatisticsTableBuilder(digits);
+        classificationResultsFrameBase.setStatisticsTable(
+                statisticsTableBuilder.createStatistics(classifier, evaluation));
         classificationResultsFrameBase.populateAdditionalResults();
         return classificationResultsFrameBase;
     }

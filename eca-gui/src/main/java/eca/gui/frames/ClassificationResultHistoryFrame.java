@@ -29,6 +29,10 @@ public class ClassificationResultHistoryFrame extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
+    public void addItem(ClassificationResultsFrameBase classificationResultsFrameBase) {
+        this.evaluationResultsHistory.add(classificationResultsFrameBase);
+    }
+
     private void createGUI() {
         this.setResizable(false);
         this.setTitle(TITLE_TEXT);
