@@ -25,10 +25,10 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.EnsembleTable;
+import eca.gui.tables.EvaluationStatisticsTableFactory;
 import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.SignificantAttributesTable;
-import eca.gui.tables.StatisticsTableBuilder;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -311,9 +311,9 @@ public class ClassificationResultsFrameBase extends JFrame {
             throws Exception {
         ClassificationResultsFrameBase classificationResultsFrameBase =
                 new ClassificationResultsFrameBase(parentFrame, title, classifier, data, evaluation, digits);
-        StatisticsTableBuilder statisticsTableBuilder = new StatisticsTableBuilder(digits);
-        classificationResultsFrameBase.setStatisticsTable(
-                statisticsTableBuilder.createStatistics(classifier, evaluation));
+        JTable evaluationStatisticsTable =
+                EvaluationStatisticsTableFactory.buildEvaluationStatisticsTable(classifier, evaluation, digits);
+        classificationResultsFrameBase.setStatisticsTable(evaluationStatisticsTable);
         classificationResultsFrameBase.populateAdditionalResults();
         return classificationResultsFrameBase;
     }
