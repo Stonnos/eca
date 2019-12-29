@@ -688,7 +688,7 @@ public class JMainFrame extends JFrame {
         });
     }
 
-    private void createTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
+    private void prepareTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
         LoadDialog progress = new LoadDialog(JMainFrame.this, dataBuilder,
                 BUILD_TRAINING_DATA_LOADING_MESSAGE);
         processAsyncTask(progress, callbackAction);
@@ -830,7 +830,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         J48OptionsDialog frame = new J48OptionsDialog(JMainFrame.this,
                                 ClassifiersNamesDictionary.J48, new J48(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
@@ -856,7 +856,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
                                 ClassifiersNamesDictionary.LOGISTIC, new Logistic(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
@@ -876,7 +876,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
                         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         neuralNetwork.setSeed(seed);
@@ -900,7 +900,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                         kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         KNNOptionDialog frame = new KNNOptionDialog(JMainFrame.this,
@@ -948,7 +948,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         RandomForests randomForests = new RandomForests(dataBuilder.getResult());
                         randomForests.setSeed(seed);
                         RandomForestsOptionDialog frame =
@@ -971,7 +971,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier(dataBuilder.getResult());
                         extraTreesClassifier.setSeed(seed);
                         RandomForestsOptionDialog frame = new RandomForestsOptionDialog(JMainFrame.this,
@@ -992,7 +992,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         StackingClassifier stackingClassifier = new StackingClassifier();
                         stackingClassifier.setSeed(seed);
                         StackingOptionsDialog frame = new StackingOptionsDialog(JMainFrame.this,
@@ -1014,7 +1014,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         RandomNetworks randomNetworks = new RandomNetworks();
                         randomNetworks.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         randomNetworks.setSeed(seed);
@@ -1050,7 +1050,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
                         neuralNetwork.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedNeuralNetwork automatedNeuralNetwork =
@@ -1074,7 +1074,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
+                    prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new ModifiedHeterogeneousClassifier(),
                                     modifiedHeteroEnsMenu.getText(), dataBuilder.getResult()));
                 } catch (Exception e) {
@@ -1089,7 +1089,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
+                    prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(),
                                     dataBuilder.getResult()));
                 } catch (Exception e) {
@@ -1104,7 +1104,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
+                    prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
                                     dataBuilder.getResult()));
                 } catch (Exception e) {
@@ -1119,7 +1119,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder,
+                    prepareTrainingData(dataBuilder,
                             () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
                                     dataBuilder.getResult()));
                 } catch (Exception e) {
@@ -1134,7 +1134,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
                         kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(maximumFractionDigits);
                         AutomatedKNearestNeighbours automatedKNearestNeighbours =
@@ -1157,7 +1157,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         AutomatedRandomForests automatedRandomForests =
                                 new AutomatedRandomForests(dataBuilder.getResult());
                         automatedRandomForests.setSeed(seed);
@@ -1178,7 +1178,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         AutomatedDecisionTree automatedDecisionTree =
                                 new AutomatedDecisionTree(dataBuilder.getResult());
                         automatedDecisionTree.setSeed(seed);
@@ -1212,7 +1212,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getResult(),
                                 JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
@@ -1232,7 +1232,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getResult(),
                                 JMainFrame.this);
                         scatterDiagramsFrame.setVisible(true);
@@ -1483,7 +1483,7 @@ public class JMainFrame extends JFrame {
     private void createTreeOptionDialog(final String title, final DecisionTreeClassifier tree) {
         try {
             final DataBuilder dataBuilder = new DataBuilder();
-            createTrainingData(dataBuilder, () -> {
+            prepareTrainingData(dataBuilder, () -> {
                 tree.setSeed(seed);
                 DecisionTreeOptionsDialog frame
                         = new DecisionTreeOptionsDialog(JMainFrame.this, title, tree, dataBuilder.getResult());
@@ -1502,7 +1502,7 @@ public class JMainFrame extends JFrame {
                                             final boolean sample) {
         try {
             final DataBuilder dataBuilder = new DataBuilder();
-            createTrainingData(dataBuilder, () -> {
+            prepareTrainingData(dataBuilder, () -> {
                 heterogeneousClassifier.setSeed(seed);
                 EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
                         title, heterogeneousClassifier, dataBuilder.getResult(), maximumFractionDigits);
@@ -1718,7 +1718,7 @@ public class JMainFrame extends JFrame {
                     if (isDataAndClassValid()) {
                         try {
                             final DataBuilder dataBuilder = new DataBuilder();
-                            createTrainingData(dataBuilder, () -> {
+                            prepareTrainingData(dataBuilder, () -> {
                                 ExperimentRequestDialog experimentRequestDialog =
                                         new ExperimentRequestDialog(JMainFrame.this);
                                 experimentRequestDialog.showDialog(experimentRequestDto);
@@ -1808,7 +1808,7 @@ public class JMainFrame extends JFrame {
                                 evaluationResults.getEvaluation(), maximumFractionDigits);
                     });*/
                         final DataBuilder dataBuilder = new DataBuilder();
-                        createTrainingData(dataBuilder, () -> {
+                        prepareTrainingData(dataBuilder, () -> {
                             CallbackAction callbackAction = () -> {
                                 String correlationId = UUID.randomUUID().toString();
                                 rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
@@ -1839,7 +1839,7 @@ public class JMainFrame extends JFrame {
             if (isDataAndClassValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder();
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
                                 ContingencyTableOptionsDialog(JMainFrame.this, dataBuilder.getResult());
                         contingencyTableOptionsDialog.setVisible(true);
@@ -1922,7 +1922,7 @@ public class JMainFrame extends JFrame {
                 try {
                     if (isDataValid()) {
                         final DataBuilder dataBuilder = new DataBuilder(false);
-                        createTrainingData(dataBuilder, () -> {
+                        prepareTrainingData(dataBuilder, () -> {
                             if (fileChooser == null) {
                                 fileChooser = new SaveDataFileChooser();
                             }
@@ -1976,7 +1976,7 @@ public class JMainFrame extends JFrame {
             if (isDataValid()) {
                 try {
                     final DataBuilder dataBuilder = new DataBuilder(false);
-                    createTrainingData(dataBuilder, () -> {
+                    prepareTrainingData(dataBuilder, () -> {
                         DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
                         databaseSaverDialog.setTableName(dataBuilder.getResult().relationName());
                         databaseSaverDialog.setVisible(true);
