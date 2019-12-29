@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static eca.client.util.RabbitUtils.declareReplyToQueue;
@@ -48,7 +47,7 @@ public class MessageListenerContainer {
      */
     @Getter
     @Setter
-    private long connectionAttemptIntervalMillis = 5000L;
+    private long connectionAttemptIntervalMillis = 2000L;
 
     private Connection connection;
 
@@ -58,7 +57,7 @@ public class MessageListenerContainer {
 
     private FutureTask<Void> futureTask;
 
-    private AtomicBoolean started = new AtomicBoolean();
+    private boolean started;
 
     /**
      * Default constructor.
@@ -71,10 +70,9 @@ public class MessageListenerContainer {
      * Starts message listener container.
      */
     public synchronized void start() {
-        if (started.get()) {
+        if (started) {
             throw new IllegalStateException();
         }
-        started.set(true);
         Callable<Void> callable = () -> {
             openConnection();
             setupConsumers();
@@ -82,20 +80,20 @@ public class MessageListenerContainer {
         };
         futureTask = new FutureTask<>(callable);
         executorService.execute(futureTask);
+        started = true;
     }
 
     /**
      * Stop message listener container.
      */
     public synchronized void stop() {
-        if (!started.get()) {
+        if (!started) {
             throw new IllegalStateException();
         }
         futureTask.cancel(true);
         closeChannel();
         closeConnection();
-        started.set(false);
-        log.info("OK");
+        started = false;
     }
 
     private void openConnection() {
@@ -116,7 +114,6 @@ public class MessageListenerContainer {
             RabbitUtils.closeChannel(channel);
         } catch (IOException | TimeoutException ex) {
             log.error(ex.getMessage());
-            //ignored
         }
         channel = null;
     }
@@ -126,7 +123,6 @@ public class MessageListenerContainer {
             RabbitUtils.closeConnection(connection);
         } catch (IOException ex) {
             log.error(ex.getMessage());
-            //ignored
         }
         connection = null;
     }
