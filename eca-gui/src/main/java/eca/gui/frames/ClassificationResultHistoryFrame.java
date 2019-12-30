@@ -2,6 +2,7 @@ package eca.gui.frames;
 
 import eca.gui.ButtonUtils;
 import eca.gui.EvaluationResultsHistoryModel;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
 
 import javax.swing.*;
 import java.awt.*;

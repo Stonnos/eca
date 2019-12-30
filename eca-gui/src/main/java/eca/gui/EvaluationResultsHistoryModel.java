@@ -1,7 +1,7 @@
 package eca.gui;
 
 import eca.config.ConfigurationService;
-import eca.gui.frames.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;

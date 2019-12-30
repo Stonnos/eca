@@ -89,6 +89,8 @@ import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
 import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.dictionary.CommonDictionary;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameFactory;
 import eca.gui.listeners.ReferenceListener;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ExecutorService;
@@ -585,8 +587,8 @@ public class JMainFrame extends JFrame {
                                                                    Evaluation evaluation,
                                                                    int digits) throws Exception {
         ClassificationResultsFrameBase classificationResultsFrameBase =
-                ClassificationResultsFrameBase.buildClassificationResultsFrameBase(JMainFrame.this, title, classifier,
-                        data, evaluation, digits);
+                ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(JMainFrame.this, title,
+                        classifier, data, evaluation, digits);
         resultHistoryFrame.addItem(classificationResultsFrameBase);
         return classificationResultsFrameBase;
     }

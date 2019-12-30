@@ -9,7 +9,8 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
-import eca.gui.frames.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameFactory;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
@@ -110,7 +111,7 @@ public class EnsembleTable extends JDataTableBase {
                     Evaluation evaluation = new Evaluation(data);
                     evaluation.evaluateModel(classifier, data);
                     ClassificationResultsFrameBase result =
-                            ClassificationResultsFrameBase.buildClassificationResultsFrameBase(parentFrame,
+                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame,
                                     classifier.getClass().getSimpleName(), classifier, data, evaluation, digits);
                     classificationResultsFrameBases[index] = result;
                 }

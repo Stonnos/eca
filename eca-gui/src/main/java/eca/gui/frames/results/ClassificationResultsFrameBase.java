@@ -3,20 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.frames;
+package eca.gui.frames.results;
 
-import eca.config.ApplicationConfig;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.data.FileUtils;
-import eca.ensemble.EnsembleClassifier;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
 import eca.gui.dictionary.ClassificationModelDictionary;
+import eca.gui.frames.AttributesStatisticsFrame;
+import eca.gui.frames.HtmlFrame;
+import eca.gui.frames.InstancesFrame;
+import eca.gui.frames.results.model.ComponentModel;
 import eca.gui.listeners.ReferenceListener;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
@@ -24,33 +26,25 @@ import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
-import eca.gui.tables.EnsembleTable;
-import eca.gui.tables.EvaluationStatisticsTableFactory;
 import eca.gui.tables.JDataTableBase;
-import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
-import eca.gui.tables.SignificantAttributesTable;
 import eca.gui.tables.models.EvaluationStatisticsModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
-import eca.regression.Logistic;
 import eca.report.ReportGenerator;
 import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.AttachmentImage;
 import eca.report.evaluation.EvaluationReport;
 import eca.report.evaluation.html.EvaluationHtmlReportService;
 import eca.report.evaluation.xls.EvaluationXlsReportService;
-import eca.roc.AttributesSelection;
 import eca.roc.RocCurve;
 import eca.trees.DecisionTreeClassifier;
-import eca.trees.J48;
 import eca.trees.TreeVisualizer;
 import eca.util.Entry;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
-import weka.gui.treevisualizer.PlaceNode2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,6 +58,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +71,6 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    private static final ApplicationConfig APPLICATION_CONFIG = CONFIG_SERVICE.getApplicationConfig();
 
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
@@ -85,9 +79,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String CLASSIFY_TAB_TITLE = "Классификация";
     private static final String TREE_STRUCTURE_TAB_TITLE = "Структура дерева";
     private static final String NETWORK_STRUCTURE_TAB_TITLE = "Структура нейронной сети";
-    private static final String LOGISTIC_COEFFICIENTS_TAB_TITLE = "Оценки коэффициентов";
-    private static final String SIGNIFICANT_ATTRIBUTES_TAB_TITLE = "Значимые атрибуты";
-    private static final String ENSEMBLE_STRUCTURE_TAB_TITLE = "Структура ансамбля";
     private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 650;
@@ -117,7 +108,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private EvaluationStatisticsModel evaluationStatisticsModel;
 
     private ClassificationCostsMatrix costMatrix;
-    private JFrame parentFrame;
 
     private ROCCurvePanel rocCurvePanel;
 
@@ -126,7 +116,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
-        this.parentFrame = parent;
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
         this.digits = digits;
@@ -151,14 +140,16 @@ public class ClassificationResultsFrameBase extends JFrame {
         return evaluation;
     }
 
-    public void addPanel(String title, Component panel) {
-        pane.add(title, panel);
-    }
 
     public void setEvaluationStatisticsModel(EvaluationStatisticsModel evaluationStatisticsModel) {
         this.evaluationStatisticsModel = evaluationStatisticsModel;
         JTable evaluationStatisticsTable = createEvaluationStatisticsTable();
         resultPane.setViewportView(evaluationStatisticsTable);
+    }
+
+    public void setEvaluationResultsComponents(List<ComponentModel> componentModels) {
+        Objects.requireNonNull(componentModels, "Components isn't specified!");
+        componentModels.forEach(componentModel -> pane.add(componentModel.getTitle(), componentModel.getComponent()));
     }
 
     private JTable createEvaluationStatisticsTable() {
@@ -249,61 +240,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         menu.add(serviceMenu);
         menu.add(helpMenu);
         this.setJMenuBar(menu);
-    }
-
-    public JFrame getParentFrame() {
-        return parentFrame;
-    }
-
-    public void populateAdditionalResults() throws Exception {
-        if (classifier instanceof DecisionTreeClassifier) {
-            JScrollPane pane
-                    = new JScrollPane(
-                    new TreeVisualizer((DecisionTreeClassifier) classifier, digits));
-            addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
-            JScrollBar bar = pane.getHorizontalScrollBar();
-            bar.setValue(bar.getMaximum());
-        } else if (classifier instanceof NeuralNetwork) {
-            NeuralNetwork net = (NeuralNetwork) classifier;
-            JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, this, digits));
-            addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
-        } else if (classifier instanceof Logistic) {
-            LogisticCoefficientsTable logisticCoefficientsTable =
-                    new LogisticCoefficientsTable((Logistic) classifier, data, digits);
-            JScrollPane pane = new JScrollPane(logisticCoefficientsTable);
-            addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
-            AttributesSelection attributesSelection = new AttributesSelection(data);
-            attributesSelection.setAucThresholdValue(APPLICATION_CONFIG.getAucThresholdValue());
-            attributesSelection.calculate();
-            SignificantAttributesTable signTable
-                    = new SignificantAttributesTable(attributesSelection, digits);
-            JScrollPane signPane = new JScrollPane(signTable);
-            addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
-        } else if (classifier instanceof EnsembleClassifier) {
-            EnsembleClassifier ensembleClassifier = (EnsembleClassifier) classifier;
-            EnsembleTable ensembleTable =
-                    new EnsembleTable(ensembleClassifier.getStructure(), getParentFrame(), digits);
-            JScrollPane pane = new JScrollPane(ensembleTable);
-            addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
-        } else if (classifier instanceof J48) {
-            J48 j48 = (J48) classifier;
-            addPanel(TREE_STRUCTURE_TAB_TITLE,
-                    new weka.gui.treevisualizer.TreeVisualizer(null, j48.graph(), new PlaceNode2()));
-        }
-    }
-
-    public static ClassificationResultsFrameBase buildClassificationResultsFrameBase(JFrame parentFrame, String title,
-                                                                                     Classifier classifier,
-                                                                                     Instances data,
-                                                                                     Evaluation evaluation, int digits)
-            throws Exception {
-        ClassificationResultsFrameBase classificationResultsFrameBase =
-                new ClassificationResultsFrameBase(parentFrame, title, classifier, data, evaluation, digits);
-        EvaluationStatisticsModel evaluationStatisticsTable =
-                EvaluationStatisticsTableFactory.buildEvaluationStatisticsTable(classifier, evaluation, digits);
-        classificationResultsFrameBase.setEvaluationStatisticsModel(evaluationStatisticsTable);
-        classificationResultsFrameBase.populateAdditionalResults();
-        return classificationResultsFrameBase;
     }
 
     private void createGUI() {

@@ -10,7 +10,8 @@ import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
-import eca.gui.frames.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
+import eca.gui.frames.results.ClassificationResultsFrameFactory;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
@@ -150,7 +151,7 @@ public class ExperimentTable extends JDataTableBase {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
                     ClassificationResultsFrameBase result =
-                            ClassificationResultsFrameBase.buildClassificationResultsFrameBase(parentFrame,
+                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame,
                                     classifierDescriptor.getClassifier().getClass().getSimpleName(),
                                     classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
                                     model.digits());
