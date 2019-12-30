@@ -5,7 +5,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -21,7 +20,6 @@ import static eca.client.util.RabbitUtils.closeConnection;
 @RequiredArgsConstructor
 public class ConnectionManager implements AutoCloseable {
 
-    @Setter
     @Getter
     private final ConnectionFactory connectionFactory;
 
