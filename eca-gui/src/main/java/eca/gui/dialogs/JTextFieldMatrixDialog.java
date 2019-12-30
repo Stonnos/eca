@@ -10,7 +10,6 @@ import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.text.LengthDocument;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +19,6 @@ import java.awt.*;
  *
  * @author Roman Batygin
  */
-@Slf4j
 public class JTextFieldMatrixDialog extends JDialog {
 
     private static final ConfigurationService CONFIG_SERVICE =
@@ -28,7 +26,6 @@ public class JTextFieldMatrixDialog extends JDialog {
 
     private static final int MAX_FIELD_LENGTH = 255;
 
-    private final JLabel[] labels;
     private final JTextField[] texts;
 
     private boolean dialogResult;
@@ -39,8 +36,8 @@ public class JTextFieldMatrixDialog extends JDialog {
         this.setLayout(new GridBagLayout());
         this.setModal(true);
         this.setResizable(false);
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
-        labels = new JLabel[rows];
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
+        JLabel[] labels = new JLabel[rows];
         texts = new JTextField[rows];
         JPanel panel = new JPanel(new GridLayout(rows, 2, 0, 10));
         //-------------------------------

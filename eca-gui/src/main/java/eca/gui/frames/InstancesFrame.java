@@ -37,7 +37,7 @@ public class InstancesFrame extends JFrame {
         this.setTitle(String.format(DATA_FORMAT, data.relationName()));
         this.setLayout(new GridBagLayout());
         this.createMenu();
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
         JButton closeButton = ButtonUtils.createCloseButton();
         closeButton.addActionListener(e -> setVisible(false));

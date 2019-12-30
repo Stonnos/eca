@@ -6,7 +6,6 @@ import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.tables.CreateInstanceTable;
 import eca.util.Entry;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,6 @@ import java.util.List;
 /**
  * @author Roman Batygin
  */
-@Slf4j
 public class CreateNewInstanceDialog extends JDialog {
 
     private static final ConfigurationService CONFIG_SERVICE =
@@ -33,7 +31,7 @@ public class CreateNewInstanceDialog extends JDialog {
         this.setModal(true);
         this.setLayout(new GridBagLayout());
         this.setResizable(false);
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
