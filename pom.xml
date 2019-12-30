@@ -15,16 +15,24 @@
         <module>eca-gui</module>
     </modules>
 
+    <distributionManagement>
+        <repository>
+            <id>eca.repo</id>
+            <name>Eca repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <java.version>1.8</java.version>
         <lombok.version>1.18.4</lombok.version>
-        <github.global.server>github</github.global.server>
-        <github.maven-plugin>0.12</github.maven-plugin>
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.global.server>github</github.global.server>
+        <github.maven-plugin>0.12</github.maven-plugin>
     </properties>
 
     <dependencies>
@@ -56,14 +64,6 @@
         </dependency>
 
     </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
@@ -102,7 +102,7 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>${maven-deploy-plugin.version}</version>
                 <configuration>
-                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo
+                    <altDeploymentRepository>eca.repo::default::file://${project.build.directory}/mvn-repo
                     </altDeploymentRepository>
                 </configuration>
             </plugin>
@@ -116,6 +116,7 @@
                     <noJekyll>true</noJekyll>
                     <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
                     <branch>refs/heads/mvn-repo</branch>
+                    <merge>true</merge>
                     <includes>
                         <include>**/*</include>
                     </includes>

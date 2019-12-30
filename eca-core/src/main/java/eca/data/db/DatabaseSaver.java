@@ -21,11 +21,6 @@ import java.util.Objects;
 public class DatabaseSaver implements DataSaver {
 
     /**
-     * TO_DATE function format for Oracle database
-     */
-    private static final String TO_DATE_FUNCTION_FORMAT = "TO_DATE('%s', 'yyyy-mm-dd hh24:mi:ss')";
-
-    /**
      * Connection descriptor
      */
     @Getter
@@ -101,13 +96,6 @@ public class DatabaseSaver implements DataSaver {
             @Override
             public Void casePostgreSQL() {
                 sqlQueryHelper.setDateColumnType(SqlTypeUtils.TIMESTAMP_TYPE);
-                return null;
-            }
-
-            @Override
-            public Void caseOracle() {
-                sqlQueryHelper.setDateColumnType(SqlTypeUtils.DATE_TYPE);
-                sqlQueryHelper.setInsertDateValueFormat(TO_DATE_FUNCTION_FORMAT);
                 return null;
             }
 
