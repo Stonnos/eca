@@ -56,6 +56,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -285,7 +286,7 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private Map<String, String> createStatisticsMap() {
         return evaluationStatisticsModel.getResults().stream().collect(
-                Collectors.toMap(Entry::getKey, Entry::getValue));
+                Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
     }
 
     private List<AttachmentImage> createAttachmentImagesList() {
