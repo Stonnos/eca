@@ -57,7 +57,13 @@ public class MessageListenerContainer {
 
     private FutureTask<Void> futureTask;
 
-    private boolean started;
+    @Getter
+    private volatile boolean running;
+
+    @Getter
+    private volatile boolean started;
+
+    private final Object lifecycleMonitor = new Object();
 
     /**
      * Default constructor.
@@ -69,31 +75,36 @@ public class MessageListenerContainer {
     /**
      * Starts message listener container.
      */
-    public synchronized void start() {
-        if (started) {
-            throw new IllegalStateException();
+    public void start() {
+        synchronized (lifecycleMonitor) {
+            if (running) {
+                throw new IllegalStateException();
+            }
+            Callable<Void> callable = () -> {
+                openConnection();
+                setupConsumers();
+                return null;
+            };
+            futureTask = new FutureTask<>(callable);
+            executorService.execute(futureTask);
+            running = true;
         }
-        Callable<Void> callable = () -> {
-            openConnection();
-            setupConsumers();
-            return null;
-        };
-        futureTask = new FutureTask<>(callable);
-        executorService.execute(futureTask);
-        started = true;
     }
 
     /**
      * Stop message listener container.
      */
-    public synchronized void stop() {
-        if (!started) {
-            throw new IllegalStateException();
+    public void stop() {
+        synchronized (lifecycleMonitor) {
+            if (!running) {
+                throw new IllegalStateException();
+            }
+            futureTask.cancel(true);
+            closeChannel();
+            closeConnection();
+            started = false;
+            running = false;
         }
-        futureTask.cancel(true);
-        closeChannel();
-        closeConnection();
-        started = false;
     }
 
     private void openConnection() {
@@ -136,6 +147,7 @@ public class MessageListenerContainer {
                     adapterEntry.getValue().basicConsume(channel, queue);
                 }
                 log.info("Consumers initialization has been finished");
+                started = true;
             } catch (IOException ex) {
                 log.error("There was an error while initialize consumers: {}", ex.getMessage());
             }
