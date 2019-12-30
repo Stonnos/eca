@@ -86,16 +86,6 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     private JList<String> selectedAlgorithms;
     private BaseClassifiersListModel baseClassifiersListModel;
     private JPanel samplePanel;
-    private JRadioButton initialRadioButton;
-    private JRadioButton baggingRadioButton;
-    private JRadioButton randomRadioButton;
-    private JRadioButton randomBaggingRadioButton;
-
-    private JRadioButton majorityRadioButton;
-    private JRadioButton weightedRadioButton;
-
-    private JRadioButton randomClsRadioButton;
-    private JRadioButton optimalClsRadioButton;
 
     private JSpinner threadsSpinner;
 
@@ -275,8 +265,8 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         JPanel classifierSelectionMethodPanel = new JPanel(new GridBagLayout());
         classifierSelectionMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(CLS_SELECTION_TITLE));
         ButtonGroup clsGroup = new ButtonGroup();
-        randomClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[0]);
-        optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
+        JRadioButton randomClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[0]);
+        JRadioButton optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
         clsGroup.add(randomClsRadioButton);
         clsGroup.add(optimalClsRadioButton);
         //--------------------------------
@@ -303,8 +293,8 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         JPanel votingPanel = new JPanel(new GridBagLayout());
         votingPanel.setBorder(PanelBorderUtils.createTitledBorder(VOTES_TITLE));
         ButtonGroup votesGroup = new ButtonGroup();
-        majorityRadioButton = new JRadioButton(VOTES_METHOD[0]);
-        weightedRadioButton = new JRadioButton(VOTES_METHOD[1]);
+        JRadioButton majorityRadioButton = new JRadioButton(VOTES_METHOD[0]);
+        JRadioButton weightedRadioButton = new JRadioButton(VOTES_METHOD[1]);
         votesGroup.add(majorityRadioButton);
         votesGroup.add(weightedRadioButton);
         majorityRadioButton.addItemListener(e -> {
@@ -329,10 +319,10 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         samplePanel = new JPanel(new GridBagLayout());
         samplePanel.setBorder(PanelBorderUtils.createTitledBorder(SAMPLING_TITLE));
         ButtonGroup group = new ButtonGroup();
-        initialRadioButton = new JRadioButton(SamplingMethod.INITIAL.getDescription());
-        baggingRadioButton = new JRadioButton(SamplingMethod.BAGGING.getDescription());
-        randomRadioButton = new JRadioButton(SamplingMethod.RANDOM.getDescription());
-        randomBaggingRadioButton = new JRadioButton(SamplingMethod.RANDOM_BAGGING.getDescription());
+        JRadioButton initialRadioButton = new JRadioButton(SamplingMethod.INITIAL.getDescription());
+        JRadioButton baggingRadioButton = new JRadioButton(SamplingMethod.BAGGING.getDescription());
+        JRadioButton randomRadioButton = new JRadioButton(SamplingMethod.RANDOM.getDescription());
+        JRadioButton randomBaggingRadioButton = new JRadioButton(SamplingMethod.RANDOM_BAGGING.getDescription());
         group.add(initialRadioButton);
         group.add(baggingRadioButton);
         group.add(randomRadioButton);
