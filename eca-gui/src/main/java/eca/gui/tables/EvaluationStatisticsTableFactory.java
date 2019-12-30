@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import weka.classifiers.Classifier;
 
-import javax.swing.*;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -60,28 +59,21 @@ public class EvaluationStatisticsTableFactory {
     }
 
     /**
-     * Builds evaluation statistics table.
+     * Builds evaluation statistics model.
      *
      * @param classifier        - classifier object
      * @param evaluation        - classifier evaluation
      * @param maxFractionDigits - maximum fraction digits
-     * @return evaluation statistics table
+     * @return evaluation statistics model
      */
-    public static JTable buildEvaluationStatisticsTable(Classifier classifier, Evaluation evaluation,
-                                                        int maxFractionDigits) {
+    public static EvaluationStatisticsModel buildEvaluationStatisticsTable(Classifier classifier,
+                                                                           Evaluation evaluation,
+                                                                           int maxFractionDigits) {
         ClassifierConditionRule classifierConditionRule = classifierConditionRules.stream()
                 .filter(rule -> rule.matches(classifier))
                 .findFirst().orElseThrow(() -> new IllegalStateException(
                         String.format("Can't handle %s classifier", classifier.getClass().getSimpleName())));
-        EvaluationStatisticsModel evaluationStatisticsModel =
-                classifierConditionRule.createEvaluationStatisticsModel(classifier, evaluation, maxFractionDigits);
-        return createTable(evaluationStatisticsModel);
-    }
-
-    private static JTable createTable(EvaluationStatisticsModel resultsModel) {
-        JDataTableBase dataTableBase = new JDataTableBase(resultsModel);
-        dataTableBase.setAutoResizeOff(false);
-        return dataTableBase;
+        return classifierConditionRule.createEvaluationStatisticsModel(classifier, evaluation, maxFractionDigits);
     }
 
     @RequiredArgsConstructor

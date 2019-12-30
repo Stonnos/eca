@@ -3,6 +3,7 @@ package eca.gui.tables.models;
 import eca.core.evaluation.Evaluation;
 import eca.text.NumericFormatFactory;
 import eca.util.Entry;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.Classifier;
 
@@ -44,6 +45,7 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
 
     private static final String[] TITLE = {"Статистика", "Значение"};
 
+    @Getter
     private final List<Entry<String, String>> results = new ArrayList<>();
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
