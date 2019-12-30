@@ -14,10 +14,10 @@ import java.awt.*;
 public class ConsoleFrame extends JFrame {
 
     private static final String CONSOLE_TITLE = "Консоль";
-    public static final String OPTIONS_MENU_TEXT = "Настройки";
-    public static final String SELECTED_FONT_MENU_TEXT = "Выбор шрифта";
-    public static final String BACKGROUND_COLOR_MENU_TEXT = "Выбор цвета фона";
-    public static final String FONT_COLOR_MENU_TEXT = "Выбор цвета шрифта";
+    private static final String OPTIONS_MENU_TEXT = "Настройки";
+    private static final String SELECTED_FONT_MENU_TEXT = "Выбор шрифта";
+    private static final String BACKGROUND_COLOR_MENU_TEXT = "Выбор цвета фона";
+    private static final String FONT_COLOR_MENU_TEXT = "Выбор цвета шрифта";
 
     private JTextArea textArea;
 
