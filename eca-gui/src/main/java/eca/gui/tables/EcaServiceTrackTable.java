@@ -11,6 +11,7 @@ import eca.model.TrackStatus;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.Map;
 
@@ -34,10 +35,9 @@ public class EcaServiceTrackTable extends JDataTableBase {
 
     public EcaServiceTrackTable() {
         super(new EcaServiceTrackTableModel());
-        this.getColumnModel().getColumn(STATUS_COLUMN).setCellRenderer(new TrackStatusCellRenderer());
-        this.getColumnModel().getColumn(STATUS_COLUMN).setMaxWidth(STATUS_COLUMN_WIDTH);
-        this.getColumnModel().getColumn(STATUS_COLUMN).setPreferredWidth(STATUS_COLUMN_WIDTH);
+        this.initStatusColumn();
         this.setAutoResizeOff(false);
+        this.setCellSelectionEnabled(false);
     }
 
     public EcaServiceTrack getTrack(String correlationId) {
@@ -54,6 +54,13 @@ public class EcaServiceTrackTable extends JDataTableBase {
 
     private EcaServiceTrackTableModel getEcaServiceTrackTableModel() {
         return (EcaServiceTrackTableModel) this.getModel();
+    }
+
+    private void initStatusColumn() {
+        TableColumn column = this.getColumnModel().getColumn(STATUS_COLUMN);
+        column.setCellRenderer(new TrackStatusCellRenderer());
+        column.setMaxWidth(STATUS_COLUMN_WIDTH);
+        column.setPreferredWidth(STATUS_COLUMN_WIDTH);
     }
 
     private class TrackStatusCellRenderer extends DefaultTableCellRenderer {
