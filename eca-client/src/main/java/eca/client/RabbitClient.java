@@ -12,11 +12,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.util.EnumMap;
+import java.util.Objects;
 
 import static eca.client.util.RabbitUtils.buildMessageProperties;
 
@@ -65,8 +65,8 @@ public class RabbitClient {
 
     public void sendEvaluationRequest(AbstractClassifier classifier, Instances data, String replyTo,
                                       String correlationId) {
-        Assert.notNull(classifier, "Classifier must be specified!");
-        Assert.notNull(data, "Instances must be specified!");
+        Objects.requireNonNull(classifier, "Classifier must be specified!");
+        Objects.requireNonNull(data, "Instances must be specified!");
         log.info("Starting to send request into eca - service for model '{}', data '{}'.",
                 classifier.getClass().getSimpleName(), data.relationName());
         EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, data);
@@ -77,7 +77,7 @@ public class RabbitClient {
     }
 
     public void sendExperimentRequest(ExperimentRequestDto experimentRequestDto, String replyTo, String correlationId) {
-        Assert.notNull(experimentRequestDto, "Experiment request is not specified!");
+        Objects.requireNonNull(experimentRequestDto, "Experiment request is not specified!");
         log.info("Starting to send request into eca - service for experiment '{}', data '{}'.",
                 experimentRequestDto.getExperimentType(), experimentRequestDto.getData().relationName());
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
@@ -86,7 +86,7 @@ public class RabbitClient {
     }
 
     public void sendEvaluationRequest(Instances data, String replyTo, String correlationId) {
-        Assert.notNull(data, "Instances must be specified!");
+        Objects.requireNonNull(data, "Instances must be specified!");
         log.info("Starting to send evaluation request into eca - service for data '{}'.", data.relationName());
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
         rabbitSender.sendMessage(Queues.EVALUATION_OPTIMIZER_REQUEST_QUEUE, new InstancesRequest(data),

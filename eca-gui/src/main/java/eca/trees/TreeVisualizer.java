@@ -21,7 +21,6 @@ import eca.trees.rules.NumericRule;
 import eca.util.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.springframework.util.Assert;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +31,12 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Decision tree visualization panel.
@@ -127,7 +131,7 @@ public class TreeVisualizer extends JPanel {
     }
 
     public void setTree(DecisionTreeClassifier tree) {
-        Assert.notNull(tree, "Tree is not specified!");
+        Objects.requireNonNull(tree, "Tree is not specified!");
         this.tree = tree;
         this.createNodes();
         this.computeCoordinates(tree.root);

@@ -21,7 +21,6 @@ import eca.trees.C45;
 import eca.trees.CART;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.MimeTypeUtils;
 import weka.core.Instances;
 
 import javax.swing.*;
@@ -94,7 +93,7 @@ public class RabbitClientTest {
                     .correlationId(correlationId)
                     .replyTo(replyTo)
                     .contentEncoding(StandardCharsets.UTF_8.name())
-                    .contentType(MimeTypeUtils.APPLICATION_JSON.toString()).build();
+                    .contentType("application/json").build();
             channel.basicPublish(StringUtils.EMPTY, "evaluation-request-queue", properties, message);
 
         } catch (Exception ex) {

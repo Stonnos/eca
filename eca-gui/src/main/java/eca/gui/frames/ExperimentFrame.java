@@ -26,7 +26,6 @@ import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,7 +89,6 @@ public abstract class ExperimentFrame extends JFrame {
     private JSpinner foldsSpinner = new JSpinner();
     private JSpinner validationsSpinner = new JSpinner();
 
-    private JButton initialDataButton;
     private JButton startButton;
     private JButton optionsButton;
     private JButton saveButton;
@@ -196,7 +194,7 @@ public abstract class ExperimentFrame extends JFrame {
             foldsSpinner.setEnabled(useTestingSet.isSelected());
             validationsSpinner.setEnabled(useTestingSet.isSelected());
         });
-        //------------------------------------------------------
+
         evaluationMethodPanel.add(useTrainingSet, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         evaluationMethodPanel.add(useTestingSet, new GridBagConstraints(0, 1, 2, 1, 1, 1,
@@ -234,14 +232,14 @@ public abstract class ExperimentFrame extends JFrame {
 
     private JPanel createExperimentMenuPanel() {
         JPanel experimentMenuPanel = new JPanel(new GridBagLayout());
-        initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
+        JButton initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
         startButton = new JButton(START_BUTTON_TEXT);
         stopButton = new JButton(STOP_BUTTON_TEXT);
         stopButton.setEnabled(false);
         optionsButton = new JButton(OPTIONS_BUTTON_TEXT);
         saveButton = new JButton(SAVE_BUTTON_TEXT);
         loadButton = new JButton(LOAD_BUTTON_TEXT);
-        //---------------------------------------------------------------
+
         initialDataButton.addActionListener(new ActionListener() {
 
             InstancesFrame dataFrame;
@@ -280,10 +278,10 @@ public abstract class ExperimentFrame extends JFrame {
             log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
                     experiment.getClassifier().getClass().getSimpleName());
         });
-        //---------------------------------------------------------------
+
         stopButton.addActionListener(e -> worker.cancel(true));
         optionsButton.addActionListener(e -> setOptions());
-        //---------------------------------------------------------------
+
         saveButton.addActionListener(new ActionListener() {
 
             SaveModelChooser fileChooser;
@@ -292,7 +290,7 @@ public abstract class ExperimentFrame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 try {
                     List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
-                    if (CollectionUtils.isEmpty(experimentHistory)) {
+                    if (experimentHistory != null && !experimentHistory.isEmpty()) {
                         JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
                                 JOptionPane.WARNING_MESSAGE);
                     } else {
@@ -316,7 +314,7 @@ public abstract class ExperimentFrame extends JFrame {
                 }
             }
         });
-        //---------------------------------------------------------------
+
         loadButton.addActionListener(new ActionListener() {
 
             OpenModelChooser fileChooser;
@@ -357,7 +355,7 @@ public abstract class ExperimentFrame extends JFrame {
         });
 
         createTimerField();
-        //---------------------------------------------------------------
+
         experimentMenuPanel.add(initialDataButton,
                 new GridBagConstraints(0, 0, 1, 1, 1, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 10, 5), 0, 0));
@@ -400,7 +398,6 @@ public abstract class ExperimentFrame extends JFrame {
         createExperimentProgressBar();
         JPanel mainTopPanel = new JPanel(new GridBagLayout());
 
-        //---------------------------------------------------------------
         mainTopPanel.add(evaluationMethodPanel,
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -410,7 +407,7 @@ public abstract class ExperimentFrame extends JFrame {
         mainTopPanel.add(createExperimentHistoryScrollPane(),
                 new GridBagConstraints(1, 0, 1, 2, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-        //----------------------------------------------
+
         this.add(mainTopPanel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));

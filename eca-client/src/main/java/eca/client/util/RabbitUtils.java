@@ -4,8 +4,8 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import lombok.experimental.UtilityClass;
-import org.springframework.util.MimeTypeUtils;
 
+import javax.activation.MimeType;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
@@ -17,6 +17,8 @@ import java.util.concurrent.TimeoutException;
  */
 @UtilityClass
 public class RabbitUtils {
+
+    private static final String APPLICATION_JSON = "application/json";
 
     /**
      * Builds message properties.
@@ -30,7 +32,7 @@ public class RabbitUtils {
                 .replyTo(replyTo)
                 .correlationId(correlationId)
                 .contentEncoding(StandardCharsets.UTF_8.name())
-                .contentType(MimeTypeUtils.APPLICATION_JSON.toString()).build();
+                .contentType(APPLICATION_JSON).build();
     }
 
     /**

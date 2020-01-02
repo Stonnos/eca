@@ -51,12 +51,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.7.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>eca</groupId>
             <artifactId>eca-client</artifactId>
             <version>${project.version}</version>

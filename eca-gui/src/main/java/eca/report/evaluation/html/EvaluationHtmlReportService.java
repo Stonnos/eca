@@ -13,7 +13,6 @@ import eca.util.Utils;
 import eca.util.VelocityUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.springframework.util.CollectionUtils;
 import weka.core.Attribute;
 
 import javax.imageio.ImageIO;
@@ -106,7 +105,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
     private void fillAttachments(VelocityContext context) throws IOException {
         List<AttachmentRecord> attachmentRecords = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(getEvaluationReport().getAttachmentImages())) {
+        if (getEvaluationReport().getAttachmentImages() != null) {
             for (int i = 0; i < getEvaluationReport().getAttachmentImages().size(); i++) {
                 AttachmentImage attachmentImage = getEvaluationReport().getAttachmentImages().get(i);
                 try (ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream()) {
