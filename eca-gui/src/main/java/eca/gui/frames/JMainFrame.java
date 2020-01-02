@@ -616,14 +616,15 @@ public class JMainFrame extends JFrame {
         }
         CallbackAction callbackAction = () -> {
             String correlationId = UUID.randomUUID().toString();
-            rabbitClient.sendEvaluationRequest((AbstractClassifier) frame.classifier(), frame.data(), evaluationQueue,
-                    correlationId);
+            AbstractClassifier classifier = (AbstractClassifier) frame.classifier();
+            rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
             EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                     .correlationId(correlationId)
                     .requestType(EcaServiceRequestType.CLASSIFIER)
                     .status(EcaServiceTrackStatus.REQUEST_SENT)
                     .details(frame.getTitle())
                     .relationName(frame.data().relationName())
+                    .additionalData(Utils.getClassifierInputOptionsMap(classifier))
                     .build();
             addEcaServiceTrack(ecaServiceTrack);
         };

@@ -5,15 +5,19 @@
  */
 package eca.gui.tables;
 
+import eca.gui.GuiUtils;
 import eca.gui.tables.models.EcaServiceTrackTableModel;
 import eca.model.EcaServiceTrack;
 import eca.model.EcaServiceTrackStatus;
+import eca.report.ReportGenerator;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.collect.Maps.newEnumMap;
 import static eca.gui.tables.models.EcaServiceTrackTableModel.DETAILS_COLUMN;
@@ -69,6 +73,7 @@ public class EcaServiceTrackTable extends JDataTableBase {
         statusColumn.setPreferredWidth(STATUS_COLUMN_WIDTH);
 
         TableColumn detailsColumn = getColumnModel().getColumn(DETAILS_COLUMN);
+        detailsColumn.setCellRenderer(new TrackDetailsRenderer());
         detailsColumn.setPreferredWidth(DETAILS_COLUMN_WIDTH);
         detailsColumn.setMinWidth(DETAILS_COLUMN_WIDTH);
 
@@ -95,6 +100,29 @@ public class EcaServiceTrackTable extends JDataTableBase {
                 cell.setForeground(table.getForeground());
             }
             return cell;
+        }
+    }
+
+    /**
+     * Track details renderer.
+     */
+    private class TrackDetailsRenderer extends JTextField implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
+            EcaServiceTrack ecaServiceTrack = getEcaServiceTrackTableModel().getTrack(row);
+            if (ecaServiceTrack.getAdditionalData() != null && !ecaServiceTrack.getAdditionalData().isEmpty()) {
+                this.setToolTipText(
+                        ReportGenerator.getClassifierInputOptionsAsHtml(ecaServiceTrack.getAdditionalData()));
+            } else {
+                this.setToolTipText(null);
+            }
+            this.setText(Optional.ofNullable(value).map(Object::toString).orElse(null));
+            this.setBorder(null);
+            this.setFont(EcaServiceTrackTable.this.getFont());
+            return this;
         }
     }
 
