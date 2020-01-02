@@ -147,8 +147,7 @@ import static com.google.common.collect.Lists.newArrayList;
 @Slf4j
 public class JMainFrame extends JFrame {
 
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
+    private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
     private static final Color FRAME_COLOR = new Color(198, 226, 255);
 
