@@ -98,6 +98,7 @@ import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.metrics.KNearestNeighbours;
 import eca.model.EcaServiceTrack;
+import eca.model.TrackStatus;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.report.contingency.ContingencyTableReportModel;
@@ -171,6 +172,7 @@ public class JMainFrame extends JFrame {
     private static final String DECIMAL_PLACES_TITLE = "Количество десятичных знаков:";
     private static final String ECA_SERVICE_OPTIONS_MENU_TEXT = "Настройки сервиса ECA";
     private static final String ECA_SERVICE_MENU_TEXT = "Сервис ECA";
+    private static final String ECA_SERVICE_TRACKS_MENU_TEXT = "Запросы в Eca - сервис";
     private static final String SAVE_FILE_MENU_TEXT = "Сохранить...";
     private static final String DB_CONNECTION_MENU_TEXT = "Подключиться к базе данных";
     private static final String DB_CONNECTION_WAITING_MESSAGE =
@@ -247,7 +249,10 @@ public class JMainFrame extends JFrame {
     private final EvaluationMethodOptionsDialog evaluationMethodOptionsDialog =
             new EvaluationMethodOptionsDialog(this);
 
-    private ClassificationResultHistoryFrame resultHistoryFrame;
+    private ClassificationResultHistoryFrame resultHistoryFrame =
+            new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
+
+    private EcaServiceTrackFrame ecaServiceTrackFrame = new EcaServiceTrackFrame(this);
 
     private List<AbstractButton> disabledMenuElementList = newArrayList();
 
@@ -268,7 +273,6 @@ public class JMainFrame extends JFrame {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
-        this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
@@ -636,8 +640,10 @@ public class JMainFrame extends JFrame {
             EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                     .header(frame.getTitle())
                     .correlationId(correlationId)
+                    .status(TrackStatus.REQUEST_SENT)
                     .build();
-            ecaServiceTracks.add(ecaServiceTrack);
+            //ecaServiceTracks.add(ecaServiceTrack);
+            addEcaServiceTrack(ecaServiceTrack);
         };
         LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
         processAsyncTask(progress, () -> {
@@ -1258,8 +1264,12 @@ public class JMainFrame extends JFrame {
                 new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPTIMAL_CLASSIFIER_ICON)));
         optimalClassifierMenu.addActionListener(optimalClassifierActionListener());
 
+        JMenuItem ecaServiceTracksMenu = new JMenuItem(ECA_SERVICE_TRACKS_MENU_TEXT);
+        ecaServiceTracksMenu.addActionListener(event -> ecaServiceTrackFrame.setVisible(true));
+
         ecaServiceMenu.add(experimentRequestMenu);
         ecaServiceMenu.add(optimalClassifierMenu);
+        ecaServiceMenu.add(ecaServiceTracksMenu);
         serviceMenu.add(historyMenu);
         serviceMenu.add(ecaServiceMenu);
 
@@ -1618,6 +1628,7 @@ public class JMainFrame extends JFrame {
             try {
                 EvaluationResults evaluationResults = getEvaluationResults(evaluationResponse);
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), TrackStatus.RESPONSE_RECEIVED);
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getHeader()) ? ecaServiceTrack.getHeader() :
                                 evaluationResults.getClassifier().getClass().getSimpleName();
@@ -1638,6 +1649,7 @@ public class JMainFrame extends JFrame {
         return (ecaResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), TrackStatus.RESPONSE_RECEIVED);
                 ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                     @Override
                     public Void caseSuccessStatus() {
@@ -1672,11 +1684,7 @@ public class JMainFrame extends JFrame {
     }
 
     private EcaServiceTrack getEcaServiceTrack(String correlationId) {
-        return ecaServiceTracks.stream()
-                .filter(track -> track.getCorrelationId().equals(correlationId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        String.format("Can't find eca - service track with correlation id [%s]", correlationId)));
+        return ecaServiceTrackFrame.getEcaServiceTrackTable().getTrack(correlationId);
     }
 
     private EvaluationResults getEvaluationResults(final EvaluationResponse evaluationResponse) {
@@ -1730,8 +1738,10 @@ public class JMainFrame extends JFrame {
                                         EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                                 .correlationId(correlationId)
                                                 .header(experimentRequestDto.getExperimentType().getDescription())
+                                                .status(TrackStatus.REQUEST_SENT)
                                                 .build();
-                                        ecaServiceTracks.add(ecaServiceTrack);
+                                        //ecaServiceTracks.add(ecaServiceTrack);
+                                        addEcaServiceTrack(ecaServiceTrack);
                                     };
                                     LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction,
                                             EXPERIMENT_REQUEST_LOADING_MESSAGE);
@@ -1809,8 +1819,10 @@ public class JMainFrame extends JFrame {
                                         correlationId);
                                 EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                         .correlationId(correlationId)
+                                        .status(TrackStatus.REQUEST_SENT)
                                         .build();
-                                ecaServiceTracks.add(ecaServiceTrack);
+                                //ecaServiceTracks.add(ecaServiceTrack);
+                                addEcaServiceTrack(ecaServiceTrack);
                             };
                             LoadDialog progress =
                                     new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
@@ -2088,5 +2100,13 @@ public class JMainFrame extends JFrame {
                 }
             }
         };
+    }
+
+    private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {
+        ecaServiceTrackFrame.getEcaServiceTrackTable().addTrack(ecaServiceTrack);
+    }
+
+    private void updateEcaServiceTrackStatus(String correlationId, TrackStatus status) {
+        ecaServiceTrackFrame.getEcaServiceTrackTable().updateTrackStatus(correlationId, status);
     }
 }

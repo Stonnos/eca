@@ -25,6 +25,11 @@ public class EcaServiceTrack {
     private String header;
 
     /**
+     * Track status
+     */
+    private TrackStatus status;
+
+    /**
      * Additional data map
      */
     private Map<String, String> additionalData;
