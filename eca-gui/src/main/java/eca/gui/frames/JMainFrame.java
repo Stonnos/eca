@@ -1247,6 +1247,7 @@ public class JMainFrame extends JFrame {
         optimalClassifierMenu.addActionListener(optimalClassifierActionListener());
 
         JMenuItem ecaServiceTracksMenu = new JMenuItem(ECA_SERVICE_TRACKS_MENU_TEXT);
+        ecaServiceTracksMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_TRACKS_ICON)));
         ecaServiceTracksMenu.addActionListener(event -> ecaServiceTrackFrame.setVisible(true));
 
         ecaServiceMenu.add(experimentRequestMenu);

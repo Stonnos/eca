@@ -73,6 +73,8 @@ public class ConsoleFrame extends JFrame {
             }
             chooser.dispose();
         });
+
+        fontColorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
         fontColorMenu.addActionListener(e -> {
             Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, FONT_COLOR_MENU_TEXT,
                     textArea.getForeground());
