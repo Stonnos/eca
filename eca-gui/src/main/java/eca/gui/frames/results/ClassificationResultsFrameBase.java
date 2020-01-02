@@ -14,7 +14,6 @@ import eca.data.FileUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
-import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.frames.AttributesStatisticsFrame;
 import eca.gui.frames.HtmlFrame;
 import eca.gui.frames.InstancesFrame;
@@ -55,7 +54,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -326,22 +324,15 @@ public class ClassificationResultsFrameBase extends JFrame {
                 fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
                 File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {
-                    Map<String, String> props = buildPropertiesMap();
                     ModelConverter.saveModel(file,
-                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, props));
+                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits,
+                                    getTitle()));
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }
-        }
-
-        Map<String, String> buildPropertiesMap() {
-            Map<String, String> properties = new HashMap<>();
-            properties.put(ClassificationModelDictionary.DESCRIPTION_KEY, getTitle());
-            properties.put(ClassificationModelDictionary.DIGITS_KEY, String.valueOf(digits));
-            return properties;
         }
     }
 

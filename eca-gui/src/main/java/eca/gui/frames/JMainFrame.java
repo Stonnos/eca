@@ -86,7 +86,6 @@ import eca.gui.dialogs.RandomForestsOptionDialog;
 import eca.gui.dialogs.RandomNetworkOptionsDialog;
 import eca.gui.dialogs.SpinnerDialog;
 import eca.gui.dialogs.StackingOptionsDialog;
-import eca.gui.dictionary.ClassificationModelDictionary;
 import eca.gui.dictionary.CommonDictionary;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
 import eca.gui.frames.results.ClassificationResultsFrameFactory;
@@ -133,7 +132,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -1603,7 +1602,8 @@ public class JMainFrame extends JFrame {
         return (evaluationResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), EcaServiceTrackStatus.RESPONSE_RECEIVED);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(),
+                        EcaServiceTrackStatus.RESPONSE_RECEIVED);
                 EvaluationResults evaluationResults = getEvaluationResults(evaluationResponse);
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getDetails()) ? ecaServiceTrack.getDetails() :
@@ -1625,7 +1625,8 @@ public class JMainFrame extends JFrame {
         return (ecaResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), EcaServiceTrackStatus.RESPONSE_RECEIVED);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(),
+                        EcaServiceTrackStatus.RESPONSE_RECEIVED);
                 ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                     @Override
                     public Void caseSuccessStatus() {
@@ -1983,24 +1984,13 @@ public class JMainFrame extends JFrame {
                                 loader, MODEL_BUILDING_MESSAGE);
 
                         processAsyncTask(progress, () -> {
-                            ClassificationModel model = loader.getResult();
-                            String description;
-                            int digits;
-                            Map<String, String> properties = model.getAdditionalProperties();
-                            if (model.getAdditionalProperties() != null) {
-                                String descriptionProp =
-                                        properties.get(ClassificationModelDictionary.DESCRIPTION_KEY);
-                                description = descriptionProp != null ? descriptionProp
-                                        : model.getClassifier().getClass().getSimpleName();
-                                String digitsProp = properties.get(ClassificationModelDictionary.DIGITS_KEY);
-                                digits = digitsProp != null ? Integer.valueOf(digitsProp) : maximumFractionDigits;
-                            } else {
-                                description = model.getClassifier().getClass().getSimpleName();
-                                digits = maximumFractionDigits;
-                            }
-
-                            createEvaluationResultsAsync(description, model.getClassifier(), model.getData(),
-                                    model.getEvaluation(), digits);
+                            ClassificationModel classificationModel = loader.getResult();
+                            int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits()).orElse(
+                                    maximumFractionDigits);
+                            String title = Optional.ofNullable(classificationModel.getDetails()).orElse(
+                                    classificationModel.getClassifier().getClass().getSimpleName());
+                            createEvaluationResultsAsync(title, classificationModel.getClassifier(),
+                                    classificationModel.getData(), classificationModel.getEvaluation(), digits);
                         });
 
                     }
