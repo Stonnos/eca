@@ -41,7 +41,6 @@ public class EcaServiceTrackFrame extends JFrame {
         this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
-        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
         this.setLocationRelativeTo(parent);
     }
