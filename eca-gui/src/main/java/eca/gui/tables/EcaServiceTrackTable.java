@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newEnumMap;
 import static eca.gui.tables.models.EcaServiceTrackTableModel.DETAILS_COLUMN;
+import static eca.gui.tables.models.EcaServiceTrackTableModel.RELATION_NAME_COLUMN;
 import static eca.gui.tables.models.EcaServiceTrackTableModel.REQUEST_TYPE_COLUMN;
 import static eca.gui.tables.models.EcaServiceTrackTableModel.STATUS_COLUMN;
 
@@ -26,8 +27,9 @@ import static eca.gui.tables.models.EcaServiceTrackTableModel.STATUS_COLUMN;
 public class EcaServiceTrackTable extends JDataTableBase {
 
     private static final int STATUS_COLUMN_WIDTH = 125;
+    private static final int RELATION_NAME_COLUMN_WIDTH = 200;
     private static final int DETAILS_COLUMN_WIDTH = 350;
-    private static final int REQUEST_TYPE_WIDTH = 300;
+    private static final int REQUEST_TYPE_COLUMN_WIDTH = 300;
 
     private static final Map<EcaServiceTrackStatus, Color> trackStatusColorMap;
 
@@ -71,8 +73,12 @@ public class EcaServiceTrackTable extends JDataTableBase {
         detailsColumn.setMinWidth(DETAILS_COLUMN_WIDTH);
 
         TableColumn requestTypeColumn = getColumnModel().getColumn(REQUEST_TYPE_COLUMN);
-        requestTypeColumn.setPreferredWidth(250);
-        requestTypeColumn.setMinWidth(REQUEST_TYPE_WIDTH);
+        requestTypeColumn.setPreferredWidth(REQUEST_TYPE_COLUMN_WIDTH);
+        requestTypeColumn.setMinWidth(REQUEST_TYPE_COLUMN_WIDTH);
+
+        TableColumn relationNameColumn = getColumnModel().getColumn(RELATION_NAME_COLUMN);
+        relationNameColumn.setPreferredWidth(RELATION_NAME_COLUMN_WIDTH);
+        relationNameColumn.setMinWidth(RELATION_NAME_COLUMN_WIDTH);
     }
 
     private class TrackStatusCellRenderer extends DefaultTableCellRenderer {
