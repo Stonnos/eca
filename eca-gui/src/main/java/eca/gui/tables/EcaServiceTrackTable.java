@@ -7,7 +7,7 @@ package eca.gui.tables;
 
 import eca.gui.tables.models.EcaServiceTrackTableModel;
 import eca.model.EcaServiceTrack;
-import eca.model.TrackStatus;
+import eca.model.EcaServiceTrackStatus;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -16,6 +16,8 @@ import java.awt.*;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newEnumMap;
+import static eca.gui.tables.models.EcaServiceTrackTableModel.DETAILS_COLUMN;
+import static eca.gui.tables.models.EcaServiceTrackTableModel.REQUEST_TYPE_COLUMN;
 import static eca.gui.tables.models.EcaServiceTrackTableModel.STATUS_COLUMN;
 
 /**
@@ -23,19 +25,21 @@ import static eca.gui.tables.models.EcaServiceTrackTableModel.STATUS_COLUMN;
  */
 public class EcaServiceTrackTable extends JDataTableBase {
 
-    private static final int STATUS_COLUMN_WIDTH = 150;
+    private static final int STATUS_COLUMN_WIDTH = 125;
+    private static final int DETAILS_COLUMN_WIDTH = 350;
+    private static final int REQUEST_TYPE_WIDTH = 300;
 
-    private static final Map<TrackStatus, Color> trackStatusColorMap;
+    private static final Map<EcaServiceTrackStatus, Color> trackStatusColorMap;
 
     static {
-        trackStatusColorMap = newEnumMap(TrackStatus.class);
-        trackStatusColorMap.put(TrackStatus.REQUEST_SENT, Color.BLUE);
-        trackStatusColorMap.put(TrackStatus.RESPONSE_RECEIVED, Color.GREEN);
+        trackStatusColorMap = newEnumMap(EcaServiceTrackStatus.class);
+        trackStatusColorMap.put(EcaServiceTrackStatus.REQUEST_SENT, Color.BLUE);
+        trackStatusColorMap.put(EcaServiceTrackStatus.RESPONSE_RECEIVED, Color.GREEN);
     }
 
     public EcaServiceTrackTable() {
         super(new EcaServiceTrackTableModel());
-        this.initStatusColumn();
+        this.initColumns();
         this.setAutoResizeOff(false);
         this.setCellSelectionEnabled(false);
     }
@@ -48,7 +52,7 @@ public class EcaServiceTrackTable extends JDataTableBase {
         getEcaServiceTrackTableModel().addTrack(ecaServiceTrack);
     }
 
-    public void updateTrackStatus(String correlationId, TrackStatus status) {
+    public void updateTrackStatus(String correlationId, EcaServiceTrackStatus status) {
         getEcaServiceTrackTableModel().updateTrackStatus(correlationId, status);
     }
 
@@ -56,11 +60,19 @@ public class EcaServiceTrackTable extends JDataTableBase {
         return (EcaServiceTrackTableModel) this.getModel();
     }
 
-    private void initStatusColumn() {
-        TableColumn column = this.getColumnModel().getColumn(STATUS_COLUMN);
-        column.setCellRenderer(new TrackStatusCellRenderer());
-        column.setMaxWidth(STATUS_COLUMN_WIDTH);
-        column.setPreferredWidth(STATUS_COLUMN_WIDTH);
+    private void initColumns() {
+        TableColumn statusColumn = this.getColumnModel().getColumn(STATUS_COLUMN);
+        statusColumn.setCellRenderer(new TrackStatusCellRenderer());
+        statusColumn.setMinWidth(STATUS_COLUMN_WIDTH);
+        statusColumn.setPreferredWidth(STATUS_COLUMN_WIDTH);
+
+        TableColumn detailsColumn = getColumnModel().getColumn(DETAILS_COLUMN);
+        detailsColumn.setPreferredWidth(DETAILS_COLUMN_WIDTH);
+        detailsColumn.setMinWidth(DETAILS_COLUMN_WIDTH);
+
+        TableColumn requestTypeColumn = getColumnModel().getColumn(REQUEST_TYPE_COLUMN);
+        requestTypeColumn.setPreferredWidth(250);
+        requestTypeColumn.setMinWidth(REQUEST_TYPE_WIDTH);
     }
 
     private class TrackStatusCellRenderer extends DefaultTableCellRenderer {

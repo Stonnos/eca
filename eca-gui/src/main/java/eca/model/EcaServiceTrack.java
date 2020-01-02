@@ -20,9 +20,14 @@ public class EcaServiceTrack {
     private String correlationId;
 
     /**
-     * Header info
+     * Request type
      */
-    private String header;
+    private EcaServiceRequestType requestType;
+
+    /**
+     * Training data info
+     */
+    private String relationName;
 
     /**
      * Details string
@@ -32,7 +37,7 @@ public class EcaServiceTrack {
     /**
      * Track status
      */
-    private TrackStatus status;
+    private EcaServiceTrackStatus status;
 
     /**
      * Additional data map

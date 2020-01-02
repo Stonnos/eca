@@ -5,7 +5,6 @@
  */
 package eca.gui.frames;
 
-import eca.client.EcaServiceClientImpl;
 import eca.client.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
@@ -97,8 +96,9 @@ import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
 import eca.metrics.KNearestNeighbours;
+import eca.model.EcaServiceRequestType;
 import eca.model.EcaServiceTrack;
-import eca.model.TrackStatus;
+import eca.model.EcaServiceTrackStatus;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.report.contingency.ContingencyTableReportModel;
@@ -236,8 +236,6 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
-    private static final String EXPERIMENT_REQUEST_HEADER_FORMAT = "Заявка на эксперимент: %s";
-    private static final String OPTIMAL_CLASSIFIER_OPTIONS_HEADER = "Подбор оптимальных параметров классификатора";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -622,9 +620,10 @@ public class JMainFrame extends JFrame {
                     correlationId);
             EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                     .correlationId(correlationId)
-                    .status(TrackStatus.REQUEST_SENT)
-                    .header(frame.getTitle())
+                    .requestType(EcaServiceRequestType.CLASSIFIER)
+                    .status(EcaServiceTrackStatus.REQUEST_SENT)
                     .details(frame.getTitle())
+                    .relationName(frame.data().relationName())
                     .build();
             addEcaServiceTrack(ecaServiceTrack);
         };
@@ -1602,7 +1601,7 @@ public class JMainFrame extends JFrame {
         return (evaluationResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), TrackStatus.RESPONSE_RECEIVED);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), EcaServiceTrackStatus.RESPONSE_RECEIVED);
                 EvaluationResults evaluationResults = getEvaluationResults(evaluationResponse);
                 String title =
                         !StringUtils.isBlank(ecaServiceTrack.getDetails()) ? ecaServiceTrack.getDetails() :
@@ -1624,7 +1623,7 @@ public class JMainFrame extends JFrame {
         return (ecaResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), TrackStatus.RESPONSE_RECEIVED);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), EcaServiceTrackStatus.RESPONSE_RECEIVED);
                 ecaResponse.getStatus().handle(new TechnicalStatusVisitor<Void>() {
                     @Override
                     public Void caseSuccessStatus() {
@@ -1708,10 +1707,10 @@ public class JMainFrame extends JFrame {
                                                 correlationId);
                                         EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                                 .correlationId(correlationId)
-                                                .status(TrackStatus.REQUEST_SENT)
-                                                .header(String.format(EXPERIMENT_REQUEST_HEADER_FORMAT,
-                                                        experimentRequestDto.getExperimentType().getDescription()))
+                                                .requestType(EcaServiceRequestType.EXPERIMENT)
+                                                .status(EcaServiceTrackStatus.REQUEST_SENT)
                                                 .details(experimentRequestDto.getExperimentType().getDescription())
+                                                .relationName(dataBuilder.getResult().relationName())
                                                 .build();
                                         addEcaServiceTrack(ecaServiceTrack);
                                     };
@@ -1748,8 +1747,9 @@ public class JMainFrame extends JFrame {
                                         correlationId);
                                 EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                         .correlationId(correlationId)
-                                        .status(TrackStatus.REQUEST_SENT)
-                                        .header(OPTIMAL_CLASSIFIER_OPTIONS_HEADER)
+                                        .requestType(EcaServiceRequestType.OPTIMAL_CLASSIFIER)
+                                        .status(EcaServiceTrackStatus.REQUEST_SENT)
+                                        .relationName(dataBuilder.getResult().relationName())
                                         .build();
                                 addEcaServiceTrack(ecaServiceTrack);
                             };
@@ -2034,7 +2034,7 @@ public class JMainFrame extends JFrame {
         ecaServiceTrackFrame.getEcaServiceTrackTable().addTrack(ecaServiceTrack);
     }
 
-    private void updateEcaServiceTrackStatus(String correlationId, TrackStatus status) {
+    private void updateEcaServiceTrackStatus(String correlationId, EcaServiceTrackStatus status) {
         ecaServiceTrackFrame.getEcaServiceTrackTable().updateTrackStatus(correlationId, status);
     }
 }

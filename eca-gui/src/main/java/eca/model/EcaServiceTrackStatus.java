@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
  * @author Roman Batygin
  */
 @RequiredArgsConstructor
-public enum TrackStatus implements DescriptiveEnum {
+public enum EcaServiceTrackStatus implements DescriptiveEnum {
 
     /**
      * Request sent status

@@ -1,8 +1,7 @@
 package eca.gui.tables.models;
 
 import eca.model.EcaServiceTrack;
-import eca.model.TrackStatus;
-import eca.util.Entry;
+import eca.model.EcaServiceTrackStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -20,10 +19,12 @@ import static com.google.common.collect.Maps.newHashMap;
  */
 public class EcaServiceTrackTableModel extends AbstractTableModel {
 
-    public static final int HEADER_COLUMN = 0;
-    public static final int STATUS_COLUMN = 1;
+    public static final int REQUEST_TYPE_COLUMN = 0;
+    public static final int DETAILS_COLUMN = 1;
+    public static final int RELATION_NAME_COLUMN = 2;
+    public static final int STATUS_COLUMN = 3;
 
-    private static final String[] TITLE = {"Информация об запросе", "Статус"};
+    private static final String[] TITLE = {"Тип запроса", "Информация об запросе", "Обучающая выборка", "Статус"};
 
     private final Object lifecycleMonitor = new Object();
 
@@ -56,7 +57,7 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
         }
     }
 
-    public void updateTrackStatus(String correlationId, TrackStatus status) {
+    public void updateTrackStatus(String correlationId, EcaServiceTrackStatus status) {
         synchronized (lifecycleMonitor) {
             EcaServiceTrackIndex ecaServiceTrack = getEcaServiceTrackIndex(correlationId);
             ecaServiceTrack.getTrack().setStatus(status);
@@ -83,8 +84,12 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
     public Object getValueAt(int row, int column) {
         EcaServiceTrack ecaServiceTrack = ecaServiceTracks.get(row);
         switch (column) {
-            case HEADER_COLUMN:
-                return ecaServiceTrack.getHeader();
+            case REQUEST_TYPE_COLUMN:
+                return ecaServiceTrack.getRequestType().getDescription();
+            case DETAILS_COLUMN:
+                return ecaServiceTrack.getDetails();
+            case RELATION_NAME_COLUMN:
+                return ecaServiceTrack.getRelationName();
             case STATUS_COLUMN:
                 return ecaServiceTrack.getStatus().getDescription();
             default:

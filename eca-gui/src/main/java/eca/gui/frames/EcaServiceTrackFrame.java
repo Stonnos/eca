@@ -22,7 +22,7 @@ public class EcaServiceTrackFrame extends JFrame {
 
     private static final String FRAME_TITLE = "Запросы в Eca - сервис";
 
-    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(600, 150);
+    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(1250, 150);
 
     @Getter
     private EcaServiceTrackTable ecaServiceTrackTable = new EcaServiceTrackTable();
