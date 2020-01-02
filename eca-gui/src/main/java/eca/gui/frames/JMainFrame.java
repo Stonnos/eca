@@ -1235,6 +1235,7 @@ public class JMainFrame extends JFrame {
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
 
         JMenu ecaServiceMenu = new JMenu(ECA_SERVICE_MENU_TEXT);
+        ecaServiceMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_ICON)));
         disabledMenuElementList.add(ecaServiceMenu);
 
         JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
