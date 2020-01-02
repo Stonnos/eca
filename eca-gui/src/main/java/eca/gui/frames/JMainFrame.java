@@ -236,8 +236,8 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
-    private static final String EXPERIMENT_REQUEST_HEADER_FORMAT = "Эксперимент: %s";
-    private static final String OPTIMAL_CLASSIFIER_OPTIONS_HEADER = "Оптимальный классификатор";
+    private static final String EXPERIMENT_REQUEST_HEADER_FORMAT = "Заявка на эксперимент: %s";
+    private static final String OPTIMAL_CLASSIFIER_OPTIONS_HEADER = "Подбор оптимальных параметров классификатора";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
