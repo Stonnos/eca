@@ -22,6 +22,8 @@ import static eca.gui.tables.models.EcaServiceTrackTableModel.STATUS_COLUMN;
  */
 public class EcaServiceTrackTable extends JDataTableBase {
 
+    private static final int STATUS_COLUMN_WIDTH = 150;
+
     private static final Map<TrackStatus, Color> trackStatusColorMap;
 
     static {
@@ -33,6 +35,8 @@ public class EcaServiceTrackTable extends JDataTableBase {
     public EcaServiceTrackTable() {
         super(new EcaServiceTrackTableModel());
         this.getColumnModel().getColumn(STATUS_COLUMN).setCellRenderer(new TrackStatusCellRenderer());
+        this.getColumnModel().getColumn(STATUS_COLUMN).setMaxWidth(STATUS_COLUMN_WIDTH);
+        this.getColumnModel().getColumn(STATUS_COLUMN).setPreferredWidth(STATUS_COLUMN_WIDTH);
         this.setAutoResizeOff(false);
     }
 

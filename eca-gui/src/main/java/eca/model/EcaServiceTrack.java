@@ -25,6 +25,11 @@ public class EcaServiceTrack {
     private String header;
 
     /**
+     * Details string
+     */
+    private String details;
+
+    /**
      * Track status
      */
     private TrackStatus status;
