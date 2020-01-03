@@ -19,6 +19,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitUtils {
 
     private static final String APPLICATION_JSON = "application/json";
+    private static final int DELIVERY_MODE = 2;
 
     /**
      * Builds message properties.
@@ -31,6 +32,7 @@ public class RabbitUtils {
         return new AMQP.BasicProperties.Builder()
                 .replyTo(replyTo)
                 .correlationId(correlationId)
+                .deliveryMode(DELIVERY_MODE)
                 .contentEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON).build();
     }
