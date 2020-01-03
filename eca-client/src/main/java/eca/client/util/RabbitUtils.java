@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import lombok.experimental.UtilityClass;
 
-import javax.activation.MimeType;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitUtils {
 
     private static final String APPLICATION_JSON = "application/json";
-    private static final int DELIVERY_MODE = 2;
+    private static final int PERSISTENT_MODE = 2;
 
     /**
      * Builds message properties.
@@ -32,7 +31,7 @@ public class RabbitUtils {
         return new AMQP.BasicProperties.Builder()
                 .replyTo(replyTo)
                 .correlationId(correlationId)
-                .deliveryMode(DELIVERY_MODE)
+                .deliveryMode(PERSISTENT_MODE)
                 .contentEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON).build();
     }
