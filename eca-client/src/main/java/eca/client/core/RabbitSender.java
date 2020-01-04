@@ -8,9 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-
 /**
  * Rabbit MQ sender.
  *
@@ -36,7 +33,7 @@ public class RabbitSender {
             Channel channel = connectionManager.getChannel();
             byte[] message = messageConverter.toMessage(request);
             channel.basicPublish(StringUtils.EMPTY, queue, properties, message);
-        } catch (IOException | TimeoutException ex) {
+        } catch (Exception ex) {
             throw new EcaServiceException(ex.getMessage());
         }
     }

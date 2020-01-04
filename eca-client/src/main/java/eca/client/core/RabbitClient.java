@@ -63,6 +63,14 @@ public class RabbitClient {
     @Setter
     private Integer seed;
 
+    /**
+     * Sends evaluation request.
+     *
+     * @param classifier    - classifier
+     * @param data          - training data
+     * @param replyTo       - reply to queue name
+     * @param correlationId - correlation id
+     */
     public void sendEvaluationRequest(AbstractClassifier classifier, Instances data, String replyTo,
                                       String correlationId) {
         Objects.requireNonNull(classifier, "Classifier must be specified!");
@@ -76,6 +84,13 @@ public class RabbitClient {
                 data.relationName());
     }
 
+    /**
+     * Sends experiment request.
+     *
+     * @param experimentRequestDto - experiment request dto
+     * @param replyTo              - reply to queue name
+     * @param correlationId        - correlation id
+     */
     public void sendExperimentRequest(ExperimentRequestDto experimentRequestDto, String replyTo, String correlationId) {
         Objects.requireNonNull(experimentRequestDto, "Experiment request is not specified!");
         log.info("Starting to send request into eca - service for experiment '{}', data '{}'.",
@@ -85,6 +100,13 @@ public class RabbitClient {
         log.info("Request has been sent for experiment {}.", experimentRequestDto.getExperimentType());
     }
 
+    /**
+     * Sends evaluation request.
+     *
+     * @param data          - training data
+     * @param replyTo       - reply to queue name
+     * @param correlationId - correlation id
+     */
     public void sendEvaluationRequest(Instances data, String replyTo, String correlationId) {
         Objects.requireNonNull(data, "Instances must be specified!");
         log.info("Starting to send evaluation request into eca - service for data '{}'.", data.relationName());
