@@ -5,7 +5,7 @@
  */
 package eca.gui.frames;
 
-import eca.client.RabbitClient;
+import eca.client.core.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;

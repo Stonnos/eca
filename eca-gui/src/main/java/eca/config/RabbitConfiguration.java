@@ -1,9 +1,9 @@
 package eca.config;
 
 import com.rabbitmq.client.ConnectionFactory;
-import eca.client.ConnectionManager;
-import eca.client.RabbitClient;
-import eca.client.RabbitSender;
+import eca.client.core.ConnectionManager;
+import eca.client.core.RabbitClient;
+import eca.client.core.RabbitSender;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.converter.MessageConverter;
 import eca.client.listener.MessageListenerContainer;
