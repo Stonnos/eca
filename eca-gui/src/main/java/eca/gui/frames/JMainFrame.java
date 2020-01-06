@@ -608,9 +608,10 @@ public class JMainFrame extends JFrame {
 
     private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
         rabbitClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
-        if (EvaluationMethod.CROSS_VALIDATION.equals(rabbitClient.getEvaluationMethod())) {
+        if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethodOptionsDialog.getEvaluationMethod())) {
             rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
+            rabbitClient.setSeed(seed);
         }
         CallbackAction callbackAction = () -> {
             String correlationId = UUID.randomUUID().toString();

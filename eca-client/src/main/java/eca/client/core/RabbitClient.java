@@ -1,13 +1,11 @@
 package eca.client.core;
 
 import com.rabbitmq.client.AMQP;
-import eca.client.dto.EvaluationOption;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
 import eca.client.util.Queues;
 import eca.core.evaluation.EvaluationMethod;
-import eca.util.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
-import java.util.EnumMap;
 import java.util.Objects;
 
 import static eca.client.util.RabbitUtils.buildMessageProperties;
@@ -122,13 +119,9 @@ public class RabbitClient {
         evaluationRequestDto.setData(data);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {
-            evaluationRequestDto.setEvaluationOptionsMap(new EnumMap<>(EvaluationOption.class));
-            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
-                    EvaluationOption.NUM_FOLDS, numFolds);
-            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
-                    EvaluationOption.NUM_TESTS, numTests);
-            Utils.putValueIfNotNull(evaluationRequestDto.getEvaluationOptionsMap(),
-                    EvaluationOption.SEED, seed);
+            evaluationRequestDto.setNumFolds(numFolds);
+            evaluationRequestDto.setNumTests(numTests);
+            evaluationRequestDto.setSeed(seed);
         }
         return evaluationRequestDto;
     }
