@@ -6,7 +6,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import com.rabbitmq.client.RpcClient;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.EvaluationResponse;
 import eca.core.evaluation.EvaluationMethod;
@@ -15,7 +14,6 @@ import eca.data.file.resource.FileResource;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.sampling.SamplingMethod;
-import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
@@ -27,14 +25,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -87,7 +78,6 @@ public class RabbitClientTest {
             evaluationRequestDto.setClassifier(cart);
             evaluationRequestDto.setData(instances);
             evaluationRequestDto.setEvaluationMethod(EvaluationMethod.CROSS_VALIDATION);
-            evaluationRequestDto.setEvaluationOptionsMap(Collections.emptyMap());
             byte[] message = OBJECT_MAPPER.writeValueAsBytes(evaluationRequestDto);
             AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
                     .correlationId(correlationId)
