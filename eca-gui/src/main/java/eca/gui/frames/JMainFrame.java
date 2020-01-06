@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
 import eca.client.core.RabbitClient;
@@ -155,6 +150,7 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
+    private static final String REQUEST_SENT_MESSAGE = "Пожалуйста подождите, идет отправка запросва..";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
@@ -208,8 +204,6 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
             "Ваша заявка на эксперимент '%s' была успешно создана, пожалуйста ожидайте ответное письмо на email.";
     private static final String EXPERIMENT_TIMEOUT_MESSAGE = "There was a timeout.";
-    private static final String EXPERIMENT_REQUEST_LOADING_MESSAGE =
-            "Пожалуйста подождите, идет создание заявки на эксперимент...";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -627,7 +621,7 @@ public class JMainFrame extends JFrame {
                     .build();
             addEcaServiceTrack(ecaServiceTrack);
         };
-        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
+        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
         processAsyncTask(progress, () -> {
         });
     }
@@ -1719,7 +1713,7 @@ public class JMainFrame extends JFrame {
                                         addEcaServiceTrack(ecaServiceTrack);
                                     };
                                     LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction,
-                                            EXPERIMENT_REQUEST_LOADING_MESSAGE);
+                                            REQUEST_SENT_MESSAGE);
                                     processAsyncTask(progress, () -> {
                                     });
                                 }
@@ -1758,7 +1752,7 @@ public class JMainFrame extends JFrame {
                                 addEcaServiceTrack(ecaServiceTrack);
                             };
                             LoadDialog progress =
-                                    new LoadDialog(JMainFrame.this, callbackAction, MODEL_BUILDING_MESSAGE);
+                                    new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
                             processAsyncTask(progress, () -> {
                             });
                         });
