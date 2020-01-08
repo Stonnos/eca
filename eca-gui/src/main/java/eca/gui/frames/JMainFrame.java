@@ -150,7 +150,7 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
-    private static final String REQUEST_SENT_MESSAGE = "Пожалуйста подождите, идет отправка запросва..";
+    private static final String REQUEST_SENT_MESSAGE = "Пожалуйста подождите, идет отправка запроса..";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
