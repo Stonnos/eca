@@ -146,8 +146,8 @@ public class MessageListenerContainer {
                     String queue = declareReplyToQueue(adapterEntry.getKey(), channel);
                     adapterEntry.getValue().basicConsume(channel, queue);
                 }
-                log.info("Consumers initialization has been finished");
                 started = true;
+                log.info("Consumers initialization has been finished");
             } catch (IOException ex) {
                 log.error("There was an error while initialize consumers: {}", ex.getMessage());
             }
