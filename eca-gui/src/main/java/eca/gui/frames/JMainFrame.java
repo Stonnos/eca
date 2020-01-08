@@ -1329,7 +1329,6 @@ public class JMainFrame extends JFrame {
             if (ecaServiceOptionsDialog.isDialogResult()) {
                 try {
                     CONFIG_SERVICE.saveEcaServiceConfig();
-                    //updateEcaServiceClientDetails();
                     updateMessageListenerContainerConfiguration(oldConfig);
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
