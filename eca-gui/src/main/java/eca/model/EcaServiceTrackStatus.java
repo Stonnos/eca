@@ -21,7 +21,6 @@ public enum EcaServiceTrackStatus implements DescriptiveEnum {
      */
     RESPONSE_RECEIVED("Получен ответ");
 
-
     private final String description;
 
     @Override
