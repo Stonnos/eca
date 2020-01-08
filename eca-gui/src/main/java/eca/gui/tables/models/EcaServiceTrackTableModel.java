@@ -28,13 +28,13 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
 
     private final Object lifecycleMonitor = new Object();
 
-    private Map<String, EcaServiceTrackIndex> ecaServiceTrackMap = newHashMap();
+    private Map<String, EcaServiceTrackWrapper> ecaServiceTrackMap = newHashMap();
 
     private List<EcaServiceTrack> ecaServiceTracks = newArrayList();
 
     @Data
     @AllArgsConstructor
-    private static class EcaServiceTrackIndex {
+    private static class EcaServiceTrackWrapper {
         int row;
         EcaServiceTrack track;
     }
@@ -44,7 +44,7 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
     }
 
     public EcaServiceTrack getTrack(String correlationId) {
-        return getEcaServiceTrackIndex(correlationId).getTrack();
+        return getEcaServiceTrackWrapper(correlationId).getTrack();
     }
 
     public void addTrack(EcaServiceTrack ecaServiceTrack) {
@@ -52,14 +52,14 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
             ecaServiceTracks.add(ecaServiceTrack);
             int insertedRow = getRowCount() - 1;
             ecaServiceTrackMap.put(ecaServiceTrack.getCorrelationId(),
-                    new EcaServiceTrackIndex(insertedRow, ecaServiceTrack));
+                    new EcaServiceTrackWrapper(insertedRow, ecaServiceTrack));
             fireTableRowsInserted(insertedRow, insertedRow);
         }
     }
 
     public void updateTrackStatus(String correlationId, EcaServiceTrackStatus status) {
         synchronized (lifecycleMonitor) {
-            EcaServiceTrackIndex ecaServiceTrack = getEcaServiceTrackIndex(correlationId);
+            EcaServiceTrackWrapper ecaServiceTrack = getEcaServiceTrackWrapper(correlationId);
             ecaServiceTrack.getTrack().setStatus(status);
             fireTableRowsUpdated(ecaServiceTrack.getRow(), ecaServiceTrack.getRow());
         }
@@ -102,8 +102,8 @@ public class EcaServiceTrackTableModel extends AbstractTableModel {
         return TITLE[column];
     }
 
-    private EcaServiceTrackIndex getEcaServiceTrackIndex(String correlationId) {
-        EcaServiceTrackIndex ecaServiceTrackIndex = ecaServiceTrackMap.get(correlationId);
+    private EcaServiceTrackWrapper getEcaServiceTrackWrapper(String correlationId) {
+        EcaServiceTrackWrapper ecaServiceTrackIndex = ecaServiceTrackMap.get(correlationId);
         if (ecaServiceTrackIndex == null) {
             throw new IllegalStateException(
                     String.format("Can't find eca - service track with correlation id [%s]", correlationId));
