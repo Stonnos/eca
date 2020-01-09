@@ -241,8 +241,7 @@ public class JMainFrame extends JFrame {
     private final EvaluationMethodOptionsDialog evaluationMethodOptionsDialog =
             new EvaluationMethodOptionsDialog(this);
 
-    private ClassificationResultHistoryFrame resultHistoryFrame =
-            new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
+    private ClassificationResultHistoryFrame resultHistoryFrame;
 
     private EcaServiceTrackFrame ecaServiceTrackFrame = new EcaServiceTrackFrame(this);
 
@@ -276,6 +275,7 @@ public class JMainFrame extends JFrame {
             this.seed = Utils.getIntValueOrDefault(CONFIG_SERVICE.getApplicationConfig().getSeed(),
                     CommonDictionary.MIN_SEED);
             this.setIconImage(ImageIO.read(CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON)));
+            this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
             initTooltipDismissDelay();
             generateQueueNames();
             updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
