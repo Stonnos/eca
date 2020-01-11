@@ -33,7 +33,7 @@ public class SingletonRegistry {
                     throw new IllegalStateException(ex.getMessage());
                 }
             }
-            return (T) instance;
+            return instanceClazz.cast(instance);
         }
     }
 }
