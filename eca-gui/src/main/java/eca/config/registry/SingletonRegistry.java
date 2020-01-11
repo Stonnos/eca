@@ -16,7 +16,7 @@ public class SingletonRegistry {
     private static final Map<Class<?>, Object> singletonMap = new WeakHashMap<>();
 
     /**
-     * Gets or create singleton instance.
+     * Gets or create singleton instance for specified class. Default constructor must be declared for class.
      *
      * @param instanceClazz - instance class
      * @param <T>           - instances generic type
