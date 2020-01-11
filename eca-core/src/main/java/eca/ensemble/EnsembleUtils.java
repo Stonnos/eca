@@ -1,5 +1,6 @@
 package eca.ensemble;
 
+import lombok.experimental.UtilityClass;
 import weka.classifiers.Classifier;
 
 /**
@@ -7,6 +8,7 @@ import weka.classifiers.Classifier;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class EnsembleUtils {
 
     /**

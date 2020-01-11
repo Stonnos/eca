@@ -5,12 +5,15 @@
  */
 package eca.dictionary;
 
+import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 
 /**
  * @author Roman Batygin
  */
+@UtilityClass
 public class AttributesTypesDictionary {
+
     public static final String NOMINAL = "Категориальный";
     public static final String NUMERIC = "Числовой";
     public static final String DATE = "Дата и время";

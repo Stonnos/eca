@@ -1,5 +1,6 @@
 package eca.util;
 
+import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -14,12 +15,10 @@ import java.nio.charset.Charset;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class VelocityUtils {
 
     private static final String CP1251 = "cp1251";
-
-    private VelocityUtils() {
-    }
 
     /**
      * Merges context and then writes html result string to file.

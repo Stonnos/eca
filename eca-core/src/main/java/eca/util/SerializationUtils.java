@@ -5,6 +5,8 @@
  */
 package eca.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -15,14 +17,15 @@ import java.io.ObjectOutputStream;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class SerializationUtils {
 
     /**
      * Writes serialized object to file.
      *
-     * @param obj      object
-     * @param fileName file name
-     * @throws Exception
+     * @param obj      - object
+     * @param fileName - file name
+     * @throws Exception in case of error
      */
     public static void serialize(Object obj, String fileName) throws Exception {
         try (ObjectOutputStream stream =
@@ -36,9 +39,9 @@ public class SerializationUtils {
     /**
      * Reads object from file.
      *
-     * @param fileName file name
-     * @return object
-     * @throws Exception
+     * @param fileName - file name
+     * @return deserialize object
+     * @throws Exception in case of error
      */
     public static Object deserialize(String fileName) throws Exception {
         Object obj;

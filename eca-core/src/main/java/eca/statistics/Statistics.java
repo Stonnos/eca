@@ -5,9 +5,12 @@
  */
 package eca.statistics;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Statistics class.
  */
+@UtilityClass
 public class Statistics {
 
     /**

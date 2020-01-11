@@ -1,11 +1,13 @@
 package eca.ensemble;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Ensemble algorithms dictionary class,
  *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class EnsembleDictionary {
 
     public static final String NUM_ITS = "Число итераций:";

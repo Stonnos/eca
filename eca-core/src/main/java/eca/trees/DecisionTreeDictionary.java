@@ -1,10 +1,13 @@
 package eca.trees;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Decision tree dictionary class.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class DecisionTreeDictionary {
 
     public static final String MIN_NUM_OBJECTS_IN_LEAF = "Минимальное число объектов в листе:";

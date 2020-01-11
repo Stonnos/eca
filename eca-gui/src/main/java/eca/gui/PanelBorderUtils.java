@@ -6,6 +6,8 @@
 package eca.gui;
 
 
+import lombok.experimental.UtilityClass;
+
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -13,6 +15,7 @@ import java.awt.*;
 /**
  * @author Roman Batygin
  */
+@UtilityClass
 public class PanelBorderUtils {
 
     private static final Font BORDER_FONT = new Font("Arial", Font.BOLD, 14);

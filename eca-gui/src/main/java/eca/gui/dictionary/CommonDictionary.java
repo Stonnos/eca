@@ -1,14 +1,15 @@
 package eca.gui.dictionary;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Eca common dictionary.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class CommonDictionary {
 
-    private CommonDictionary() {
-    }
 
     /**
      * Threads constraints

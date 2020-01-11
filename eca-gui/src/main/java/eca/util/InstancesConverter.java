@@ -1,5 +1,6 @@
 package eca.util;
 
+import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class InstancesConverter {
 
     /**

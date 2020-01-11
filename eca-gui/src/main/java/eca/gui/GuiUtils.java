@@ -1,6 +1,7 @@
 package eca.gui;
 
 import eca.gui.logging.LoggerUtils;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,6 +18,7 @@ import java.util.Optional;
  * @author Roman Batygin
  */
 @Slf4j
+@UtilityClass
 public class GuiUtils {
 
     private static final String INPUT_ERROR_TEXT = "Ошибка ввода";

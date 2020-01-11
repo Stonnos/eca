@@ -5,9 +5,12 @@
  */
 package eca.dictionary;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * @author Roman Batygin
  */
+@UtilityClass
 public class ClassifiersNamesDictionary {
     public static final String ID3 = "Алгоритм ID3";
     public static final String C45 = "Алгоритм C4.5";

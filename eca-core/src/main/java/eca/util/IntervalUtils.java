@@ -1,12 +1,14 @@
 package eca.util;
 
 import eca.statistics.diagram.IntervalData;
+import lombok.experimental.UtilityClass;
 
 /**
  * Interval utility class.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class IntervalUtils {
 
     /**

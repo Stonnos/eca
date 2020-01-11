@@ -1,12 +1,14 @@
 package eca.gui;
 
+import lombok.experimental.UtilityClass;
+
 import javax.swing.*;
 import java.awt.*;
 
 /**
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class ButtonUtils {
 
     private static final String OK_BUTTON_TEXT = "OK";

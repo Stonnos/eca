@@ -1,10 +1,13 @@
 package eca.filter;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Data filter dictionary class.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class FilterDictionary {
 
     public static final String STRING_ATTR_ERROR_TEXT = "Алгоритм не работает со строковыми атрибутами!";

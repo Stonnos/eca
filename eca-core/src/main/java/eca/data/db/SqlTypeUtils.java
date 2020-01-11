@@ -1,5 +1,7 @@
 package eca.data.db;
 
+import lombok.experimental.UtilityClass;
+
 import java.sql.Types;
 import java.util.Arrays;
 
@@ -8,23 +10,19 @@ import java.util.Arrays;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class SqlTypeUtils {
-
-    private SqlTypeUtils() {
-    }
 
     /**
      * Numeric column sql type
      */
     public static final String NUMERIC_TYPE = "NUMERIC(22,9)";
+
     /**
      * Datetime column sql type
      */
     public static final String DATETIME_TYPE = "DATETIME";
-    /**
-     * Date column sql type
-     */
-    public static final String DATE_TYPE = "DATE";
+
     /**
      * Timestamp column sql type
      */

@@ -5,9 +5,12 @@
  */
 package eca.dictionary;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * @author Roman Batygin
  */
+@UtilityClass
 public class EnsemblesNamesDictionary {
     public static final String HETEROGENEOUS_ENSEMBLE = "Неоднородный ансамблевый алгоритм";
     public static final String BOOSTING = "Алгоритм AdaBoost";

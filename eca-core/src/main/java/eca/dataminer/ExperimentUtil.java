@@ -10,6 +10,7 @@ import eca.trees.CHAID;
 import eca.trees.ID3;
 import eca.trees.J48;
 import eca.util.MathUtils;
+import lombok.experimental.UtilityClass;
 import weka.core.Instances;
 
 /**
@@ -17,6 +18,7 @@ import weka.core.Instances;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ExperimentUtil {
 
     /**

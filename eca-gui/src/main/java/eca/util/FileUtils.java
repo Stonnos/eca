@@ -1,5 +1,7 @@
 package eca.util;
 
+import lombok.experimental.UtilityClass;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -12,6 +14,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class FileUtils {
 
     private static final String JAVA_CLASS_PATH = "java.class.path";
