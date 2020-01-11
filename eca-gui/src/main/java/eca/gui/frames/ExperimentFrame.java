@@ -286,7 +286,7 @@ public abstract class ExperimentFrame extends JFrame {
         saveButton.addActionListener(event -> {
             try {
                 List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
-                if (experimentHistory != null && !experimentHistory.isEmpty()) {
+                if (experimentHistory == null || experimentHistory.isEmpty()) {
                     JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
                             JOptionPane.WARNING_MESSAGE);
                 } else {
