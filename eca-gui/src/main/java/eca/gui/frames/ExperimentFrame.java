@@ -6,6 +6,7 @@
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
+import eca.config.registry.SingletonRegistry;
 import eca.converters.ModelConverter;
 import eca.converters.model.EvaluationParams;
 import eca.converters.model.ExperimentHistory;
@@ -282,74 +283,58 @@ public abstract class ExperimentFrame extends JFrame {
         stopButton.addActionListener(e -> worker.cancel(true));
         optionsButton.addActionListener(e -> setOptions());
 
-        saveButton.addActionListener(new ActionListener() {
-
-            SaveModelChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
-                    if (experimentHistory != null && !experimentHistory.isEmpty()) {
-                        JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
-                                JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        if (fileChooser == null) {
-                            fileChooser = new SaveModelChooser();
-                        }
-                        fileChooser.setSelectedFile(
-                                new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
-                        File file = fileChooser.getSelectedFile(ExperimentFrame.this);
-                        if (file != null) {
-                            ModelConverter.saveModel(file,
-                                    new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
-                                            experiment.getData(), experiment.getEvaluationMethod(),
-                                            createEvaluationParams()));
-                        }
+        saveButton.addActionListener(event -> {
+            try {
+                List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
+                if (experimentHistory != null && !experimentHistory.isEmpty()) {
+                    JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
+                            JOptionPane.WARNING_MESSAGE);
+                } else {
+                    SaveModelChooser fileChooser = SingletonRegistry.getSingleton(SaveModelChooser.class);
+                    fileChooser.setSelectedFile(
+                            new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
+                    File file = fileChooser.getSelectedFile(ExperimentFrame.this);
+                    if (file != null) {
+                        ModelConverter.saveModel(file,
+                                new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
+                                        experiment.getData(), experiment.getEvaluationMethod(),
+                                        createEvaluationParams()));
                     }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        loadButton.addActionListener(new ActionListener() {
+        loadButton.addActionListener(event -> {
+            OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
+            File file = fileChooser.openFile(ExperimentFrame.this);
+            if (file != null) {
+                try {
+                    ExperimentLoader loader = new ExperimentLoader(file);
+                    LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
+                            loader, LOAD_EXPERIMENT_TITLE);
 
-            OpenModelChooser fileChooser;
+                    ExecutorService.process(loadDialog, () -> {
+                        ExperimentHistory history = loader.getExperiment();
+                        if (!experiment.getExperimentType().equals(history.getType())) {
+                            JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE,
+                                    null, JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            experimentTable.setRenderer(Color.RED);
+                            experimentTable.setExperiment(history.getExperiment());
+                            setResults(history);
+                        }
+                    }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
+                            loadDialog.getErrorMessageText(),
+                            null, JOptionPane.WARNING_MESSAGE));
 
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (fileChooser == null) {
-                    fileChooser = new OpenModelChooser();
-                }
-                File file = fileChooser.openFile(ExperimentFrame.this);
-                if (file != null) {
-                    try {
-                        ExperimentLoader loader = new ExperimentLoader(file);
-                        LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
-                                loader, LOAD_EXPERIMENT_TITLE);
-
-                        ExecutorService.process(loadDialog, () -> {
-                            ExperimentHistory history = loader.getExperiment();
-                            if (!experiment.getExperimentType().equals(history.getType())) {
-                                JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE,
-                                        null, JOptionPane.WARNING_MESSAGE);
-                            } else {
-                                experimentTable.setRenderer(Color.RED);
-                                experimentTable.setExperiment(history.getExperiment());
-                                setResults(history);
-                            }
-                        }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                loadDialog.getErrorMessageText(),
-                                null, JOptionPane.WARNING_MESSAGE));
-
-                    } catch (Exception e) {
-                        LoggerUtils.error(log, e);
-                        JOptionPane.showMessageDialog(ExperimentFrame.this,
-                                e.getMessage(), null, JOptionPane.ERROR_MESSAGE);
-                    }
+                } catch (Exception e) {
+                    LoggerUtils.error(log, e);
+                    JOptionPane.showMessageDialog(ExperimentFrame.this,
+                            e.getMessage(), null, JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

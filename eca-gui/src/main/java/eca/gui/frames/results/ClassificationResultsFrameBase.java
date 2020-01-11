@@ -7,6 +7,7 @@ package eca.gui.frames.results;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.config.registry.SingletonRegistry;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
@@ -313,14 +314,10 @@ public class ClassificationResultsFrameBase extends JFrame {
      */
     private class SaveModelListener implements ActionListener {
 
-        SaveModelChooser fileChooser;
-
         @Override
         public void actionPerformed(ActionEvent evt) {
             try {
-                if (fileChooser == null) {
-                    fileChooser = new SaveModelChooser();
-                }
+                SaveModelChooser fileChooser = SingletonRegistry.getSingleton(SaveModelChooser.class);
                 fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
                 File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {
@@ -341,15 +338,11 @@ public class ClassificationResultsFrameBase extends JFrame {
      */
     private class SaveReportListener implements ActionListener {
 
-        SaveResultsChooser chooser;
-
         @Override
         public void actionPerformed(ActionEvent event) {
             File file;
             try {
-                if (chooser == null) {
-                    chooser = new SaveResultsChooser();
-                }
+                SaveResultsChooser chooser = SingletonRegistry.getSingleton(SaveResultsChooser.class);
                 chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
                 file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {

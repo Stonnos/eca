@@ -13,6 +13,7 @@ import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
+import eca.config.registry.SingletonRegistry;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
@@ -58,6 +59,7 @@ import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
+import eca.gui.choosers.OpenFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.dialogs.ClassifierBuilderDialog;
@@ -706,7 +708,7 @@ public class JMainFrame extends JFrame {
                 dataInternalFrame.getMenu().setSelected(false);
             }
         });
-        //-----------------------------
+
         dataInternalFrame.getMenu().addActionListener(event -> {
             try {
                 dataInternalFrame.setSelected(true);
@@ -715,7 +717,7 @@ public class JMainFrame extends JFrame {
                 LoggerUtils.error(log, e);
             }
         });
-        //--------------------------------------------
+
         dataPanels.add(dataInternalFrame);
         dataInternalFrame.setVisible(true);
         setEnabledMenuComponents(true);
@@ -1815,15 +1817,12 @@ public class JMainFrame extends JFrame {
     private ActionListener openFileActionListener() {
         return new ActionListener() {
 
-            OpenDataFileChooser fileChooser;
             FileDataLoader dataLoader = new FileDataLoader();
 
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    if (fileChooser == null) {
-                        fileChooser = new OpenDataFileChooser();
-                    }
+                    OpenDataFileChooser fileChooser = SingletonRegistry.getSingleton(OpenDataFileChooser.class);
                     File file = fileChooser.openFile(JMainFrame.this);
                     if (file != null) {
                         dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
@@ -1845,7 +1844,6 @@ public class JMainFrame extends JFrame {
     private ActionListener saveFileActionListener() {
         return new ActionListener() {
 
-            SaveDataFileChooser fileChooser;
             FileDataSaver dataSaver = new FileDataSaver();
 
             @Override
@@ -1854,9 +1852,7 @@ public class JMainFrame extends JFrame {
                     if (isDataValid()) {
                         final DataBuilder dataBuilder = new DataBuilder(false);
                         prepareTrainingData(dataBuilder, () -> {
-                            if (fileChooser == null) {
-                                fileChooser = new SaveDataFileChooser();
-                            }
+                            SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
                             fileChooser.setSelectedFile(new File(dataBuilder.getResult().relationName()));
                             File file = fileChooser.getSelectedFile(JMainFrame.this);
                             if (file != null) {
@@ -1961,38 +1957,30 @@ public class JMainFrame extends JFrame {
     }
 
     private ActionListener loadModelActionListener() {
-        return new ActionListener() {
+        return event -> {
+            try {
+                OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
+                File file = fileChooser.openFile(JMainFrame.this);
+                if (file != null) {
+                    ModelLoader loader = new ModelLoader(file);
+                    LoadDialog progress = new LoadDialog(JMainFrame.this,
+                            loader, MODEL_BUILDING_MESSAGE);
 
-            OpenModelChooser fileChooser;
+                    processAsyncTask(progress, () -> {
+                        ClassificationModel classificationModel = loader.getResult();
+                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits()).orElse(
+                                maximumFractionDigits);
+                        String title = Optional.ofNullable(classificationModel.getDetails()).orElse(
+                                classificationModel.getClassifier().getClass().getSimpleName());
+                        createEvaluationResultsAsync(title, classificationModel.getClassifier(),
+                                classificationModel.getData(), classificationModel.getEvaluation(), digits);
+                    });
 
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new OpenModelChooser();
-                    }
-                    File file = fileChooser.openFile(JMainFrame.this);
-                    if (file != null) {
-                        ModelLoader loader = new ModelLoader(file);
-                        LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                loader, MODEL_BUILDING_MESSAGE);
-
-                        processAsyncTask(progress, () -> {
-                            ClassificationModel classificationModel = loader.getResult();
-                            int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits()).orElse(
-                                    maximumFractionDigits);
-                            String title = Optional.ofNullable(classificationModel.getDetails()).orElse(
-                                    classificationModel.getClassifier().getClass().getSimpleName());
-                            createEvaluationResultsAsync(title, classificationModel.getClassifier(),
-                                    classificationModel.getData(), classificationModel.getEvaluation(), digits);
-                        });
-
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         };
     }

@@ -9,6 +9,7 @@ import eca.buffer.ImageCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.VelocityConfigService;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -24,14 +25,23 @@ import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Neural network visualization panel.
@@ -185,7 +195,7 @@ public class NetworkVisualizer extends JPanel {
         decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
 
         increase.addActionListener(evt -> increaseImage());
-        //-----------------------------------
+
         decrease.addActionListener(evt -> decreaseImage());
         options.addActionListener(evt -> {
             NeuronOptions dialog = new NeuronOptions(frame);
@@ -206,7 +216,7 @@ public class NetworkVisualizer extends JPanel {
             }
             dialog.dispose();
         });
-        //-----------------------------------
+
         copyImage.addActionListener(new ActionListener() {
             ImageCopier copier = new ImageCopier();
 
@@ -221,7 +231,7 @@ public class NetworkVisualizer extends JPanel {
                 }
             }
         });
-        //-----------------------------------
+
         textView.addActionListener(new ActionListener() {
 
             NetworkInfo networkModelInfo;
@@ -240,30 +250,22 @@ public class NetworkVisualizer extends JPanel {
                 networkModelInfo.setVisible(true);
             }
         });
-        //-----------------------------------
-        saveImage.addActionListener(new ActionListener() {
 
-            SaveImageFileChooser fileChooser;
+        saveImage.addActionListener(event -> {
+            try {
+                SaveImageFileChooser fileChooser = SingletonRegistry.getSingleton(SaveImageFileChooser.class);
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
+                File file = fileChooser.getSelectedFile(frame);
+                if (file != null) {
+                    FileUtils.write(file, getImage());
 
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveImageFileChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
-                    File file = fileChooser.getSelectedFile(frame);
-                    if (file != null) {
-                        FileUtils.write(file, getImage());
-
-                    }
-                } catch (Throwable e) {
-                    JOptionPane.showMessageDialog(frame, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(frame, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
-        //-----------------------------------
+
         popMenu.add(options);
         popMenu.addSeparator();
         popMenu.add(increase);
@@ -295,22 +297,17 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setEditable(false);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-            //----------------------------------------           
             textInfo.setText(getNeuralNetworkStructureAsHtml());
             textInfo.setCaretPosition(0);
-            //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton closeButton = ButtonUtils.createCloseButton();
-            //-----------------------------------
             closeButton.addActionListener(evt -> setVisible(false));
-            //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
             this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
-            //----------------------------------------
             this.getRootPane().setDefaultButton(closeButton);
             this.pack();
             this.setLocationRelativeTo(frame);
@@ -351,22 +348,17 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
             textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-            //----------------------------------------           
             textInfo.setText(neuron.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
-            //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton closeButton = ButtonUtils.createCloseButton();
-            //-----------------------------------
             closeButton.addActionListener(evt -> setVisible(false));
-            //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
             this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
-            //----------------------------------------
             this.getRootPane().setDefaultButton(closeButton);
             this.setResizable(false);
             this.pack();

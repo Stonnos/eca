@@ -9,6 +9,7 @@ import eca.buffer.ImageCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.VelocityConfigService;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -190,7 +191,6 @@ public class TreeVisualizer extends JPanel {
         increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
         decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
-        //-----------------------------------
         options.addActionListener(evt -> {
             TreeOptions frame = new TreeOptions(null);
             frame.setVisible(true);
@@ -212,11 +212,8 @@ public class TreeVisualizer extends JPanel {
             }
             frame.dispose();
         });
-        //-----------------------------------
         increase.addActionListener(evt -> increaseImage());
-        //-----------------------------------
         decrease.addActionListener(evt -> decreaseImage());
-        //-----------------------------------
         copyImage.addActionListener(new ActionListener() {
             ImageCopier copier = new ImageCopier();
 
@@ -231,29 +228,20 @@ public class TreeVisualizer extends JPanel {
                 }
             }
         });
-        //---------------------------------------------------
-        saveImage.addActionListener(new ActionListener() {
 
-            SaveImageFileChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveImageFileChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
-                    File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
-                    if (file != null) {
-                        FileUtils.write(file, getImage());
-                    }
-                } catch (Throwable e) {
-                    JOptionPane.showMessageDialog(TreeVisualizer.this.getParent(), e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+        saveImage.addActionListener(event -> {
+            try {
+                SaveImageFileChooser fileChooser = SingletonRegistry.getSingleton(SaveImageFileChooser.class);
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
+                File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
+                if (file != null) {
+                    FileUtils.write(file, getImage());
                 }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(TreeVisualizer.this.getParent(), e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
-        //-----------------------------------
         popMenu.add(options);
         popMenu.addSeparator();
         popMenu.add(increase);

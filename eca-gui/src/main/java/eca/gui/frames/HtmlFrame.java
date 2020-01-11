@@ -2,6 +2,7 @@ package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.HtmlChooser;
 import eca.gui.logging.LoggerUtils;
@@ -10,8 +11,6 @@ import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
@@ -47,40 +46,32 @@ public class HtmlFrame extends JFrame {
         JButton closeButton = ButtonUtils.createCloseButton();
 
         closeButton.addActionListener(e -> setVisible(false));
-        //----------------------------------------
+
         this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
-        //---------------------------------------
+
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenuItem saveMenu = new JMenuItem(SAVE_MENU_TEXT);
         saveMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         fileMenu.add(saveMenu);
         menu.add(fileMenu);
-        //--------------------------------------------
-        saveMenu.addActionListener(new ActionListener() {
 
-            HtmlChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new HtmlChooser();
-                    }
-                    File file = fileChooser.getSelectedFile(HtmlFrame.this);
-                    if (file != null) {
-                        FileUtils.write(file, inputOptionsPane.getText(), StandardCharsets.UTF_8);
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(HtmlFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+        saveMenu.addActionListener(event -> {
+            try {
+                HtmlChooser fileChooser = SingletonRegistry.getSingleton(HtmlChooser.class);
+                File file = fileChooser.getSelectedFile(HtmlFrame.this);
+                if (file != null) {
+                    FileUtils.write(file, inputOptionsPane.getText(), StandardCharsets.UTF_8);
                 }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(HtmlFrame.this, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
         this.setJMenuBar(menu);

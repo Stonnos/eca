@@ -2,6 +2,7 @@ package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.HtmlChooser;
@@ -114,15 +115,12 @@ public class ContingencyTableResultFrame extends JFrame {
     private void addSaveButtonListener(JButton saveButton) {
         saveButton.addActionListener(new ActionListener() {
 
-            HtmlChooser fileChooser;
             ContingencyTableReportService contingencyTableReportService;
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    if (fileChooser == null) {
-                        fileChooser = new HtmlChooser();
-                    }
+                    HtmlChooser fileChooser = SingletonRegistry.getSingleton(HtmlChooser.class);
                     fileChooser.setSelectedFile(new File(
                             String.format(SELECTED_FILE_FORMAT, CONTINGENCY_TABLE_DEFAULT_FILE_PREFIX,
                                     System.currentTimeMillis())));
