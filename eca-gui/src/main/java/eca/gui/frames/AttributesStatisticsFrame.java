@@ -56,7 +56,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final String SELECTED_ATTRIBUTE_TITLE = "Выбранный атрибут";
     private static final String ATTR_LABEL_TEXT = "Атрибут:";
     private static final String ATTR_TYPE_TEXT = "Тип:";
-    private static final int DEFAULT_WIDTH = 875;
+    private static final int DEFAULT_WIDTH = 950;
     private static final int DEFAULT_HEIGHT = 450;
     private static final Dimension FREQUENCY_DIAGRAM_DIMENSION = new Dimension(400, DEFAULT_HEIGHT);
     private static final Dimension ATTR_BOX_DIMENSION = new Dimension(200, 25);
