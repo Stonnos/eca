@@ -64,9 +64,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
     private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
     private static final int MIN_SCREEN_WIDTH = 100;
-    private static final int STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD = 50;
-    private static final int MAX_STEP_BETWEEN_LEVELS = 180;
-    private static final int MIN_STEP_BETWEEN_LEVELS = 100;
+    private static final double RESIZE_COEFFICIENT = 4.0d;
     private static final int SCREEN_WIDTH_MARGIN = 100;
     private static final String ARIAL = "Arial";
 
@@ -248,8 +246,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private void resizeTree() {
         screenWidth = MIN_SCREEN_WIDTH;
-        stepBetweenLevels =
-                nodeHeight >= STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD ? MAX_STEP_BETWEEN_LEVELS : MIN_STEP_BETWEEN_LEVELS;
+        stepBetweenLevels = nodeHeight * RESIZE_COEFFICIENT;
         computeCoordinates(tree.root);
         setDimension();
         getRootPane().repaint();
@@ -269,7 +266,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private void shiftTree(TreeNode x, int i) {
         NodeDescriptor p = treeNodes.get(x.index());
-        p.setRect(p.x2() + i * MAX_SIZE + (i - 1) * nodeHeight,
+        p.setRect(p.x2() + i * RESIZE_COEFFICIENT * nodeWidth + (i - 1) * nodeHeight,
                 p.y1(), nodeWidth, nodeHeight);
         screenWidth = Double.max(screenWidth, p.x1());
         if (!x.isLeaf()) {
