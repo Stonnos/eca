@@ -22,6 +22,7 @@ import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import eca.util.FileUtils;
+import eca.util.FontUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
@@ -254,14 +255,18 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private void shiftTree(TreeNode x, int i) {
         NodeDescriptor p = treeNodes.get(x.index());
-        p.setRect(p.x2() + i * RESIZE_COEFFICIENT * nodeWidth + (i - 1) * nodeHeight,
-                p.y1(), nodeWidth, nodeHeight);
+        double xVal = calculateX(p, i);
+        p.setRect(xVal, p.y1(), nodeWidth, nodeHeight);
         screenWidth = Double.max(screenWidth, p.x1());
         if (!x.isLeaf()) {
             for (TreeNode child : x.children()) {
                 shiftTree(child, i);
             }
         }
+    }
+
+    private double calculateX(NodeDescriptor p, int i) {
+        return p.x2() + i * RESIZE_COEFFICIENT * nodeWidth + (i - 1) * nodeHeight;
     }
 
     private void computeCoordinates(TreeNode x) {
@@ -416,13 +421,12 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
             FontMetrics fm = g.getFontMetrics(nodeFont);
             g.setPaint(textColor);
             g.setFont(nodeFont);
-            String size = String.valueOf(objectsNum());
+            String sizeStr = String.valueOf(objectsNum());
             info.setSize((int) nodeWidth, (int) nodeHeight);
             info.setLocation((int) x1(), (int) y1());
-            g.drawString(size, (float) x1()
-                            + ((float) width() - fm.stringWidth(size)) / 2.0f,
-                    (float) y1() + fm.getAscent()
-                            + ((float) height() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+            float xVal = FontUtils.calculateXForString(sizeStr, fm, (float) x1(), (float) width());
+            float yVal = FontUtils.calculateYForString(fm, (float) y1(), (float) height());
+            g.drawString(sizeStr, xVal, yVal);
         }
 
         void paintClass(Graphics2D g) {

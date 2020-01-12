@@ -21,6 +21,7 @@ import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
+import eca.util.FontUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
@@ -477,16 +478,11 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
             }
             int shift = (int) Math.floor(neuronDiam / 2);
             int yShift = NEURON_INFO_PREFERRED_HEIGHT + Y_SHIFT_IN_NEURON_NODE;
-            int correctedY;
-            if (y + yShift > frame.getHeight()) {
-                correctedY = y - yShift;
-            } else {
-                correctedY = y + shift;
-            }
+            int correctedY = y + yShift > frame.getHeight() ? y - yShift : y + shift;
             neuronInfoPopup.show(x + shift, correctedY);
         }
 
-        public void dispose() {
+        void dispose() {
             Optional.ofNullable(neuronInfoPopup).ifPresent(NeuronInfoPopup::hide);
         }
 
@@ -549,10 +545,9 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
             String text = String.valueOf(neuron.index());
             infoLabel.setSize((int) neuronDiam, (int) neuronDiam);
             infoLabel.setLocation((int) x1(), (int) y1());
-            g.drawString(text, (float) x1()
-                            + ((float) width() - fm.stringWidth(text)) / 2.0f,
-                    (float) y1() + fm.getAscent()
-                            + ((float) width() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+            float xVal = FontUtils.calculateXForString(text, fm, (float) x1(), (float) width());
+            float yVal = FontUtils.calculateYForString(fm, (float) y1(), (float) width());
+            g.drawString(text, xVal, yVal);
         }
 
         void paint(Graphics2D g) {
@@ -693,10 +688,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(u.x1(), u.centerY());
-        path.lineTo(u.x1() - stepBetweenLevels / 10,
-                u.centerY() - neuronDiam / 5);
-        path.lineTo(u.x1() - stepBetweenLevels / 10,
-                u.centerY() + neuronDiam / 5);
+        path.lineTo(u.x1() - stepBetweenLevels / 10, u.centerY() - neuronDiam / 5);
+        path.lineTo(u.x1() - stepBetweenLevels / 10, u.centerY() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
         g.setColor(attrColor);
@@ -706,15 +699,12 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     private void drawOutArrow(Graphics2D g, NeuronNode u, String value) {
         g.setColor(Color.BLACK);
-        Line2D.Double arrow = new Line2D.Double(u.x2(),
-                u.centerY(), u.x2() + stepBetweenLevels / 2, u.centerY());
+        Line2D.Double arrow = new Line2D.Double(u.x2(), u.centerY(), u.x2() + stepBetweenLevels / 2, u.centerY());
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(arrow.getX2(), arrow.getY2());
-        path.lineTo(arrow.getX2() - stepBetweenLevels / 10,
-                arrow.getY2() - neuronDiam / 5);
-        path.lineTo(arrow.getX2() - stepBetweenLevels / 10,
-                arrow.getY2() + neuronDiam / 5);
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10, arrow.getY2() - neuronDiam / 5);
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10, arrow.getY2() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
         g.setColor(classColor);
