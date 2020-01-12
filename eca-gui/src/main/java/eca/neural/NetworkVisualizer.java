@@ -64,9 +64,9 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private static final int NEURON_INFO_PREFERRED_WIDTH = 350;
     private static final int NEURON_INFO_PREFERRED_HEIGHT = 150;
     private static final int Y_SHIFT_IN_NEURON_NODE = 50;
-    private static final double STEP_BETWEEN_LEVELS = 200.0d;
-    private static final double STEP_BETWEEN_NODES = 40.0d;
     private static final double STEP_SIZE = 5.0d;
+    private static final double STEP_BETWEEN_LEVEL_COEFFICIENT = 8.0d;
+    private static final double STEP_BETWEEN_NODES_COEFFICIENT = 2.0d;
     private static final String MODEL_TEXT_MENU = "Текстовое представление модели";
     private static final String SAVE_IMAGE_MENU_TEXT = "Сохранить изображение";
     private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
@@ -79,6 +79,9 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private static final String ARIAL = "Arial";
 
     private double neuronDiam = 25.0d;
+
+    private double stepBetweenLevels;
+    private double stepBetweenNodes;
 
     private Template nodeTemplate;
     private VelocityContext nodeContext;
@@ -119,6 +122,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
             }
         });
         this.nodes = new ArrayList<>();
+        this.calculateSteps();
         this.setDimension();
         this.createNodes();
         this.createPopupMenu();
@@ -144,14 +148,14 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     @Override
     public void increaseImage() {
-        neuronDiam  = Double.min(neuronDiam + STEP_SIZE, MAX_SIZE);
+        neuronDiam = Double.min(neuronDiam + STEP_SIZE, MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
 
     @Override
     public void decreaseImage() {
-        neuronDiam  = Double.max(neuronDiam - STEP_SIZE, MIN_SIZE);
+        neuronDiam = Double.max(neuronDiam - STEP_SIZE, MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
@@ -571,21 +575,28 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     } //End of class NeuronNode
 
+    private void calculateSteps() {
+        this.stepBetweenNodes = neuronDiam * STEP_BETWEEN_NODES_COEFFICIENT;
+        this.stepBetweenLevels = neuronDiam * STEP_BETWEEN_LEVEL_COEFFICIENT;
+    }
+
     private void resizeNetwork() {
+        this.calculateSteps();
         this.setDimension();
         this.computeCoordinates();
         this.getRootPane().repaint();
     }
 
     private double screenWidth() {
-        return neuralNetwork.getMultilayerPerceptron().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
+        return neuralNetwork.getMultilayerPerceptron().layersNum() * (stepBetweenLevels + 1 + neuronDiam) +
+                SCREEN_WIDTH_MARGIN;
     }
 
     private double screenHeight() {
         int max = Integer.max(Integer.max(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length,
                 neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length),
                 maxHiddenLayerSize());
-        return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
+        return max * (stepBetweenNodes + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
     }
 
     private int maxHiddenLayerSize() {
@@ -597,13 +608,13 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private double startY(int size) {
-        double length = size * neuronDiam + (size - 1) * STEP_BETWEEN_NODES;
+        double length = size * neuronDiam + (size - 1) * stepBetweenNodes;
         return (this.getMaximumSize().height - length) / 2.0;
     }
 
     private double startX() {
         double length = neuralNetwork.getMultilayerPerceptron().layersNum() * neuronDiam
-                + (neuralNetwork.getMultilayerPerceptron().layersNum() - 1) * STEP_BETWEEN_LEVELS;
+                + (neuralNetwork.getMultilayerPerceptron().layersNum() - 1) * stepBetweenLevels;
         return (this.getMaximumSize().width - length) / 2.0;
     }
 
@@ -612,25 +623,25 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
 
         for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
-            w += neuronDiam + STEP_BETWEEN_LEVELS;
+            w += neuronDiam + stepBetweenLevels;
             for (Neuron n : layer) {
                 nodes.get(n.index()).setRect(w, h,
                         neuronDiam, neuronDiam);
-                h += neuronDiam + STEP_BETWEEN_NODES;
+                h += neuronDiam + stepBetweenNodes;
             }
         }
 
-        w += neuronDiam + STEP_BETWEEN_LEVELS;
+        w += neuronDiam + stepBetweenLevels;
         h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
     }
 
@@ -639,25 +650,25 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
 
         for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
-            w += neuronDiam + STEP_BETWEEN_LEVELS;
+            w += neuronDiam + stepBetweenLevels;
             for (Neuron n : layer) {
                 nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                         neuronDiam, neuronDiam)));
-                h += neuronDiam + STEP_BETWEEN_NODES;
+                h += neuronDiam + stepBetweenNodes;
             }
         }
 
-        w += neuronDiam + STEP_BETWEEN_LEVELS;
+        w += neuronDiam + stepBetweenLevels;
         h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
     }
 
@@ -677,14 +688,14 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     private void drawInArrow(Graphics2D g, NeuronNode u, String name) {
         g.setColor(Color.BLACK);
-        Line2D.Double arrow = new Line2D.Double(u.x1() - STEP_BETWEEN_LEVELS / 2,
+        Line2D.Double arrow = new Line2D.Double(u.x1() - stepBetweenLevels / 2,
                 u.centerY(), u.x1(), u.centerY());
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(u.x1(), u.centerY());
-        path.lineTo(u.x1() - STEP_BETWEEN_LEVELS / 10,
+        path.lineTo(u.x1() - stepBetweenLevels / 10,
                 u.centerY() - neuronDiam / 5);
-        path.lineTo(u.x1() - STEP_BETWEEN_LEVELS / 10,
+        path.lineTo(u.x1() - stepBetweenLevels / 10,
                 u.centerY() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
@@ -696,13 +707,13 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private void drawOutArrow(Graphics2D g, NeuronNode u, String value) {
         g.setColor(Color.BLACK);
         Line2D.Double arrow = new Line2D.Double(u.x2(),
-                u.centerY(), u.x2() + STEP_BETWEEN_LEVELS / 2, u.centerY());
+                u.centerY(), u.x2() + stepBetweenLevels / 2, u.centerY());
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(arrow.getX2(), arrow.getY2());
-        path.lineTo(arrow.getX2() - STEP_BETWEEN_LEVELS / 10,
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10,
                 arrow.getY2() - neuronDiam / 5);
-        path.lineTo(arrow.getX2() - STEP_BETWEEN_LEVELS / 10,
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10,
                 arrow.getY2() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
