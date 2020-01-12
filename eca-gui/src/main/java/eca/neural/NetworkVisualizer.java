@@ -13,7 +13,7 @@ import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
-import eca.gui.dialogs.JFontChooser;
+import eca.gui.dialogs.JFontChooserFactory;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionsDictionary;
@@ -775,22 +775,12 @@ public class NetworkVisualizer extends JPanel {
             panel.add(diamSpinner);
 
             JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
-            nodeButton.addActionListener(evt -> {
-                JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
-                nodeFontChooser.setVisible(true);
-                if (nodeFontChooser.dialogResult()) {
-                    selectedNodeFont = nodeFontChooser.getSelectedFont();
-                }
-            });
+            nodeButton.addActionListener(evt -> selectedNodeFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedNodeFont));
             JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
 
-            attrButton.addActionListener(evt -> {
-                JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
-                ruleFontChooser.setVisible(true);
-                if (ruleFontChooser.dialogResult()) {
-                    selectedAttrFont = ruleFontChooser.getSelectedFont();
-                }
-            });
+            attrButton.addActionListener(evt -> selectedAttrFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedAttrFont));
 
             JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
             inColorButton.addActionListener(evt -> {

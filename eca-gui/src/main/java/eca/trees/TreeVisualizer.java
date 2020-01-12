@@ -13,7 +13,7 @@ import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveImageFileChooser;
-import eca.gui.dialogs.JFontChooser;
+import eca.gui.dialogs.JFontChooserFactory;
 import eca.gui.service.ClassifierIndexerService;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier.TreeNode;
@@ -566,7 +566,6 @@ public class TreeVisualizer extends JPanel {
         void init() {
             JPanel panel = new JPanel(new GridLayout(13, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_TITLE));
-            //-------------------------------------------
             widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, MIN_SIZE, MAX_SIZE, 1));
             heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, MIN_SIZE, MAX_SIZE, 1));
             strokeSpinner.setModel(new SpinnerNumberModel(stroke, MIN_STROKE, MAX_STROKE, 1));
@@ -576,25 +575,14 @@ public class TreeVisualizer extends JPanel {
             panel.add(heightSpinner);
             panel.add(new JLabel(NODE_STROKE_TITLE));
             panel.add(strokeSpinner);
-            //------------------------------------
+
             JButton nodeButton = new JButton(CHOOSE_BUTTON_TEXT);
-            nodeButton.addActionListener(evt -> {
-                JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, selectedNodeFont);
-                nodeFontChooser.setVisible(true);
-                if (nodeFontChooser.dialogResult()) {
-                    selectedNodeFont = nodeFontChooser.getSelectedFont();
-                }
-            });
+            nodeButton.addActionListener(evt -> selectedNodeFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedNodeFont));
             JButton ruleButton = new JButton(CHOOSE_BUTTON_TEXT);
-            //----------------------------------------------
-            ruleButton.addActionListener(evt -> {
-                JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, selectedRuleFont);
-                ruleFontChooser.setVisible(true);
-                if (ruleFontChooser.dialogResult()) {
-                    selectedRuleFont = ruleFontChooser.getSelectedFont();
-                }
-            });
-            //--------------------------------------------------
+            ruleButton.addActionListener(evt -> selectedRuleFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedRuleFont));
+
             JButton ruleColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             ruleColorButton.addActionListener(evt -> {
                 Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
@@ -603,7 +591,7 @@ public class TreeVisualizer extends JPanel {
                     selectedRuleColor = newRuleColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton textColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
@@ -612,7 +600,7 @@ public class TreeVisualizer extends JPanel {
                     selectedTextColor = newTextColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton linkColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
@@ -621,7 +609,7 @@ public class TreeVisualizer extends JPanel {
                     selectedLinkColor = newLinkColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton nodeColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             nodeColorButton.addActionListener(evt -> {
                 Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
@@ -630,16 +618,16 @@ public class TreeVisualizer extends JPanel {
                     selectedNodeColor = newLeafColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton leafColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             leafColorButton.addActionListener(evt -> {
-                Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
+                Color color = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
                         selectedLeafColor);
-                if (obj != null) {
-                    selectedLeafColor = obj;
+                if (color != null) {
+                    selectedLeafColor = color;
                 }
             });
-            //--------------------------------------------------
+
             JButton classColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
@@ -648,7 +636,7 @@ public class TreeVisualizer extends JPanel {
                     selectedClassColor = newClassColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton borderColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             borderColorButton.addActionListener(evt -> {
                 Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
@@ -657,7 +645,7 @@ public class TreeVisualizer extends JPanel {
                     selectedBorderColor = newBorderColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton backgroundColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
@@ -666,7 +654,7 @@ public class TreeVisualizer extends JPanel {
                     backgroundColor = newBackgroundColor;
                 }
             });
-            //------------------------------------
+
             panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
             panel.add(new JLabel(RULE_FONT_TEXT));
@@ -687,7 +675,7 @@ public class TreeVisualizer extends JPanel {
             panel.add(borderColorButton);
             panel.add(new JLabel(BACK_COLOR_TEXT));
             panel.add(backgroundColorButton);
-            //-------------------------------------------
+
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -699,14 +687,14 @@ public class TreeVisualizer extends JPanel {
                 dialogResult = false;
                 setVisible(false);
             });
-            //---------------------------------------------------------
+
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 7, 15, 7), 0, 0));
             this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
             this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-            //-----------------------------------------------------------
+
             this.getRootPane().setDefaultButton(okButton);
         }
 
