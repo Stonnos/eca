@@ -107,28 +107,16 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     @Override
     public void increaseImage() {
-        nodeWidth += STEP_SIZE;
-        nodeHeight += STEP_SIZE;
-        if (nodeWidth > MAX_SIZE) {
-            nodeWidth = MAX_SIZE;
-        }
-        if (nodeHeight > MAX_SIZE) {
-            nodeHeight = MAX_SIZE;
-        }
+        nodeWidth = Double.min(nodeWidth + STEP_SIZE, MAX_SIZE);
+        nodeHeight = Double.min(nodeHeight + STEP_SIZE, MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
 
     @Override
     public void decreaseImage() {
-        nodeWidth -= STEP_SIZE;
-        nodeHeight -= STEP_SIZE;
-        if (nodeWidth < MIN_SIZE) {
-            nodeWidth = MIN_SIZE;
-        }
-        if (nodeHeight < MIN_SIZE) {
-            nodeHeight = MIN_SIZE;
-        }
+        nodeWidth = Double.max(nodeWidth - STEP_SIZE, MIN_SIZE);
+        nodeHeight = Double.max(nodeHeight - STEP_SIZE, MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
