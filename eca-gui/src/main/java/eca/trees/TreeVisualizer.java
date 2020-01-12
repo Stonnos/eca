@@ -53,8 +53,8 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/optionsTable.vm";
 
-    private static final double MIN_SIZE = 15;
-    private static final double MAX_SIZE = 100;
+    private static final double NODE_MIN_SIZE = 15;
+    private static final double NODE_MAX_SIZE = 100;
     private static final int MIN_STROKE = 1;
     private static final int MAX_STROKE = 6;
     private static final double STEP_SIZE = 5.0d;
@@ -107,16 +107,16 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     @Override
     public void increaseImage() {
-        nodeWidth = Double.min(nodeWidth + STEP_SIZE, MAX_SIZE);
-        nodeHeight = Double.min(nodeHeight + STEP_SIZE, MAX_SIZE);
+        nodeWidth = Double.min(nodeWidth + STEP_SIZE, NODE_MAX_SIZE);
+        nodeHeight = Double.min(nodeHeight + STEP_SIZE, NODE_MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
 
     @Override
     public void decreaseImage() {
-        nodeWidth = Double.max(nodeWidth - STEP_SIZE, MIN_SIZE);
-        nodeHeight = Double.max(nodeHeight - STEP_SIZE, MIN_SIZE);
+        nodeWidth = Double.max(nodeWidth - STEP_SIZE, NODE_MIN_SIZE);
+        nodeHeight = Double.max(nodeHeight - STEP_SIZE, NODE_MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
@@ -544,8 +544,8 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
         void init() {
             JPanel panel = new JPanel(new GridLayout(13, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_TITLE));
-            widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, MIN_SIZE, MAX_SIZE, 1));
-            heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, MIN_SIZE, MAX_SIZE, 1));
+            widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, NODE_MIN_SIZE, NODE_MAX_SIZE, 1));
+            heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, NODE_MIN_SIZE, NODE_MAX_SIZE, 1));
             strokeSpinner.setModel(new SpinnerNumberModel(stroke, MIN_STROKE, MAX_STROKE, 1));
             panel.add(new JLabel(NODE_WIDTH_TEXT));
             panel.add(widthSpinner);

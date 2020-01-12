@@ -59,8 +59,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private static final String NEURON_OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
     private static final String NETWORK_MODEL_VM = "vm-templates/neuralNetworkModel.vm";
 
-    private static final double MIN_SIZE = 20;
-    private static final double MAX_SIZE = 80;
+    private static final double NEURON_MIN_SIZE = 20;
+    private static final double NEURON_MAX_SIZE = 80;
     private static final int NEURON_INFO_PREFERRED_WIDTH = 350;
     private static final int NEURON_INFO_PREFERRED_HEIGHT = 150;
     private static final int Y_SHIFT_IN_NEURON_NODE = 50;
@@ -148,14 +148,14 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     @Override
     public void increaseImage() {
-        neuronDiam = Double.min(neuronDiam + STEP_SIZE, MAX_SIZE);
+        neuronDiam = Double.min(neuronDiam + STEP_SIZE, NEURON_MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
 
     @Override
     public void decreaseImage() {
-        neuronDiam = Double.max(neuronDiam - STEP_SIZE, MIN_SIZE);
+        neuronDiam = Double.max(neuronDiam - STEP_SIZE, NEURON_MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
@@ -777,7 +777,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         void init() {
             JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
-            diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, MIN_SIZE, MAX_SIZE, 1));
+            diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, NEURON_MIN_SIZE, NEURON_MAX_SIZE, 1));
             panel.add(new JLabel(NEURON_DIAM_TEXT));
             panel.add(diamSpinner);
 
