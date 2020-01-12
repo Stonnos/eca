@@ -16,7 +16,7 @@ public class ResizableImageListener implements MouseWheelListener {
     @Override
     public void mouseWheelMoved(MouseWheelEvent event) {
         Component component = event.getComponent();
-        if (!ResizeableImage.class.isAssignableFrom(component.getClass())) {
+        if (!(component instanceof ResizeableImage)) {
             throw new IllegalStateException(
                     String.format("Component must implements %s interface!", ResizeableImage.class.getName()));
         }
