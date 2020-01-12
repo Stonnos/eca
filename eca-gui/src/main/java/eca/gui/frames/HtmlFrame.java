@@ -77,7 +77,6 @@ public class HtmlFrame extends JFrame {
         this.setJMenuBar(menu);
         inputOptionsPane.setText(text);
         inputOptionsPane.setCaretPosition(0);
-        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
         this.setLocationRelativeTo(parent);
     }

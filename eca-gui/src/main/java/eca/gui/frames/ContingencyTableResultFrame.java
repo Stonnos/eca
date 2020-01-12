@@ -107,8 +107,6 @@ public class ContingencyTableResultFrame extends JFrame {
         this.add(closeButton, new GridBagConstraints(1, 2, 1, 1, 1, 0,
                 GridBagConstraints.WEST, GridBagConstraints.NONE,
                 new Insets(4, 3, 10, 0), 0, 0));
-
-        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
     }
 

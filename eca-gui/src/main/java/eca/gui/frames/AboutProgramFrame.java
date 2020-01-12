@@ -38,15 +38,13 @@ public class AboutProgramFrame extends JFrame {
                 getClass().getClassLoader().getResource(CONFIG_SERVICE.getApplicationConfig().getLogotypeUrl()));
         info.setIcon(icon);
         infoPanel.add(info);
-        JButton okButton = ButtonUtils.createCloseButton();
+        JButton closeButton = ButtonUtils.createCloseButton();
 
-        okButton.addActionListener(e -> setVisible(false));
+        closeButton.addActionListener(e -> setVisible(false));
         add(infoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-        add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+        add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-
-        this.getRootPane().setDefaultButton(okButton);
         this.pack();
     }
 
