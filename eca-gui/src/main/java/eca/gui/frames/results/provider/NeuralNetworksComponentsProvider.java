@@ -30,7 +30,7 @@ public class NeuralNetworksComponentsProvider extends EvaluationResultsComponent
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentHidden(ComponentEvent componentEvent) {
-                networkVisualizer.closeNeuronInfoPopups();
+                networkVisualizer.hideNeuronInfo();
             }
         });
         ComponentModel componentModel = new ComponentModel(NETWORK_STRUCTURE_TAB_TITLE, scrollPane);

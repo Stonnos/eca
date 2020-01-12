@@ -83,7 +83,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private Template nodeTemplate;
     private VelocityContext nodeContext;
 
-    private final NeuralNetwork net;
+    private final NeuralNetwork neuralNetwork;
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
 
@@ -103,14 +103,19 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private Font nodeFont = new Font(ARIAL, Font.BOLD, 12);
     private Font attrFont = new Font(ARIAL, Font.BOLD, 11);
 
-    public NetworkVisualizer(NeuralNetwork net, JFrame frame, int digits) {
-        this.net = net;
+    /**
+     * Current visible node info
+     */
+    private NeuronNode visibleNode;
+
+    public NetworkVisualizer(NeuralNetwork neuralNetwork, JFrame frame, int digits) {
+        this.neuralNetwork = neuralNetwork;
         this.frame = frame;
         this.decimalFormat.setMaximumFractionDigits(digits);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowDeactivated(WindowEvent evt) {
-                closeNeuronInfoPopups();
+                hideNeuronInfo();
             }
         });
         this.nodes = new ArrayList<>();
@@ -121,8 +126,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         this.registerMouseWheelListener();
     }
 
-    public void closeNeuronInfoPopups() {
-        nodes.forEach(NeuronNode::dispose);
+    public void hideNeuronInfo() {
+        Optional.ofNullable(visibleNode).ifPresent(NeuronNode::dispose);
     }
 
     public Image getImage() {
@@ -162,13 +167,13 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void drawNet(Graphics2D g2d) {
-        Enumeration<Attribute> attr = net.getData().enumerateAttributes();
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+        Enumeration<Attribute> attr = neuralNetwork.getData().enumerateAttributes();
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             drawInArrow(g2d, nodes.get(n.index()), attr.nextElement().name());
         }
 
-        Enumeration<Object> values = net.getData().classAttribute().enumerateValues();
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        Enumeration<Object> values = neuralNetwork.getData().classAttribute().enumerateValues();
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             drawOutArrow(g2d, nodes.get(n.index()), values.nextElement().toString());
         }
 
@@ -255,7 +260,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         saveImage.addActionListener(event -> {
             try {
                 SaveImageFileChooser fileChooser = SingletonRegistry.getSingleton(SaveImageFileChooser.class);
-                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(neuralNetwork)));
                 File file = fileChooser.getSelectedFile(frame);
                 if (file != null) {
                     FileUtils.write(file, getImage());
@@ -343,7 +348,6 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         }
 
         void show(int x, int y) {
-            hide();
             JPanel infoPanel = createNeuronInfoPanel();
             this.popup = popupFactory.getPopup(frame, infoPanel, x, y);
             popup.show();
@@ -403,11 +407,17 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
             this.neuron = neuron;
             this.ellipse = ellipse;
             NetworkVisualizer.this.add(infoLabel);
+            this.initInfoLabel();
+        }
+
+        void initInfoLabel() {
             infoLabel.setCursor(handCursor);
             infoLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent evt) {
+                    hideNeuronInfo();
                     showNeuronInfo(evt.getXOnScreen(), evt.getYOnScreen());
+                    visibleNode = NeuronNode.this;
                 }
             });
             infoLabel.setToolTipText(TOOL_TIP_TEXT);
@@ -574,19 +584,19 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private double screenWidth() {
-        return net.getMultilayerPerceptron().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
+        return neuralNetwork.getMultilayerPerceptron().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
     }
 
     private double screenHeight() {
-        int max = Integer.max(Integer.max(net.getMultilayerPerceptron().inLayerNeurons.length,
-                net.getMultilayerPerceptron().outLayerNeurons.length),
+        int max = Integer.max(Integer.max(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length,
+                neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length),
                 maxHiddenLayerSize());
         return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
     }
 
     private int maxHiddenLayerSize() {
         int max = 0;
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             max = Integer.max(max, layer.length);
         }
         return max;
@@ -598,20 +608,20 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private double startX() {
-        double length = net.getMultilayerPerceptron().layersNum() * neuronDiam
-                + (net.getMultilayerPerceptron().layersNum() - 1) * STEP_BETWEEN_LEVELS;
+        double length = neuralNetwork.getMultilayerPerceptron().layersNum() * neuronDiam
+                + (neuralNetwork.getMultilayerPerceptron().layersNum() - 1) * STEP_BETWEEN_LEVELS;
         return (this.getMaximumSize().width - length) / 2.0;
     }
 
     private void computeCoordinates() {
-        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
 
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
             for (Neuron n : layer) {
@@ -622,8 +632,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         }
 
         w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
             h += neuronDiam + STEP_BETWEEN_NODES;
@@ -631,14 +641,14 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void createNodes() {
-        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
             h += neuronDiam + STEP_BETWEEN_NODES;
         }
 
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
             w += neuronDiam + STEP_BETWEEN_LEVELS;
             for (Neuron n : layer) {
@@ -649,8 +659,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         }
 
         w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
             h += neuronDiam + STEP_BETWEEN_NODES;
