@@ -132,32 +132,26 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     public Image getImage() {
         Image img = this.createImage(getMinimumSize().width, getMinimumSize().height);
-        drawNet((Graphics2D) img.getGraphics());
+        drawNetwork((Graphics2D) img.getGraphics());
         return img;
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        drawNet((Graphics2D) g);
+        drawNetwork((Graphics2D) g);
     }
 
     @Override
     public void increaseImage() {
-        neuronDiam += STEP_SIZE;
-        if (neuronDiam > MAX_SIZE) {
-            neuronDiam = MAX_SIZE;
-        }
+        neuronDiam  = Double.min(neuronDiam + STEP_SIZE, MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
 
     @Override
     public void decreaseImage() {
-        neuronDiam -= STEP_SIZE;
-        if (neuronDiam < MIN_SIZE) {
-            neuronDiam = MIN_SIZE;
-        }
+        neuronDiam  = Double.max(neuronDiam - STEP_SIZE, MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
@@ -166,7 +160,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         this.addMouseWheelListener(new ResizableImageListener());
     }
 
-    private void drawNet(Graphics2D g2d) {
+    private void drawNetwork(Graphics2D g2d) {
         Enumeration<Attribute> attr = neuralNetwork.getData().enumerateAttributes();
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             drawInArrow(g2d, nodes.get(n.index()), attr.nextElement().name());
