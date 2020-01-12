@@ -158,7 +158,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(new ResizableImageListener<>(this));
+        this.addMouseWheelListener(new ResizableImageListener());
     }
 
     private void drawNet(Graphics2D g2d) {

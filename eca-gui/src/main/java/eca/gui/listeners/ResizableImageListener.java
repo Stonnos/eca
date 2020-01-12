@@ -1,9 +1,8 @@
 package eca.gui.listeners;
 
 import eca.gui.ResizeableImage;
-import lombok.RequiredArgsConstructor;
 
-import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -12,18 +11,21 @@ import java.awt.event.MouseWheelListener;
  *
  * @author Roman Batygin
  */
-@RequiredArgsConstructor
-public class ResizableImageListener<E extends JPanel & ResizeableImage> implements MouseWheelListener {
-
-    private final E component;
+public class ResizableImageListener implements MouseWheelListener {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent event) {
+        Component component = event.getComponent();
+        if (!ResizeableImage.class.isAssignableFrom(component.getClass())) {
+            throw new IllegalStateException(
+                    String.format("Component must implements %s interface!", ResizeableImage.class.getName()));
+        }
         if (event.isControlDown()) {
+            ResizeableImage resizeableImage = (ResizeableImage) component;
             if (event.getWheelRotation() < 0) {
-                component.increaseImage();
+                resizeableImage.increaseImage();
             } else {
-                component.decreaseImage();
+                resizeableImage.decreaseImage();
             }
         } else {
             //Scroll panel otherwise

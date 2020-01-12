@@ -169,7 +169,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(new ResizableImageListener<>(this));
+        this.addMouseWheelListener(new ResizableImageListener());
     }
 
     private void createPopupMenu() {
