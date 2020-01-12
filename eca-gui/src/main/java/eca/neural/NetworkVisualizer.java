@@ -42,6 +42,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Neural network visualization panel.
@@ -58,6 +59,9 @@ public class NetworkVisualizer extends JPanel {
 
     private static final double MIN_SIZE = 20;
     private static final double MAX_SIZE = 80;
+    private static final int NEURON_INFO_PREFERRED_WIDTH = 350;
+    private static final int NEURON_INFO_PREFERRED_HEIGHT = 150;
+    private static final int Y_SHIFT_IN_NEURON_NODE = 50;
     private static final double STEP_BETWEEN_LEVELS = 200.0d;
     private static final double STEP_BETWEEN_NODES = 40.0d;
     private static final double STEP_SIZE = 5.0d;
@@ -81,6 +85,8 @@ public class NetworkVisualizer extends JPanel {
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
 
+    private final PopupFactory popupFactory = new PopupFactory();
+
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
     private Color linkColor = Color.GRAY;
@@ -101,10 +107,8 @@ public class NetworkVisualizer extends JPanel {
         this.decimalFormat.setMaximumFractionDigits(digits);
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent evt) {
-                for (NeuronNode neuron : nodes) {
-                    neuron.dispose();
-                }
+            public void windowDeactivated(WindowEvent evt) {
+                closeNeuronInfoPopups();
             }
         });
         this.nodes = new ArrayList<>();
@@ -113,6 +117,10 @@ public class NetworkVisualizer extends JPanel {
         this.createPopupMenu();
         this.setLayout(null);
         this.registerMouseWheelListener();
+    }
+
+    public void closeNeuronInfoPopups() {
+        nodes.forEach(NeuronNode::dispose);
     }
 
     public Image getImage() {
@@ -328,41 +336,52 @@ public class NetworkVisualizer extends JPanel {
     }
 
     /**
-     * Neuron info frame.
+     * Neuron info popup.
      */
-    private class NeuronInfo extends JFrame {
+    private class NeuronInfoPopup {
 
         static final String NODE_INDEX_FORMAT = "Узел %d";
         static final String CONTENT_TYPE = "text/html";
-        static final int PREFERRED_WIDTH = 350;
-        static final int PREFERRED_HEIGHT = 150;
 
-        NeuronNode neuron;
+        NeuronNode neuronNode;
+        Popup popup;
 
-        NeuronInfo(NeuronNode neuron) {
-            this.neuron = neuron;
-            this.setTitle(String.format(NODE_INDEX_FORMAT, neuron.neuron().index()));
-            this.setLayout(new GridBagLayout());
-            this.setIconImage(frame.getIconImage());
+        NeuronInfoPopup(NeuronNode neuronNode) {
+            this.neuronNode = neuronNode;
+        }
+
+        void show(int x, int y) {
+            hide();
+            JPanel infoPanel = createNeuronInfoPanel();
+            this.popup = popupFactory.getPopup(frame, infoPanel, x, y);
+            popup.show();
+        }
+
+        void hide() {
+            Optional.ofNullable(popup).ifPresent(Popup::hide);
+        }
+
+        JPanel createNeuronInfoPanel() {
+            JPanel infoPanel = new JPanel(new GridBagLayout());
+            infoPanel.setBackground(Color.WHITE);
+            infoPanel.setBorder(
+                    PanelBorderUtils.createTitledBorder(String.format(NODE_INDEX_FORMAT, neuronNode.neuron().index())));
             JTextPane textInfo = new JTextPane();
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
-            textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-            textInfo.setText(neuron.getNeuronInfoAsHtml());
+            textInfo.setPreferredSize(new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT));
+            textInfo.setText(neuronNode.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton closeButton = ButtonUtils.createCloseButton();
-            closeButton.addActionListener(evt -> setVisible(false));
-            this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+            closeButton.addActionListener(evt -> hide());
+            infoPanel.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+            infoPanel.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
-            this.getRootPane().setDefaultButton(closeButton);
-            this.setResizable(false);
-            this.pack();
-            this.setLocationRelativeTo(frame);
+            return infoPanel;
         }
     }
 
@@ -385,7 +404,7 @@ public class NetworkVisualizer extends JPanel {
 
         final Neuron neuron;
         Ellipse2D.Double ellipse;
-        NeuronInfo info;
+        NeuronInfoPopup neuronInfoPopup;
         JLabel infoLabel = new JLabel();
 
         NeuronNode(Neuron neuron, Ellipse2D.Double ellipse) {
@@ -396,7 +415,7 @@ public class NetworkVisualizer extends JPanel {
             infoLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent evt) {
-                    createInfo();
+                    showNeuronInfo(evt.getXOnScreen(), evt.getYOnScreen());
                 }
             });
             infoLabel.setToolTipText(TOOL_TIP_TEXT);
@@ -452,17 +471,23 @@ public class NetworkVisualizer extends JPanel {
             return paramsMap;
         }
 
-        void dispose() {
-            if (info != null) {
-                info.dispose();
+        void showNeuronInfo(int x, int y) {
+            if (neuronInfoPopup == null) {
+                neuronInfoPopup = new NeuronInfoPopup(this);
             }
+            int shift = (int) Math.floor(neuronDiam / 2);
+            int yShift = NEURON_INFO_PREFERRED_HEIGHT + Y_SHIFT_IN_NEURON_NODE;
+            int correctedY;
+            if (y + yShift > frame.getHeight()) {
+                correctedY = y - yShift;
+            } else {
+                correctedY = y + shift;
+            }
+            neuronInfoPopup.show(x + shift, correctedY);
         }
 
-        void createInfo() {
-            if (info == null) {
-                info = new NeuronInfo(this);
-            }
-            info.setVisible(true);
+        public void dispose() {
+            Optional.ofNullable(neuronInfoPopup).ifPresent(NeuronInfoPopup::hide);
         }
 
         Neuron neuron() {
@@ -745,11 +770,10 @@ public class NetworkVisualizer extends JPanel {
         void init() {
             JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
-            //-------------------------------------------
             diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, MIN_SIZE, MAX_SIZE, 1));
             panel.add(new JLabel(NEURON_DIAM_TEXT));
             panel.add(diamSpinner);
-            //------------------------------------
+
             JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
             nodeButton.addActionListener(evt -> {
                 JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
@@ -759,7 +783,7 @@ public class NetworkVisualizer extends JPanel {
                 }
             });
             JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
-            //----------------------------------------------
+
             attrButton.addActionListener(evt -> {
                 JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
                 ruleFontChooser.setVisible(true);
@@ -767,7 +791,7 @@ public class NetworkVisualizer extends JPanel {
                     selectedAttrFont = ruleFontChooser.getSelectedFont();
                 }
             });
-            //--------------------------------------------------
+
             JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
             inColorButton.addActionListener(evt -> {
                 Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -776,7 +800,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedInLayerColor = newInLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton outColorButton = new JButton(SELECT_BUTTON_TEXT);
             outColorButton.addActionListener(evt -> {
                 Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -785,7 +808,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedOutLayerColor = newOutLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton linkColorButton = new JButton(SELECT_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -794,7 +816,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedLinkColor = newLinkColor;
                 }
             });
-            //--------------------------------------------------
             JButton hidColorButton = new JButton(SELECT_BUTTON_TEXT);
             hidColorButton.addActionListener(evt -> {
                 Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -803,7 +824,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedHiddenLayerColor = newHiddenLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton attrColorButton = new JButton(SELECT_BUTTON_TEXT);
             attrColorButton.addActionListener(evt -> {
                 Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
@@ -812,7 +832,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedAttrColor = newAttrColor;
                 }
             });
-            //--------------------------------------------------
             JButton classColorButton = new JButton(SELECT_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
@@ -821,7 +840,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedClassColor = newClassColor;
                 }
             });
-            //--------------------------------------------------
             JButton textColorButton = new JButton(SELECT_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
@@ -830,7 +848,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedTextColor = newTextColor;
                 }
             });
-            //--------------------------------------------------
             JButton backgroundColorButton = new JButton(SELECT_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
@@ -839,7 +856,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedBackgroundColor = newBackgroundColor;
                 }
             });
-            //------------------------------------
             panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
             panel.add(new JLabel(ATTR_FONT_TEXT));
@@ -860,7 +876,6 @@ public class NetworkVisualizer extends JPanel {
             panel.add(classColorButton);
             panel.add(new JLabel(BACKGROUND_TEXT));
             panel.add(backgroundColorButton);
-            //-------------------------------------------
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -872,14 +887,12 @@ public class NetworkVisualizer extends JPanel {
                 dialogResult = false;
                 setVisible(false);
             });
-            //---------------------------------------------------------
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 7, 15, 7), 0, 0));
             this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
             this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-            //-----------------------------------------------------------
             this.getRootPane().setDefaultButton(okButton);
         }
 

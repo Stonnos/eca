@@ -6,6 +6,8 @@ import eca.neural.NeuralNetwork;
 import weka.core.Instances;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +25,14 @@ public class NeuralNetworksComponentsProvider extends EvaluationResultsComponent
     @Override
     public List<ComponentModel> getComponents(NeuralNetwork classifier, Instances data, int maxFractionDigits,
                                               JFrame parent) {
-        JScrollPane scrollPane = new JScrollPane(new NetworkVisualizer(classifier, parent, maxFractionDigits));
+        NetworkVisualizer networkVisualizer = new NetworkVisualizer(classifier, parent, maxFractionDigits);
+        JScrollPane scrollPane = new JScrollPane(networkVisualizer);
+        scrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent componentEvent) {
+                networkVisualizer.closeNeuronInfoPopups();
+            }
+        });
         ComponentModel componentModel = new ComponentModel(NETWORK_STRUCTURE_TAB_TITLE, scrollPane);
         return Collections.singletonList(componentModel);
     }
