@@ -12,8 +12,10 @@ import eca.config.VelocityConfigService;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooserFactory;
+import eca.gui.listeners.ResizableImageListener;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionsDictionary;
@@ -49,7 +51,7 @@ import java.util.Optional;
  *
  * @author Roman Batygin
  */
-public class NetworkVisualizer extends JPanel {
+public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -135,6 +137,7 @@ public class NetworkVisualizer extends JPanel {
         drawNet((Graphics2D) g);
     }
 
+    @Override
     public void increaseImage() {
         neuronDiam += STEP_SIZE;
         if (neuronDiam > MAX_SIZE) {
@@ -144,6 +147,7 @@ public class NetworkVisualizer extends JPanel {
         resizeNetwork();
     }
 
+    @Override
     public void decreaseImage() {
         neuronDiam -= STEP_SIZE;
         if (neuronDiam < MIN_SIZE) {
@@ -154,18 +158,7 @@ public class NetworkVisualizer extends JPanel {
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(event -> {
-            if (event.isControlDown()) {
-                if (event.getWheelRotation() < 0) {
-                    increaseImage();
-                } else {
-                    decreaseImage();
-                }
-            } else {
-                //Scroll panel otherwise
-                getParent().dispatchEvent(event);
-            }
-        });
+        this.addMouseWheelListener(new ResizableImageListener<>(this));
     }
 
     private void drawNet(Graphics2D g2d) {

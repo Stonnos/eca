@@ -12,8 +12,10 @@ import eca.config.VelocityConfigService;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
 import eca.gui.dialogs.JFontChooserFactory;
+import eca.gui.listeners.ResizableImageListener;
 import eca.gui.service.ClassifierIndexerService;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier.TreeNode;
@@ -44,7 +46,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class TreeVisualizer extends JPanel {
+public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -105,6 +107,7 @@ public class TreeVisualizer extends JPanel {
         this.registerMouseWheelListener();
     }
 
+    @Override
     public void increaseImage() {
         nodeWidth += STEP_SIZE;
         nodeHeight += STEP_SIZE;
@@ -118,6 +121,7 @@ public class TreeVisualizer extends JPanel {
         resizeTree();
     }
 
+    @Override
     public void decreaseImage() {
         nodeWidth -= STEP_SIZE;
         nodeHeight -= STEP_SIZE;
@@ -165,18 +169,7 @@ public class TreeVisualizer extends JPanel {
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(event -> {
-            if (event.isControlDown()) {
-                if (event.getWheelRotation() < 0) {
-                    increaseImage();
-                } else {
-                    decreaseImage();
-                }
-            } else {
-                //Scroll panel otherwise
-                getParent().dispatchEvent(event);
-            }
-        });
+        this.addMouseWheelListener(new ResizableImageListener<>(this));
     }
 
     private void createPopupMenu() {
