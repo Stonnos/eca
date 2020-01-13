@@ -103,8 +103,6 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private EvaluationStatisticsModel evaluationStatisticsModel;
 
-    private ClassificationCostsMatrix classificationCostsMatrix;
-
     private ROCCurvePanel rocCurvePanel;
 
     public ClassificationResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
@@ -249,7 +247,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         JScrollPane misClassPane = new JScrollPane(misClassificationMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
 
-        classificationCostsMatrix = new ClassificationCostsMatrix(evaluation, digits);
+        ClassificationCostsMatrix classificationCostsMatrix = new ClassificationCostsMatrix(evaluation, digits);
         JScrollPane costsPane = new JScrollPane(classificationCostsMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));
