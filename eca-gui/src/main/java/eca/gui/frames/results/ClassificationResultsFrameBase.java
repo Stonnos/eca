@@ -11,7 +11,6 @@ import eca.config.registry.SingletonRegistry;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
-import eca.data.FileUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
@@ -32,12 +31,11 @@ import eca.gui.tables.models.EvaluationStatisticsModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.report.ReportGenerator;
-import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.AttachmentImage;
 import eca.report.evaluation.EvaluationReport;
-import eca.report.evaluation.html.EvaluationHtmlReportService;
-import eca.report.evaluation.xls.EvaluationXlsReportService;
+import eca.report.evaluation.EvaluationReportHelper;
 import eca.roc.RocCurve;
+import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
 import eca.util.Entry;
@@ -53,6 +51,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -91,8 +90,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final int ATTACHMENT_TAB_INDEX = 3;
-    private static final String HTML_EXTENSION = ".html";
-    private static final String INVALID_REPORT_EXTENSION = "Система не поддерживает отчеты с расширением %s";
 
     private static final String REFERENCE_KEY_STROKE = "F1";
     private static final String SAVE_MODEL_KEY_STROKE = "ctrl S";
@@ -102,12 +99,13 @@ public class ClassificationResultsFrameBase extends JFrame {
     private final Instances data;
     private final Evaluation evaluation;
     private final int digits;
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private JTabbedPane pane;
     private JScrollPane resultPane;
 
     private EvaluationStatisticsModel evaluationStatisticsModel;
 
-    private ClassificationCostsMatrix costMatrix;
+    private ClassificationCostsMatrix classificationCostsMatrix;
 
     private ROCCurvePanel rocCurvePanel;
 
@@ -119,6 +117,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
         this.digits = digits;
+        this.decimalFormat.setMaximumFractionDigits(digits);
         this.createGUI();
         this.createMenuBar();
         this.setLocationRelativeTo(parent);
@@ -252,8 +251,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         JScrollPane misClassPane = new JScrollPane(misClassificationMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
 
-        costMatrix = new ClassificationCostsMatrix(evaluation, digits);
-        JScrollPane costsPane = new JScrollPane(costMatrix);
+        classificationCostsMatrix = new ClassificationCostsMatrix(evaluation, digits);
+        JScrollPane costsPane = new JScrollPane(classificationCostsMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));
 
@@ -356,21 +355,10 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            AbstractEvaluationReportService reportService;
-            if (FileUtils.isXlsExtension(file.getName())) {
-                reportService = new EvaluationXlsReportService();
-            } else if (file.getName().endsWith(HTML_EXTENSION)) {
-                reportService = new EvaluationHtmlReportService();
-            } else {
-                throw new IllegalArgumentException(String.format(INVALID_REPORT_EXTENSION, file.getName()));
-            }
-            reportService.setFile(file);
-            reportService.setDecimalFormat(costMatrix.getFormat());
             EvaluationReport evaluationReport =
                     new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
                             createAttachmentImagesList());
-            reportService.setEvaluationReport(evaluationReport);
-            reportService.saveReport();
+            EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
         }
     }
 }
