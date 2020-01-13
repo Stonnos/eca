@@ -77,6 +77,8 @@ public class AttributesStatisticsFrame extends JFrame {
 
     private static PieSectionLabelGenerator PIE_LABEL_GENERATOR;
 
+    private Instances data;
+
     private JFrame parentFrame;
 
     private JDataTableBase statisticsTable;
@@ -103,19 +105,25 @@ public class AttributesStatisticsFrame extends JFrame {
     }
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
-        DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
-        decimalFormat.setMaximumFractionDigits(digits);
+        this.data = data;
         this.parentFrame = parent;
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
         this.frequencyDiagramModels = new FrequencyDiagramModel[data.numAttributes()];
         this.dataFrames = new DataFrame[data.numInstances()];
         this.statisticsTable = new JDataTableBase();
+        DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
+        decimalFormat.setMaximumFractionDigits(digits);
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
         this.statisticsTable.setAutoResizeOff(false);
+        this.createGUI();
+        this.setLocationRelativeTo(parent);
+    }
+
+    private void createGUI() {
         this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        this.setIconImage(parent.getIconImage());
+        this.setIconImage(parentFrame.getIconImage());
 
         JPanel dataInfoPanel = new JPanel(new GridBagLayout());
         dataInfoPanel.setBorder(PanelBorderUtils.createTitledBorder(DATA_INFO_TITLE));
@@ -194,7 +202,6 @@ public class AttributesStatisticsFrame extends JFrame {
         this.add(closeButton, new GridBagConstraints(0, 1, 2, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 10, 0), 0, 0));
-        this.setLocationRelativeTo(parent);
     }
 
     private void createPlotBox() {
