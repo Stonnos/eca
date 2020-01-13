@@ -76,8 +76,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
     private static final String CLASSIFY_TAB_TITLE = "Классификация";
-    private static final String TREE_STRUCTURE_TAB_TITLE = "Структура дерева";
-    private static final String NETWORK_STRUCTURE_TAB_TITLE = "Структура нейронной сети";
     private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 650;
@@ -294,11 +292,13 @@ public class ClassificationResultsFrameBase extends JFrame {
             if (classifier instanceof DecisionTreeClassifier) {
                 JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
                 TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(new AttachmentImage(TREE_STRUCTURE_TAB_TITLE, treeVisualizer.getImage()));
+                attachmentImages.add(
+                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
             } else if (classifier instanceof NeuralNetwork) {
                 JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
                 NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(new AttachmentImage(NETWORK_STRUCTURE_TAB_TITLE, networkVisualizer.getImage()));
+                attachmentImages.add(
+                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
             }
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
