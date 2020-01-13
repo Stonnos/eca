@@ -20,7 +20,7 @@ DisableProgramGroupPage=yes
 LicenseFile=COPYING
 OutputDir=EcaSetup
 OutputBaseFilename=EcaSetup-{#MyAppVersion}
-SetupIconFile=Icon.ico
+SetupIconFile=target\images\Icon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -31,13 +31,13 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "eca-gui\target\ECA.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "eca-gui\target\eca-gui-6.6.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "eca-gui\target\ECAManual.pdf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "eca-gui\target\eca-service-config.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\ECA.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\eca-gui-6.6.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\ECAManual.pdf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\eca-service-config.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "COPYING"; DestDir: "{app}"; Flags: ignoreversion
-Source: "eca-gui\target\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "eca-gui\target\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "target\images\*"; DestDir: "{app}\images"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "target\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "docs\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
