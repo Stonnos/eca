@@ -67,7 +67,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
         add(infoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
         add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
+                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         this.pack();
     }
 
