@@ -19,10 +19,10 @@ public class AttributeStatistics {
     private DecimalFormat decimalFormat;
 
     /**
-     * Creates <tt>AttributeStatistics</tt> object
+     * Creates AttributeStatistics object
      *
-     * @param data          {@link Instances} object
-     * @param decimalFormat {@link DecimalFormat} object
+     * @param data          - instances object
+     * @param decimalFormat - decimal format object
      */
     public AttributeStatistics(Instances data, DecimalFormat decimalFormat) {
         Objects.requireNonNull(data, "Data is not specified!");
@@ -68,7 +68,7 @@ public class AttributeStatistics {
     public double getMax(Attribute a) {
         return data.stream().filter(instance -> !instance.isMissing(a)).max(
                 Comparator.comparingDouble(instance -> instance.value(a))).map(instance -> instance.value(a)).orElse(
-                -Double.MAX_VALUE);
+                Double.NaN);
     }
 
     /**
@@ -79,7 +79,7 @@ public class AttributeStatistics {
      */
     public String getMaxAsString(Attribute a) {
         double maxVal = getMax(a);
-        return maxVal != -Double.MAX_VALUE ? decimalFormat.format(maxVal) : NAN;
+        return !Double.isNaN(maxVal) ? decimalFormat.format(maxVal) : NAN;
     }
 
     /**
@@ -91,7 +91,7 @@ public class AttributeStatistics {
     public double getMin(Attribute a) {
         return data.stream().filter(instance -> !instance.isMissing(a)).min(
                 Comparator.comparingDouble(instance -> instance.value(a))).map(instance -> instance.value(a)).orElse(
-                Double.MAX_VALUE);
+                Double.NaN);
     }
 
     /**
@@ -102,7 +102,7 @@ public class AttributeStatistics {
      */
     public String getMinAsString(Attribute a) {
         double minVal = getMin(a);
-        return minVal != Double.MAX_VALUE ? decimalFormat.format(minVal) : NAN;
+        return !Double.isNaN(minVal) ? decimalFormat.format(minVal) : NAN;
     }
 
     /**
