@@ -28,13 +28,13 @@
             <td class="val">$entry.value</td>
         </tr>
     #end
-</table>
     #if ($extendedOptions)
-    <h4 class="attr" style="text-align: center">Входные параметры базовых классификаторов:</h4>
-    <table class="optionsTable">
+        <tr>
+            <td class="attr" style="text-align: center;" colspan="2">Входные параметры базовых классификаторов:</td>
+        </tr>
         #foreach($inputOptionsMap in $classifiersOptions.entrySet())
             <tr>
-                <th class="attr" colspan="2">$inputOptionsMap.key</th>
+                <td class="attr" style="text-align: center;" colspan="2">$inputOptionsMap.key</td>
             </tr>
             #foreach($optionEntry in $inputOptionsMap.value.entrySet())
                 <tr>
@@ -43,7 +43,7 @@
                 </tr>
             #end
         #end
-    </table>
     #end
+</table>
 </body>
 </html>
