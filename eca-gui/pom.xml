@@ -62,7 +62,7 @@
                         <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <execution>
-                                <phase>install</phase>
+                                <phase>package</phase>
                                 <configuration>
                                     <target>
                                         <exec executable="cmd.exe" failonerror="true">
