@@ -67,7 +67,7 @@
                                     <target>
                                         <exec executable="cmd.exe" failonerror="true">
                                             <arg value="/c"/>
-                                            <arg value="setup.bat"/>
+                                            <arg value="compile-installer.bat"/>
                                         </exec>
                                     </target>
                                 </configuration>
