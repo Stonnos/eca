@@ -694,7 +694,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         g.fill(path);
         g.setColor(attrColor);
         g.setFont(attrFont);
-        g.drawString(name, (float) ((arrow.getX1() + arrow.getX2()) / 3.0), (float) u.y1());
+        g.drawString(name, (float) ((arrow.getX1() + arrow.getX2()) / 3.0), (float) (u.y1() - 5.0));
     }
 
     private void drawOutArrow(Graphics2D g, NeuronNode u, String value) {
@@ -709,7 +709,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         g.fill(path);
         g.setColor(classColor);
         g.setFont(attrFont);
-        g.drawString(value, (float) ((arrow.getX1() + arrow.getX2()) / 2.0), (float) (arrow.getY1() - 5.0));
+        g.drawString(value, (float) ((arrow.getX1() + arrow.getX2()) / 2.0), (float) (u.y1() - 5.0));
     }
 
     /**
