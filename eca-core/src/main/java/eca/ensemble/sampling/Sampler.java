@@ -5,6 +5,7 @@
  */
 package eca.ensemble.sampling;
 
+import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -19,6 +20,7 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class Sampler implements java.io.Serializable {
 
     /**

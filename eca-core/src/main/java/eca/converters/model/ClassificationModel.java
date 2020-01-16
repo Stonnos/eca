@@ -40,8 +40,12 @@ public class ClassificationModel implements java.io.Serializable {
     private Evaluation evaluation;
 
     /**
-     * Additional properties
+     * Maximum fraction digits
      */
-    private Map<String, String> additionalProperties;
+    private Integer maximumFractionDigits;
 
+    /**
+     * Details string
+     */
+    private String details;
 }

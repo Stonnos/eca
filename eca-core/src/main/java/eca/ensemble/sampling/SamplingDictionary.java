@@ -1,9 +1,13 @@
 package eca.ensemble.sampling;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Sampling method dictionary class.
+ *
  * @author Roman Batygin
  */
+@UtilityClass
 public class SamplingDictionary {
 
     public static final String INITIAL_TEXT = "Использование исходной выборки";

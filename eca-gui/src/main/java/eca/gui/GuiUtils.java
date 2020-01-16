@@ -1,12 +1,12 @@
 package eca.gui;
 
 import eca.gui.logging.LoggerUtils;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.net.URL;
 import java.util.Enumeration;
@@ -17,6 +17,8 @@ import java.util.Optional;
  *
  * @author Roman Batygin
  */
+@Slf4j
+@UtilityClass
 public class GuiUtils {
 
     private static final String INPUT_ERROR_TEXT = "Ошибка ввода";
@@ -65,23 +67,11 @@ public class GuiUtils {
         target.requestFocusInWindow();
     }
 
-    public static void setIcon(Window window, URL iconUrl, Logger log) {
+    public static void setIcon(Window window, URL iconUrl) {
         try {
             window.setIconImage(ImageIO.read(iconUrl));
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
         }
     }
-
-    public static void setUIFont(FontUIResource f) {
-        java.util.Enumeration keys = UIManager.getLookAndFeelDefaults().keys();
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value != null && value instanceof FontUIResource) {
-                UIManager.put(key, f);
-            }
-        }
-    }
-
 }

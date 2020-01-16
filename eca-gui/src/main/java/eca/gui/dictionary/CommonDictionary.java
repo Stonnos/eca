@@ -1,14 +1,15 @@
 package eca.gui.dictionary;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Eca common dictionary.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class CommonDictionary {
 
-    private CommonDictionary() {
-    }
 
     /**
      * Threads constraints
@@ -40,8 +41,8 @@ public class CommonDictionary {
      * Eca - service options
      */
     public static final String ECA_SERVICE_ENABLED = "eca.service.enabled";
-    public static final String ECA_API_URL = "eca.service.apiUrl";
-    public static final String ECA_TOKEN_URL = "eca.service.tokenUrl";
-    public static final String ECA_CLIENT_ID = "eca.service.clientId";
-    public static final String ECA_CLIENT_SECRET = "eca.service.clientSecret";
+    public static final String RABBIT_HOST = "eca.service.rabbit.host";
+    public static final String RABBIT_PORT = "eca.service.rabbit.port";
+    public static final String RABBIT_USERNAME = "eca.service.rabbit.username";
+    public static final String RABBIT_PASSWORD = "eca.service.rabbit.password";
 }

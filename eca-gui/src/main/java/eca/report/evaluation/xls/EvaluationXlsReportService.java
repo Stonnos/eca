@@ -22,7 +22,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.util.CollectionUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
@@ -83,7 +82,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             style.setFont(font);
             createClassifierInputParamSheet(book, style);
             createXlsResultsSheet(book, style);
-            if (!CollectionUtils.isEmpty(getEvaluationReport().getAttachmentImages())) {
+            if (getEvaluationReport().getAttachmentImages() != null) {
                 for (AttachmentImage attachmentImage : getEvaluationReport().getAttachmentImages()) {
                     writeImage(getFile(), book, (BufferedImage) attachmentImage.getImage(), attachmentImage.getTitle());
                 }

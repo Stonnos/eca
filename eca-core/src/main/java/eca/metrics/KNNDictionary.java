@@ -1,10 +1,13 @@
 package eca.metrics;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * K - nearest neighbours dictionary class.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class KNNDictionary {
 
     public static final String NEIGHBOURS_NUM = "Число ближайших соседей:";

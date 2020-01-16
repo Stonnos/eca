@@ -58,7 +58,6 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
     private JComboBox<String> metaClassifierBox;
     private JButton metaOptionsButton;
 
-    private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
     private final JSpinner foldsSpinner = new JSpinner();
 
@@ -96,15 +95,15 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         this.add(createMetaDataSetSelectionPanel(), new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 10, 0), 0, 0));
         useTestingSet.addItemListener(e -> foldsSpinner.setEnabled(useTestingSet.isSelected()));
-        //-------------------------------------------------------------
+
         this.add(createAlgorithmsSelectionPanel(), new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
         this.add(createSelectedAlgorithmsPanel(digits), new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(6, 0, 8, 0), 0, 0));
-        //-------------------------------------------------------------
+
         createMetaClassifierComboBox(digits);
         createMetaClassifierOptionsButton();
-        //----------------------------------------------------------------
+
         JPanel metaPanel = new JPanel(new GridBagLayout());
         metaPanel.setBorder(PanelBorderUtils.createTitledBorder(META_CLASSIFIER_TITLE));
         metaPanel.add(metaClassifierBox, new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -113,7 +112,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
         this.add(metaPanel, new GridBagConstraints(0, 2, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 8, 0), 0, 0));
-        //--------------------------------------------------------------
+
         JButton okButton = createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -121,12 +120,12 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
             dialogResult = false;
             setVisible(false);
         });
-        //--------------------------------------------------------------
+
         this.add(okButton, new GridBagConstraints(0, 3, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------------------
+
         this.getRootPane().setDefaultButton(okButton);
     }
 
@@ -166,7 +165,6 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         algorithmsList.setPreferredSize(ALGORITHMS_LIST_DIM);
         algorithmsList.setMinimumSize(ALGORITHMS_LIST_DIM);
         algorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //-------------------------------------------------
         JScrollPane algorithmsPane = new JScrollPane(algorithmsList);
         algorithmsPane.setPreferredSize(ALGORITHMS_LIST_DIM);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TEXT));
@@ -190,7 +188,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
         selectedAlgorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TEXT));
         selectedPane.setPreferredSize(ALGORITHMS_LIST_DIM);
-        //-----------------------------------------------------------------
+
         final JButton removeButton = new JButton(DELETE_CLASSIFIER_BUTTON_TEXT);
         removeButton.setEnabled(false);
         removeButton.addActionListener(e -> {
@@ -212,7 +210,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         JPanel metaDataSetSelectionMethodPanel = new JPanel(new GridBagLayout());
         metaDataSetSelectionMethodPanel.setBorder(PanelBorderUtils.createTitledBorder(META_SET_TITLE));
         ButtonGroup group = new ButtonGroup();
-        useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
+        JRadioButton useTrainingSet = new JRadioButton(EvaluationMethod.TRAINING_DATA.getDescription());
         useTestingSet = new JRadioButton(EvaluationMethod.CROSS_VALIDATION.getDescription());
         useTrainingSet.setSelected(true);
         group.add(useTrainingSet);

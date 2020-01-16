@@ -4,25 +4,32 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Text area singleton for console.
+ *
  * @author Roman Batygin
  */
-
 public class ConsoleTextArea {
 
     private static final Font DEFAULT_TEXT_AREA_FONT = new Font("Arial", Font.BOLD, 12);
 
     private static final Color CONSOLE_COLOR = Color.BLACK;
     private static final Color TEXT_COLOR = Color.WHITE;
+    private static final int ROWS = 30;
+    private static final int COLUMNS = 85;
 
     private static JTextArea textArea;
 
     private ConsoleTextArea() {
-
     }
 
-    public static JTextArea getTextArea() {
+    /**
+     * Creates text area for console.
+     *
+     * @return text area
+     */
+    public synchronized static JTextArea getTextArea() {
         if (textArea == null) {
-            textArea = new JTextArea(30, 85);
+            textArea = new JTextArea(ROWS, COLUMNS);
             textArea.setWrapStyleWord(true);
             textArea.setLineWrap(true);
             textArea.setEditable(false);

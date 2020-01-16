@@ -1,6 +1,7 @@
 package eca.util;
 
 import eca.core.DescriptiveEnum;
+import lombok.experimental.UtilityClass;
 
 import java.util.stream.Stream;
 
@@ -9,10 +10,8 @@ import java.util.stream.Stream;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class EnumUtils {
-
-    private EnumUtils() {
-    }
 
     /**
      * Gets enum constants by its description.

@@ -1,11 +1,13 @@
 package eca.core;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Assertion class.
  *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class Assert {
 
     private static final double ZERO = 0d;

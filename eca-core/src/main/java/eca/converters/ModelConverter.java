@@ -1,6 +1,7 @@
 package eca.converters;
 
 import eca.util.SerializationUtils;
+import lombok.experimental.UtilityClass;
 
 import java.io.File;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ModelConverter {
 
     private static final String MODEL_EXTENSION = ".model";
@@ -36,7 +38,7 @@ public class ModelConverter {
      *
      * @param file file object
      * @return deserialize object
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static Object loadModel(File file) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");

@@ -9,7 +9,7 @@ import eca.gui.actions.CallbackAction;
 import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +48,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
                 }
             }
         });
-        //----------------------------------------------------
+
         progress = new JProgressBar();
         progress.setIndeterminate(true);
         this.add(new JLabel(msg),
@@ -57,7 +57,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
                         new Insets(10, 5, 10, 5), 0, 0));
         this.add(progress, new GridBagConstraints(0, 1, 3, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
-        //---------------------------------------------------
+
         this.pack();
         this.setLocationRelativeTo(parent);
         worker = new SwingWorkerConstruction();
@@ -85,7 +85,7 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
     }
 
     public long getTotalTimeMillis() {
-        return stopWatch.getTotalTimeMillis();
+        return stopWatch.getTime();
     }
 
     /**

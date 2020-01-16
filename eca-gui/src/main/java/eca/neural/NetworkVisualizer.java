@@ -9,36 +9,50 @@ import eca.buffer.ImageCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.VelocityConfigService;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
-import eca.gui.dialogs.JFontChooser;
+import eca.gui.dialogs.JFontChooserFactory;
+import eca.gui.listeners.ResizableImageListener;
 import eca.gui.service.ClassifierIndexerService;
 import eca.neural.functions.AbstractFunction;
 import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
+import eca.util.FontUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Neural network visualization panel.
  *
  * @author Roman Batygin
  */
-public class NetworkVisualizer extends JPanel {
+public class NetworkVisualizer extends JPanel implements ResizeableImage {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -46,11 +60,14 @@ public class NetworkVisualizer extends JPanel {
     private static final String NEURON_OPTIONS_TABLE_VM = "vm-templates/optionsTable.vm";
     private static final String NETWORK_MODEL_VM = "vm-templates/neuralNetworkModel.vm";
 
-    private static final double MIN_SIZE = 20;
-    private static final double MAX_SIZE = 80;
-    private static final double STEP_BETWEEN_LEVELS = 200.0d;
-    private static final double STEP_BETWEEN_NODES = 40.0d;
+    private static final double NEURON_MIN_SIZE = 20;
+    private static final double NEURON_MAX_SIZE = 80;
+    private static final int NEURON_INFO_PREFERRED_WIDTH = 350;
+    private static final int NEURON_INFO_PREFERRED_HEIGHT = 150;
+    private static final int Y_SHIFT_IN_NEURON_NODE = 50;
     private static final double STEP_SIZE = 5.0d;
+    private static final double STEP_BETWEEN_LEVEL_COEFFICIENT = 8.0d;
+    private static final double STEP_BETWEEN_NODES_COEFFICIENT = 2.0d;
     private static final String MODEL_TEXT_MENU = "Текстовое представление модели";
     private static final String SAVE_IMAGE_MENU_TEXT = "Сохранить изображение";
     private static final String COPY_IMAGE_MENU_TEXT = "Копировать";
@@ -64,12 +81,17 @@ public class NetworkVisualizer extends JPanel {
 
     private double neuronDiam = 25.0d;
 
+    private double stepBetweenLevels;
+    private double stepBetweenNodes;
+
     private Template nodeTemplate;
     private VelocityContext nodeContext;
 
-    private final NeuralNetwork net;
+    private final NeuralNetwork neuralNetwork;
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
+
+    private final PopupFactory popupFactory = new PopupFactory();
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
 
@@ -85,19 +107,23 @@ public class NetworkVisualizer extends JPanel {
     private Font nodeFont = new Font(ARIAL, Font.BOLD, 12);
     private Font attrFont = new Font(ARIAL, Font.BOLD, 11);
 
-    public NetworkVisualizer(NeuralNetwork net, JFrame frame, int digits) {
-        this.net = net;
+    /**
+     * Current visible node info
+     */
+    private NeuronNode visibleNode;
+
+    public NetworkVisualizer(NeuralNetwork neuralNetwork, JFrame frame, int digits) {
+        this.neuralNetwork = neuralNetwork;
         this.frame = frame;
         this.decimalFormat.setMaximumFractionDigits(digits);
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent evt) {
-                for (NeuronNode neuron : nodes) {
-                    neuron.dispose();
-                }
+            public void windowDeactivated(WindowEvent evt) {
+                hideNeuronInfo();
             }
         });
         this.nodes = new ArrayList<>();
+        this.calculateSteps();
         this.setDimension();
         this.createNodes();
         this.createPopupMenu();
@@ -105,59 +131,48 @@ public class NetworkVisualizer extends JPanel {
         this.registerMouseWheelListener();
     }
 
+    public void hideNeuronInfo() {
+        Optional.ofNullable(visibleNode).ifPresent(NeuronNode::dispose);
+    }
+
     public Image getImage() {
         Image img = this.createImage(getMinimumSize().width, getMinimumSize().height);
-        drawNet((Graphics2D) img.getGraphics());
+        drawNetwork((Graphics2D) img.getGraphics());
         return img;
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        drawNet((Graphics2D) g);
+        drawNetwork((Graphics2D) g);
     }
 
+    @Override
     public void increaseImage() {
-        neuronDiam += STEP_SIZE;
-        if (neuronDiam > MAX_SIZE) {
-            neuronDiam = MAX_SIZE;
-        }
+        neuronDiam = Double.min(neuronDiam + STEP_SIZE, NEURON_MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
 
+    @Override
     public void decreaseImage() {
-        neuronDiam -= STEP_SIZE;
-        if (neuronDiam < MIN_SIZE) {
-            neuronDiam = MIN_SIZE;
-        }
+        neuronDiam = Double.max(neuronDiam - STEP_SIZE, NEURON_MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (neuronDiam / 2));
         resizeNetwork();
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(event -> {
-            if (event.isControlDown()) {
-                if (event.getWheelRotation() < 0) {
-                    increaseImage();
-                } else {
-                    decreaseImage();
-                }
-            } else {
-                //Scroll panel otherwise
-                getParent().dispatchEvent(event);
-            }
-        });
+        this.addMouseWheelListener(new ResizableImageListener());
     }
 
-    private void drawNet(Graphics2D g2d) {
-        Enumeration<Attribute> attr = net.getData().enumerateAttributes();
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+    private void drawNetwork(Graphics2D g2d) {
+        Enumeration<Attribute> attr = neuralNetwork.getData().enumerateAttributes();
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             drawInArrow(g2d, nodes.get(n.index()), attr.nextElement().name());
         }
 
-        Enumeration<Object> values = net.getData().classAttribute().enumerateValues();
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        Enumeration<Object> values = neuralNetwork.getData().classAttribute().enumerateValues();
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             drawOutArrow(g2d, nodes.get(n.index()), values.nextElement().toString());
         }
 
@@ -185,7 +200,7 @@ public class NetworkVisualizer extends JPanel {
         decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
 
         increase.addActionListener(evt -> increaseImage());
-        //-----------------------------------
+
         decrease.addActionListener(evt -> decreaseImage());
         options.addActionListener(evt -> {
             NeuronOptions dialog = new NeuronOptions(frame);
@@ -206,7 +221,7 @@ public class NetworkVisualizer extends JPanel {
             }
             dialog.dispose();
         });
-        //-----------------------------------
+
         copyImage.addActionListener(new ActionListener() {
             ImageCopier copier = new ImageCopier();
 
@@ -221,7 +236,7 @@ public class NetworkVisualizer extends JPanel {
                 }
             }
         });
-        //-----------------------------------
+
         textView.addActionListener(new ActionListener() {
 
             NetworkInfo networkModelInfo;
@@ -240,30 +255,22 @@ public class NetworkVisualizer extends JPanel {
                 networkModelInfo.setVisible(true);
             }
         });
-        //-----------------------------------
-        saveImage.addActionListener(new ActionListener() {
 
-            SaveImageFileChooser fileChooser;
+        saveImage.addActionListener(event -> {
+            try {
+                SaveImageFileChooser fileChooser = SingletonRegistry.getSingleton(SaveImageFileChooser.class);
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(neuralNetwork)));
+                File file = fileChooser.getSelectedFile(frame);
+                if (file != null) {
+                    FileUtils.write(file, getImage());
 
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveImageFileChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(net)));
-                    File file = fileChooser.getSelectedFile(frame);
-                    if (file != null) {
-                        FileUtils.write(file, getImage());
-
-                    }
-                } catch (Throwable e) {
-                    JOptionPane.showMessageDialog(frame, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(frame, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
-        //-----------------------------------
+
         popMenu.add(options);
         popMenu.addSeparator();
         popMenu.add(increase);
@@ -295,23 +302,17 @@ public class NetworkVisualizer extends JPanel {
             textInfo.setEditable(false);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-            //----------------------------------------           
             textInfo.setText(getNeuralNetworkStructureAsHtml());
             textInfo.setCaretPosition(0);
-            //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton closeButton = ButtonUtils.createCloseButton();
-            //-----------------------------------
             closeButton.addActionListener(evt -> setVisible(false));
-            //----------------------------------------
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
             this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
-            //----------------------------------------
-            this.getRootPane().setDefaultButton(closeButton);
             this.pack();
             this.setLocationRelativeTo(frame);
         }
@@ -331,46 +332,51 @@ public class NetworkVisualizer extends JPanel {
     }
 
     /**
-     * Neuron info frame.
+     * Neuron info popup.
      */
-    private class NeuronInfo extends JFrame {
+    private class NeuronInfoPopup {
 
         static final String NODE_INDEX_FORMAT = "Узел %d";
         static final String CONTENT_TYPE = "text/html";
-        static final int PREFERRED_WIDTH = 350;
-        static final int PREFERRED_HEIGHT = 150;
 
-        NeuronNode neuron;
+        NeuronNode neuronNode;
+        Popup popup;
 
-        NeuronInfo(NeuronNode neuron) {
-            this.neuron = neuron;
-            this.setTitle(String.format(NODE_INDEX_FORMAT, neuron.neuron().index()));
-            this.setLayout(new GridBagLayout());
-            this.setIconImage(frame.getIconImage());
+        NeuronInfoPopup(NeuronNode neuronNode) {
+            this.neuronNode = neuronNode;
+        }
+
+        void show(int x, int y) {
+            JPanel infoPanel = createNeuronInfoPanel();
+            this.popup = popupFactory.getPopup(frame, infoPanel, x, y);
+            popup.show();
+        }
+
+        void hide() {
+            Optional.ofNullable(popup).ifPresent(Popup::hide);
+        }
+
+        JPanel createNeuronInfoPanel() {
+            JPanel infoPanel = new JPanel(new GridBagLayout());
+            infoPanel.setBackground(Color.WHITE);
+            infoPanel.setBorder(
+                    PanelBorderUtils.createTitledBorder(String.format(NODE_INDEX_FORMAT, neuronNode.neuron().index())));
             JTextPane textInfo = new JTextPane();
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
-            textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
-            //----------------------------------------           
-            textInfo.setText(neuron.getNeuronInfoAsHtml());
+            textInfo.setPreferredSize(new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT));
+            textInfo.setText(neuronNode.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
-            //----------------------------------------
             JScrollPane scrollPanel = new JScrollPane(textInfo);
             JButton closeButton = ButtonUtils.createCloseButton();
-            //-----------------------------------
-            closeButton.addActionListener(evt -> setVisible(false));
-            //----------------------------------------
-            this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+            closeButton.addActionListener(evt -> hide());
+            infoPanel.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+            infoPanel.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
-            //----------------------------------------
-            this.getRootPane().setDefaultButton(closeButton);
-            this.setResizable(false);
-            this.pack();
-            this.setLocationRelativeTo(frame);
+            return infoPanel;
         }
     }
 
@@ -393,18 +399,24 @@ public class NetworkVisualizer extends JPanel {
 
         final Neuron neuron;
         Ellipse2D.Double ellipse;
-        NeuronInfo info;
+        NeuronInfoPopup neuronInfoPopup;
         JLabel infoLabel = new JLabel();
 
         NeuronNode(Neuron neuron, Ellipse2D.Double ellipse) {
             this.neuron = neuron;
             this.ellipse = ellipse;
             NetworkVisualizer.this.add(infoLabel);
+            this.initInfoLabel();
+        }
+
+        void initInfoLabel() {
             infoLabel.setCursor(handCursor);
             infoLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent evt) {
-                    createInfo();
+                    hideNeuronInfo();
+                    showNeuronInfo(evt.getXOnScreen(), evt.getYOnScreen());
+                    visibleNode = NeuronNode.this;
                 }
             });
             infoLabel.setToolTipText(TOOL_TIP_TEXT);
@@ -460,17 +472,18 @@ public class NetworkVisualizer extends JPanel {
             return paramsMap;
         }
 
-        void dispose() {
-            if (info != null) {
-                info.dispose();
+        void showNeuronInfo(int x, int y) {
+            if (neuronInfoPopup == null) {
+                neuronInfoPopup = new NeuronInfoPopup(this);
             }
+            int shift = (int) Math.floor(neuronDiam / 2);
+            int yShift = NEURON_INFO_PREFERRED_HEIGHT + Y_SHIFT_IN_NEURON_NODE;
+            int correctedY = y + yShift > frame.getHeight() ? y - yShift : y + shift;
+            neuronInfoPopup.show(x + shift, correctedY);
         }
 
-        void createInfo() {
-            if (info == null) {
-                info = new NeuronInfo(this);
-            }
-            info.setVisible(true);
+        void dispose() {
+            Optional.ofNullable(neuronInfoPopup).ifPresent(NeuronInfoPopup::hide);
         }
 
         Neuron neuron() {
@@ -532,10 +545,9 @@ public class NetworkVisualizer extends JPanel {
             String text = String.valueOf(neuron.index());
             infoLabel.setSize((int) neuronDiam, (int) neuronDiam);
             infoLabel.setLocation((int) x1(), (int) y1());
-            g.drawString(text, (float) x1()
-                            + ((float) width() - fm.stringWidth(text)) / 2.0f,
-                    (float) y1() + fm.getAscent()
-                            + ((float) width() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+            float xVal = FontUtils.calculateXForString(text, fm, (float) x1(), (float) width());
+            float yVal = FontUtils.calculateYForString(fm, (float) y1(), (float) width());
+            g.drawString(text, xVal, yVal);
         }
 
         void paint(Graphics2D g) {
@@ -558,93 +570,100 @@ public class NetworkVisualizer extends JPanel {
 
     } //End of class NeuronNode
 
+    private void calculateSteps() {
+        this.stepBetweenNodes = neuronDiam * STEP_BETWEEN_NODES_COEFFICIENT;
+        this.stepBetweenLevels = neuronDiam * STEP_BETWEEN_LEVEL_COEFFICIENT;
+    }
+
     private void resizeNetwork() {
+        this.calculateSteps();
         this.setDimension();
         this.computeCoordinates();
         this.getRootPane().repaint();
     }
 
     private double screenWidth() {
-        return net.getMultilayerPerceptron().layersNum() * (STEP_BETWEEN_LEVELS + 1 + neuronDiam) + SCREEN_WIDTH_MARGIN;
+        return neuralNetwork.getMultilayerPerceptron().layersNum() * (stepBetweenLevels + 1 + neuronDiam) +
+                SCREEN_WIDTH_MARGIN;
     }
 
     private double screenHeight() {
-        int max = Integer.max(Integer.max(net.getMultilayerPerceptron().inLayerNeurons.length,
-                net.getMultilayerPerceptron().outLayerNeurons.length),
+        int max = Integer.max(Integer.max(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length,
+                neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length),
                 maxHiddenLayerSize());
-        return max * (STEP_BETWEEN_NODES + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
+        return max * (stepBetweenNodes + 1 + neuronDiam) + SCREEN_HEIGHT_MARGIN;
     }
 
     private int maxHiddenLayerSize() {
         int max = 0;
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             max = Integer.max(max, layer.length);
         }
         return max;
     }
 
     private double startY(int size) {
-        double length = size * neuronDiam + (size - 1) * STEP_BETWEEN_NODES;
+        double length = size * neuronDiam + (size - 1) * stepBetweenNodes;
         return (this.getMaximumSize().height - length) / 2.0;
     }
 
     private double startX() {
-        double length = net.getMultilayerPerceptron().layersNum() * neuronDiam
-                + (net.getMultilayerPerceptron().layersNum() - 1) * STEP_BETWEEN_LEVELS;
+        double length = neuralNetwork.getMultilayerPerceptron().layersNum() * neuronDiam
+                + (neuralNetwork.getMultilayerPerceptron().layersNum() - 1) * stepBetweenLevels;
         return (this.getMaximumSize().width - length) / 2.0;
     }
 
     private void computeCoordinates() {
-        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
 
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
-            w += neuronDiam + STEP_BETWEEN_LEVELS;
+            w += neuronDiam + stepBetweenLevels;
             for (Neuron n : layer) {
                 nodes.get(n.index()).setRect(w, h,
                         neuronDiam, neuronDiam);
-                h += neuronDiam + STEP_BETWEEN_NODES;
+                h += neuronDiam + stepBetweenNodes;
             }
         }
 
-        w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        w += neuronDiam + stepBetweenLevels;
+        h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
     }
 
     private void createNodes() {
-        double w = startX(), h = startY(net.getMultilayerPerceptron().inLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().inLayerNeurons) {
+        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
 
-        for (Neuron[] layer : net.getMultilayerPerceptron().hiddenLayerNeurons) {
+        for (Neuron[] layer : neuralNetwork.getMultilayerPerceptron().hiddenLayerNeurons) {
             h = startY(layer.length);
-            w += neuronDiam + STEP_BETWEEN_LEVELS;
+            w += neuronDiam + stepBetweenLevels;
             for (Neuron n : layer) {
                 nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                         neuronDiam, neuronDiam)));
-                h += neuronDiam + STEP_BETWEEN_NODES;
+                h += neuronDiam + stepBetweenNodes;
             }
         }
 
-        w += neuronDiam + STEP_BETWEEN_LEVELS;
-        h = startY(net.getMultilayerPerceptron().outLayerNeurons.length);
-        for (Neuron n : net.getMultilayerPerceptron().outLayerNeurons) {
+        w += neuronDiam + stepBetweenLevels;
+        h = startY(neuralNetwork.getMultilayerPerceptron().outLayerNeurons.length);
+        for (Neuron n : neuralNetwork.getMultilayerPerceptron().outLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));
-            h += neuronDiam + STEP_BETWEEN_NODES;
+            h += neuronDiam + stepBetweenNodes;
         }
     }
 
@@ -664,38 +683,33 @@ public class NetworkVisualizer extends JPanel {
 
     private void drawInArrow(Graphics2D g, NeuronNode u, String name) {
         g.setColor(Color.BLACK);
-        Line2D.Double arrow = new Line2D.Double(u.x1() - STEP_BETWEEN_LEVELS / 2,
+        Line2D.Double arrow = new Line2D.Double(u.x1() - stepBetweenLevels / 2,
                 u.centerY(), u.x1(), u.centerY());
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(u.x1(), u.centerY());
-        path.lineTo(u.x1() - STEP_BETWEEN_LEVELS / 10,
-                u.centerY() - neuronDiam / 5);
-        path.lineTo(u.x1() - STEP_BETWEEN_LEVELS / 10,
-                u.centerY() + neuronDiam / 5);
+        path.lineTo(u.x1() - stepBetweenLevels / 10, u.centerY() - neuronDiam / 5);
+        path.lineTo(u.x1() - stepBetweenLevels / 10, u.centerY() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
         g.setColor(attrColor);
         g.setFont(attrFont);
-        g.drawString(name, (float) ((arrow.getX1() + arrow.getX2()) / 3.0), (float) u.y1());
+        g.drawString(name, (float) ((arrow.getX1() + arrow.getX2()) / 3.0), (float) (u.y1() - 5.0));
     }
 
     private void drawOutArrow(Graphics2D g, NeuronNode u, String value) {
         g.setColor(Color.BLACK);
-        Line2D.Double arrow = new Line2D.Double(u.x2(),
-                u.centerY(), u.x2() + STEP_BETWEEN_LEVELS / 2, u.centerY());
+        Line2D.Double arrow = new Line2D.Double(u.x2(), u.centerY(), u.x2() + stepBetweenLevels / 2, u.centerY());
         g.draw(arrow);
         Path2D.Double path = new Path2D.Double();
         path.moveTo(arrow.getX2(), arrow.getY2());
-        path.lineTo(arrow.getX2() - STEP_BETWEEN_LEVELS / 10,
-                arrow.getY2() - neuronDiam / 5);
-        path.lineTo(arrow.getX2() - STEP_BETWEEN_LEVELS / 10,
-                arrow.getY2() + neuronDiam / 5);
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10, arrow.getY2() - neuronDiam / 5);
+        path.lineTo(arrow.getX2() - stepBetweenLevels / 10, arrow.getY2() + neuronDiam / 5);
         path.closePath();
         g.fill(path);
         g.setColor(classColor);
         g.setFont(attrFont);
-        g.drawString(value, (float) ((arrow.getX1() + arrow.getX2()) / 2.0), (float) (arrow.getY1() - 5.0));
+        g.drawString(value, (float) ((arrow.getX1() + arrow.getX2()) / 2.0), (float) (u.y1() - 5.0));
     }
 
     /**
@@ -753,29 +767,18 @@ public class NetworkVisualizer extends JPanel {
         void init() {
             JPanel panel = new JPanel(new GridLayout(11, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(OPTIONS_TITLE));
-            //-------------------------------------------
-            diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, MIN_SIZE, MAX_SIZE, 1));
+            diamSpinner.setModel(new SpinnerNumberModel(neuronDiam, NEURON_MIN_SIZE, NEURON_MAX_SIZE, 1));
             panel.add(new JLabel(NEURON_DIAM_TEXT));
             panel.add(diamSpinner);
-            //------------------------------------
+
             JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
-            nodeButton.addActionListener(evt -> {
-                JFontChooser nodeFontChooser = new JFontChooser(NeuronOptions.this, selectedNodeFont);
-                nodeFontChooser.setVisible(true);
-                if (nodeFontChooser.dialogResult()) {
-                    selectedNodeFont = nodeFontChooser.getSelectedFont();
-                }
-            });
+            nodeButton.addActionListener(evt -> selectedNodeFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedNodeFont));
             JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
-            //----------------------------------------------
-            attrButton.addActionListener(evt -> {
-                JFontChooser ruleFontChooser = new JFontChooser(NeuronOptions.this, selectedAttrFont);
-                ruleFontChooser.setVisible(true);
-                if (ruleFontChooser.dialogResult()) {
-                    selectedAttrFont = ruleFontChooser.getSelectedFont();
-                }
-            });
-            //--------------------------------------------------
+
+            attrButton.addActionListener(evt -> selectedAttrFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedAttrFont));
+
             JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
             inColorButton.addActionListener(evt -> {
                 Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -784,7 +787,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedInLayerColor = newInLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton outColorButton = new JButton(SELECT_BUTTON_TEXT);
             outColorButton.addActionListener(evt -> {
                 Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -793,7 +795,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedOutLayerColor = newOutLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton linkColorButton = new JButton(SELECT_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -802,7 +803,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedLinkColor = newLinkColor;
                 }
             });
-            //--------------------------------------------------
             JButton hidColorButton = new JButton(SELECT_BUTTON_TEXT);
             hidColorButton.addActionListener(evt -> {
                 Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
@@ -811,7 +811,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedHiddenLayerColor = newHiddenLayerColor;
                 }
             });
-            //--------------------------------------------------
             JButton attrColorButton = new JButton(SELECT_BUTTON_TEXT);
             attrColorButton.addActionListener(evt -> {
                 Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
@@ -820,7 +819,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedAttrColor = newAttrColor;
                 }
             });
-            //--------------------------------------------------
             JButton classColorButton = new JButton(SELECT_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
@@ -829,7 +827,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedClassColor = newClassColor;
                 }
             });
-            //--------------------------------------------------
             JButton textColorButton = new JButton(SELECT_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
@@ -838,7 +835,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedTextColor = newTextColor;
                 }
             });
-            //--------------------------------------------------
             JButton backgroundColorButton = new JButton(SELECT_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
@@ -847,7 +843,6 @@ public class NetworkVisualizer extends JPanel {
                     selectedBackgroundColor = newBackgroundColor;
                 }
             });
-            //------------------------------------
             panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
             panel.add(new JLabel(ATTR_FONT_TEXT));
@@ -868,7 +863,6 @@ public class NetworkVisualizer extends JPanel {
             panel.add(classColorButton);
             panel.add(new JLabel(BACKGROUND_TEXT));
             panel.add(backgroundColorButton);
-            //-------------------------------------------
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -880,14 +874,12 @@ public class NetworkVisualizer extends JPanel {
                 dialogResult = false;
                 setVisible(false);
             });
-            //---------------------------------------------------------
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 7, 15, 7), 0, 0));
             this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
             this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-            //-----------------------------------------------------------
             this.getRootPane().setDefaultButton(okButton);
         }
 

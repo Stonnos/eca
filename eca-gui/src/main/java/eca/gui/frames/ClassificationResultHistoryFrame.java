@@ -1,6 +1,8 @@
 package eca.gui.frames;
 
 import eca.gui.ButtonUtils;
+import eca.gui.EvaluationResultsHistoryModel;
+import eca.gui.frames.results.ClassificationResultsFrameBase;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,15 +19,19 @@ public class ClassificationResultHistoryFrame extends JFrame {
 
     private static final String TITLE_TEXT = "История классификаторов";
 
-    private JMainFrame.ResultsHistory historyModel;
+    private EvaluationResultsHistoryModel evaluationResultsHistory;
 
     private JList<String> historyList;
 
-    public ClassificationResultHistoryFrame(JFrame parent, JMainFrame.ResultsHistory historyModel) {
+    public ClassificationResultHistoryFrame(JFrame parent, EvaluationResultsHistoryModel evaluationResultsHistory) {
         this.setIconImage(parent.getIconImage());
-        this.historyModel = historyModel;
+        this.evaluationResultsHistory = evaluationResultsHistory;
         this.createGUI();
         this.setLocationRelativeTo(parent);
+    }
+
+    public void addItem(ClassificationResultsFrameBase classificationResultsFrameBase) {
+        this.evaluationResultsHistory.add(classificationResultsFrameBase);
     }
 
     private void createGUI() {
@@ -34,7 +40,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         JPanel infoPanel = new JPanel();
         Dimension dim = new Dimension(430, 300);
-        historyList = new JList<>(historyModel);
+        historyList = new JList<>(evaluationResultsHistory);
         historyList.setMinimumSize(dim);
         historyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane historyPane = new JScrollPane(historyList);
@@ -45,9 +51,9 @@ public class ClassificationResultHistoryFrame extends JFrame {
         historyList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2 && !historyModel.isEmpty()) {
+                if (e.getClickCount() == 2 && !evaluationResultsHistory.isEmpty()) {
                     int i = historyList.locationToIndex(e.getPoint());
-                    historyModel.getFrame(i).setVisible(true);
+                    evaluationResultsHistory.getClassificationResultsFrame(i).setVisible(true);
                 }
             }
 
@@ -55,15 +61,13 @@ public class ClassificationResultHistoryFrame extends JFrame {
 
         infoPanel.add(historyPane);
 
-        JButton okButton = ButtonUtils.createCloseButton();
+        JButton closeButton = ButtonUtils.createCloseButton();
 
-        okButton.addActionListener(e -> setVisible(false));
+        closeButton.addActionListener(e -> setVisible(false));
         add(infoPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-        add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-
-        this.getRootPane().setDefaultButton(okButton);
+        add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         this.pack();
     }
 

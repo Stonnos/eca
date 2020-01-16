@@ -56,7 +56,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final String SELECTED_ATTRIBUTE_TITLE = "Выбранный атрибут";
     private static final String ATTR_LABEL_TEXT = "Атрибут:";
     private static final String ATTR_TYPE_TEXT = "Тип:";
-    private static final int DEFAULT_WIDTH = 875;
+    private static final int DEFAULT_WIDTH = 950;
     private static final int DEFAULT_HEIGHT = 450;
     private static final Dimension FREQUENCY_DIAGRAM_DIMENSION = new Dimension(400, DEFAULT_HEIGHT);
     private static final Dimension ATTR_BOX_DIMENSION = new Dimension(200, 25);
@@ -76,6 +76,8 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final float FOREGROUND_ALPHA = 0.70f;
 
     private static PieSectionLabelGenerator PIE_LABEL_GENERATOR;
+
+    private Instances data;
 
     private JFrame parentFrame;
 
@@ -103,19 +105,25 @@ public class AttributesStatisticsFrame extends JFrame {
     }
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
-        DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
-        decimalFormat.setMaximumFractionDigits(digits);
+        this.data = data;
         this.parentFrame = parent;
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
         this.frequencyDiagramModels = new FrequencyDiagramModel[data.numAttributes()];
         this.dataFrames = new DataFrame[data.numInstances()];
         this.statisticsTable = new JDataTableBase();
+        DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
+        decimalFormat.setMaximumFractionDigits(digits);
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
         this.statisticsTable.setAutoResizeOff(false);
+        this.createGUI();
+        this.setLocationRelativeTo(parent);
+    }
+
+    private void createGUI() {
         this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        this.setIconImage(parent.getIconImage());
+        this.setIconImage(parentFrame.getIconImage());
 
         JPanel dataInfoPanel = new JPanel(new GridBagLayout());
         dataInfoPanel.setBorder(PanelBorderUtils.createTitledBorder(DATA_INFO_TITLE));
@@ -194,9 +202,6 @@ public class AttributesStatisticsFrame extends JFrame {
         this.add(closeButton, new GridBagConstraints(0, 1, 2, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(10, 0, 10, 0), 0, 0));
-
-        this.getRootPane().setDefaultButton(closeButton);
-        this.setLocationRelativeTo(parent);
     }
 
     private void createPlotBox() {
@@ -411,13 +416,13 @@ public class AttributesStatisticsFrame extends JFrame {
             this.setIconImage(parentFrame.getIconImage());
             FrequencyDiagramTable table = new FrequencyDiagramTable(frequencyDataList, digits);
             JScrollPane scrollPanel = new JScrollPane(table);
-            JButton okButton = ButtonUtils.createOkButton();
+            JButton closeButton = ButtonUtils.createCloseButton();
 
-            okButton.addActionListener(e -> setVisible(false));
+            closeButton.addActionListener(e -> setVisible(false));
             this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 0), 0, 0));
-            this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+            this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.NONE,
                     new Insets(4, 0, 4, 0), 0, 0));
             this.pack();

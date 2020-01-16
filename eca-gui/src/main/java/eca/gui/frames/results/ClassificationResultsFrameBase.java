@@ -3,20 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.gui.frames;
+package eca.gui.frames.results;
 
-import eca.config.ApplicationConfig;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.config.registry.SingletonRegistry;
 import eca.converters.ModelConverter;
 import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
-import eca.data.FileUtils;
-import eca.ensemble.EnsembleClassifier;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
-import eca.gui.dictionary.ClassificationModelDictionary;
+import eca.gui.frames.AttributesStatisticsFrame;
+import eca.gui.frames.HtmlFrame;
+import eca.gui.frames.InstancesFrame;
+import eca.gui.frames.results.model.ComponentModel;
 import eca.gui.listeners.ReferenceListener;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
@@ -24,29 +25,24 @@ import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
-import eca.gui.tables.EnsembleTable;
-import eca.gui.tables.LogisticCoefficientsTable;
+import eca.gui.tables.JDataTableBase;
 import eca.gui.tables.MisClassificationMatrix;
-import eca.gui.tables.SignificantAttributesTable;
+import eca.gui.tables.models.EvaluationStatisticsModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
-import eca.regression.Logistic;
 import eca.report.ReportGenerator;
-import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.AttachmentImage;
 import eca.report.evaluation.EvaluationReport;
-import eca.report.evaluation.html.EvaluationHtmlReportService;
-import eca.report.evaluation.xls.EvaluationXlsReportService;
-import eca.roc.AttributesSelection;
+import eca.report.evaluation.EvaluationReportHelper;
 import eca.roc.RocCurve;
+import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
-import eca.trees.J48;
 import eca.trees.TreeVisualizer;
+import eca.util.Entry;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
-import weka.gui.treevisualizer.PlaceNode2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,12 +51,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Classification results frame.
@@ -72,18 +70,12 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
-    private static final ApplicationConfig APPLICATION_CONFIG = CONFIG_SERVICE.getApplicationConfig();
 
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
     private static final String CLASSIFY_TAB_TITLE = "Классификация";
-    private static final String TREE_STRUCTURE_TAB_TITLE = "Структура дерева";
-    private static final String NETWORK_STRUCTURE_TAB_TITLE = "Структура нейронной сети";
-    private static final String LOGISTIC_COEFFICIENTS_TAB_TITLE = "Оценки коэффициентов";
-    private static final String SIGNIFICANT_ATTRIBUTES_TAB_TITLE = "Значимые атрибуты";
-    private static final String ENSEMBLE_STRUCTURE_TAB_TITLE = "Структура ансамбля";
     private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 650;
@@ -96,33 +88,34 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final int ATTACHMENT_TAB_INDEX = 3;
-    private static final String HTML_EXTENSION = ".html";
-    private static final String INVALID_REPORT_EXTENSION = "Система не поддерживает отчеты с расширением %s";
+
+    private static final String REFERENCE_KEY_STROKE = "F1";
+    private static final String SAVE_MODEL_KEY_STROKE = "ctrl S";
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
     private final Instances data;
     private final Evaluation evaluation;
+    private final int digits;
+    private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private JTabbedPane pane;
     private JScrollPane resultPane;
 
-    private JTable statTable;
-    private JTable misMatrix;
-    private ClassificationCostsMatrix costMatrix;
-    private JFrame parentFrame;
+    private EvaluationStatisticsModel evaluationStatisticsModel;
 
     private ROCCurvePanel rocCurvePanel;
 
     public ClassificationResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-                                          Evaluation evaluation, final int digits) {
+                                          Evaluation evaluation, int digits) {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
-        this.parentFrame = parent;
         this.setIconImage(parent.getIconImage());
         this.evaluation = evaluation;
-        this.createGUI(digits);
-        this.createMenu(digits);
+        this.digits = digits;
+        this.decimalFormat.setMaximumFractionDigits(digits);
+        this.createGUI();
+        this.createMenuBar();
         this.setLocationRelativeTo(parent);
     }
 
@@ -142,18 +135,27 @@ public class ClassificationResultsFrameBase extends JFrame {
         return evaluation;
     }
 
-    public void addPanel(String title, Component panel) {
-        pane.add(title, panel);
+
+    public void setEvaluationStatisticsModel(EvaluationStatisticsModel evaluationStatisticsModel) {
+        this.evaluationStatisticsModel = evaluationStatisticsModel;
+        JTable evaluationStatisticsTable = createEvaluationStatisticsTable();
+        resultPane.setViewportView(evaluationStatisticsTable);
     }
 
-    public final void setStatisticsTable(JTable table) {
-        this.statTable = table;
-        this.statTable.setRowSelectionAllowed(false);
-        this.statTable.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(classifier, false));
-        resultPane.setViewportView(table);
+    public void setEvaluationResultsComponents(List<ComponentModel> componentModels) {
+        Objects.requireNonNull(componentModels, "Components isn't specified!");
+        componentModels.forEach(componentModel -> pane.add(componentModel.getTitle(), componentModel.getComponent()));
     }
 
-    private void createMenu(final int digits) {
+    private JTable createEvaluationStatisticsTable() {
+        JDataTableBase dataTableBase = new JDataTableBase(evaluationStatisticsModel);
+        dataTableBase.setAutoResizeOff(false);
+        dataTableBase.setRowSelectionAllowed(false);
+        dataTableBase.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(classifier, false));
+        return dataTableBase;
+    }
+
+    private void createMenuBar() {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
@@ -162,41 +164,15 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        refMenu.setAccelerator(KeyStroke.getKeyStroke("F1"));
+        refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
         dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
-        //--------------------------------------------
-        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
-        //--------------------------------------------
-        saveModelMenu.addActionListener(new ActionListener() {
 
-            SaveModelChooser fileChooser;
+        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_MODEL_KEY_STROKE));
 
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveModelChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
-                    File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
-                    if (file != null) {
-                        HashMap<String, String> props = new HashMap<>();
-                        props.put(ClassificationModelDictionary.DESCRIPTION_KEY, getTitle());
-                        props.put(ClassificationModelDictionary.DIGITS_KEY, String.valueOf(digits));
-                        ModelConverter.saveModel(file,
-                                new ClassificationModel((AbstractClassifier) classifier, data, evaluation, props));
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        //--------------------------------------------
+        saveModelMenu.addActionListener(new SaveModelListener());
         inputMenu.addActionListener(new ActionListener() {
 
             HtmlFrame inputParamInfo;
@@ -236,7 +212,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 dataFrame.setVisible(true);
             }
         });
-        //-------------------------------------------------
+
         statMenu.addActionListener(new ActionListener() {
 
             AttributesStatisticsFrame frame;
@@ -249,7 +225,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 frame.setVisible(true);
             }
         });
-        //--------------------------------------------
+
         fileMenu.add(saveModelMenu);
         serviceMenu.add(dataMenu);
         serviceMenu.add(inputMenu);
@@ -261,76 +237,28 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.setJMenuBar(menu);
     }
 
-    public JFrame getParentFrame() {
-        return parentFrame;
-    }
-
-    public static void createResults(ClassificationResultsFrameBase resultsFrameBase, int digits) throws Exception {
-        if (resultsFrameBase != null) {
-            if (resultsFrameBase.classifier() instanceof DecisionTreeClassifier) {
-                JScrollPane pane
-                        = new JScrollPane(
-                        new TreeVisualizer((DecisionTreeClassifier) resultsFrameBase.classifier(), digits));
-                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, pane);
-                JScrollBar bar = pane.getHorizontalScrollBar();
-                bar.setValue(bar.getMaximum());
-            } else if (resultsFrameBase.classifier() instanceof NeuralNetwork) {
-                NeuralNetwork net = (NeuralNetwork) resultsFrameBase.classifier();
-                JScrollPane pane = new JScrollPane(new NetworkVisualizer(net, resultsFrameBase, digits));
-                resultsFrameBase.addPanel(NETWORK_STRUCTURE_TAB_TITLE, pane);
-            } else if (resultsFrameBase.classifier() instanceof Logistic) {
-                LogisticCoefficientsTable table
-                        =
-                        new LogisticCoefficientsTable((Logistic) resultsFrameBase.classifier(), resultsFrameBase.data(),
-                                digits);
-                JScrollPane pane = new JScrollPane(table);
-                resultsFrameBase.addPanel(LOGISTIC_COEFFICIENTS_TAB_TITLE, pane);
-
-                AttributesSelection attributesSelection = new AttributesSelection(resultsFrameBase.data());
-                attributesSelection.setAucThresholdValue(APPLICATION_CONFIG.getAucThresholdValue());
-                attributesSelection.calculate();
-                SignificantAttributesTable signTable
-                        = new SignificantAttributesTable(attributesSelection, digits);
-                JScrollPane signPane = new JScrollPane(signTable);
-                resultsFrameBase.addPanel(SIGNIFICANT_ATTRIBUTES_TAB_TITLE, signPane);
-            } else if (resultsFrameBase.classifier() instanceof EnsembleClassifier) {
-                EnsembleClassifier ensembleClassifier = (EnsembleClassifier) resultsFrameBase.classifier();
-                EnsembleTable table = new EnsembleTable(ensembleClassifier.getStructure(),
-                        resultsFrameBase.getParentFrame(), digits);
-                JScrollPane pane = new JScrollPane(table);
-                resultsFrameBase.addPanel(ENSEMBLE_STRUCTURE_TAB_TITLE, pane);
-            } else if (resultsFrameBase.classifier() instanceof J48) {
-                J48 j48 = (J48) resultsFrameBase.classifier();
-                resultsFrameBase.addPanel(TREE_STRUCTURE_TAB_TITLE, new weka.gui.treevisualizer.TreeVisualizer(null,
-                        j48.graph(), new PlaceNode2()));
-            }
-        }
-    }
-
-    private void createGUI(final int digits) {
+    private void createGUI() {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         pane = new JTabbedPane();
         JPanel resultPanel = new JPanel(new GridBagLayout());
-        //------------------------------------------------------
         resultPane = new JScrollPane();
         resultPane.setBorder(PanelBorderUtils.createTitledBorder(STATISTICS_TEXT));
-        //------------------------------------------------------
-        misMatrix = new MisClassificationMatrix(evaluation);
-        JScrollPane misClassPane = new JScrollPane(misMatrix);
+        MisClassificationMatrix misClassificationMatrix = new MisClassificationMatrix(evaluation);
+        JScrollPane misClassPane = new JScrollPane(misClassificationMatrix);
         misClassPane.setBorder(PanelBorderUtils.createTitledBorder(MATRIX_TEXT));
-        //----------------------------------------
-        costMatrix = new ClassificationCostsMatrix(evaluation, digits);
-        JScrollPane costsPane = new JScrollPane(costMatrix);
+
+        ClassificationCostsMatrix classificationCostsMatrix = new ClassificationCostsMatrix(evaluation, digits);
+        JScrollPane costsPane = new JScrollPane(classificationCostsMatrix);
         costsPane.setBorder(PanelBorderUtils.
                 createTitledBorder(RESULTS_TEXT));
-        //---------------------------------
+
         resultPanel.add(resultPane, new GridBagConstraints(0, 0, 1, 1, 1, 0.5,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         resultPanel.add(costsPane, new GridBagConstraints(0, 1, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
-        //-----------------------------------
+
         JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
         saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         Dimension dim = new Dimension(150, 25);
@@ -338,7 +266,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveButton.setMinimumSize(dim);
         resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
-        //----------------------------------
+
         saveButton.addActionListener(new SaveReportListener());
 
         rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
@@ -351,11 +279,8 @@ public class ClassificationResultsFrameBase extends JFrame {
     }
 
     private Map<String, String> createStatisticsMap() {
-        Map<String, String> resultMap = new LinkedHashMap<>();
-        for (int i = 0; i < statTable.getRowCount(); i++) {
-            resultMap.put(statTable.getValueAt(i, 0).toString(), statTable.getValueAt(i, 1).toString());
-        }
-        return resultMap;
+        return evaluationStatisticsModel.getResults().stream().collect(
+                Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
     }
 
     private List<AttachmentImage> createAttachmentImagesList() {
@@ -365,11 +290,13 @@ public class ClassificationResultsFrameBase extends JFrame {
             if (classifier instanceof DecisionTreeClassifier) {
                 JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
                 TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(new AttachmentImage(TREE_STRUCTURE_TAB_TITLE, treeVisualizer.getImage()));
+                attachmentImages.add(
+                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
             } else if (classifier instanceof NeuralNetwork) {
                 JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
                 NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(new AttachmentImage(NETWORK_STRUCTURE_TAB_TITLE, networkVisualizer.getImage()));
+                attachmentImages.add(
+                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
             }
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
@@ -380,19 +307,39 @@ public class ClassificationResultsFrameBase extends JFrame {
     }
 
     /**
+     * Save classifier model action listener
+     */
+    private class SaveModelListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            try {
+                SaveModelChooser fileChooser = SingletonRegistry.getSingleton(SaveModelChooser.class);
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
+                File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
+                if (file != null) {
+                    ModelConverter.saveModel(file,
+                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits,
+                                    getTitle()));
+                }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
      * Action listener for saving evaluation results report.
      */
     private class SaveReportListener implements ActionListener {
-
-        SaveResultsChooser chooser;
 
         @Override
         public void actionPerformed(ActionEvent event) {
             File file;
             try {
-                if (chooser == null) {
-                    chooser = new SaveResultsChooser();
-                }
+                SaveResultsChooser chooser = SingletonRegistry.getSingleton(SaveResultsChooser.class);
                 chooser.setSelectedFile(new File(ClassifierIndexerService.getResultsIndex(classifier())));
                 file = chooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {
@@ -406,21 +353,10 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            AbstractEvaluationReportService reportService;
-            if (FileUtils.isXlsExtension(file.getName())) {
-                reportService = new EvaluationXlsReportService();
-            } else if (file.getName().endsWith(HTML_EXTENSION)) {
-                reportService = new EvaluationHtmlReportService();
-            } else {
-                throw new IllegalArgumentException(String.format(INVALID_REPORT_EXTENSION, file.getName()));
-            }
-            reportService.setFile(file);
-            reportService.setDecimalFormat(costMatrix.getFormat());
             EvaluationReport evaluationReport =
                     new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
                             createAttachmentImagesList());
-            reportService.setEvaluationReport(evaluationReport);
-            reportService.saveReport();
+            EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
         }
     }
 }

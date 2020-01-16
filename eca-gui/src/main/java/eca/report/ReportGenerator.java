@@ -113,6 +113,19 @@ public class ReportGenerator {
     /**
      * Returns classifier input options html string.
      *
+     * @param inputOptions - classifier input options map
+     * @return classifier input options html string
+     */
+    public static String getClassifierInputOptionsAsHtml(Map<String, String> inputOptions) {
+        Template template = VelocityConfigService.getTemplate(CLASSIFIER_INPUT_OPTIONS_VM);
+        VelocityContext context = new VelocityContext();
+        context.put(OPTIONS_MAP, inputOptions);
+        return mergeContext(template, context);
+    }
+
+    /**
+     * Returns classifier input options html string.
+     *
      * @param classifier classifier object
      * @param extended   extended options info for ensemble algorithms
      * @return classifier input options html string

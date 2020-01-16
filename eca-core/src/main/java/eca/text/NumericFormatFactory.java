@@ -5,6 +5,8 @@
  */
 package eca.text;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
@@ -13,6 +15,7 @@ import java.text.DecimalFormatSymbols;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class NumericFormatFactory implements java.io.Serializable {
 
     public static final char DECIMAL_SEPARATOR = ',';

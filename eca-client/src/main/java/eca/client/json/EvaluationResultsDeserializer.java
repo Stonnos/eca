@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import eca.core.evaluation.EvaluationResults;
-import org.springframework.util.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.IOException;
 import java.util.Base64;

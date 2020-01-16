@@ -9,19 +9,22 @@ import eca.buffer.ImageCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.VelocityConfigService;
+import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
+import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
-import eca.gui.dialogs.JFontChooser;
+import eca.gui.dialogs.JFontChooserFactory;
+import eca.gui.listeners.ResizableImageListener;
 import eca.gui.service.ClassifierIndexerService;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier.TreeNode;
 import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import eca.util.FileUtils;
+import eca.util.FontUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.springframework.util.Assert;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,22 +35,27 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Decision tree visualization panel.
  *
  * @author Roman Batygin
  */
-public class TreeVisualizer extends JPanel {
+public class TreeVisualizer extends JPanel implements ResizeableImage {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
     private static final String VM_TEMPLATES_DECISION_TREE_NODE_VM = "vm-templates/optionsTable.vm";
 
-    private static final double MIN_SIZE = 15;
-    private static final double MAX_SIZE = 100;
+    private static final double NODE_MIN_SIZE = 15;
+    private static final double NODE_MAX_SIZE = 100;
     private static final int MIN_STROKE = 1;
     private static final int MAX_STROKE = 6;
     private static final double STEP_SIZE = 5.0d;
@@ -57,9 +65,7 @@ public class TreeVisualizer extends JPanel {
     private static final String INCREASE_IMAGE_MENU_TEXT = "Увеличить";
     private static final String DECREASE_IMAGE_MENU_TEXT = "Уменьшить";
     private static final int MIN_SCREEN_WIDTH = 100;
-    private static final int STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD = 50;
-    private static final int MAX_STEP_BETWEEN_LEVELS = 180;
-    private static final int MIN_STEP_BETWEEN_LEVELS = 100;
+    private static final double RESIZE_COEFFICIENT = 4.0d;
     private static final int SCREEN_WIDTH_MARGIN = 100;
     private static final String ARIAL = "Arial";
 
@@ -100,34 +106,24 @@ public class TreeVisualizer extends JPanel {
         this.registerMouseWheelListener();
     }
 
+    @Override
     public void increaseImage() {
-        nodeWidth += STEP_SIZE;
-        nodeHeight += STEP_SIZE;
-        if (nodeWidth > MAX_SIZE) {
-            nodeWidth = MAX_SIZE;
-        }
-        if (nodeHeight > MAX_SIZE) {
-            nodeHeight = MAX_SIZE;
-        }
+        nodeWidth = Double.min(nodeWidth + STEP_SIZE, NODE_MAX_SIZE);
+        nodeHeight = Double.min(nodeHeight + STEP_SIZE, NODE_MAX_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
 
+    @Override
     public void decreaseImage() {
-        nodeWidth -= STEP_SIZE;
-        nodeHeight -= STEP_SIZE;
-        if (nodeWidth < MIN_SIZE) {
-            nodeWidth = MIN_SIZE;
-        }
-        if (nodeHeight < MIN_SIZE) {
-            nodeHeight = MIN_SIZE;
-        }
+        nodeWidth = Double.max(nodeWidth - STEP_SIZE, NODE_MIN_SIZE);
+        nodeHeight = Double.max(nodeHeight - STEP_SIZE, NODE_MIN_SIZE);
         nodeFont = new Font(nodeFont.getName(), Font.BOLD, (int) (nodeHeight / 2));
         resizeTree();
     }
 
     public void setTree(DecisionTreeClassifier tree) {
-        Assert.notNull(tree, "Tree is not specified!");
+        Objects.requireNonNull(tree, "Tree is not specified!");
         this.tree = tree;
         this.createNodes();
         this.computeCoordinates(tree.root);
@@ -160,18 +156,7 @@ public class TreeVisualizer extends JPanel {
     }
 
     private void registerMouseWheelListener() {
-        this.addMouseWheelListener(event -> {
-            if (event.isControlDown()) {
-                if (event.getWheelRotation() < 0) {
-                    increaseImage();
-                } else {
-                    decreaseImage();
-                }
-            } else {
-                //Scroll panel otherwise
-                getParent().dispatchEvent(event);
-            }
-        });
+        this.addMouseWheelListener(new ResizableImageListener());
     }
 
     private void createPopupMenu() {
@@ -186,7 +171,6 @@ public class TreeVisualizer extends JPanel {
         increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
         decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
-        //-----------------------------------
         options.addActionListener(evt -> {
             TreeOptions frame = new TreeOptions(null);
             frame.setVisible(true);
@@ -208,11 +192,8 @@ public class TreeVisualizer extends JPanel {
             }
             frame.dispose();
         });
-        //-----------------------------------
         increase.addActionListener(evt -> increaseImage());
-        //-----------------------------------
         decrease.addActionListener(evt -> decreaseImage());
-        //-----------------------------------
         copyImage.addActionListener(new ActionListener() {
             ImageCopier copier = new ImageCopier();
 
@@ -227,29 +208,20 @@ public class TreeVisualizer extends JPanel {
                 }
             }
         });
-        //---------------------------------------------------
-        saveImage.addActionListener(new ActionListener() {
 
-            SaveImageFileChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveImageFileChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
-                    File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
-                    if (file != null) {
-                        FileUtils.write(file, getImage());
-                    }
-                } catch (Throwable e) {
-                    JOptionPane.showMessageDialog(TreeVisualizer.this.getParent(), e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+        saveImage.addActionListener(event -> {
+            try {
+                SaveImageFileChooser fileChooser = SingletonRegistry.getSingleton(SaveImageFileChooser.class);
+                fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(tree)));
+                File file = fileChooser.getSelectedFile(TreeVisualizer.this.getParent());
+                if (file != null) {
+                    FileUtils.write(file, getImage());
                 }
+            } catch (Throwable e) {
+                JOptionPane.showMessageDialog(TreeVisualizer.this.getParent(), e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
-        //-----------------------------------
         popMenu.add(options);
         popMenu.addSeparator();
         popMenu.add(increase);
@@ -263,8 +235,7 @@ public class TreeVisualizer extends JPanel {
 
     private void resizeTree() {
         screenWidth = MIN_SCREEN_WIDTH;
-        stepBetweenLevels =
-                nodeHeight >= STEP_BETWEEN_LEVEL_RESIZE_THRESHOLD ? MAX_STEP_BETWEEN_LEVELS : MIN_STEP_BETWEEN_LEVELS;
+        stepBetweenLevels = nodeHeight * RESIZE_COEFFICIENT;
         computeCoordinates(tree.root);
         setDimension();
         getRootPane().repaint();
@@ -284,14 +255,18 @@ public class TreeVisualizer extends JPanel {
 
     private void shiftTree(TreeNode x, int i) {
         NodeDescriptor p = treeNodes.get(x.index());
-        p.setRect(p.x2() + i * MAX_SIZE + (i - 1) * nodeHeight,
-                p.y1(), nodeWidth, nodeHeight);
+        double xVal = calculateX(p, i);
+        p.setRect(xVal, p.y1(), nodeWidth, nodeHeight);
         screenWidth = Double.max(screenWidth, p.x1());
         if (!x.isLeaf()) {
             for (TreeNode child : x.children()) {
                 shiftTree(child, i);
             }
         }
+    }
+
+    private double calculateX(NodeDescriptor p, int i) {
+        return p.x2() + i * RESIZE_COEFFICIENT * nodeWidth + (i - 1) * nodeHeight;
     }
 
     private void computeCoordinates(TreeNode x) {
@@ -446,13 +421,12 @@ public class TreeVisualizer extends JPanel {
             FontMetrics fm = g.getFontMetrics(nodeFont);
             g.setPaint(textColor);
             g.setFont(nodeFont);
-            String size = String.valueOf(objectsNum());
+            String sizeStr = String.valueOf(objectsNum());
             info.setSize((int) nodeWidth, (int) nodeHeight);
             info.setLocation((int) x1(), (int) y1());
-            g.drawString(size, (float) x1()
-                            + ((float) width() - fm.stringWidth(size)) / 2.0f,
-                    (float) y1() + fm.getAscent()
-                            + ((float) height() - (fm.getAscent() + fm.getDescent())) / 2.0f);
+            float xVal = FontUtils.calculateXForString(sizeStr, fm, (float) x1(), (float) width());
+            float yVal = FontUtils.calculateYForString(fm, (float) y1(), (float) height());
+            g.drawString(sizeStr, xVal, yVal);
         }
 
         void paintClass(Graphics2D g) {
@@ -574,9 +548,8 @@ public class TreeVisualizer extends JPanel {
         void init() {
             JPanel panel = new JPanel(new GridLayout(13, 2, 10, 10));
             panel.setBorder(PanelBorderUtils.createTitledBorder(TREE_OPTIONS_TITLE));
-            //-------------------------------------------
-            widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, MIN_SIZE, MAX_SIZE, 1));
-            heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, MIN_SIZE, MAX_SIZE, 1));
+            widthSpinner.setModel(new SpinnerNumberModel(nodeWidth, NODE_MIN_SIZE, NODE_MAX_SIZE, 1));
+            heightSpinner.setModel(new SpinnerNumberModel(nodeHeight, NODE_MIN_SIZE, NODE_MAX_SIZE, 1));
             strokeSpinner.setModel(new SpinnerNumberModel(stroke, MIN_STROKE, MAX_STROKE, 1));
             panel.add(new JLabel(NODE_WIDTH_TEXT));
             panel.add(widthSpinner);
@@ -584,25 +557,14 @@ public class TreeVisualizer extends JPanel {
             panel.add(heightSpinner);
             panel.add(new JLabel(NODE_STROKE_TITLE));
             panel.add(strokeSpinner);
-            //------------------------------------
+
             JButton nodeButton = new JButton(CHOOSE_BUTTON_TEXT);
-            nodeButton.addActionListener(evt -> {
-                JFontChooser nodeFontChooser = new JFontChooser(TreeOptions.this, selectedNodeFont);
-                nodeFontChooser.setVisible(true);
-                if (nodeFontChooser.dialogResult()) {
-                    selectedNodeFont = nodeFontChooser.getSelectedFont();
-                }
-            });
+            nodeButton.addActionListener(evt -> selectedNodeFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedNodeFont));
             JButton ruleButton = new JButton(CHOOSE_BUTTON_TEXT);
-            //----------------------------------------------
-            ruleButton.addActionListener(evt -> {
-                JFontChooser ruleFontChooser = new JFontChooser(TreeOptions.this, selectedRuleFont);
-                ruleFontChooser.setVisible(true);
-                if (ruleFontChooser.dialogResult()) {
-                    selectedRuleFont = ruleFontChooser.getSelectedFont();
-                }
-            });
-            //--------------------------------------------------
+            ruleButton.addActionListener(evt -> selectedRuleFont =
+                    JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedRuleFont));
+
             JButton ruleColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             ruleColorButton.addActionListener(evt -> {
                 Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
@@ -611,7 +573,7 @@ public class TreeVisualizer extends JPanel {
                     selectedRuleColor = newRuleColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton textColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
@@ -620,7 +582,7 @@ public class TreeVisualizer extends JPanel {
                     selectedTextColor = newTextColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton linkColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
@@ -629,7 +591,7 @@ public class TreeVisualizer extends JPanel {
                     selectedLinkColor = newLinkColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton nodeColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             nodeColorButton.addActionListener(evt -> {
                 Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
@@ -638,16 +600,16 @@ public class TreeVisualizer extends JPanel {
                     selectedNodeColor = newLeafColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton leafColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             leafColorButton.addActionListener(evt -> {
-                Color obj = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
+                Color color = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
                         selectedLeafColor);
-                if (obj != null) {
-                    selectedLeafColor = obj;
+                if (color != null) {
+                    selectedLeafColor = color;
                 }
             });
-            //--------------------------------------------------
+
             JButton classColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
@@ -656,7 +618,7 @@ public class TreeVisualizer extends JPanel {
                     selectedClassColor = newClassColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton borderColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             borderColorButton.addActionListener(evt -> {
                 Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
@@ -665,7 +627,7 @@ public class TreeVisualizer extends JPanel {
                     selectedBorderColor = newBorderColor;
                 }
             });
-            //--------------------------------------------------
+
             JButton backgroundColorButton = new JButton(CHOOSE_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
@@ -674,7 +636,7 @@ public class TreeVisualizer extends JPanel {
                     backgroundColor = newBackgroundColor;
                 }
             });
-            //------------------------------------
+
             panel.add(new JLabel(NODE_FONT_TEXT));
             panel.add(nodeButton);
             panel.add(new JLabel(RULE_FONT_TEXT));
@@ -695,7 +657,7 @@ public class TreeVisualizer extends JPanel {
             panel.add(borderColorButton);
             panel.add(new JLabel(BACK_COLOR_TEXT));
             panel.add(backgroundColorButton);
-            //-------------------------------------------
+
             JButton okButton = ButtonUtils.createOkButton();
             JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -707,14 +669,14 @@ public class TreeVisualizer extends JPanel {
                 dialogResult = false;
                 setVisible(false);
             });
-            //---------------------------------------------------------
+
             this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 7, 15, 7), 0, 0));
             this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                     GridBagConstraints.EAST, GridBagConstraints.EAST, new Insets(0, 0, 8, 3), 0, 0));
             this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                     GridBagConstraints.WEST, GridBagConstraints.WEST, new Insets(0, 3, 8, 0), 0, 0));
-            //-----------------------------------------------------------
+
             this.getRootPane().setDefaultButton(okButton);
         }
 

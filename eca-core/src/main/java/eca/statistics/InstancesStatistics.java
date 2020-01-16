@@ -1,5 +1,6 @@
 package eca.statistics;
 
+import lombok.experimental.UtilityClass;
 import weka.core.Instances;
 
 /**
@@ -7,6 +8,7 @@ import weka.core.Instances;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class InstancesStatistics {
 
     /**

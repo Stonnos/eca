@@ -1,6 +1,8 @@
 package eca.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Eca - service api config.
@@ -8,6 +10,8 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class EcaServiceConfig {
 
     /**
@@ -16,22 +20,22 @@ public class EcaServiceConfig {
     private Boolean enabled;
 
     /**
-     * Api url
+     * Rabbit host
      */
-    private String apiUrl;
+    private String host;
 
     /**
-     * Token url
+     * Rabbit port
      */
-    private String tokenUrl;
+    private int port;
 
     /**
-     * Application id
+     * Rabbit username
      */
-    private String clientId;
+    private String username;
 
     /**
-     * Application secret
+     * Rabbit password
      */
-    private String clientSecret;
+    private String password;
 }

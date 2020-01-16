@@ -1,6 +1,7 @@
 package eca.util;
 
 import eca.statistics.diagram.FrequencyData;
+import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -9,6 +10,7 @@ import weka.core.Instances;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class FrequencyUtils {
 
     /**

@@ -1,10 +1,13 @@
 package eca.regression;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Logistic dictionary.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class LogisticDictionary {
 
     public static final String MAX_ITS_NUM = "Максимальное число итераций:";

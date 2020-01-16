@@ -1,10 +1,13 @@
 package eca.util;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Utility class.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class MathUtils {
 
     /**

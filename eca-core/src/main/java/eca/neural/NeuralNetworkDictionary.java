@@ -1,11 +1,13 @@
 package eca.neural;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Neural network dictionary.
  *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class NeuralNetworkDictionary {
 
     public static final String IN_LAYER_NEURONS_NUM = "Количество нейронов во входном слое:";

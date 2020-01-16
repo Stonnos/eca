@@ -94,17 +94,17 @@ public class EcaServiceOptionsDialog extends JDialog {
             case CommonDictionary.ECA_SERVICE_ENABLED:
                 CONFIG_SERVICE.getEcaServiceConfig().setEnabled(Boolean.valueOf(entry.getValue()));
                 break;
-            case CommonDictionary.ECA_API_URL:
-                CONFIG_SERVICE.getEcaServiceConfig().setApiUrl(entry.getValue());
+            case CommonDictionary.RABBIT_HOST:
+                CONFIG_SERVICE.getEcaServiceConfig().setHost(entry.getValue());
                 break;
-            case CommonDictionary.ECA_TOKEN_URL:
-                CONFIG_SERVICE.getEcaServiceConfig().setTokenUrl(entry.getValue());
+            case CommonDictionary.RABBIT_PORT:
+                CONFIG_SERVICE.getEcaServiceConfig().setPort(Integer.parseInt(entry.getValue()));
                 break;
-            case CommonDictionary.ECA_CLIENT_ID:
-                CONFIG_SERVICE.getEcaServiceConfig().setClientId(entry.getValue());
+            case CommonDictionary.RABBIT_USERNAME:
+                CONFIG_SERVICE.getEcaServiceConfig().setUsername(entry.getValue());
                 break;
-            case CommonDictionary.ECA_CLIENT_SECRET:
-                CONFIG_SERVICE.getEcaServiceConfig().setClientSecret(entry.getValue());
+            case CommonDictionary.RABBIT_PASSWORD:
+                CONFIG_SERVICE.getEcaServiceConfig().setPassword(entry.getValue());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));

@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.5.1</version>
+        <version>6.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.5.1</version>
+    <version>6.6</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -27,6 +27,7 @@
         <sqllite.version>3.27.2.1</sqllite.version>
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
+        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     </properties>
 
     <profiles>
@@ -45,6 +46,39 @@
             <properties>
                 <production>true</production>
             </properties>
+        </profile>
+
+        <profile>
+            <id>installer</id>
+            <properties>
+                <production>true</production>
+            </properties>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${maven-antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <exec executable="cmd.exe" failonerror="true">
+                                            <arg value="/c"/>
+                                            <arg value="compile-installer.bat"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

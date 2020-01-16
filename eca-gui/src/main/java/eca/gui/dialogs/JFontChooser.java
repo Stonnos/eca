@@ -137,7 +137,7 @@ public class JFontChooser extends JDialog {
     private void createGUI(Font font) {
         this.setLayout(new GridBagLayout());
         JPanel panel = new JPanel(new GridBagLayout());
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
         //---------------------------------
         createFontSizeComponent(font);

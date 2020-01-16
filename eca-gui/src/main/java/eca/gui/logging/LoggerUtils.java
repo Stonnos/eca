@@ -1,5 +1,6 @@
 package eca.gui.logging;
 
+import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 
 /**
@@ -7,7 +8,7 @@ import org.slf4j.Logger;
  *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class LoggerUtils {
 
     /**

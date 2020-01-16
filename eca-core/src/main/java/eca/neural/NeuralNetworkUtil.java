@@ -1,6 +1,7 @@
 package eca.neural;
 
 import eca.generators.NumberGenerator;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
 import weka.core.Utils;
@@ -12,6 +13,7 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class NeuralNetworkUtil {
 
     private static final int MIN_NEURONS_NUM_IN_HIDDEN_LAYER = 1;

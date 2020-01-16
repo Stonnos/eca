@@ -140,6 +140,7 @@ public class InstancesTable extends JDataTableBase {
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
         clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
+        missMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
         reValueMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.REPLACE_ICON)));
         popMenu.addPopupMenuListener(new PopupMenuListener() {
@@ -191,7 +192,7 @@ public class InstancesTable extends JDataTableBase {
 
         clearMenu.addActionListener(e -> {
             int result = JOptionPane.showConfirmDialog(InstancesTable.this.getRootPane(),
-                    ARE_YOU_SURE_TEXT, null,
+                    ARE_YOU_SURE_TEXT, CLEAR_DATA_MENU_TEXT,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (result == JOptionPane.YES_OPTION) {
                 getInstancesTableModel().clear();

@@ -10,7 +10,7 @@ import eca.ensemble.IterativeBuilder;
 import eca.gui.logging.LoggerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +40,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
         this.builder = builder;
         this.setResizable(false);
         this.setLayout(new GridBagLayout());
-        //---------------------------------------------------
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -49,7 +49,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 }
             }
         });
-        //----------------------------------------------------
+
         progress = new JProgressBar();
         progress.setStringPainted(true);
         this.add(new JLabel(msg),
@@ -58,7 +58,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                         new Insets(10, 5, 10, 5), 0, 0));
         this.add(progress, new GridBagConstraints(0, 1, 3, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
-        //---------------------------------------------------
+
         this.pack();
         this.setLocationRelativeTo(parent);
         worker = new SwingWorkerConstruction();
@@ -111,7 +111,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                 Evaluation evaluation = builder.evaluation();
                 stopWatch.stop();
                 if (evaluation != null) {
-                    evaluation.setTotalTimeMillis(stopWatch.getTotalTimeMillis());
+                    evaluation.setTotalTimeMillis(stopWatch.getTime());
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);

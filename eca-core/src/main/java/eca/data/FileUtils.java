@@ -1,13 +1,17 @@
 package eca.data;
 
 import com.google.common.collect.ImmutableSet;
+import lombok.experimental.UtilityClass;
 
 import java.util.Collections;
 import java.util.Set;
 
 /**
  * File utility class.
+ *
+ * @author Roman Batygin
  */
+@UtilityClass
 public class FileUtils {
 
     /**
@@ -78,11 +82,6 @@ public class FileUtils {
     }
 
     private static boolean containsExtension(String fileName, Set<String> extensions) {
-        for (String extension : extensions) {
-            if (fileName.endsWith(extension)) {
-                return true;
-            }
-        }
-        return false;
+        return extensions.stream().anyMatch(fileName::endsWith);
     }
 }

@@ -5,10 +5,16 @@
  */
 package eca.statistics;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Statistics class.
  */
+@UtilityClass
 public class Statistics {
+
+    private static final double MAX_VALUE = 99999.0;
+    private static final double MIN_VALUE = .000001;
 
     /**
      * Calculates Student critical value.
@@ -42,13 +48,13 @@ public class Statistics {
      * @return the F - critical value
      */
     public static double fCriticalValue(double p, int df1, int df2) {
-        double maxF = 99999.0;
-        double minF = .000001;
+        double maxF = MAX_VALUE;
+        double minF = MIN_VALUE;
         if (p <= 0.0 || p >= 1.0) {
             return 0.0;
         }
         double fVal = 1.0 / p;
-        while (Math.abs(maxF - minF) > .000001) {
+        while (Math.abs(maxF - minF) > MIN_VALUE) {
             if (weka.core.Statistics.FProbability(fVal, df1, df2) < p) {
                 maxF = fVal;
             } else {
@@ -67,13 +73,13 @@ public class Statistics {
      * @return the hi - square critical value
      */
     public static double chiSquaredCriticalValue(double p, int df) {
-        double maxF = 99999.0;
-        double minF = .000001;
+        double maxF = MAX_VALUE;
+        double minF = MIN_VALUE;
         if (p <= 0.0 || p >= 1.0) {
             return 0.0;
         }
         double chiVal = 1.0 / p;
-        while (Math.abs(maxF - minF) > .000001) {
+        while (Math.abs(maxF - minF) > MIN_VALUE) {
             if (weka.core.Statistics.chiSquaredProbability(chiVal, df) < p) {
                 maxF = chiVal;
             } else {

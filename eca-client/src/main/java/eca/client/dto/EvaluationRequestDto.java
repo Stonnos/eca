@@ -36,7 +36,17 @@ public class EvaluationRequestDto {
     private EvaluationMethod evaluationMethod;
 
     /**
-     * Evaluation method options map
+     * Folds number for k * V cross - validation method
      */
-    private Map<EvaluationOption, String> evaluationOptionsMap;
+    private Integer numFolds;
+
+    /**
+     * Tests number for k * V cross - validation method
+     */
+    private Integer numTests;
+
+    /**
+     * Seed value for k * V cross - validation method
+     */
+    private Integer seed;
 }

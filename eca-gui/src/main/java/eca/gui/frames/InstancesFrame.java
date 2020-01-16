@@ -2,6 +2,7 @@ package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.config.registry.SingletonRegistry;
 import eca.data.file.FileDataSaver;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
@@ -13,8 +14,6 @@ import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
@@ -36,8 +35,8 @@ public class InstancesFrame extends JFrame {
         this.data = data;
         this.setTitle(String.format(DATA_FORMAT, data.relationName()));
         this.setLayout(new GridBagLayout());
-        this.createMenu();
-        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON), log);
+        this.createMenuBar();
+        GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
         JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
         JButton closeButton = ButtonUtils.createCloseButton();
         closeButton.addActionListener(e -> setVisible(false));
@@ -47,7 +46,6 @@ public class InstancesFrame extends JFrame {
         this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
-        this.getRootPane().setDefaultButton(closeButton);
         this.pack();
         this.setLocationRelativeTo(parent);
     }
@@ -56,7 +54,7 @@ public class InstancesFrame extends JFrame {
         return data;
     }
 
-    private void createMenu() {
+    private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         addSaveDataMenuItem(fileMenu);
@@ -69,28 +67,20 @@ public class InstancesFrame extends JFrame {
         saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
 
-        saveFileMenu.addActionListener(new ActionListener() {
-
-            SaveDataFileChooser fileChooser;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                try {
-                    if (fileChooser == null) {
-                        fileChooser = new SaveDataFileChooser();
-                    }
-                    fileChooser.setSelectedFile(new File(getData().relationName()));
-                    File file = fileChooser.getSelectedFile(InstancesFrame.this);
-                    if (file != null) {
-                        FileDataSaver dataSaver = new FileDataSaver();
-                        dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                        dataSaver.saveData(file, getData());
-                    }
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(InstancesFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+        saveFileMenu.addActionListener(event -> {
+            try {
+                SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
+                fileChooser.setSelectedFile(new File(getData().relationName()));
+                File file = fileChooser.getSelectedFile(InstancesFrame.this);
+                if (file != null) {
+                    FileDataSaver dataSaver = new FileDataSaver();
+                    dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                    dataSaver.saveData(file, getData());
                 }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(InstancesFrame.this, e.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
             }
         });
         menu.add(saveFileMenu);
