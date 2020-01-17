@@ -1,10 +1,13 @@
 package eca.client.dictionary;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Experiment type dictionary.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ExperimentTypeDictionary {
 
     public static final String NEURAL_NETWORK_NAME = "Нейронные сети";

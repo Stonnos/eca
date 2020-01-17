@@ -5,11 +5,14 @@
  */
 package eca.core;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Implements the <tt>next_permutation</tt> algorithm.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class Permutation {
 
     /**
@@ -31,7 +34,8 @@ public class Permutation {
             k--;
         }
         swap(a, j, k);
-        int l = j + 1, r = a.length - 1;
+        int l = j + 1;
+        int r = a.length - 1;
         while (l < r) {
             swap(a, l++, r--);
         }

@@ -30,6 +30,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 
+import static javax.swing.SwingConstants.RIGHT;
+
 /**
  * @author Roman Batygin
  */
@@ -165,10 +167,10 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
         //----------------------------------------------------
         JLabel inLabel = new JLabel(IN_LAYER_NEURONS_NUM_TITLE);
         inLabel.setPreferredSize(LABEL_DIM);
-        inLabel.setHorizontalAlignment(JLabel.RIGHT);
+        inLabel.setHorizontalAlignment(RIGHT);
         JLabel outLabel = new JLabel(OUT_LAYER_NEURONS_NUM_TITLE);
         outLabel.setPreferredSize(LABEL_DIM);
-        outLabel.setHorizontalAlignment(JLabel.RIGHT);
+        outLabel.setHorizontalAlignment(RIGHT);
         //-------------------------------------------------
         immutableOptionsPanel.add(inLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -186,7 +188,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
     private JPanel createHiddenLayerPanel() {
         JLabel hidLabel = new JLabel(HIDDEN_LAYER_STRUCTURE_TITLE);
         hidLabel.setPreferredSize(LABEL_DIM);
-        hidLabel.setHorizontalAlignment(JLabel.RIGHT);
+        hidLabel.setHorizontalAlignment(RIGHT);
         String recommendText = String.format(RECOMMENDED_HIDDEN_LAYER_MESSAGE,
                 NeuralNetworkUtil.getMinNumNeuronsInHiddenLayer(data()),
                 NeuralNetworkUtil.getMaxNumNeuronsInHiddenLayer(data()));
@@ -210,7 +212,7 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
         activationFunctionsBox = new JComboBox<>(EnumUtils.getDescriptions(ActivationFunctionType.class));
         JLabel coefficientLabel = new JLabel(COEFFICIENT_TITLE);
         coefficientLabel.setPreferredSize(LABEL_DIM);
-        coefficientLabel.setHorizontalAlignment(JLabel.RIGHT);
+        coefficientLabel.setHorizontalAlignment(RIGHT);
         afCoefficientTextField = new JTextField(TEXT_FIELD_LENGTH);
         afCoefficientTextField.setDocument(new DoubleDocument(DOUBLE_FIELD_LENGTH));
         afCoefficientTextField.setInputVerifier(new TextFieldInputVerifier());
@@ -241,16 +243,16 @@ public class NetworkOptionsDialog extends ClassifierOptionsDialogBase<NeuralNetw
         momentumTextField.setInputVerifier(new TextFieldInputVerifier());
         JLabel errLabel = new JLabel(ERROR_TITLE);
         errLabel.setPreferredSize(LABEL_DIM);
-        errLabel.setHorizontalAlignment(JLabel.RIGHT);
+        errLabel.setHorizontalAlignment(RIGHT);
         JLabel itsLabel = new JLabel(MAX_ITS_TITLE);
         itsLabel.setPreferredSize(LABEL_DIM);
-        itsLabel.setHorizontalAlignment(JLabel.RIGHT);
+        itsLabel.setHorizontalAlignment(RIGHT);
         JLabel speedLabel = new JLabel(SPEED_COEFFICIENT_TITLE);
         speedLabel.setPreferredSize(LABEL_DIM);
-        speedLabel.setHorizontalAlignment(JLabel.RIGHT);
+        speedLabel.setHorizontalAlignment(RIGHT);
         JLabel momentumLabel = new JLabel(MOMENTUM_COEFFICIENT_TITLE);
         speedLabel.setPreferredSize(LABEL_DIM);
-        speedLabel.setHorizontalAlignment(JLabel.RIGHT);
+        speedLabel.setHorizontalAlignment(RIGHT);
         //------------------------------------------------------------
         learningPanel.add(errLabel,
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,

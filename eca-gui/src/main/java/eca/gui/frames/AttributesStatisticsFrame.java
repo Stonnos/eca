@@ -75,7 +75,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final int START_ANGLE = 290;
     private static final float FOREGROUND_ALPHA = 0.70f;
 
-    private static PieSectionLabelGenerator PIE_LABEL_GENERATOR;
+    private static PieSectionLabelGenerator pieSectionLabelGenerator;
 
     private Instances data;
 
@@ -100,7 +100,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private FrequencyDiagramBuilder frequencyDiagramBuilder;
 
     static {
-        PIE_LABEL_GENERATOR = new StandardPieSectionLabelGenerator("{0} : {1} ({2})", new DecimalFormat("0"),
+        pieSectionLabelGenerator = new StandardPieSectionLabelGenerator("{0} : {1} ({2})", new DecimalFormat("0"),
                 new DecimalFormat("0.00%"));
     }
 
@@ -241,7 +241,7 @@ public class AttributesStatisticsFrame extends JFrame {
                         DefaultPieDataset pieDataSet = createPieDataSet(frequencyDiagramModel);
                         JFreeChart chart =
                                 ChartFactory.createPieChart(PIE_DIAGRAM_TITLE, pieDataSet, true, false, false);
-                        ((PiePlot) chart.getPlot()).setLabelGenerator(PIE_LABEL_GENERATOR);
+                        ((PiePlot) chart.getPlot()).setLabelGenerator(pieSectionLabelGenerator);
                         return chart;
                     }
 
@@ -250,7 +250,7 @@ public class AttributesStatisticsFrame extends JFrame {
                         DefaultPieDataset pieDataSet = createPieDataSet(frequencyDiagramModel);
                         JFreeChart chart =
                                 ChartFactory.createPieChart3D(PIE_DIAGRAM_TITLE, pieDataSet, true, false, false);
-                        ((PiePlot) chart.getPlot()).setLabelGenerator(PIE_LABEL_GENERATOR);
+                        ((PiePlot) chart.getPlot()).setLabelGenerator(pieSectionLabelGenerator);
                         PiePlot3D plot = (PiePlot3D) chart.getPlot();
                         plot.setStartAngle(START_ANGLE);
                         plot.setForegroundAlpha(FOREGROUND_ALPHA);
@@ -304,8 +304,8 @@ public class AttributesStatisticsFrame extends JFrame {
 
     private void showFrequencyDiagramPlot(int attrIndex) {
         if (frequencyDiagramModels[attrIndex] == null) {
-            Instances data = frequencyDiagramBuilder.getData();
-            Attribute attribute = data.attribute(attrIndex);
+            Instances instances = frequencyDiagramBuilder.getData();
+            Attribute attribute = instances.attribute(attrIndex);
             if (attribute.isNumeric()) {
                 frequencyDiagramModels[attrIndex] = createFrequencyModelForNumericAttribute(attribute);
             } else {
@@ -427,7 +427,7 @@ public class AttributesStatisticsFrame extends JFrame {
                     new Insets(4, 0, 4, 0), 0, 0));
             this.pack();
             this.setLocationRelativeTo(parentFrame);
-            this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         }
     }
 

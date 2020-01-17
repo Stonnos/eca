@@ -163,7 +163,8 @@ public class Aggregator implements java.io.Serializable {
     }
 
     private double classValue(double[] voices) {
-        double classValue = 0.0, maxVoices = 0.0;
+        double classValue = 0.0;
+        double maxVoices = 0.0;
         for (int i = 0; i < voices.length; i++) {
             if (voices[i] > maxVoices) {
                 maxVoices = voices[i];

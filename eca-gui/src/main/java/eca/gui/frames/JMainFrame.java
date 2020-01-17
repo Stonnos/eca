@@ -59,7 +59,6 @@ import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
-import eca.gui.choosers.OpenFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.dialogs.ClassifierBuilderDialog;

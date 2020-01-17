@@ -10,5 +10,5 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ExperimentDictionary {
 
-    public static String INVALID_EXPERIMENTS_NUM_ERROR_TEXT = "Число экспериментов должно быть больше нуля!";
+    public static final String INVALID_NUM_EXPERIMENTS_ERROR_TEXT = "Число экспериментов должно быть больше нуля!";
 }

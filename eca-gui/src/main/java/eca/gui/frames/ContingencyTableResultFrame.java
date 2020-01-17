@@ -89,9 +89,7 @@ public class ContingencyTableResultFrame extends JFrame {
         saveButton.setMinimumSize(SAVE_BUTTON_DIM);
         saveButton.setMaximumSize(SAVE_BUTTON_DIM);
 
-        closeButton.addActionListener(evt -> {
-            setVisible(false);
-        });
+        closeButton.addActionListener(evt -> setVisible(false));
 
         addSaveButtonListener(saveButton);
 

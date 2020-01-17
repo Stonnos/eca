@@ -124,6 +124,7 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
                     Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
                     LoggerUtils.error(log, e);
+                    Thread.currentThread().interrupt();
                 }
             }
             return null;

@@ -74,6 +74,7 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
         super.clear();
     }
 
+    @Override
     public boolean isEmpty() {
         return frames.isEmpty();
     }

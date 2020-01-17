@@ -158,7 +158,8 @@ public class MessageListenerContainer {
         try {
             Thread.sleep(connectionAttemptIntervalMillis);
         } catch (InterruptedException e) {
-            //ignored
+            log.error(e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 }

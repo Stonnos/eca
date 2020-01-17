@@ -1,10 +1,13 @@
 package eca.metrics.distances;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Distance functions dictionary
+ *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class DistanceDictionary {
 
     public static final String EUCLID_DESCRIPTION = "Евкилидово расстояние";

@@ -1,9 +1,13 @@
 package eca.neural.functions;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Activation function formulas dictionary.
+ *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ActivationFunctionFormulasDictionary {
 
     public static final String LOGISTIC_FORMULA = "f(S)=1/(1+exp(-S))";

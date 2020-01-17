@@ -42,7 +42,7 @@ public class ScatterDiagramsFrame extends JFrame {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
+    private final SimpleDateFormat simpleDateFormat =
             new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private Instances data;
@@ -157,7 +157,7 @@ public class ScatterDiagramsFrame extends JFrame {
     private ValueAxis createAxis(Attribute attribute) {
         if (attribute.isDate()) {
             DateAxis dateAxis = new DateAxis(attribute.name());
-            dateAxis.setDateFormatOverride(SIMPLE_DATE_FORMAT);
+            dateAxis.setDateFormatOverride(simpleDateFormat);
             return dateAxis;
         } else if (attribute.isNumeric()) {
             NumberAxis axis = new NumberAxis(attribute.name());
