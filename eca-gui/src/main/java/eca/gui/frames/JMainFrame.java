@@ -133,6 +133,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
 /**
  * Implements the main application frame.
@@ -296,11 +298,11 @@ public class JMainFrame extends JFrame {
             int exitResult = JOptionPane.showConfirmDialog(JMainFrame.this, ON_EXIT_TEXT, null,
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if (exitResult == JOptionPane.YES_OPTION) {
-                JMainFrame.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                JMainFrame.this.setDefaultCloseOperation(EXIT_ON_CLOSE);
                 System.exit(0);
             }
         } else {
-            JMainFrame.this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            JMainFrame.this.setDefaultCloseOperation(EXIT_ON_CLOSE);
             System.exit(0);
         }
     }
@@ -465,8 +467,8 @@ public class JMainFrame extends JFrame {
         void createLowerPanel() {
             lowerPanel = new JPanel(new GridBagLayout());
             dataScrollPane = new JScrollPane();
-            dataScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            dataScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            dataScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            dataScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
             this.createAttrPanel();
             lowerPanel.add(dataScrollPane, new GridBagConstraints(0, 0, 1, 2, 1, 1,
@@ -489,8 +491,8 @@ public class JMainFrame extends JFrame {
             resetButton.addActionListener(e -> attributesTable.resetValues());
 
             attrScrollPane = new JScrollPane();
-            attrScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            attrScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            attrScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            attrScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
             double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT *
                     Toolkit.getDefaultToolkit().getScreenSize().getWidth();
             attrScrollPane.setPreferredSize(new Dimension((int) width, ATTRS_PANEL_HEIGHT));
@@ -640,7 +642,7 @@ public class JMainFrame extends JFrame {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
             log.info("Starting evaluation for classifier {} with options: {} on data '{}'",
                     frame.classifier().getClass().getSimpleName(), options, frame.data().relationName());
-            if (CONFIG_SERVICE.getEcaServiceConfig().getEnabled()) {
+            if (Boolean.TRUE.equals(CONFIG_SERVICE.getEcaServiceConfig().getEnabled())) {
                 executeWithEcaService(frame);
             } else {
                 processSimpleBuilding(frame);
@@ -1913,11 +1915,11 @@ public class JMainFrame extends JFrame {
                             LoadDialog progress = new LoadDialog(JMainFrame.this,
                                     new DatabaseSaverAction(databaseSaver, dataBuilder.getResult()),
                                     DB_SAVE_PROGRESS_MESSAGE_TEXT);
-                            processAsyncTask(progress, () -> {
+                            processAsyncTask(progress, () ->
                                 JOptionPane.showMessageDialog(JMainFrame.this,
                                         String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
-                                        JOptionPane.INFORMATION_MESSAGE);
-                            });
+                                        JOptionPane.INFORMATION_MESSAGE)
+                            );
                         }
                         databaseSaverDialog.dispose();
                     });

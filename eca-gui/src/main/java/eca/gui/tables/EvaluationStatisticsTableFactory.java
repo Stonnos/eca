@@ -97,6 +97,7 @@ public class EvaluationStatisticsTableFactory {
             super(DecisionTreeClassifier.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(DecisionTreeClassifier classifier,
                                                                          Evaluation evaluation,
                                                                          int maxFractionDigits) {
@@ -116,6 +117,7 @@ public class EvaluationStatisticsTableFactory {
             super(NeuralNetwork.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(NeuralNetwork classifier,
                                                                          Evaluation evaluation,
                                                                          int maxFractionDigits) {
@@ -148,6 +150,7 @@ public class EvaluationStatisticsTableFactory {
             super(IterativeEnsembleClassifier.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(IterativeEnsembleClassifier classifier,
                                                                          Evaluation evaluation,
                                                                          int maxFractionDigits) {
@@ -172,6 +175,7 @@ public class EvaluationStatisticsTableFactory {
             super(KNearestNeighbours.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(KNearestNeighbours kNearestNeighbours,
                                                                          Evaluation evaluation,
                                                                          int maxFractionDigits) {
@@ -189,6 +193,7 @@ public class EvaluationStatisticsTableFactory {
             super(StackingClassifier.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(StackingClassifier stackingClassifier,
                                                                          Evaluation evaluation,
                                                                          int maxFractionDigits) {
@@ -209,6 +214,7 @@ public class EvaluationStatisticsTableFactory {
             super(J48.class);
         }
 
+        @Override
         public EvaluationStatisticsModel createEvaluationStatisticsModel(J48 classifier, Evaluation evaluation,
                                                                          int maxFractionDigits) {
             EvaluationStatisticsModel evaluationStatisticsModel =

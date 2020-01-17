@@ -318,7 +318,7 @@ public class ROCCurvePanel extends JPanel {
                     new Insets(4, 0, 4, 0), 0, 0));
             this.pack();
             this.setLocationRelativeTo(parentFrame);
-            this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         }
     }
 

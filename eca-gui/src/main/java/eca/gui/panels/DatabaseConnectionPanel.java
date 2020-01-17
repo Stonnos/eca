@@ -15,8 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
+
+import static com.google.common.collect.Maps.newEnumMap;
 
 /**
  * Implements database connection panel;
@@ -50,7 +51,7 @@ public class DatabaseConnectionPanel extends JPanel {
     private JTextField userField;
     private JPasswordField passwordField;
 
-    private Map<DataBaseType, ConnectionDescriptor> connectionDescriptorMap = new HashMap<>();
+    private Map<DataBaseType, ConnectionDescriptor> connectionDescriptorMap = newEnumMap(DataBaseType.class);
 
     public DatabaseConnectionPanel() {
         super(new GridBagLayout());
