@@ -13,7 +13,7 @@ import eca.neural.NeuralNetworkDictionary;
  *
  * @author Roman Batygin
  */
-public abstract class AbstractFunction implements ActivationFunction, java.io.Serializable {
+public abstract class AbstractFunction implements ActivationFunction {
 
     /**
      * Activation function type

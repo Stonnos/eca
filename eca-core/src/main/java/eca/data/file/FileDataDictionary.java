@@ -1,11 +1,13 @@
 package eca.data.file;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Data module dictionary.
  *
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class FileDataDictionary {
 
     public static final String EMPTY_COLUMNS_ERROR = "Данные должны быть без пустых столбцов!";

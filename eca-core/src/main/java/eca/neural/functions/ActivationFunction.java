@@ -10,7 +10,7 @@ package eca.neural.functions;
  *
  * @author Roman Batygin
  */
-public interface ActivationFunction {
+public interface ActivationFunction extends java.io.Serializable {
 
     /**
      * Calculates the value of activation function.

@@ -108,7 +108,7 @@ public class ExtraTreesClassifier extends RandomForests {
 
     @Override
     protected Instances createSample(int iteration) throws Exception {
-        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random(getSeed() + iteration)) :
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random((long) getSeed() + iteration)) :
                 Sampler.initial(filteredData);
     }
 
