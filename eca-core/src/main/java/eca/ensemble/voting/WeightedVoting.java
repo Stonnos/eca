@@ -8,8 +8,6 @@ package eca.ensemble.voting;
 import eca.ensemble.Aggregator;
 import weka.core.Instance;
 
-import java.util.ArrayList;
-
 /**
  * Implements weighted voting method.
  *

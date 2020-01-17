@@ -2,12 +2,14 @@ package eca.gui.service;
 
 import eca.gui.actions.CallbackAction;
 import eca.gui.dialogs.ExecutorDialog;
+import lombok.experimental.UtilityClass;
 
 /**
  * Service for execution asynchronous task.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ExecutorService {
 
     /**

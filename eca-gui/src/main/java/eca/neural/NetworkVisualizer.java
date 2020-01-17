@@ -614,7 +614,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void computeCoordinates() {
-        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        double w = startX();
+        double h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.get(n.index()).setRect(w, h,
                     neuronDiam, neuronDiam);

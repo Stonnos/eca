@@ -158,7 +158,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
 
     @Override
     protected Instances createSample(int iteration) {
-        return Sampler.instances(samplingMethod, filteredData, new Random(getSeed() + iteration));
+        return Sampler.instances(samplingMethod, filteredData, new Random((long) getSeed() + iteration));
     }
 
     @Override

@@ -80,7 +80,7 @@ public class Utils {
      */
     public static String[] getAttributeValuesAsArray(Attribute attribute) {
         if (attribute == null || !attribute.isNominal()) {
-            return null;
+            return new String[0];
         } else {
             String[] values = new String[attribute.numValues()];
             for (int i = 0; i < attribute.numValues(); i++) {

@@ -8,8 +8,6 @@ import lombok.Data;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
-import java.util.Map;
-
 /**
  * Evaluation request model.
  *

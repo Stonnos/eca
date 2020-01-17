@@ -21,6 +21,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.StringWriter;
 
+import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
+
 /**
  * @author Roman Batygin
  */
@@ -43,8 +46,6 @@ public class ClassifyInstancePanel extends JPanel {
 
     private Classifier classifier;
     private final ClassifyInstanceTable classifyInstanceTable;
-
-    private JTextPane classField;
 
     private Template template;
     private VelocityContext velocityContext;
@@ -72,10 +73,10 @@ public class ClassifyInstancePanel extends JPanel {
     private void createGUI() {
         JScrollPane pane = new JScrollPane(classifyInstanceTable);
         pane.setPreferredSize(SCROLL_PANE_PREFERRED_SIZE);
-        pane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        pane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        pane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        classField = new JTextPane();
+        JTextPane classField = new JTextPane();
         classField.setPreferredSize(new Dimension(300,100));
         classField.setEditable(false);
         classField.setContentType(CONTENT_TYPE);

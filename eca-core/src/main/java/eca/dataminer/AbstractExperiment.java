@@ -117,7 +117,7 @@ public abstract class AbstractExperiment<T extends Classifier>
 
     @Override
     public void setNumIterations(int numIterations) {
-        Assert.greaterThanZero(numIterations, ExperimentDictionary.INVALID_EXPERIMENTS_NUM_ERROR_TEXT);
+        Assert.greaterThanZero(numIterations, ExperimentDictionary.INVALID_NUM_EXPERIMENTS_ERROR_TEXT);
         this.numIterations = numIterations;
     }
 

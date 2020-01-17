@@ -3,6 +3,7 @@ package eca.gui.service;
 import eca.config.ConfigurationService;
 import eca.gui.dictionary.CommonDictionary;
 import eca.text.NumericFormatFactory;
+import lombok.experimental.UtilityClass;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
 /**
  * @author Roman Batygin
  */
+@UtilityClass
 public class ValidationService {
 
     private static final ConfigurationService CONFIG_SERVICE =

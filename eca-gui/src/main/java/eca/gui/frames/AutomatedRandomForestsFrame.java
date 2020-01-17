@@ -6,17 +6,10 @@
 package eca.gui.frames;
 
 import eca.dataminer.AbstractExperiment;
-import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedRandomForests;
-import eca.ensemble.ClassifiersSet;
-import eca.gui.ButtonUtils;
 import eca.gui.dialogs.AutomatedRandomForestsOptionsDialog;
-import eca.gui.dialogs.EnsembleOptionsDialog;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Implements frame for automatic selection of optimal options for Random forests algorithm hierarchy.

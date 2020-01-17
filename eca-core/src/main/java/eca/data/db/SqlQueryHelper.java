@@ -16,8 +16,6 @@ import java.util.Date;
 @Data
 public class SqlQueryHelper {
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     private static final String DELIMITER = "_";
     private static final String STRING_VALUE_FORMAT = "'%s'";
     private static final int VARCHAR_LENGTH = 255;
@@ -33,6 +31,8 @@ public class SqlQueryHelper {
      * Date column type
      */
     private String dateColumnType = SqlTypeUtils.DATETIME_TYPE;
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Formats attribute name to database column format for create table query.
@@ -70,7 +70,7 @@ public class SqlQueryHelper {
             return String.format(STRING_VALUE_FORMAT, truncateStringValue(val));
         } else if (attribute.isDate()) {
             return String.format(STRING_VALUE_FORMAT,
-                    SIMPLE_DATE_FORMAT.format(new Date((long) instance.value(attribute))));
+                    simpleDateFormat.format(new Date((long) instance.value(attribute))));
         } else if (attribute.isNumeric()) {
             return String.valueOf(instance.value(attribute));
         } else {

@@ -1,5 +1,7 @@
 package eca.generators;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Random;
 
 /**
@@ -7,6 +9,7 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class NumberGenerator {
 
     private static final double NOISE_LOWER_BOUND = -0.5;

@@ -1,5 +1,6 @@
 package eca.core.evaluation;
 
+import lombok.experimental.UtilityClass;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -11,6 +12,7 @@ import java.util.Random;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class EvaluationService {
 
     /**

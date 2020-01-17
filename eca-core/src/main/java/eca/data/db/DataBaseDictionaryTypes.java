@@ -1,10 +1,13 @@
 package eca.data.db;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Data base dictionary types.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class DataBaseDictionaryTypes {
 
     public static final String MYSQL = "MySQL";

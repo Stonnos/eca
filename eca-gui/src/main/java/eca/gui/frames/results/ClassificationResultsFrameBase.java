@@ -278,34 +278,6 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.add(pane);
     }
 
-    private Map<String, String> createStatisticsMap() {
-        return evaluationStatisticsModel.getResults().stream().collect(
-                Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
-    }
-
-    private List<AttachmentImage> createAttachmentImagesList() {
-        List<AttachmentImage> attachmentImages = new ArrayList<>();
-        try {
-            attachmentImages.add(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
-            if (classifier instanceof DecisionTreeClassifier) {
-                JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(
-                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
-            } else if (classifier instanceof NeuralNetwork) {
-                JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
-                attachmentImages.add(
-                        new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
-            }
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-            JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
-                    null, JOptionPane.WARNING_MESSAGE);
-        }
-        return attachmentImages;
-    }
-
     /**
      * Save classifier model action listener
      */
@@ -357,6 +329,34 @@ public class ClassificationResultsFrameBase extends JFrame {
                     new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
                             createAttachmentImagesList());
             EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
+        }
+
+        Map<String, String> createStatisticsMap() {
+            return evaluationStatisticsModel.getResults().stream().collect(
+                    Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
+        }
+
+        List<AttachmentImage> createAttachmentImagesList() {
+            List<AttachmentImage> attachmentImages = new ArrayList<>();
+            try {
+                attachmentImages.add(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
+                if (classifier instanceof DecisionTreeClassifier) {
+                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+                    TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
+                    attachmentImages.add(
+                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
+                } else if (classifier instanceof NeuralNetwork) {
+                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+                    NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
+                    attachmentImages.add(
+                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
+                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
+                        null, JOptionPane.WARNING_MESSAGE);
+            }
+            return attachmentImages;
         }
     }
 }

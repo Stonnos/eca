@@ -164,7 +164,7 @@ public class DataGeneratorDialog extends JDialog {
 
     private void setSeed() {
         if (!GuiUtils.isEmpty(seedField)) {
-            long seed = Long.valueOf(seedField.getText().trim());
+            long seed = Long.parseLong(seedField.getText().trim());
             simpleDataGenerator.setRandom(new Random(seed));
         }
     }

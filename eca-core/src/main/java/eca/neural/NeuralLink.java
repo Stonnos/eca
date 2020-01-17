@@ -13,14 +13,24 @@ package eca.neural;
 public class NeuralLink implements java.io.Serializable {
 
     /**
-     * Source and target neurons
+     * Source neuron
      **/
-    private Neuron source, target;
+    private Neuron source;
 
     /**
-     * Current weight and previous weight
+     * Target neuron
+     */
+    private Neuron target;
+
+    /**
+     * Current weight
      **/
-    private double weight, previousCorrect;
+    private double weight;
+
+    /**
+     * Previous weight correct
+     */
+    private double previousCorrect;
 
     /**
      * Creates neural link with given neurons.

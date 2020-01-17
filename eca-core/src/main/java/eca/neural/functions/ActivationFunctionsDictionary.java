@@ -1,10 +1,13 @@
 package eca.neural.functions;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Activation functions dictionary.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ActivationFunctionsDictionary {
 
     public static final String LOGISTIC_TEXT = "Логистическая";

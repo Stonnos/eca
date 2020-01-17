@@ -19,14 +19,15 @@ import java.io.File;
 @Slf4j
 public class Reference {
 
-    private static File REFERENCE_FILE;
     private static final String FILE_NAME = "ECAManual.pdf";
+
+    private static File referenceFile;
     private static Reference reference;
 
     static {
         try {
-            REFERENCE_FILE = new File(FileUtils.getCurrentDir(), FILE_NAME);
-            REFERENCE_FILE.setExecutable(true, false);
+            referenceFile = new File(FileUtils.getCurrentDir(), FILE_NAME);
+            referenceFile.setExecutable(true, false);
         } catch (Exception ex) {
             log.error("Can't load manual", ex);
         }
@@ -53,12 +54,12 @@ public class Reference {
      * @throws Exception if user manual file does not exists
      */
     public void openReference() throws Exception {
-        if (REFERENCE_FILE == null) {
+        if (referenceFile == null) {
             throw new Exception(String.format("Reference file with name %s does not exists!", FILE_NAME));
         }
         if (Desktop.isDesktopSupported()) {
             Desktop desktop = Desktop.getDesktop();
-            desktop.open(REFERENCE_FILE);
+            desktop.open(referenceFile);
         } else {
             throw new Exception(String.format("Can not open reference file %s", FILE_NAME));
         }

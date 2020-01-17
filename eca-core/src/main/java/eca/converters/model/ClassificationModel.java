@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
-import java.util.Map;
-
 /**
  * Classification results model.
  *

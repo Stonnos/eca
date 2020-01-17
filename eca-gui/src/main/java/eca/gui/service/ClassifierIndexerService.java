@@ -5,6 +5,7 @@
  */
 package eca.gui.service;
 
+import lombok.experimental.UtilityClass;
 import weka.classifiers.Classifier;
 
 /**
@@ -12,6 +13,7 @@ import weka.classifiers.Classifier;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ClassifierIndexerService {
 
     /**

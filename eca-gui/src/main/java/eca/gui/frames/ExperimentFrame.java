@@ -427,6 +427,7 @@ public abstract class ExperimentFrame extends JFrame {
                     timerField.setText(dateFormat.format(new Date(currentTimeMillis)));
                 } catch (InterruptedException ex) {
                     LoggerUtils.error(log, ex);
+                    Thread.currentThread().interrupt();
                 }
             }
             return null;

@@ -27,7 +27,6 @@ public class DatabaseSaverDialog extends JDialog {
     private static final String ADDITIONAL_OPTIONS_TEXT = "Дополнительные настройки";
     private static final int FIELD_LENGTH = 255;
     private static final int TEXT_LENGTH = 20;
-    private static final String OVERWRITE_TABLE_TEXT = "Удалить существубщую таблицу";
     private static final String TABLE_NAME_TEXT = "Имя таблицы:";
     private static final String START_SYMBOL_IN_TABLE_NAME_FORMAT = "^[a-zA-Z]+$";
     private static final String TABLE_NAME_REGEX = "^[0-9_a-zA-Z]+$";

@@ -60,7 +60,7 @@ public class ModifiedHeterogeneousClassifier extends HeterogeneousClassifier {
 
     @Override
     protected Instances createSample(int iteration) {
-        Random random = new Random(getSeed() + iteration);
+        Random random = new Random((long) getSeed() + iteration);
         return Sampler.instances(getSamplingMethod(), filteredData,
                 random.nextInt(filteredData.numAttributes() - 1) + 1, random);
     }

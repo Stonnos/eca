@@ -254,26 +254,6 @@ public class QueryFrame extends JFrame {
         }
     }
 
-    private void highlightSqlWords() {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                StyledDocument document = queryArea.getStyledDocument();
-                String content = document.getText(0, document.getLength()).toLowerCase();
-                int next = 0;
-                for (String word : content.split(SPACE_REGEX)) {
-                    next = content.indexOf(word, next);
-                    int end = next + word.length();
-                    document.setCharacterAttributes(next, end,
-                            queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
-                            true);
-                    next = end;
-                }
-            } catch (BadLocationException ex) {
-                log.error(ex.getMessage());
-            }
-        });
-    }
-
     /**
      * Database query worker.
      */
@@ -353,6 +333,26 @@ public class QueryFrame extends JFrame {
                 super.replace(fb, offset, length, text, attrs);
                 highlightSqlWords();
             }
+        }
+
+        void highlightSqlWords() {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    StyledDocument document = queryArea.getStyledDocument();
+                    String content = document.getText(0, document.getLength()).toLowerCase();
+                    int next = 0;
+                    for (String word : content.split(SPACE_REGEX)) {
+                        next = content.indexOf(word, next);
+                        int end = next + word.length();
+                        document.setCharacterAttributes(next, end,
+                                queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                                true);
+                        next = end;
+                    }
+                } catch (BadLocationException ex) {
+                    log.error(ex.getMessage());
+                }
+            });
         }
     }
 }

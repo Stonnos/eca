@@ -49,11 +49,11 @@ public class JFontChooser extends JDialog {
     private static final int ITALIC_ID = 2;
     private static final int BOLD_AND_ITALIC_ID = 3;
 
-    private static String[] AVAILABLE_FONT_NAMES;
+    private static String[] availableFontNames;
 
     static {
         try {
-            AVAILABLE_FONT_NAMES = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            availableFontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
         }
@@ -201,7 +201,7 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontSizeComponent(Font font) {
-        fontNameBox = new JComboBox<>(AVAILABLE_FONT_NAMES);
+        fontNameBox = new JComboBox<>(availableFontNames);
         fontSize = new JComboBox<>();
         fontSize.setPreferredSize(COMBO_BOX_DIM);
         for (int i = MIN_FONT_SIZE; i <= MAX_FONT_SIZE; i++) {
@@ -211,7 +211,7 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontTypeComponent(Font font) {
-        fontNameBox = new JComboBox<>(AVAILABLE_FONT_NAMES);
+        fontNameBox = new JComboBox<>(availableFontNames);
         fontNameBox.setPreferredSize(COMBO_BOX_DIM);
         fontNameBox.setRenderer(new DefaultListCellRenderer() {
 
@@ -219,8 +219,8 @@ public class JFontChooser extends JDialog {
             public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
                 if (i >= 0) {
-                    label.setFont(new Font(AVAILABLE_FONT_NAMES[i], Font.PLAIN, DEFAULT_FONT_SIZE));
-                    label.setText(AVAILABLE_FONT_NAMES[i]);
+                    label.setFont(new Font(availableFontNames[i], Font.PLAIN, DEFAULT_FONT_SIZE));
+                    label.setText(availableFontNames[i]);
                 }
                 return label;
             }

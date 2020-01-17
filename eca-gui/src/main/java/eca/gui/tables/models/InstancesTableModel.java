@@ -15,7 +15,6 @@ import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,13 +28,13 @@ public class InstancesTableModel extends AbstractTableModel {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
-    private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
-            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-
     private static final String NUMBER = "№";
 
     private final Instances data;
     private final List<List<Object>> values;
+
+    private final SimpleDateFormat simpleDateFormat =
+            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     private int modificationCount;
@@ -43,7 +42,7 @@ public class InstancesTableModel extends AbstractTableModel {
     public InstancesTableModel(Instances data, int digits) {
         this.data = data;
         this.format.setMaximumFractionDigits(digits);
-        this.values = InstancesConverter.toArray(data, format, SIMPLE_DATE_FORMAT);
+        this.values = InstancesConverter.toArray(data, format, simpleDateFormat);
     }
 
     public int getModificationCount() {
@@ -156,8 +155,8 @@ public class InstancesTableModel extends AbstractTableModel {
                 switch (attributeType) {
                     case Attribute.DATE:
                         try {
-                            Date dateX = SIMPLE_DATE_FORMAT.parse(x.toString());
-                            Date dateY = SIMPLE_DATE_FORMAT.parse(y.toString());
+                            Date dateX = simpleDateFormat.parse(x.toString());
+                            Date dateY = simpleDateFormat.parse(y.toString());
                             return sign * dateX.compareTo(dateY);
                         } catch (ParseException ex) {
                             throw new IllegalArgumentException(ex.getMessage());
