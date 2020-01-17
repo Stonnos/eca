@@ -187,7 +187,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
 
     @Override
     protected Instances createSample(int iteration) throws Exception {
-        return Sampler.bootstrap(filteredData, new Random(getSeed() + iteration));
+        return Sampler.bootstrap(filteredData, new Random((long) getSeed() + iteration));
     }
 
     @Override

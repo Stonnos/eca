@@ -99,7 +99,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
 
     @Override
     protected Instances createSample(int iteration) {
-        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random(getSeed() + iteration)) :
+        return isUseBootstrapSamples() ? Sampler.bootstrap(filteredData, new Random((long) getSeed() + iteration)) :
                 Sampler.initial(filteredData);
     }
 
