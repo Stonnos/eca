@@ -15,7 +15,7 @@
 
     <properties>
         <jackson.version>2.9.9</jackson.version>
-        <jackson.databind.version>2.9.10.1</jackson.databind.version>
+        <jackson.databind.version>2.9.10.3</jackson.databind.version>
         <amqp-client.version>5.7.3</amqp-client.version>
     </properties>
 
