@@ -52,8 +52,6 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
 
     private static final Dimension ALGORITHMS_LIST_DIM = new Dimension(300, 180);
 
-    private JList<String> algorithmsList;
-    private JList<String> selectedAlgorithmsList;
     private BaseClassifiersListModel baseClassifiersListModel;
     private JComboBox<String> metaClassifierBox;
     private JButton metaOptionsButton;
@@ -161,7 +159,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
 
     private JPanel createAlgorithmsSelectionPanel() {
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
+        JList<String> algorithmsList = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         algorithmsList.setPreferredSize(ALGORITHMS_LIST_DIM);
         algorithmsList.setMinimumSize(ALGORITHMS_LIST_DIM);
         algorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -182,7 +180,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
     private JPanel createSelectedAlgorithmsPanel(int digits) {
         JPanel selectedAlgorithmsPanel = new JPanel(new GridBagLayout());
         baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
-        selectedAlgorithmsList = new JList<>(baseClassifiersListModel);
+        JList<String> selectedAlgorithmsList = new JList<>(baseClassifiersListModel);
         selectedAlgorithmsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane selectedPane = new JScrollPane(selectedAlgorithmsList);
         selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
