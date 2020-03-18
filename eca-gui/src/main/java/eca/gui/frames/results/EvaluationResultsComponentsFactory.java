@@ -5,7 +5,6 @@ import eca.gui.frames.results.provider.DecisionTreeComponentsProvider;
 import eca.gui.frames.results.provider.EnsembleClassifierComponentsProvider;
 import eca.gui.frames.results.provider.EvaluationResultsComponentsProvider;
 import eca.gui.frames.results.provider.J48ComponentsProvider;
-import eca.gui.frames.results.provider.KnnComponentsProvider;
 import eca.gui.frames.results.provider.LogisticComponentsProvider;
 import eca.gui.frames.results.provider.NeuralNetworksComponentsProvider;
 import lombok.experimental.UtilityClass;
@@ -13,12 +12,14 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Evaluation results components factory.
+ *
  * @author Roman Batygin
  */
 @UtilityClass
@@ -33,7 +34,6 @@ public class EvaluationResultsComponentsFactory {
         evaluationResultsComponentsProviders.add(new LogisticComponentsProvider());
         evaluationResultsComponentsProviders.add(new EnsembleClassifierComponentsProvider());
         evaluationResultsComponentsProviders.add(new J48ComponentsProvider());
-        evaluationResultsComponentsProviders.add(new KnnComponentsProvider());
     }
 
     /**
@@ -51,8 +51,8 @@ public class EvaluationResultsComponentsFactory {
         EvaluationResultsComponentsProvider provider = evaluationResultsComponentsProviders.stream()
                 .filter(p -> p.canHandle(classifier))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException(
-                        String.format("Can't handle %s classifier", classifier.getClass().getSimpleName())));
-        return provider.getComponents(classifier, data, maxFractionDigits, parent);
+                .orElse(null);
+        return provider != null ? provider.getComponents(classifier, data, maxFractionDigits, parent) :
+                Collections.emptyList();
     }
 }
