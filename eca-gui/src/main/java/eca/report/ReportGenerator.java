@@ -17,6 +17,7 @@ import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.AttributeStatistics;
 import eca.statistics.contingency.ChiSquareTestResult;
 import eca.util.Utils;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -35,6 +36,7 @@ import static eca.util.VelocityUtils.mergeContext;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ReportGenerator {
 
     /**
