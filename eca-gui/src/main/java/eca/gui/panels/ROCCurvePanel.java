@@ -140,12 +140,12 @@ public class ROCCurvePanel extends JPanel {
 
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-
+                // Not implemented
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-
+                // Not implemented
             }
         });
         chartPanel.getPopupMenu().add(dataMenu);
