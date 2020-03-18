@@ -1,11 +1,13 @@
 package eca.gui.tables;
 
+import lombok.experimental.UtilityClass;
+
 import javax.swing.*;
 
 /**
  * @author Roman Batygin
  */
-
+@UtilityClass
 public class JTableConverter {
 
     public static String convertToString(JTable table, boolean copyHeaders) {

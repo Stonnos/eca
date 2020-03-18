@@ -156,12 +156,12 @@ public class InstancesTable extends JDataTableBase {
 
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-
+                // Not implemented
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-
+                // Not implemented
             }
         });
 
