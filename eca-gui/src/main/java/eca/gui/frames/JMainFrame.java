@@ -133,6 +133,14 @@ import java.util.Random;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.LOAD_MODEL_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.OPEN_DB_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.OPEN_FILE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -1255,7 +1263,7 @@ public class JMainFrame extends JFrame {
     private void fillReferenceMenu(JMenu referenceMenu) {
         JMenuItem aboutProgramMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
         JMenuItem reference = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
+        reference.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
 
         aboutProgramMenu.addActionListener(new ActionListener() {
 
@@ -1331,19 +1339,19 @@ public class JMainFrame extends JFrame {
     private void fillFileMenu(JMenu fileMenu) {
         JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
         openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
-        openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
+        openFileMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_FILE_MENU_KEY_STROKE));
         openFileMenu.addActionListener(openFileActionListener());
         fileMenu.add(openFileMenu);
 
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
         saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         disabledMenuElementList.add(saveFileMenu);
-        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
+        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
         fileMenu.add(saveFileMenu);
         saveFileMenu.addActionListener(saveFileActionListener());
 
         JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
-        dbMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift D"));
+        dbMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_DB_MENU_KEY_STROKE));
         dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(dbMenu);
@@ -1351,20 +1359,20 @@ public class JMainFrame extends JFrame {
 
         JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
         dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
-        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
+        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_DB_MENU_KEY_STROKE));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(dbSaverActionListener());
         fileMenu.add(dbSaverMenu);
 
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
-        urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));
+        urlMenu.setAccelerator(KeyStroke.getKeyStroke(URL_MENU_KEY_STROKE));
         urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(urlLoaderActionListener());
 
         JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
-        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl M"));
+        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke(LOAD_MODEL_KEY_STROKE));
         loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
@@ -1372,7 +1380,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
         generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
-        generatorMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift G"));
+        generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
         fileMenu.addSeparator();
         fileMenu.add(generatorMenu);
         generatorMenu.addActionListener(dataGeneratorActionListener());

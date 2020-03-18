@@ -60,6 +60,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
+
 /**
  * Classification results frame.
  *
@@ -88,9 +91,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final int ATTACHMENT_TAB_INDEX = 3;
-
-    private static final String REFERENCE_KEY_STROKE = "F1";
-    private static final String SAVE_MODEL_KEY_STROKE = "ctrl S";
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
@@ -164,13 +164,13 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_KEY_STROKE));
+        refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
         dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
 
-        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_MODEL_KEY_STROKE));
+        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
 
         saveModelMenu.addActionListener(new SaveModelListener());
         inputMenu.addActionListener(new ActionListener() {
