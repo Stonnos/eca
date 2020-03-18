@@ -50,6 +50,10 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private static final String INTEGER_REGEX = "^[0-9]+$";
 
+    private static final IntegerDocument INTEGER_DOCUMENT = new IntegerDocument(INT_FIELD_LENGTH);
+    private static final DoubleDocument DOUBLE_DOCUMENT = new DoubleDocument(MAX_FIELD_LENGTH);
+    private static final LengthDocument LENGTH_DOCUMENT = new LengthDocument(MAX_FIELD_LENGTH);
+
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private final AttributeStatistics attributeStatistics;
 
@@ -184,15 +188,13 @@ public class ClassifyInstanceTable extends JDataTableBase {
             Instances data = getClassifyInstanceTableModel().data();
             int i = row >= data.classIndex() ? row + 1 : row;
             JTextField textField = (JTextField) component;
-
             if (data.attribute(i).isDate()) {
-                textField.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(LENGTH_DOCUMENT);
             } else if (data.attribute(i).isNumeric()) {
-                textField.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(DOUBLE_DOCUMENT);
             } else {
-                textField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+                textField.setDocument(INTEGER_DOCUMENT);
             }
-
             return component;
         }
     }

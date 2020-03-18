@@ -37,6 +37,9 @@ public class CreateInstanceTable extends JDataTableBase {
     private static final int NUMERATOR_COLUMN_WIDTH = 50;
     private static final int INFO_COLUMN_WIDTH = 240;
 
+    private static final LengthDocument LENGTH_DOCUMENT = new LengthDocument(MAX_FIELD_LENGTH);
+    private static final DoubleDocument DOUBLE_DOCUMENT = new DoubleDocument(MAX_FIELD_LENGTH);
+
     public CreateInstanceTable(List<Entry<String, Integer>> attributes) {
         super(new CreateInstanceTableModel(attributes));
         TableColumn column = this.getColumnModel().getColumn(CreateInstanceTableModel.INPUT_TEXT_COLUMN_INDEX);
@@ -123,9 +126,9 @@ public class CreateInstanceTable extends JDataTableBase {
             List<Entry<String, Integer>> attributes = ((CreateInstanceTableModel) getModel()).getAttributes();
             JTextField textField = (JTextField) component;
             if (attributes.get(row).getValue() == Attribute.NUMERIC) {
-                textField.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(DOUBLE_DOCUMENT);
             } else {
-                textField.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(LENGTH_DOCUMENT);
             }
             return component;
         }
