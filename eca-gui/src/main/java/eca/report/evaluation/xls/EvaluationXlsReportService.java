@@ -122,8 +122,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             AbstractHeterogeneousClassifier heterogeneousClassifier = (AbstractHeterogeneousClassifier) classifier;
             ClassifiersSet classifiersSet = heterogeneousClassifier.getClassifiersSet();
             setXlsEnsembleOptions(sheet, style, classifiersSet.toList());
-        }
-        if (classifier instanceof StackingClassifier) {
+        } else if (classifier instanceof StackingClassifier) {
             createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
             StackingClassifier stackingClassifier = (StackingClassifier) classifier;
             setXlsEnsembleOptions(sheet, style, stackingClassifier.getClassifiers().toList());
@@ -263,53 +262,58 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         cell.setCellStyle(titleStyle);
         cell.setCellValue(RESULTS_TEXT);
         row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-
         //Creates table header
         for (int i = 0; i < COST_CLASSIFICATION_HEADER.length; i++) {
             cell = row.createCell(i);
             cell.setCellStyle(tableStyle);
             cell.setCellValue(COST_CLASSIFICATION_HEADER[i]);
         }
-
         //Creates results table
         Attribute classAttribute = getEvaluationReport().getData().classAttribute();
-        Evaluation evaluation = getEvaluationReport().getEvaluation();
         for (int i = 0; i < classAttribute.numValues(); i++) {
             row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             for (int j = 0; j < COST_CLASSIFICATION_HEADER.length; j++) {
                 cell = row.createCell(j);
                 cell.setCellStyle(tableStyle);
-                switch (j) {
-                    case CLASS_COL_IDX:
-                        cell.setCellValue(classAttribute.value(i));
-                        break;
-                    case TP_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.truePositiveRate(i)));
-                        break;
-                    case FP_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.falsePositiveRate(i)));
-                        break;
-                    case TN_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.trueNegativeRate(i)));
-                        break;
-                    case FN_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.falseNegativeRate(i)));
-                        break;
-                    case RECALL_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.recall(i)));
-                        break;
-                    case PRECISION_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.precision(i)));
-                        break;
-                    case FM_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.fMeasure(i)));
-                        break;
-                    case AUC_COL_IDX:
-                        double aucValue = evaluation.areaUnderROC(i);
-                        setCellValue(cell, Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
-                        break;
-                }
+                setEvaluationResultsValue(cell, j, i);
             }
+        }
+    }
+
+    private void setEvaluationResultsValue(Cell cell, int column, int classIndex) {
+        Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+        Evaluation evaluation = getEvaluationReport().getEvaluation();
+        switch (column) {
+            case CLASS_COL_IDX:
+                cell.setCellValue(classAttribute.value(classIndex));
+                break;
+            case TP_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.truePositiveRate(classIndex)));
+                break;
+            case FP_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.falsePositiveRate(classIndex)));
+                break;
+            case TN_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.trueNegativeRate(classIndex)));
+                break;
+            case FN_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.falseNegativeRate(classIndex)));
+                break;
+            case RECALL_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.recall(classIndex)));
+                break;
+            case PRECISION_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.precision(classIndex)));
+                break;
+            case FM_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.fMeasure(classIndex)));
+                break;
+            case AUC_COL_IDX:
+                double aucValue = evaluation.areaUnderROC(classIndex);
+                setCellValue(cell, Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected column index!");
         }
     }
 
