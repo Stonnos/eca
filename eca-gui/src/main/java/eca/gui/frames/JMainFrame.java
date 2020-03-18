@@ -781,26 +781,10 @@ public class JMainFrame extends JFrame {
         JMenuItem cartItem = new JMenuItem(ClassifiersNamesDictionary.CART);
         JMenuItem chaidItem = new JMenuItem(ClassifiersNamesDictionary.CHAID);
         JMenuItem j48Item = new JMenuItem(ClassifiersNamesDictionary.J48);
-        id3Item.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
-            }
-        });
-        c45Item.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
-            }
-        });
-        cartItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.CART, new CART());
-            }
-        });
-        chaidItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.CHAID, new CHAID());
-            }
-        });
+        id3Item.addActionListener(decisionTreeActionListener(ClassifiersNamesDictionary.ID3, new ID3()));
+        c45Item.addActionListener(decisionTreeActionListener(ClassifiersNamesDictionary.C45, new C45()));
+        cartItem.addActionListener(decisionTreeActionListener(ClassifiersNamesDictionary.CART, new CART()));
+        chaidItem.addActionListener(decisionTreeActionListener(ClassifiersNamesDictionary.CHAID, new CHAID()));
         j48Item.addActionListener(event -> {
             if (isDataAndClassValid()) {
                 try {
@@ -1999,6 +1983,14 @@ public class JMainFrame extends JFrame {
                     JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
                             null, JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        };
+    }
+
+    private ActionListener decisionTreeActionListener(String treeType, DecisionTreeClassifier decisionTreeClassifier) {
+        return event -> {
+            if (isDataAndClassValid()) {
+                createTreeOptionDialog(treeType, decisionTreeClassifier);
             }
         };
     }
