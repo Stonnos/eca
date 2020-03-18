@@ -263,7 +263,7 @@ public class JMainFrame extends JFrame {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
         this.setLocationRelativeTo(null);
@@ -359,7 +359,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        DataInternalFrame(Instances data, JMenuItem menu, int digits) throws Exception {
+        DataInternalFrame(Instances data, JMenuItem menu, int digits) {
             this.setLayout(new GridBagLayout());
             this.createUpperPanel();
             this.createLowerPanel();
@@ -1511,8 +1511,7 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,
-                                          String title, Instances data) throws Exception {
+    private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier, String title, Instances data) {
         classifier.setClassifiersSet(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedHeterogeneousEnsemble automatedHeterogeneousEnsemble =
                 new AutomatedHeterogeneousEnsemble(classifier, data);
@@ -1523,8 +1522,7 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private void createStackingExperiment(StackingClassifier classifier,
-                                          String title, Instances data) throws Exception {
+    private void createStackingExperiment(StackingClassifier classifier, String title, Instances data) {
         classifier.setClassifiers(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking automatedStacking = new AutomatedStacking(classifier, data);
         automatedStacking.setSeed(seed);
