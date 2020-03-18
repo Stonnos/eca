@@ -18,10 +18,11 @@ public class JTextAreaOutputStream extends OutputStream {
 
     @Override
     public void write(int b) {
+        throw new UnsupportedOperationException("Unsupported operation!");
     }
 
     @Override
-    public void write(byte b[], int off, int len) {
+    public void write(byte[] b, int off, int len) {
         Objects.requireNonNull(b, "Buffer is not Specified!");
         if (off < 0 || off > b.length || len < 0 || off + len > b.length || off + len < 0) {
             throw new IndexOutOfBoundsException();
