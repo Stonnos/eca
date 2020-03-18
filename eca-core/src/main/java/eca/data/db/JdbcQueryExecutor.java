@@ -57,7 +57,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     /**
      * Opens connection with database.
      *
-     * @throws SQLException
+     * @throws SQLException if a database access error occurs
      */
     public void open() throws SQLException, ClassNotFoundException {
         Class.forName(connectionDescriptor.getDriver());
@@ -204,33 +204,34 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
                 } else if (isNumeric(metaData.getColumnType(i))) {
                     row.add(result.getDouble(i));
                 } else if (canHandleAsDate(metaData.getColumnType(i))) {
-                    switch (metaData.getColumnType(i)) {
-                        case Types.DATE:
-                            row.add(result.getDate(i).getTime());
-                            break;
-                        case Types.TIME:
-                            row.add(result.getTime(i).getTime());
-                            break;
-                        case Types.TIMESTAMP:
-                            row.add(result.getTimestamp(i).getTime());
-                            break;
-                        default:
-                            throw new IllegalArgumentException(
-                                    String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
-                                            metaData.getColumnTypeName(i)));
-                    }
+                    row.add(getDateValue(result, metaData, i));
                 } else {
-                    String stringValue = result.getObject(i).toString().trim();
-                    if (!StringUtils.isEmpty(stringValue)) {
-                        row.add(stringValue);
-                    } else {
-                        row.add(null);
-                    }
+                    row.add(getStringValue(result, i));
                 }
             }
             data.add(row);
         }
         return data;
+    }
+
+    private long getDateValue(ResultSet result, ResultSetMetaData metaData, int column) throws SQLException {
+        switch (metaData.getColumnType(column)) {
+            case Types.DATE:
+                return result.getDate(column).getTime();
+            case Types.TIME:
+                return result.getTime(column).getTime();
+            case Types.TIMESTAMP:
+                return result.getTimestamp(column).getTime();
+            default:
+                throw new IllegalArgumentException(
+                        String.format(DataBaseDictionary.BAD_COLUMN_TYPE_ERROR_FORMAT,
+                                metaData.getColumnTypeName(column)));
+        }
+    }
+
+    private String getStringValue(ResultSet result, int column) throws SQLException {
+        String stringValue = result.getObject(column).toString().trim();
+        return !StringUtils.isEmpty(stringValue) ? stringValue : null;
     }
 
     private boolean canHandleAsDate(int columnType) {
