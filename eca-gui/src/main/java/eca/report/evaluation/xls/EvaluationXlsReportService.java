@@ -1,5 +1,6 @@
 package eca.report.evaluation.xls;
 
+import com.google.common.collect.ImmutableList;
 import eca.core.evaluation.Evaluation;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
@@ -8,6 +9,10 @@ import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.AttachmentImage;
+import eca.report.evaluation.DecisionTreeReport;
+import eca.report.evaluation.EvaluationReport;
+import eca.report.evaluation.NeuralNetworkReport;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -74,6 +79,9 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private static final int FM_COL_IDX = 7;
     private static final int AUC_COL_IDX = 8;
 
+    private List<EvaluationReportHandler> evaluationReportHandlers =
+            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler());
+
     @Override
     public void saveReport() throws Exception {
         try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
@@ -82,11 +90,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             style.setFont(font);
             createClassifierInputParamSheet(book, style);
             createXlsResultsSheet(book, style);
-            if (getEvaluationReport().getAttachmentImages() != null) {
-                for (AttachmentImage attachmentImage : getEvaluationReport().getAttachmentImages()) {
-                    writeImage(getFile(), book, (BufferedImage) attachmentImage.getImage(), attachmentImage.getTitle());
-                }
-            }
+            populateRocCurveImage(book);
+            populateAdditionalReportData(book);
             book.write(stream);
         }
     }
@@ -108,6 +113,21 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         font.setBold(true);
         font.setFontHeightInPoints((short) FONT_SIZE);
         return font;
+    }
+
+    private void populateRocCurveImage(Workbook book) throws Exception {
+        AttachmentImage rocCurveImage = getEvaluationReport().getRocCurveImage();
+        writeImage(getFile(), book, (BufferedImage) rocCurveImage.getImage(), rocCurveImage.getTitle());
+    }
+
+    private void populateAdditionalReportData(Workbook workbook) throws Exception {
+        EvaluationReportHandler evaluationReportHandler = evaluationReportHandlers.stream()
+                .filter(h -> h.canHandle(getEvaluationReport()))
+                .findFirst()
+                .orElse(null);
+        if (evaluationReportHandler != null) {
+            evaluationReportHandler.populateReport(workbook, getEvaluationReport());
+        }
     }
 
     private void createClassifierInputParamSheet(Workbook book, CellStyle style) {
@@ -333,6 +353,55 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             Drawing drawing = sheet.createDrawingPatriarch();
             Picture pict = drawing.createPicture(anchor, pictureIdx);
             pict.resize();
+        }
+    }
+
+    /**
+     * Evaluation report handler.
+     *
+     * @param <T> - evaluation report generic type
+     */
+    @RequiredArgsConstructor
+    private abstract class EvaluationReportHandler<T extends EvaluationReport> {
+
+        private final Class<T> reportClazz;
+
+        boolean canHandle(T report) {
+            return reportClazz.isAssignableFrom(report.getClass());
+        }
+
+        abstract void populateReport(Workbook workbook, T report) throws Exception;
+    }
+
+    /**
+     * Decision tree report handler.
+     */
+    private class DecisionTreeReportHandler extends EvaluationReportHandler<DecisionTreeReport> {
+
+        public DecisionTreeReportHandler() {
+            super(DecisionTreeReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, DecisionTreeReport report) throws Exception {
+            AttachmentImage treeImage = report.getTreeImage();
+            writeImage(getFile(), workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+        }
+    }
+
+    /**
+     * Neural network report handler.
+     */
+    private class NeuralNetworkReportHandler extends EvaluationReportHandler<NeuralNetworkReport> {
+
+        public NeuralNetworkReportHandler() {
+            super(NeuralNetworkReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, NeuralNetworkReport report) throws Exception {
+            AttachmentImage treeImage = report.getNetworkImage();
+            writeImage(getFile(), workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
         }
     }
 }

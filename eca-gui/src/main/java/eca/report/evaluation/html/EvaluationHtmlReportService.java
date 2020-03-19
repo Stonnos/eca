@@ -53,7 +53,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
                 (getEvaluationReport().getClassifier(), true));
         fillClassificationCosts(context);
         fillConfusionMatrix(context);
-        fillAttachments(context);
+        //fillAttachments(context);
         VelocityUtils.mergeAndWrite(getFile(), template, context);
     }
 
@@ -103,7 +103,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
         context.put(CONFUSION_MATRIX_PARAM, confusionMatrixReport);
     }
 
-    private void fillAttachments(VelocityContext context) throws IOException {
+    /*private void fillAttachments(VelocityContext context) throws IOException {
         List<AttachmentRecord> attachmentRecords = new ArrayList<>();
         if (getEvaluationReport().getAttachmentImages() != null) {
             for (int i = 0; i < getEvaluationReport().getAttachmentImages().size(); i++) {
@@ -119,5 +119,5 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             }
             context.put(ATTACHMENTS_PARAM, attachmentRecords);
         }
-    }
+    }*/
 }

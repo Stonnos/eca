@@ -5,6 +5,7 @@
  */
 package eca.gui.frames.results;
 
+import com.google.common.collect.ImmutableList;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
@@ -55,7 +56,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -311,7 +311,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private class SaveReportListener implements ActionListener {
 
         List<EvaluationReportDataProvider> evaluationReportDataProviders =
-                Arrays.asList(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider());
+                ImmutableList.of(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider());
         DefaultEvaluationReportDataProvider defaultEvaluationReportDataProvider =
                 new DefaultEvaluationReportDataProvider();
 
