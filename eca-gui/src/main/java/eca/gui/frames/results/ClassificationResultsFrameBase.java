@@ -27,16 +27,20 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.JDataTableBase;
+import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.models.EvaluationStatisticsModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
+import eca.regression.Logistic;
 import eca.report.ReportGenerator;
-import eca.report.evaluation.AttachmentImage;
-import eca.report.evaluation.DecisionTreeReport;
-import eca.report.evaluation.EvaluationReport;
 import eca.report.evaluation.EvaluationReportHelper;
-import eca.report.evaluation.NeuralNetworkReport;
+import eca.report.model.AttachmentImage;
+import eca.report.model.DecisionTreeReport;
+import eca.report.model.EvaluationReport;
+import eca.report.model.LogisticCoefficientsModel;
+import eca.report.model.LogisticReport;
+import eca.report.model.NeuralNetworkReport;
 import eca.roc.RocCurve;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
@@ -311,7 +315,8 @@ public class ClassificationResultsFrameBase extends JFrame {
     private class SaveReportListener implements ActionListener {
 
         List<EvaluationReportDataProvider> evaluationReportDataProviders =
-                ImmutableList.of(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider());
+                ImmutableList.of(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider(),
+                        new LogisticDataProvider());
         DefaultEvaluationReportDataProvider defaultEvaluationReportDataProvider =
                 new DefaultEvaluationReportDataProvider();
 
@@ -414,6 +419,29 @@ public class ClassificationResultsFrameBase extends JFrame {
             neuralNetworkReport.setNetworkImage(
                     new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
             return neuralNetworkReport;
+        }
+    }
+
+    /**
+     * Logistic data provider.
+     */
+    private class LogisticDataProvider extends EvaluationReportDataProvider<Logistic, LogisticReport> {
+
+        LogisticDataProvider() {
+            super(Logistic.class);
+        }
+
+        @Override
+        LogisticReport internalPopulateReportData() {
+            LogisticReport logisticReport = new LogisticReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            LogisticCoefficientsTable logisticCoefficientsTable =
+                    (LogisticCoefficientsTable) scrollPane.getViewport().getView();
+            LogisticCoefficientsModel logisticCoefficientsModel =
+                    new LogisticCoefficientsModel(logisticCoefficientsTable.getInstances(),
+                            logisticCoefficientsTable.getLogistic());
+            logisticReport.setLogisticCoefficientsModel(logisticCoefficientsModel);
+            return logisticReport;
         }
     }
 

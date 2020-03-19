@@ -1,4 +1,4 @@
-package eca.report.evaluation;
+package eca.report.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

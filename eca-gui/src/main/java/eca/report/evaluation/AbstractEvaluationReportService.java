@@ -1,6 +1,7 @@
 package eca.report.evaluation;
 
 import eca.report.ReportService;
+import eca.report.model.EvaluationReport;
 import lombok.Getter;
 
 import java.io.File;

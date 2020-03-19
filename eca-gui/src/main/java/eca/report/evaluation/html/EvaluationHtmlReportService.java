@@ -4,8 +4,6 @@ import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
 import eca.report.ReportGenerator;
 import eca.report.evaluation.AbstractEvaluationReportService;
-import eca.report.evaluation.AttachmentImage;
-import eca.report.evaluation.html.model.AttachmentRecord;
 import eca.report.evaluation.html.model.ClassificationCostRecord;
 import eca.report.evaluation.html.model.ConfusionMatrixRecord;
 import eca.report.evaluation.html.model.ConfusionMatrixReport;
@@ -15,13 +13,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 /**

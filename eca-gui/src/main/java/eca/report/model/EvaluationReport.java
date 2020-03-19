@@ -1,4 +1,4 @@
-package eca.report.evaluation;
+package eca.report.model;
 
 import eca.core.evaluation.Evaluation;
 import lombok.Data;
@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
-import java.util.List;
 import java.util.Map;
 
 /**
