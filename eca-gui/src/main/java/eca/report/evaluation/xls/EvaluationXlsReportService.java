@@ -11,6 +11,7 @@ import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.model.AttachmentImage;
 import eca.report.model.DecisionTreeReport;
 import eca.report.model.EvaluationReport;
+import eca.report.model.LogisticReport;
 import eca.report.model.NeuralNetworkReport;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -30,6 +31,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -80,7 +82,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private static final int AUC_COL_IDX = 8;
 
     private List<EvaluationReportHandler> evaluationReportHandlers =
-            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler());
+            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler(),
+                    new LogisticReportHandler());
 
     @Override
     public void saveReport() throws Exception {
@@ -382,7 +385,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
      */
     private class DecisionTreeReportHandler extends EvaluationReportHandler<DecisionTreeReport> {
 
-        public DecisionTreeReportHandler() {
+        DecisionTreeReportHandler() {
             super(DecisionTreeReport.class);
         }
 
@@ -398,7 +401,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
      */
     private class NeuralNetworkReportHandler extends EvaluationReportHandler<NeuralNetworkReport> {
 
-        public NeuralNetworkReportHandler() {
+        NeuralNetworkReportHandler() {
             super(NeuralNetworkReport.class);
         }
 
@@ -406,6 +409,66 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         void populateReport(Workbook workbook, NeuralNetworkReport report) throws Exception {
             AttachmentImage treeImage = report.getNetworkImage();
             writeImage(getFile(), workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+        }
+    }
+
+    /**
+     * Logistic report handler.
+     */
+    private class LogisticReportHandler extends EvaluationReportHandler<LogisticReport> {
+
+        static final String INTERCEPT = "Intercept";
+        static final String ATTR_TEXT = "Атрибут";
+        static final String CLASS_FORMAT = "Класс %d";
+
+        LogisticReportHandler() {
+            super(LogisticReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, LogisticReport report) throws Exception {
+            Sheet sheet = workbook.createSheet(report.getLogisticCoefficientsModel().getTitle());
+            populateCoefficients(workbook, sheet, report);
+        }
+
+        void populateCoefficients(Workbook book, Sheet sheet, LogisticReport report) {
+            CellStyle tableStyle = createBorderedCellStyle(book);
+            populateCoefficientsHeader(sheet, tableStyle);
+            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+            double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
+            for (int i = 0; i < coefficients.length; i++) {
+                Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+                Cell cell = row.createCell(0);
+                cell.setCellStyle(tableStyle);
+                cell.setCellValue(getAttributeName(i, report.getLogisticCoefficientsModel().getMeta()));
+                sheet.autoSizeColumn(0);
+                for (int j = 0; j < classAttribute.numValues() - 1; j++) {
+                    int cellIdx = j + 1;
+                    cell = row.createCell(cellIdx);
+                    cell.setCellStyle(tableStyle);
+                    setCellValue(cell, getDecimalFormat().format(coefficients[i][j]));
+                    sheet.autoSizeColumn(cellIdx);
+                }
+            }
+        }
+
+        void populateCoefficientsHeader(Sheet sheet, CellStyle tableStyle) {
+            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+            Cell cell = row.createCell(0);
+            cell.setCellStyle(tableStyle);
+            cell.setCellValue(ATTR_TEXT);
+            sheet.autoSizeColumn(0);
+            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+            for (int i = 1; i < classAttribute.numValues(); i++) {
+                cell = row.createCell(i);
+                cell.setCellStyle(tableStyle);
+                cell.setCellValue(String.format(CLASS_FORMAT, i - 1));
+                sheet.autoSizeColumn(i);
+            }
+        }
+
+        String getAttributeName(int attrIndex, Instances data) {
+            return attrIndex == 0 ? INTERCEPT : data.attribute(attrIndex - 1).name();
         }
     }
 }

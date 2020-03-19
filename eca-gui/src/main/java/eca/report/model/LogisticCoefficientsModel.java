@@ -17,6 +17,11 @@ import weka.core.Instances;
 public class LogisticCoefficientsModel {
 
     /**
+     * Report title
+     */
+    private String title;
+
+    /**
      * Training data meta info
      */
     private Instances meta;
