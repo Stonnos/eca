@@ -85,13 +85,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     @Override
     public void saveReport() throws Exception {
         try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
-            Font font = createTitleFont(book);
-            CellStyle style = book.createCellStyle();
-            style.setFont(font);
-            createClassifierInputParamSheet(book, style);
-            createXlsResultsSheet(book, style);
-            populateRocCurveImage(book);
-            populateAdditionalReportData(book);
+            populateReportData(book);
             book.write(stream);
         }
     }
@@ -118,6 +112,16 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private void populateRocCurveImage(Workbook book) throws Exception {
         AttachmentImage rocCurveImage = getEvaluationReport().getRocCurveImage();
         writeImage(getFile(), book, (BufferedImage) rocCurveImage.getImage(), rocCurveImage.getTitle());
+    }
+
+    private void populateReportData(Workbook book) throws Exception {
+        Font font = createTitleFont(book);
+        CellStyle style = book.createCellStyle();
+        style.setFont(font);
+        createClassifierInputParamSheet(book, style);
+        createXlsResultsSheet(book, style);
+        populateRocCurveImage(book);
+        populateAdditionalReportData(book);
     }
 
     private void populateAdditionalReportData(Workbook workbook) throws Exception {

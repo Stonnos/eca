@@ -2,6 +2,7 @@ package eca.gui.frames.results.provider;
 
 import eca.config.ApplicationConfig;
 import eca.config.ConfigurationService;
+import eca.filter.LogisticFilter;
 import eca.gui.frames.results.model.ComponentModel;
 import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.SignificantAttributesTable;
@@ -25,6 +26,8 @@ public class LogisticComponentsProvider extends EvaluationResultsComponentsProvi
             ConfigurationService.getApplicationConfigService();
     private static final ApplicationConfig APPLICATION_CONFIG = CONFIG_SERVICE.getApplicationConfig();
 
+    private final LogisticFilter logisticFilter = new LogisticFilter();
+
     public LogisticComponentsProvider() {
         super(Logistic.class);
     }
@@ -34,7 +37,9 @@ public class LogisticComponentsProvider extends EvaluationResultsComponentsProvi
                                               Instances data,
                                               int maxFractionDigits,
                                               JFrame parent) throws Exception {
-        ComponentModel coefficientsModel = createLogisticCoefficientsModel(classifier, data, maxFractionDigits);
+        Instances logisticTrainingData = logisticFilter.filterInstances(data);
+        ComponentModel coefficientsModel =
+                createLogisticCoefficientsModel(classifier, logisticTrainingData, maxFractionDigits);
         ComponentModel signAttributesModel = createSignAttributesModel(data, maxFractionDigits);
         return Arrays.asList(coefficientsModel, signAttributesModel);
     }
