@@ -23,7 +23,6 @@ import weka.core.Attribute;
 import weka.core.Instances;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -116,22 +115,22 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
         void fillClassificationCosts(VelocityContext context) {
             Attribute classAttribute = getEvaluationReport().getData().classAttribute();
-            List<ClassificationCostRecord> classificationCostRecordList = new ArrayList<>(classAttribute.numValues());
             Evaluation evaluation = getEvaluationReport().getEvaluation();
-            for (int i = 0; i < classAttribute.numValues(); i++) {
-                ClassificationCostRecord record = new ClassificationCostRecord();
-                record.setClassValue(classAttribute.value(i));
-                record.setTpRate(getDecimalFormat().format(evaluation.truePositiveRate(i)));
-                record.setFpRate(getDecimalFormat().format(evaluation.falsePositiveRate(i)));
-                record.setTnRate(getDecimalFormat().format(evaluation.trueNegativeRate(i)));
-                record.setFnRate(getDecimalFormat().format(evaluation.falseNegativeRate(i)));
-                record.setRecall(getDecimalFormat().format(evaluation.recall(i)));
-                record.setPrecision(getDecimalFormat().format(evaluation.precision(i)));
-                record.setFMeasure(getDecimalFormat().format(evaluation.fMeasure(i)));
-                double aucValue = evaluation.areaUnderROC(i);
-                record.setAucValue(Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
-                classificationCostRecordList.add(record);
-            }
+            List<ClassificationCostRecord> classificationCostRecordList = IntStream.range(0, classAttribute.numValues())
+                    .mapToObj(i -> {
+                        ClassificationCostRecord record = new ClassificationCostRecord();
+                        record.setClassValue(classAttribute.value(i));
+                        record.setTpRate(getDecimalFormat().format(evaluation.truePositiveRate(i)));
+                        record.setFpRate(getDecimalFormat().format(evaluation.falsePositiveRate(i)));
+                        record.setTnRate(getDecimalFormat().format(evaluation.trueNegativeRate(i)));
+                        record.setFnRate(getDecimalFormat().format(evaluation.falseNegativeRate(i)));
+                        record.setRecall(getDecimalFormat().format(evaluation.recall(i)));
+                        record.setPrecision(getDecimalFormat().format(evaluation.precision(i)));
+                        record.setFMeasure(getDecimalFormat().format(evaluation.fMeasure(i)));
+                        double aucValue = evaluation.areaUnderROC(i);
+                        record.setAucValue(Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
+                        return record;
+                    }).collect(Collectors.toList());
             context.put(CLASSIFICATION_COST_PARAM, classificationCostRecordList);
         }
 
@@ -139,17 +138,17 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             Attribute classAttribute = getEvaluationReport().getData().classAttribute();
             ConfusionMatrixReport confusionMatrixReport = new ConfusionMatrixReport();
             confusionMatrixReport.setClassValues(Utils.getAttributeValues(classAttribute));
-            confusionMatrixReport.setConfusionMatrixRecords(new ArrayList<>());
             double[][] confusionMatrix = getEvaluationReport().getEvaluation().confusionMatrix();
-            for (int i = 0; i < confusionMatrix.length; i++) {
-                ConfusionMatrixRecord record = new ConfusionMatrixRecord();
-                record.setClassValue(classAttribute.value(i));
-                record.setValues(new ArrayList<>());
-                for (int j = 0; j < confusionMatrix[i].length; j++) {
-                    record.getValues().add((int) confusionMatrix[i][j]);
-                }
-                confusionMatrixReport.getConfusionMatrixRecords().add(record);
-            }
+            List<ConfusionMatrixRecord> records = IntStream.range(0, confusionMatrix.length)
+                    .mapToObj(i -> {
+                        ConfusionMatrixRecord record = new ConfusionMatrixRecord();
+                        record.setClassValue(classAttribute.value(i));
+                        List<Integer> values = IntStream.range(0, confusionMatrix[i].length)
+                                .mapToObj(j -> (int) confusionMatrix[i][j]).collect(Collectors.toList());
+                        record.setValues(values);
+                        return record;
+                    }).collect(Collectors.toList());
+            confusionMatrixReport.setConfusionMatrixRecords(records);
             context.put(CONFUSION_MATRIX_PARAM, confusionMatrixReport);
         }
     }
