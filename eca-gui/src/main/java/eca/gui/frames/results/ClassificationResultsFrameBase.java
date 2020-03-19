@@ -55,7 +55,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -310,6 +310,11 @@ public class ClassificationResultsFrameBase extends JFrame {
      */
     private class SaveReportListener implements ActionListener {
 
+        List<EvaluationReportDataProvider> evaluationReportDataProviders =
+                Arrays.asList(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider());
+        DefaultEvaluationReportDataProvider defaultEvaluationReportDataProvider =
+                new DefaultEvaluationReportDataProvider();
+
         @Override
         public void actionPerformed(ActionEvent event) {
             File file;
@@ -328,56 +333,32 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            EvaluationReport evaluationReport =
-                    new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
-                            createAttachmentImagesList());
+            EvaluationReport evaluationReport = evaluationReportDataProviders
+                    .stream()
+                    .filter(p -> p.canHandle(classifier))
+                    .findFirst()
+                    .map(EvaluationReportDataProvider::populateEvaluationReportData)
+                    .orElse(defaultEvaluationReportDataProvider.populateEvaluationReportData());
             EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
-        }
-
-        Map<String, String> createStatisticsMap() {
-            return evaluationStatisticsModel.getResults().stream().collect(
-                    Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
-        }
-
-        List<AttachmentImage> createAttachmentImagesList() {
-            List<AttachmentImage> attachmentImages = new ArrayList<>();
-            try {
-                attachmentImages.add(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
-                if (classifier instanceof DecisionTreeClassifier) {
-                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                    TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
-                    attachmentImages.add(
-                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
-                } else if (classifier instanceof NeuralNetwork) {
-                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                    NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
-                    attachmentImages.add(
-                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
-                }
-            } catch (Exception ex) {
-                LoggerUtils.error(log, ex);
-                JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
-                        null, JOptionPane.WARNING_MESSAGE);
-            }
-            return attachmentImages;
         }
     }
 
     /**
      * Evaluation report data provider.
      *
+     * @param <C> - classifier generic type
      * @param <T> - evaluation report generic type
      */
     @RequiredArgsConstructor
-    private abstract class EvaluationReportDataProvider<T extends EvaluationReport> {
+    private abstract class EvaluationReportDataProvider<C, T extends EvaluationReport> {
 
-        private final Class<T> reportClazz;
+        private final Class<C> classifierClazz;
 
-        public boolean canHandle(T report) {
-            return reportClazz.isAssignableFrom(report.getClass());
+        boolean canHandle(C report) {
+            return classifierClazz.isAssignableFrom(report.getClass());
         }
 
-        public T populateEvaluationReportData() {
+        T populateEvaluationReportData() {
             T report = internalPopulateReportData();
             report.setData(data);
             report.setClassifier(classifier);
@@ -398,10 +379,11 @@ public class ClassificationResultsFrameBase extends JFrame {
     /**
      * Decision tree report data provider.
      */
-    private class DecisionTreeReportDataProvider extends EvaluationReportDataProvider<DecisionTreeReport> {
+    private class DecisionTreeReportDataProvider
+            extends EvaluationReportDataProvider<DecisionTreeClassifier, DecisionTreeReport> {
 
-        public DecisionTreeReportDataProvider() {
-            super(DecisionTreeReport.class);
+        DecisionTreeReportDataProvider() {
+            super(DecisionTreeClassifier.class);
         }
 
         @Override
@@ -418,10 +400,10 @@ public class ClassificationResultsFrameBase extends JFrame {
     /**
      * Neural network data provider.
      */
-    private class NeuralNetworkDataProvider extends EvaluationReportDataProvider<NeuralNetworkReport> {
+    private class NeuralNetworkDataProvider extends EvaluationReportDataProvider<NeuralNetwork, NeuralNetworkReport> {
 
-        public NeuralNetworkDataProvider() {
-            super(NeuralNetworkReport.class);
+        NeuralNetworkDataProvider() {
+            super(NeuralNetwork.class);
         }
 
         @Override
@@ -432,6 +414,22 @@ public class ClassificationResultsFrameBase extends JFrame {
             neuralNetworkReport.setNetworkImage(
                     new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
             return neuralNetworkReport;
+        }
+    }
+
+    /**
+     * Default evaluation report data provider.
+     */
+    private class DefaultEvaluationReportDataProvider
+            extends EvaluationReportDataProvider<AbstractClassifier, EvaluationReport> {
+
+        DefaultEvaluationReportDataProvider() {
+            super(AbstractClassifier.class);
+        }
+
+        @Override
+        EvaluationReport internalPopulateReportData() {
+            return new EvaluationReport();
         }
     }
 }
