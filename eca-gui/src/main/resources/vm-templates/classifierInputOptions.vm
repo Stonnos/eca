@@ -1,24 +1,11 @@
 <html>
 <head>
     <style>
-        .attr {
-            font-weight: bold;
-            font-family: 'Arial';
-            font-size: 12
-        }
-
-        .val {
-            font-family: 'Arial';
-            font-size: 12
-        }
-
-        .optionsTable {
-            margin: auto;
-        }
+        #include("styles/styles.css")
     </style>
 </head>
 <body>
-<table class="optionsTable">
+<table style="margin: auto;">
     <tr>
         <th class="attr" colspan="2">Входные параметры классификатора</th>
     </tr>

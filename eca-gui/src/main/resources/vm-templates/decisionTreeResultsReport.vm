@@ -1,17 +1,7 @@
 <html>
 <head>
     <style>
-        .attachment {
-            display: block;
-            text-align: center;
-            font-style: italic;
-            margin-top: 20px;
-            margin-bottom: 5px;
-        }
-
-        body {
-            background: rgb(198, 226, 255);
-        }
+        #include("styles/evaluation-results.css")
     </style>
 </head>
 <body>
