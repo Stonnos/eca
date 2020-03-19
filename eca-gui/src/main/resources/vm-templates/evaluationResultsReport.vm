@@ -121,11 +121,9 @@
     #end
 </table>
 
-#foreach($attachment in $attachments)
-    <figure class="attachment">
-        <p><img src="data:image/png;base64,$attachment.base64String"></p>
-        <figcaption>$attachment.title</figcaption>
-    </figure>
-#end
+<figure class="attachment">
+    <p><img src="data:image/png;base64,$rocCurveImage.base64String"></p>
+    <figcaption>$rocCurveImage.title</figcaption>
+</figure>
 </body>
 </html>

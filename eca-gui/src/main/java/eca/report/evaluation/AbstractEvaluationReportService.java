@@ -39,7 +39,7 @@ public abstract class AbstractEvaluationReportService implements ReportService {
      * @param file - file
      */
     public void setFile(File file) {
-        Objects.requireNonNull(file, "file isn't specified!");
+        Objects.requireNonNull(file, "File isn't specified!");
         validateFile(file);
         this.file = file;
     }
