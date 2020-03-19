@@ -33,7 +33,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
     private static final String VM_REPORT_TEMPLATE = "vm-templates/evaluationResultsReport.vm";
     private static final String VM_TEMPLATE_DECISION_TREE_RESULTS = "vm-templates/decisionTreeResultsReport.vm";
-    private static final String VM_TEMPLATE_NEURAL_NETWORK_REPORT = "vm-templates/neuralNetworkReport.vm";
+    private static final String VM_TEMPLATE_NEURAL_NETWORK_REPORT = "vm-templates/neuralNetworkResultsReport.vm";
     private static final String NAN = "NaN";
 
     private static final String INPUT_OPTIONS_PARAM = "inputOptions";
