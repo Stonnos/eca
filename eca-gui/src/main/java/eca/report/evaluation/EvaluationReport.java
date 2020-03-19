@@ -1,7 +1,6 @@
 package eca.report.evaluation;
 
 import eca.core.evaluation.Evaluation;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import weka.classifiers.Classifier;
@@ -17,7 +16,6 @@ import java.util.Map;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class EvaluationReport {
 
     /**
@@ -41,7 +39,7 @@ public class EvaluationReport {
     private Classifier classifier;
 
     /**
-     * Attachment images
+     * Roc curve image
      */
-    private List<AttachmentImage> attachmentImages;
+    private AttachmentImage rocCurveImage;
 }

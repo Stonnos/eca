@@ -32,13 +32,16 @@ import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.report.ReportGenerator;
 import eca.report.evaluation.AttachmentImage;
+import eca.report.evaluation.DecisionTreeReport;
 import eca.report.evaluation.EvaluationReport;
 import eca.report.evaluation.EvaluationReportHelper;
+import eca.report.evaluation.NeuralNetworkReport;
 import eca.roc.RocCurve;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
 import eca.util.Entry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -357,6 +360,78 @@ public class ClassificationResultsFrameBase extends JFrame {
                         null, JOptionPane.WARNING_MESSAGE);
             }
             return attachmentImages;
+        }
+    }
+
+    /**
+     * Evaluation report data provider.
+     *
+     * @param <T> - evaluation report generic type
+     */
+    @RequiredArgsConstructor
+    private abstract class EvaluationReportDataProvider<T extends EvaluationReport> {
+
+        private final Class<T> reportClazz;
+
+        public boolean canHandle(T report) {
+            return reportClazz.isAssignableFrom(report.getClass());
+        }
+
+        public T populateEvaluationReportData() {
+            T report = internalPopulateReportData();
+            report.setData(data);
+            report.setClassifier(classifier);
+            report.setEvaluation(evaluation);
+            report.setStatisticsMap(createStatisticsMap());
+            report.setRocCurveImage(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
+            return report;
+        }
+
+        abstract T internalPopulateReportData();
+
+        Map<String, String> createStatisticsMap() {
+            return evaluationStatisticsModel.getResults().stream().collect(
+                    Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
+        }
+    }
+
+    /**
+     * Decision tree report data provider.
+     */
+    private class DecisionTreeReportDataProvider extends EvaluationReportDataProvider<DecisionTreeReport> {
+
+        public DecisionTreeReportDataProvider() {
+            super(DecisionTreeReport.class);
+        }
+
+        @Override
+        DecisionTreeReport internalPopulateReportData() {
+            DecisionTreeReport decisionTreeReport = new DecisionTreeReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
+            decisionTreeReport.setTreeImage(
+                    new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
+            return decisionTreeReport;
+        }
+    }
+
+    /**
+     * Neural network data provider.
+     */
+    private class NeuralNetworkDataProvider extends EvaluationReportDataProvider<NeuralNetworkReport> {
+
+        public NeuralNetworkDataProvider() {
+            super(NeuralNetworkReport.class);
+        }
+
+        @Override
+        NeuralNetworkReport internalPopulateReportData() {
+            NeuralNetworkReport neuralNetworkReport = new NeuralNetworkReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
+            neuralNetworkReport.setNetworkImage(
+                    new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
+            return neuralNetworkReport;
         }
     }
 }
