@@ -224,12 +224,21 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         return cellStyle;
     }
 
+    private CellStyle createHeaderStyle(Workbook book) {
+        CellStyle style = createBorderedCellStyle(book);
+        Font font = book.createFont();
+        font.setBold(true);
+        style.setFont(font);
+        return style;
+    }
+
     private void createXlsResultsSheet(Workbook book, CellStyle style) {
         Sheet sheet = book.createSheet(RESULTS_TEXT);
         CellStyle tableStyle = createBorderedCellStyle(book);
+        CellStyle headerStyle = createHeaderStyle(book);
         createStatisticsTable(sheet, style, tableStyle);
-        createCostMatrix(sheet, style, tableStyle);
-        createMisClassificationMatrix(sheet, style, tableStyle);
+        createCostMatrix(sheet, style, tableStyle, headerStyle);
+        createMisClassificationMatrix(sheet, style, tableStyle, headerStyle);
     }
 
     private void createStatisticsTable(Sheet sheet, CellStyle style, CellStyle tableStyle) {
@@ -248,7 +257,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         });
     }
 
-    private void createMisClassificationMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle) {
+    private void createMisClassificationMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle,
+                                               CellStyle headerStyle) {
         Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
         Cell cell = row.createCell(0);
         cell.setCellStyle(titleStyle);
@@ -257,13 +267,13 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
         //Creates table header
         cell = row.createCell(0);
-        cell.setCellStyle(tableStyle);
+        cell.setCellStyle(headerStyle);
         cell.setCellValue(ACTUAL_CLASS_TEXT);
         sheet.autoSizeColumn(0);
         Attribute classAttribute = getEvaluationReport().getData().classAttribute();
         for (int i = 1; i <= classAttribute.numValues(); i++) {
             cell = row.createCell(i);
-            cell.setCellStyle(tableStyle);
+            cell.setCellStyle(headerStyle);
             cell.setCellValue(String.format(PREDICTED_VALUE_FORMAT, classAttribute.value(i - 1)));
             sheet.autoSizeColumn(i);
         }
@@ -283,7 +293,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         }
     }
 
-    private void createCostMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle) {
+    private void createCostMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle, CellStyle headerStyle) {
         Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
         Cell cell = row.createCell(0);
         cell.setCellStyle(titleStyle);
@@ -292,7 +302,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         //Creates table header
         for (int i = 0; i < COST_CLASSIFICATION_HEADER.length; i++) {
             cell = row.createCell(i);
-            cell.setCellStyle(tableStyle);
+            cell.setCellStyle(headerStyle);
             cell.setCellValue(COST_CLASSIFICATION_HEADER[i]);
         }
         //Creates results table
@@ -433,7 +443,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
         void populateCoefficients(Workbook book, Sheet sheet, LogisticReport report) {
             CellStyle tableStyle = createBorderedCellStyle(book);
-            populateCoefficientsHeader(sheet, tableStyle);
+            populateCoefficientsHeader(book, sheet);
             Attribute classAttribute = getEvaluationReport().getData().classAttribute();
             double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
             for (int i = 0; i < coefficients.length; i++) {
@@ -452,16 +462,17 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             }
         }
 
-        void populateCoefficientsHeader(Sheet sheet, CellStyle tableStyle) {
+        void populateCoefficientsHeader(Workbook book, Sheet sheet) {
+            CellStyle headerStyle = createHeaderStyle(book);
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             Cell cell = row.createCell(0);
-            cell.setCellStyle(tableStyle);
+            cell.setCellStyle(headerStyle);
             cell.setCellValue(ATTR_TEXT);
             sheet.autoSizeColumn(0);
             Attribute classAttribute = getEvaluationReport().getData().classAttribute();
             for (int i = 1; i < classAttribute.numValues(); i++) {
                 cell = row.createCell(i);
-                cell.setCellStyle(tableStyle);
+                cell.setCellStyle(headerStyle);
                 cell.setCellValue(String.format(CLASS_FORMAT, i - 1));
                 sheet.autoSizeColumn(i);
             }
