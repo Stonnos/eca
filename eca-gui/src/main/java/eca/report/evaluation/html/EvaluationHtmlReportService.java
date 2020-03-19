@@ -8,8 +8,11 @@ import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.html.model.ClassificationCostRecord;
 import eca.report.evaluation.html.model.ConfusionMatrixRecord;
 import eca.report.evaluation.html.model.ConfusionMatrixReport;
+import eca.report.evaluation.html.model.LogisticCoefficientsData;
+import eca.report.evaluation.html.model.LogisticCoefficientsRecord;
 import eca.report.model.DecisionTreeReport;
 import eca.report.model.EvaluationReport;
+import eca.report.model.LogisticReport;
 import eca.report.model.NeuralNetworkReport;
 import eca.util.Utils;
 import eca.util.VelocityUtils;
@@ -17,11 +20,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static eca.report.ReportHelper.toAttachmentRecord;
 
 /**
@@ -32,8 +39,9 @@ import static eca.report.ReportHelper.toAttachmentRecord;
 public class EvaluationHtmlReportService extends AbstractEvaluationReportService {
 
     private static final String VM_REPORT_TEMPLATE = "vm-templates/evaluationResultsReport.vm";
-    private static final String VM_TEMPLATE_DECISION_TREE_RESULTS = "vm-templates/decisionTreeResultsReport.vm";
+    private static final String VM_TEMPLATE_DECISION_TREE_REPORT = "vm-templates/decisionTreeResultsReport.vm";
     private static final String VM_TEMPLATE_NEURAL_NETWORK_REPORT = "vm-templates/neuralNetworkResultsReport.vm";
+    private static final String VM_TEMPLATE_LOGISTIC_REPORT = "vm-templates/logisticResultsReport.vm";
     private static final String NAN = "NaN";
 
     private static final String INPUT_OPTIONS_PARAM = "inputOptions";
@@ -43,24 +51,16 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
     private static final String ROC_CURVE_IMAGE_PARAM = "rocCurveImage";
     private static final String NETWORK_IMAGE_PARAM = "networkImage";
     private static final String TREE_IMAGE_PARAM = "treeImage";
-    // private static final String ATTACHMENTS_PARAM = "attachments";
-    // private static final String IMAGE_TITLE_FORMAT = "Рис %d. %s";
+    private static final String LOGISTIC_COEFFICIENTS_PARAM = "logisticCoefficients";
     private static final String HTML_EXTENSION = ".html";
 
     private final List<EvaluationReportHandler> evaluationReportHandlers =
-            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler());
+            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler(),
+                    new LogisticReportHandler());
     private final CommonReportHandler commonReportHandler = new CommonReportHandler();
 
     @Override
     public void saveReport() throws Exception {
-        /*Template template = VelocityConfigService.getTemplate(VM_REPORT_TEMPLATE);
-        VelocityContext context = new VelocityContext();
-        context.put(STATISTICS_PARAM, getEvaluationReport().getStatisticsMap());
-        context.put(INPUT_OPTIONS_PARAM, ReportGenerator.getClassifierInputOptionsAsHtml
-                (getEvaluationReport().getClassifier(), true));
-        fillClassificationCosts(context);
-        fillConfusionMatrix(context);
-        VelocityUtils.mergeAndWrite(getFile(), template, context);*/
         EvaluationReportHandler evaluationReportHandler = evaluationReportHandlers.stream()
                 .filter(handler -> handler.canHandle(getEvaluationReport()))
                 .findFirst()
@@ -160,7 +160,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
     private class DecisionTreeReportHandler extends EvaluationReportHandler<DecisionTreeReport> {
 
         DecisionTreeReportHandler() {
-            super(DecisionTreeReport.class, VM_TEMPLATE_DECISION_TREE_RESULTS);
+            super(DecisionTreeReport.class, VM_TEMPLATE_DECISION_TREE_REPORT);
         }
 
         @Override
@@ -185,6 +185,61 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
     }
 
     /**
+     * Logistic report handler.
+     */
+    private class LogisticReportHandler extends EvaluationReportHandler<LogisticReport> {
+
+        static final String INTERCEPT = "Intercept";
+        static final String ATTR_TEXT = "Атрибут";
+        static final String CLASS_FORMAT = "Класс %d";
+
+        LogisticReportHandler() {
+            super(LogisticReport.class, VM_TEMPLATE_LOGISTIC_REPORT);
+        }
+
+        @Override
+        void internalFillContext(VelocityContext context, LogisticReport report) throws Exception {
+            context.put(LOGISTIC_COEFFICIENTS_PARAM, fillLogisticCoefficientsData(report));
+        }
+
+        LogisticCoefficientsData fillLogisticCoefficientsData(LogisticReport report) {
+            LogisticCoefficientsData logisticCoefficientsData = new LogisticCoefficientsData();
+            logisticCoefficientsData.setHeaders(getCoefficientsHeaders(report));
+            logisticCoefficientsData.setCoefficientsRecords(fillLogisticCoefficientsRecords(report));
+            return logisticCoefficientsData;
+        }
+
+        List<String> getCoefficientsHeaders(LogisticReport report) {
+            Attribute classAttribute = report.getData().classAttribute();
+            List<String> headers = newArrayList();
+            headers.add(ATTR_TEXT);
+            List<String> values = IntStream.range(0, classAttribute.numValues()).mapToObj(
+                    i -> String.format(CLASS_FORMAT, i - 1)).collect(Collectors.toList());
+            headers.addAll(values);
+            return headers;
+        }
+
+        List<LogisticCoefficientsRecord> fillLogisticCoefficientsRecords(LogisticReport report) {
+            Attribute classAttribute = report.getData().classAttribute();
+            double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
+            return IntStream.range(0, coefficients.length)
+                    .mapToObj(i -> {
+                        LogisticCoefficientsRecord record = new LogisticCoefficientsRecord();
+                        record.setAttrValue(getAttributeName(i, report.getLogisticCoefficientsModel().getMeta()));
+                        final int row = i;
+                        List<String> coefficientsList = IntStream.range(0, classAttribute.numValues() - 1).mapToObj(
+                                j -> getDecimalFormat().format(coefficients[row][j])).collect(Collectors.toList());
+                        record.setCoefficients(coefficientsList);
+                        return record;
+                    }).collect(Collectors.toList());
+        }
+
+        String getAttributeName(int attrIndex, Instances data) {
+            return attrIndex == 0 ? INTERCEPT : data.attribute(attrIndex - 1).name();
+        }
+    }
+
+    /**
      * Common report handler.
      */
     private class CommonReportHandler extends EvaluationReportHandler<EvaluationReport> {
@@ -198,22 +253,4 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             // Not implemented
         }
     }
-
-    /*private void fillAttachments(VelocityContext context) throws IOException {
-        List<AttachmentRecord> attachmentRecords = new ArrayList<>();
-        if (getEvaluationReport().getAttachmentImages() != null) {
-            for (int i = 0; i < getEvaluationReport().getAttachmentImages().size(); i++) {
-                AttachmentImage attachmentImage = getEvaluationReport().getAttachmentImages().get(i);
-                try (ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream()) {
-                    ImageIO.write((BufferedImage) attachmentImage.getImage(), PNG, byteArrayImg);
-                    String base64Image = Base64.getEncoder().encodeToString(byteArrayImg.toByteArray());
-                    AttachmentRecord record = new AttachmentRecord();
-                    record.setTitle(String.format(IMAGE_TITLE_FORMAT, i + 1, attachmentImage.getTitle()));
-                    record.setBase64String(base64Image);
-                    attachmentRecords.add(record);
-                }
-            }
-            context.put(ATTACHMENTS_PARAM, attachmentRecords);
-        }
-    }*/
 }

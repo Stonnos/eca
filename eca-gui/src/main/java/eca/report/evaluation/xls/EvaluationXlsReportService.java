@@ -443,8 +443,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
         void populateCoefficients(Workbook book, Sheet sheet, LogisticReport report) {
             CellStyle tableStyle = createBorderedCellStyle(book);
-            populateCoefficientsHeader(book, sheet);
-            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+            populateCoefficientsHeader(book, sheet, report);
+            Attribute classAttribute = report.getData().classAttribute();
             double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
             for (int i = 0; i < coefficients.length; i++) {
                 Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
@@ -462,14 +462,14 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             }
         }
 
-        void populateCoefficientsHeader(Workbook book, Sheet sheet) {
+        void populateCoefficientsHeader(Workbook book, Sheet sheet, LogisticReport report) {
             CellStyle headerStyle = createHeaderStyle(book);
             Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             Cell cell = row.createCell(0);
             cell.setCellStyle(headerStyle);
             cell.setCellValue(ATTR_TEXT);
             sheet.autoSizeColumn(0);
-            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+            Attribute classAttribute = report.getData().classAttribute();
             for (int i = 1; i < classAttribute.numValues(); i++) {
                 cell = row.createCell(i);
                 cell.setCellStyle(headerStyle);
