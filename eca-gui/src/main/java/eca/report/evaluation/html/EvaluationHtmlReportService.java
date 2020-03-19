@@ -213,8 +213,8 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             Attribute classAttribute = report.getData().classAttribute();
             List<String> headers = newArrayList();
             headers.add(ATTR_TEXT);
-            List<String> values = IntStream.range(0, classAttribute.numValues()).mapToObj(
-                    i -> String.format(CLASS_FORMAT, i - 1)).collect(Collectors.toList());
+            List<String> values = IntStream.range(0, classAttribute.numValues() - 1).mapToObj(
+                    i -> String.format(CLASS_FORMAT, i)).collect(Collectors.toList());
             headers.addAll(values);
             return headers;
         }

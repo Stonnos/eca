@@ -18,6 +18,13 @@
     margin-bottom: 30px;
 }
 
+.logistic-coefficients-table {
+    margin: auto;
+    width: 90%;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
 .attachment {
     display: block;
     text-align: center;
