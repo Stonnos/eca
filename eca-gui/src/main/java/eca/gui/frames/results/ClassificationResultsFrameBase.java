@@ -439,7 +439,8 @@ public class ClassificationResultsFrameBase extends JFrame {
                     (LogisticCoefficientsTable) scrollPane.getViewport().getView();
             LogisticCoefficientsModel logisticCoefficientsModel =
                     new LogisticCoefficientsModel(pane.getTitleAt(ATTACHMENT_TAB_INDEX),
-                            logisticCoefficientsTable.getInstances(), logisticCoefficientsTable.getLogistic());
+                            logisticCoefficientsTable.getInstances(),
+                            logisticCoefficientsTable.getLogistic().coefficients());
             logisticReport.setLogisticCoefficientsModel(logisticCoefficientsModel);
             return logisticReport;
         }

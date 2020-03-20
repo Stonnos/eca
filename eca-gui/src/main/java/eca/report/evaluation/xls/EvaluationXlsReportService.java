@@ -438,7 +438,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             CellStyle tableStyle = createBorderedCellStyle(book);
             populateCoefficientsHeader(book, sheet, report);
             Attribute classAttribute = report.getData().classAttribute();
-            double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
+            double[][] coefficients = report.getLogisticCoefficientsModel().getCoefficients();
             for (int i = 0; i < coefficients.length; i++) {
                 Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
                 Cell cell = row.createCell(0);

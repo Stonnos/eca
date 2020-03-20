@@ -218,7 +218,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
         List<LogisticCoefficientsRecord> fillLogisticCoefficientsRecords(LogisticReport report) {
             Attribute classAttribute = report.getData().classAttribute();
-            double[][] coefficients = report.getLogisticCoefficientsModel().getLogistic().coefficients();
+            double[][] coefficients = report.getLogisticCoefficientsModel().getCoefficients();
             return IntStream.range(0, coefficients.length)
                     .mapToObj(i -> {
                         LogisticCoefficientsRecord record = new LogisticCoefficientsRecord();

@@ -27,7 +27,7 @@ public class LogisticCoefficientsModel {
     private Instances meta;
 
     /**
-     * Logistic model
+     * Logistic coefficients
      */
-    private Logistic logistic;
+    private double[][] coefficients;
 }
