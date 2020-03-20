@@ -110,43 +110,59 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
         public EvaluationResults nextState() throws Exception {
             switch (state) {
                 case META_MODEL_SELECTION_STATE: {
-                    Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClassifierIndex);
-                    getClassifier().setMetaClassifier(metaClassifier);
-                    state = INIT_STATE;
+                    processMetaModelSelectionState();
                     break;
                 }
                 case INIT_STATE: {
-                    if (numIndividualClassifiers == marks.length) {
-                        metaClassifierIndex++;
-                        numIndividualClassifiers = 0;
-                        state = META_MODEL_SELECTION_STATE;
-                    } else {
-                        fillMarks();
-                        permutationsSearch.setValues(marks);
-                        state = NEXT_PERMUTATION_STATE;
-                    }
+                    processInitState();
                     break;
                 }
                 case NEXT_PERMUTATION_STATE: {
-                    if (permutationsSearch.nextPermutation()) {
-                        initializeClassifiersSet();
-                        state = MODEL_LEARNING_STATE;
-                    } else {
-                        numIndividualClassifiers++;
-                        state = INIT_STATE;
-                    }
+                    processNextPermutationState();
                     break;
                 }
                 case MODEL_LEARNING_STATE: {
-                    state = NEXT_PERMUTATION_STATE;
-                    StackingClassifier nextModel
-                            = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
-                    nextModel.setSeed(getSeed());
-                    nextModel.setClassifiers(new ClassifiersSet(currentSet));
-                    return evaluateModel(nextModel);
+                    return processModelLearningState();
                 }
             }
             return null;
+        }
+
+        void processMetaModelSelectionState() throws Exception {
+            Classifier metaClassifier = getClassifier().getClassifiers().getClassifierCopy(metaClassifierIndex);
+            getClassifier().setMetaClassifier(metaClassifier);
+            state = INIT_STATE;
+        }
+
+        void processInitState() {
+            if (numIndividualClassifiers == marks.length) {
+                metaClassifierIndex++;
+                numIndividualClassifiers = 0;
+                state = META_MODEL_SELECTION_STATE;
+            } else {
+                fillMarks();
+                permutationsSearch.setValues(marks);
+                state = NEXT_PERMUTATION_STATE;
+            }
+        }
+
+        void processNextPermutationState() {
+            if (permutationsSearch.nextPermutation()) {
+                initializeClassifiersSet();
+                state = MODEL_LEARNING_STATE;
+            } else {
+                numIndividualClassifiers++;
+                state = INIT_STATE;
+            }
+        }
+
+        EvaluationResults processModelLearningState() throws Exception {
+            state = NEXT_PERMUTATION_STATE;
+            StackingClassifier nextModel
+                    = (StackingClassifier) AbstractClassifier.makeCopy(getClassifier());
+            nextModel.setSeed(getSeed());
+            nextModel.setClassifiers(new ClassifiersSet(currentSet));
+            return evaluateModel(nextModel);
         }
 
         void fillMarks() {

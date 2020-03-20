@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.dataminer;
 
 import eca.core.PermutationsSearcher;
@@ -147,62 +142,69 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
 
         @Override
         public EvaluationResults nextState() throws Exception {
-
             switch (state) {
                 case INIT_STATE: {
-                    fillMarks();
-                    permutationsSearch.setValues(marks);
-                    state = NEXT_PERMUTATION_STATE;
+                    processInitState();
                     break;
                 }
-
                 case NEXT_PERMUTATION_STATE: {
-                    if (permutationsSearch.nextPermutation()) {
-                        initializeClassifiersSet();
-                        state = MODEL_LEARNING_STATE;
-                    } else {
-                        numIndividualClassifiers++;
-                        state = INIT_STATE;
-                    }
+                    processNextPermutationState();
                     break;
                 }
-
                 case MODEL_LEARNING_STATE: {
-                    if (getClassifier() instanceof HeterogeneousClassifier) {
-                        for (; sampleMethodIndex < SAMPLE_METHOD.length; sampleMethodIndex++) {
-                            for (; classifierSelectionMethodIndex < CLASSIFIER_SELECTION_METHOD.length;
-                                 classifierSelectionMethodIndex++) {
-                                votingMethodIndex++;
-                                if (votingMethodIndex < VOTING_METHOD.length) {
-                                    HeterogeneousClassifier nextModel =
-                                            (HeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
-                                    nextModel.setSeed(getSeed());
-                                    nextModel.setSamplingMethod(SAMPLE_METHOD[sampleMethodIndex]);
-                                    nextModel.setUseRandomClassifier(
-                                            CLASSIFIER_SELECTION_METHOD[classifierSelectionMethodIndex]);
-                                    nextModel.setUseWeightedVotes(VOTING_METHOD[votingMethodIndex]);
-                                    nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
-                                    return evaluateModel(nextModel);
-                                }
-                                votingMethodIndex = -1;
-                            }
-                            classifierSelectionMethodIndex = 0;
-                        }
-                        sampleMethodIndex = 0;
-                        state = NEXT_PERMUTATION_STATE;
-                    } else {
-                        state = NEXT_PERMUTATION_STATE;
-                        AbstractHeterogeneousClassifier nextModel
-                                = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
-                        nextModel.setSeed(getSeed());
-                        nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
-                        return evaluateModel(nextModel);
-                    }
-                    break;
+                    return processModelLearningState();
                 }
-
             }
+            return null;
+        }
 
+        void processInitState() {
+            fillMarks();
+            permutationsSearch.setValues(marks);
+            state = NEXT_PERMUTATION_STATE;
+        }
+
+        void processNextPermutationState() {
+            if (permutationsSearch.nextPermutation()) {
+                initializeClassifiersSet();
+                state = MODEL_LEARNING_STATE;
+            } else {
+                numIndividualClassifiers++;
+                state = INIT_STATE;
+            }
+        }
+
+        EvaluationResults processModelLearningState() throws Exception {
+            if (getClassifier() instanceof HeterogeneousClassifier) {
+                for (; sampleMethodIndex < SAMPLE_METHOD.length; sampleMethodIndex++) {
+                    for (; classifierSelectionMethodIndex < CLASSIFIER_SELECTION_METHOD.length;
+                         classifierSelectionMethodIndex++) {
+                        votingMethodIndex++;
+                        if (votingMethodIndex < VOTING_METHOD.length) {
+                            HeterogeneousClassifier nextModel =
+                                    (HeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
+                            nextModel.setSeed(getSeed());
+                            nextModel.setSamplingMethod(SAMPLE_METHOD[sampleMethodIndex]);
+                            nextModel.setUseRandomClassifier(
+                                    CLASSIFIER_SELECTION_METHOD[classifierSelectionMethodIndex]);
+                            nextModel.setUseWeightedVotes(VOTING_METHOD[votingMethodIndex]);
+                            nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
+                            return evaluateModel(nextModel);
+                        }
+                        votingMethodIndex = -1;
+                    }
+                    classifierSelectionMethodIndex = 0;
+                }
+                sampleMethodIndex = 0;
+                state = NEXT_PERMUTATION_STATE;
+            } else {
+                state = NEXT_PERMUTATION_STATE;
+                AbstractHeterogeneousClassifier nextModel
+                        = (AbstractHeterogeneousClassifier) AbstractClassifier.makeCopy(getClassifier());
+                nextModel.setSeed(getSeed());
+                nextModel.setClassifiersSet(new ClassifiersSet(currentSet));
+                return evaluateModel(nextModel);
+            }
             return null;
         }
 
