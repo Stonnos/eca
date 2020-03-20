@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables.models;
 
 import eca.core.evaluation.Evaluation;
 import eca.text.NumericFormatFactory;
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.Utils;
 
@@ -48,7 +44,8 @@ public class ClassificationCostsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? row : values[row][column - 1];
+        Attribute classAttribute = ev.getData().classAttribute();
+        return column == 0 ? classAttribute.value(row) : values[row][column - 1];
     }
 
     @Override

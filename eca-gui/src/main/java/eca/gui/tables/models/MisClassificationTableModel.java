@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables.models;
 
 import eca.core.evaluation.Evaluation;
+import weka.core.Attribute;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -15,7 +11,7 @@ import javax.swing.table.AbstractTableModel;
 public class MisClassificationTableModel extends AbstractTableModel {
 
     private static final String ACTUAL_VALUE_TEXT = "Реальное";
-    private static final String PREDICTED_VALUE_FORMAT = "%d (Прогнозное)";
+    private static final String PREDICTED_VALUE_FORMAT = "%s (Прогнозное)";
     private Evaluation evaluation;
     private String[] titles;
     private double[][] values;
@@ -38,7 +34,8 @@ public class MisClassificationTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? row : (int) values[row][column - 1];
+        Attribute classAttribute = evaluation.getData().classAttribute();
+        return column == 0 ? classAttribute.value(row) : (int) values[row][column - 1];
     }
 
     @Override
@@ -49,8 +46,9 @@ public class MisClassificationTableModel extends AbstractTableModel {
     private void createTitles() {
         titles = new String[evaluation.getData().numClasses() + 1];
         titles[0] = ACTUAL_VALUE_TEXT;
+        Attribute classAttribute = evaluation.getData().classAttribute();
         for (int i = 1; i < titles.length; i++) {
-            titles[i] = String.format(PREDICTED_VALUE_FORMAT, i - 1);
+            titles[i] = String.format(PREDICTED_VALUE_FORMAT, classAttribute.value(i - 1));
         }
     }
 
