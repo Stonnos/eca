@@ -3,7 +3,6 @@ package eca.report.evaluation.html;
 import com.google.common.collect.ImmutableList;
 import eca.config.VelocityConfigService;
 import eca.core.evaluation.Evaluation;
-import eca.report.ReportGenerator;
 import eca.report.evaluation.AbstractEvaluationReportService;
 import eca.report.evaluation.html.model.ClassificationCostRecord;
 import eca.report.evaluation.html.model.ConfusionMatrixRecord;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.report.ReportGenerator.populateClassifierInputOptions;
 import static eca.report.ReportHelper.toAttachmentRecord;
 
 /**
@@ -43,7 +43,6 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
     private static final String VM_TEMPLATE_LOGISTIC_REPORT = "vm-templates/logisticResultsReport.vm";
     private static final String NAN = "NaN";
 
-    private static final String INPUT_OPTIONS_PARAM = "inputOptions";
     private static final String STATISTICS_PARAM = "statistics";
     private static final String CONFUSION_MATRIX_PARAM = "confusionMatrix";
     private static final String CLASSIFICATION_COST_PARAM = "classificationCosts";
@@ -101,11 +100,10 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
         VelocityContext buildContext(T report) throws Exception {
             VelocityContext context = new VelocityContext();
-            context.put(STATISTICS_PARAM, getEvaluationReport().getStatisticsMap());
-            context.put(INPUT_OPTIONS_PARAM, ReportGenerator.getClassifierInputOptionsAsHtml
-                    (getEvaluationReport().getClassifier(), true));
-            fillClassificationCosts(context);
-            fillConfusionMatrix(context);
+            context.put(STATISTICS_PARAM, report.getStatisticsMap());
+            populateClassifierInputOptions(context, report.getClassifier(), true);
+            fillClassificationCosts(context, report);
+            fillConfusionMatrix(context, report);
             context.put(ROC_CURVE_IMAGE_PARAM, toAttachmentRecord(report.getRocCurveImage()));
             internalFillContext(context, report);
             return context;
@@ -113,9 +111,9 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
 
         abstract void internalFillContext(VelocityContext context, T report) throws Exception;
 
-        void fillClassificationCosts(VelocityContext context) {
-            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
-            Evaluation evaluation = getEvaluationReport().getEvaluation();
+        void fillClassificationCosts(VelocityContext context, T report) {
+            Attribute classAttribute = report.getData().classAttribute();
+            Evaluation evaluation = report.getEvaluation();
             List<ClassificationCostRecord> classificationCostRecordList = IntStream.range(0, classAttribute.numValues())
                     .mapToObj(i -> {
                         ClassificationCostRecord record = new ClassificationCostRecord();
@@ -134,11 +132,11 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
             context.put(CLASSIFICATION_COST_PARAM, classificationCostRecordList);
         }
 
-        void fillConfusionMatrix(VelocityContext context) {
-            Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+        void fillConfusionMatrix(VelocityContext context, T report) {
+            Attribute classAttribute = report.getData().classAttribute();
             ConfusionMatrixReport confusionMatrixReport = new ConfusionMatrixReport();
             confusionMatrixReport.setClassValues(Utils.getAttributeValues(classAttribute));
-            double[][] confusionMatrix = getEvaluationReport().getEvaluation().confusionMatrix();
+            double[][] confusionMatrix = report.getEvaluation().confusionMatrix();
             List<ConfusionMatrixRecord> records = IntStream.range(0, confusionMatrix.length)
                     .mapToObj(i -> {
                         ConfusionMatrixRecord record = new ConfusionMatrixRecord();
