@@ -1,5 +1,8 @@
 package eca.buffer;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -11,25 +14,9 @@ import java.awt.datatransfer.StringSelection;
  */
 public class StringCopier implements Copyable {
 
+    @Getter
+    @Setter
     private String copyString;
-
-    /**
-     * Returns string for copying.
-     *
-     * @return string object.
-     */
-    public String getCopyString() {
-        return copyString;
-    }
-
-    /**
-     * Sets the string for copying.
-     *
-     * @param copyString string object
-     */
-    public void setCopyString(String copyString) {
-        this.copyString = copyString;
-    }
 
     @Override
     public void copy() {

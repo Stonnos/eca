@@ -1,5 +1,6 @@
 package eca.config;
 
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
  * @author Roman Batygin
  */
 @Slf4j
+@UtilityClass
 public class VelocityConfigService {
 
     private static final String CLASSPATH_PROPERTY = "classpath";
@@ -32,9 +34,6 @@ public class VelocityConfigService {
         } catch (Exception ex) {
             log.error("Error in init velocity engine: ", ex);
         }
-    }
-
-    private VelocityConfigService() {
     }
 
     /**
