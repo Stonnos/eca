@@ -13,20 +13,20 @@ import eca.report.model.DecisionTreeReport;
 import eca.report.model.EvaluationReport;
 import eca.report.model.LogisticReport;
 import eca.report.model.NeuralNetworkReport;
+import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -62,8 +62,6 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private static final int FONT_SIZE = 12;
     private static final int PICTURE_ANCHOR_COL1 = 5;
     private static final int PICTURE_ANCHOR_ROW1 = 5;
-    private static final short PICTURE_COL_1 = 0;
-    private static final short PICTURE_COL_2 = 0;
     private static final String ACTUAL_CLASS_TEXT = "Реальное";
     private static final String PREDICTED_VALUE_FORMAT = "%s (Прогнозное)";
     private static final String[] COST_CLASSIFICATION_HEADER =
@@ -114,7 +112,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
     private void populateRocCurveImage(Workbook book) throws Exception {
         AttachmentImage rocCurveImage = getEvaluationReport().getRocCurveImage();
-        writeImage(getFile(), book, (BufferedImage) rocCurveImage.getImage(), rocCurveImage.getTitle());
+        writeImage(book, (BufferedImage) rocCurveImage.getImage(), rocCurveImage.getTitle());
     }
 
     private void populateReportData(Workbook book) throws Exception {
@@ -354,23 +352,18 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         }
     }
 
-    private void writeImage(File file, Workbook book, BufferedImage image, String title) throws Exception {
+    private void writeImage(Workbook book, BufferedImage image, String title) throws Exception {
         Sheet sheet = book.createSheet(title);
-        try (ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream()) {
-            ImageIO.write(image, PNG, byteArrayImg);
-            int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
-            ClientAnchor anchor;
-            if (file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension())) {
-                anchor = new HSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);
-            } else {
-                anchor = new XSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);
-            }
-            anchor.setCol1(PICTURE_ANCHOR_COL1);
-            anchor.setRow1(PICTURE_ANCHOR_ROW1);
-            Drawing drawing = sheet.createDrawingPatriarch();
-            Picture pict = drawing.createPicture(anchor, pictureIdx);
-            pict.resize();
-        }
+        @Cleanup ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream();
+        ImageIO.write(image, PNG, byteArrayImg);
+        int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
+        CreationHelper factory = book.getCreationHelper();
+        ClientAnchor anchor = factory.createClientAnchor();
+        anchor.setCol1(PICTURE_ANCHOR_COL1);
+        anchor.setRow1(PICTURE_ANCHOR_ROW1);
+        Drawing drawing = sheet.createDrawingPatriarch();
+        Picture pict = drawing.createPicture(anchor, pictureIdx);
+        pict.resize();
     }
 
     /**
@@ -402,7 +395,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         @Override
         void populateReport(Workbook workbook, DecisionTreeReport report) throws Exception {
             AttachmentImage treeImage = report.getTreeImage();
-            writeImage(getFile(), workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+            writeImage(workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
         }
     }
 
@@ -418,7 +411,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         @Override
         void populateReport(Workbook workbook, NeuralNetworkReport report) throws Exception {
             AttachmentImage treeImage = report.getNetworkImage();
-            writeImage(getFile(), workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+            writeImage(workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
         }
     }
 
