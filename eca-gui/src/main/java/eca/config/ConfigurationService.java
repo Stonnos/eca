@@ -43,7 +43,7 @@ public class ConfigurationService {
      *
      * @return application config service singleton instance
      */
-    public static ConfigurationService getApplicationConfigService() {
+    public static synchronized ConfigurationService getApplicationConfigService() {
         if (applicationConfigService == null) {
             applicationConfigService = new ConfigurationService();
         }
