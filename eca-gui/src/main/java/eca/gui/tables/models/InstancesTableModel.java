@@ -219,7 +219,7 @@ public class InstancesTableModel extends AbstractTableModel {
             Date dateY = simpleDateFormat.parse(y.toString());
             return dateX.compareTo(dateY);
         } catch (ParseException ex) {
-            throw new IllegalArgumentException(ex.getMessage());
+            throw new IllegalStateException(ex.getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ public class InstancesTableModel extends AbstractTableModel {
             Number numberY = format.parse(y.toString());
             return Double.compare(numberX.doubleValue(), numberY.doubleValue());
         } catch (ParseException ex) {
-            throw new IllegalArgumentException(ex.getMessage());
+            throw new IllegalStateException(ex.getMessage());
         }
     }
 }

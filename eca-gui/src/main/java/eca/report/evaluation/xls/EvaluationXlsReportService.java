@@ -410,8 +410,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
         @Override
         void populateReport(Workbook workbook, NeuralNetworkReport report) throws Exception {
-            AttachmentImage treeImage = report.getNetworkImage();
-            writeImage(workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+            AttachmentImage networkImage = report.getNetworkImage();
+            writeImage(workbook, (BufferedImage) networkImage.getImage(), networkImage.getTitle());
         }
     }
 
