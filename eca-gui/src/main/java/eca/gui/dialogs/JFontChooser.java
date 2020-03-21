@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
@@ -10,7 +5,7 @@ import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.logging.LoggerUtils;
+import eca.gui.font.FontManager;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -48,16 +43,6 @@ public class JFontChooser extends JDialog {
     private static final int BOLD_ID = 1;
     private static final int ITALIC_ID = 2;
     private static final int BOLD_AND_ITALIC_ID = 3;
-
-    private static String[] availableFontNames;
-
-    static {
-        try {
-            availableFontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-        }
-    }
 
     private JComboBox<String> fontNameBox;
     private JComboBox<String> fontSize;
@@ -200,7 +185,6 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontSizeComponent(Font font) {
-        fontNameBox = new JComboBox<>(availableFontNames);
         fontSize = new JComboBox<>();
         fontSize.setPreferredSize(COMBO_BOX_DIM);
         for (int i = MIN_FONT_SIZE; i <= MAX_FONT_SIZE; i++) {
@@ -210,6 +194,7 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontTypeComponent(Font font) {
+        String[] availableFontNames = FontManager.getFontManager().getAvailableFontNames();
         fontNameBox = new JComboBox<>(availableFontNames);
         fontNameBox.setPreferredSize(COMBO_BOX_DIM);
         fontNameBox.setRenderer(new DefaultListCellRenderer() {
