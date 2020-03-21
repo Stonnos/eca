@@ -53,7 +53,6 @@ public class FontManager {
             IntStream.range(0, allFonts.length).forEach(
                     i -> allFonts[i] = new Font(fontNames[i], Font.PLAIN, DEFAULT_FONT_SIZE));
         }
-        System.out.println(allFonts.length);
         return allFonts;
     }
 
