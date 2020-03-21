@@ -1,6 +1,7 @@
 package eca.gui.font;
 
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
+import java.util.stream.IntStream;
 
 /**
  * Font manager class.
@@ -9,9 +10,12 @@ import java.awt.GraphicsEnvironment;
  */
 public class FontManager {
 
+    private static final int DEFAULT_FONT_SIZE = 12;
+
     private static FontManager fontManager;
 
     private String[] availableFontNames;
+    private Font[] allFonts;
 
     private FontManager() {
     }
@@ -34,6 +38,26 @@ public class FontManager {
      * @return font names array
      */
     public synchronized String[] getAvailableFontNames() {
+        return getFontNames();
+    }
+
+    /**
+     * Gets all fonts array.
+     *
+     * @return all fonts array
+     */
+    public synchronized Font[] getAllFonts() {
+        if (allFonts == null) {
+            String[] fontNames = getFontNames();
+            allFonts = new Font[fontNames.length];
+            IntStream.range(0, allFonts.length).forEach(
+                    i -> allFonts[i] = new Font(fontNames[i], Font.PLAIN, DEFAULT_FONT_SIZE));
+        }
+        System.out.println(allFonts.length);
+        return allFonts;
+    }
+
+    private String[] getFontNames() {
         if (availableFontNames == null) {
             availableFontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         }

@@ -195,6 +195,7 @@ public class JFontChooser extends JDialog {
 
     private void createFontTypeComponent(Font font) {
         String[] availableFontNames = FontManager.getFontManager().getAvailableFontNames();
+        Font[] allFonts = FontManager.getFontManager().getAllFonts();
         fontNameBox = new JComboBox<>(availableFontNames);
         fontNameBox.setPreferredSize(COMBO_BOX_DIM);
         fontNameBox.setRenderer(new DefaultListCellRenderer() {
@@ -203,8 +204,8 @@ public class JFontChooser extends JDialog {
             public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
                 if (i >= 0) {
-                    label.setFont(new Font(availableFontNames[i], Font.PLAIN, DEFAULT_FONT_SIZE));
-                    label.setText(availableFontNames[i]);
+                    label.setFont(allFonts[i]);
+                    label.setText(allFonts[i].getFontName());
                 }
                 return label;
             }
