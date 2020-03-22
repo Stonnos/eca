@@ -9,7 +9,7 @@ import weka.core.Instances;
  */
 public class LogisticCoefficientsTable extends JDataTableBase {
 
-    public LogisticCoefficientsTable(Logistic logistic, Instances data, int digits) throws Exception {
+    public LogisticCoefficientsTable(Logistic logistic, Instances data, int digits) {
         super(new LogisticCoefficientsTableModel(logistic, data, digits));
     }
 
