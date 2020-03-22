@@ -25,7 +25,7 @@ public class LogisticCoefficientsTableModel extends AbstractTableModel {
     private String[] titles;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
-    public LogisticCoefficientsTableModel(Logistic logistic, Instances data, int digits) throws Exception {
+    public LogisticCoefficientsTableModel(Logistic logistic, Instances data, int digits) {
         this.logistic = logistic;
         this.data = data;
         this.createHeader();

@@ -108,9 +108,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
             int i = historyList.getSelectedIndex();
             evaluationResultsHistory.removeItem(i);
         });
-        clearMenu.addActionListener(e -> {
-            evaluationResultsHistory.removeAllItems();
-        });
+        clearMenu.addActionListener(e -> evaluationResultsHistory.removeAllItems());
         popupMenu.add(deleteMenu);
         popupMenu.add(clearMenu);
         historyList.setComponentPopupMenu(popupMenu);
