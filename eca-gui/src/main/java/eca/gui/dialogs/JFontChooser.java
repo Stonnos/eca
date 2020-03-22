@@ -8,6 +8,7 @@ import eca.gui.PanelBorderUtils;
 import eca.gui.font.FontManager;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.accessibility.Accessible;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
@@ -198,6 +199,12 @@ public class JFontChooser extends JDialog {
         Font[] allFonts = FontManager.getFontManager().getAllFonts();
         fontNameBox = new JComboBox<>(availableFontNames);
         fontNameBox.setPreferredSize(COMBO_BOX_DIM);
+        fontNameBox.setPrototypeDisplayValue(allFonts[0].getFontName());
+        Accessible accessibleChild = fontNameBox.getUI().getAccessibleChild(fontNameBox, 0);
+        if (accessibleChild instanceof javax.swing.plaf.basic.ComboPopup) {
+            JList popupList = ((javax.swing.plaf.basic.ComboPopup) accessibleChild).getList();
+            popupList.setPrototypeCellValue(fontNameBox.getPrototypeDisplayValue());
+        }
         fontNameBox.setRenderer(new DefaultListCellRenderer() {
 
             @Override
