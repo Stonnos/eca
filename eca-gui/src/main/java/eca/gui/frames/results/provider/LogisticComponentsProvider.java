@@ -44,8 +44,7 @@ public class LogisticComponentsProvider extends EvaluationResultsComponentsProvi
         return Arrays.asList(coefficientsModel, signAttributesModel);
     }
 
-    private ComponentModel createLogisticCoefficientsModel(Logistic classifier, Instances data, int maxFractionDigits)
-            throws Exception {
+    private ComponentModel createLogisticCoefficientsModel(Logistic classifier, Instances data, int maxFractionDigits) {
         LogisticCoefficientsTable logisticCoefficientsTable =
                 new LogisticCoefficientsTable(classifier, data, maxFractionDigits);
         JScrollPane coefficientsPane = new JScrollPane(logisticCoefficientsTable);
