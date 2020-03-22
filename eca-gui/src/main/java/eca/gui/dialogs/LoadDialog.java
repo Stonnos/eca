@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.dialogs;
 
 import eca.gui.actions.CallbackAction;
@@ -24,6 +19,8 @@ import java.awt.event.WindowEvent;
 @Slf4j
 public class LoadDialog extends JDialog implements ExecutorDialog {
 
+    private static final long DELAY = 300L;
+
     private final CallbackAction action;
     private final JProgressBar progress;
     private SwingWorkerConstruction worker;
@@ -39,7 +36,6 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
         this.action = action;
         this.setResizable(false);
         this.setLayout(new GridBagLayout());
-        //---------------------------------------------------
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
@@ -100,12 +96,27 @@ public class LoadDialog extends JDialog implements ExecutorDialog {
                 action.apply();
                 stopWatch.stop();
             } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                isSuccess = false;
-                errorMessage = e.getMessage();
+                handleError(e);
             }
             setProgress(100);
+            delay();
             return null;
+        }
+
+        void handleError(Exception e) {
+            LoggerUtils.error(log, e);
+            isSuccess = false;
+            errorMessage = e.getMessage();
+        }
+
+        void delay() {
+            if (!isCancelled()) {
+                try {
+                    Thread.sleep(DELAY);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
 
         @Override

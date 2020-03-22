@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.dialogs;
 
 import eca.core.evaluation.Evaluation;
@@ -102,32 +97,43 @@ public class ClassifierBuilderDialog extends JDialog implements ExecutorDialog {
         @Override
         protected Void doInBackground() {
             try {
-                StopWatch stopWatch = new StopWatch();
-                stopWatch.start();
-                while (!isCancelled() && builder.hasNext()) {
-                    builder.next();
-                    setProgress(builder.getPercent());
-                }
-                Evaluation evaluation = builder.evaluation();
-                stopWatch.stop();
-                if (evaluation != null) {
-                    evaluation.setTotalTimeMillis(stopWatch.getTime());
-                }
+                performTask();
             } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                isSuccess = false;
-                errorMessage = e.getMessage();
+                handleError(e);
             }
             setProgress(100);
+            delay();
+            return null;
+        }
+
+        void performTask() throws Exception {
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            while (!isCancelled() && builder.hasNext()) {
+                builder.next();
+                setProgress(builder.getPercent());
+            }
+            Evaluation evaluation = builder.evaluation();
+            stopWatch.stop();
+            if (evaluation != null) {
+                evaluation.setTotalTimeMillis(stopWatch.getTime());
+            }
+        }
+
+        void handleError(Exception e) {
+            LoggerUtils.error(log, e);
+            isSuccess = false;
+            errorMessage = e.getMessage();
+        }
+
+        void delay() {
             if (!isCancelled()) {
                 try {
                     Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
-                    LoggerUtils.error(log, e);
                     Thread.currentThread().interrupt();
                 }
             }
-            return null;
         }
 
         @Override
