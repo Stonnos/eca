@@ -21,7 +21,9 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
 
     private static final long DELAY = 300L;
     private static final int FULL_PROGRESS = 100;
+    private static final String PROGRESS_PROPERTY_NAME = "progress";
 
+    private JProgressBar progress;
     private AbstractBackgroundTask backgroundTask;
 
     private boolean isSuccess = true;
@@ -29,11 +31,12 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
 
     private final StopWatch stopWatch = new StopWatch();
 
-    public AbstractProgressDialog(Window parent, String loadingMessage, boolean intermediate) {
+    protected AbstractProgressDialog(Window parent, String loadingMessage, boolean intermediate,
+                                  boolean progressValuePainted) {
         super(parent, StringUtils.EMPTY);
         this.setModal(true);
         this.setResizable(false);
-        this.createGUI(loadingMessage, intermediate);
+        this.createGUI(loadingMessage, intermediate, progressValuePainted);
         this.addCancelListener();
         this.pack();
         this.setLocationRelativeTo(parent);
@@ -67,14 +70,16 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
 
     /**
      * Creates background task object.
+     *
      * @return background task object
      */
     protected abstract AbstractBackgroundTask createBackgroundTask();
 
-    private void createGUI(String loadingMessage, boolean intermediate) {
+    private void createGUI(String loadingMessage, boolean intermediate, boolean progressValuePainted) {
         this.setLayout(new GridBagLayout());
-        JProgressBar progress = new JProgressBar();
+        progress = new JProgressBar();
         progress.setIndeterminate(intermediate);
+        progress.setStringPainted(progressValuePainted);
         this.add(new JLabel(loadingMessage),
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.NONE,
@@ -99,7 +104,17 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
      */
     protected abstract class AbstractBackgroundTask extends SwingWorker<Void, Void> {
 
-        abstract void performTask();
+        AbstractBackgroundTask() {
+            if (progress.isStringPainted()) {
+                this.addPropertyChangeListener(evt -> {
+                    if (PROGRESS_PROPERTY_NAME.equals(evt.getPropertyName())) {
+                        progress.setValue((Integer) evt.getNewValue());
+                    }
+                });
+            }
+        }
+
+        abstract void performTask() throws Exception;
 
         @Override
         protected Void doInBackground() {
