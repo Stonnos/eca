@@ -70,6 +70,6 @@ public class RabbitUtils {
      * @throws IOException in case of I/O error
      */
     public static String declareReplyToQueue(String queue, Channel channel) throws IOException {
-        return channel.queueDeclare(queue, true, true, true, null).getQueue();
+        return channel.queueDeclare(queue, true, false, true, null).getQueue();
     }
 }
