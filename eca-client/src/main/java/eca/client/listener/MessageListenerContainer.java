@@ -104,6 +104,7 @@ public class MessageListenerContainer {
             closeConnection();
             started = false;
             running = false;
+            log.info("Message listener container has been stopped");
         }
     }
 
