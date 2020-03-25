@@ -74,4 +74,14 @@ public class GuiUtils {
             LoggerUtils.error(log, ex);
         }
     }
+
+    public static int getScreenWidth() {
+        GraphicsDevice screenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        return screenDevice.getDisplayMode().getWidth();
+    }
+
+    public static int getScreenHeight() {
+        GraphicsDevice screenDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        return screenDevice.getDisplayMode().getHeight();
+    }
 }

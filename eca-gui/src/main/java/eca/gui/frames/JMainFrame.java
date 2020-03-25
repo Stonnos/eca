@@ -133,6 +133,8 @@ import java.util.Random;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.GuiUtils.getScreenHeight;
+import static eca.gui.GuiUtils.getScreenWidth;
 import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.LOAD_MODEL_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.OPEN_DB_MENU_KEY_STROKE;
@@ -501,8 +503,7 @@ public class JMainFrame extends JFrame {
             attrScrollPane = new JScrollPane();
             attrScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
             attrScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
-            double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT *
-                    Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT * getScreenWidth();
             attrScrollPane.setPreferredSize(new Dimension((int) width, ATTRS_PANEL_HEIGHT));
             classBox = new JComboBox<>();
             classBox.setBorder(PanelBorderUtils.createTitledBorder(CLASS_TITLE));
@@ -694,8 +695,7 @@ public class JMainFrame extends JFrame {
     }
 
     private void createGUI() {
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize((int) (WIDTH_COEFFICIENT * dim.getWidth()), (int) (HEIGHT_COEFFICIENT * dim.getHeight()));
+        this.setSize((int) (WIDTH_COEFFICIENT * getScreenWidth()), (int) (HEIGHT_COEFFICIENT * getScreenHeight()));
         this.populateMenuBar();
         dataPanels.setBackground(Color.GRAY);
         this.add(dataPanels);
