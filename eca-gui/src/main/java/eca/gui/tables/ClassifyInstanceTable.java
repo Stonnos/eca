@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.Optional;
 
 import static eca.gui.service.ValidationService.isNumericOverflow;
 import static eca.gui.service.ValidationService.parseDate;
@@ -163,7 +164,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ReportGenerator.getAttributeStatisticsAsHtml(data.attribute(i),
                     attributeStatistics));
-            this.setText(value.toString());
+            this.setText(Optional.ofNullable(value).map(Object::toString).orElse(null));
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());
             return this;
