@@ -40,7 +40,7 @@ public class MessageListenerContainer {
      */
     @Getter
     @Setter
-    private Map<String, AbstractRabbitListenerAdapter> rabbitListenerAdapters = newHashMap();
+    private Map<String, AbstractRabbitListenerAdapter<?>> rabbitListenerAdapters = newHashMap();
 
     /**
      * Connection attempt interval in millis
@@ -142,7 +142,8 @@ public class MessageListenerContainer {
         if (!futureTask.isCancelled()) {
             try {
                 channel = connection.createChannel();
-                for (Map.Entry<String, AbstractRabbitListenerAdapter> adapterEntry : rabbitListenerAdapters.entrySet()) {
+                for (Map.Entry<String, AbstractRabbitListenerAdapter<?>> adapterEntry :
+                        rabbitListenerAdapters.entrySet()) {
                     String queue = declareReplyToQueue(adapterEntry.getKey(), channel);
                     adapterEntry.getValue().basicConsume(channel, queue);
                 }

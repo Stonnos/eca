@@ -43,7 +43,7 @@ public class RabbitUtils {
      * @throws IOException in case of I/O error
      */
     public static void closeConnection(Connection connection) throws IOException {
-        if (connection != null) {
+        if (connection != null && connection.isOpen()) {
             connection.close();
         }
     }
@@ -56,7 +56,7 @@ public class RabbitUtils {
      * @throws TimeoutException in case og timeout error
      */
     public static void closeChannel(Channel channel) throws IOException, TimeoutException {
-        if (channel != null) {
+        if (channel != null && channel.isOpen()) {
             channel.close();
         }
     }
