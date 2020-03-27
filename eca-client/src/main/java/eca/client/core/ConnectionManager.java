@@ -3,14 +3,12 @@ package eca.client.core;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import eca.client.util.RabbitUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-
-import static eca.client.util.RabbitUtils.closeChannel;
-import static eca.client.util.RabbitUtils.closeConnection;
 
 /**
  * Rabbit MQ connection manager.
@@ -44,8 +42,18 @@ public class ConnectionManager implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        closeChannel(channel);
-        closeConnection(connection);
+    public void close() throws IOException, TimeoutException {
+        closeChannel();
+        closeConnection();
+    }
+
+    private void closeChannel() throws IOException, TimeoutException {
+        RabbitUtils.closeChannel(channel);
+        channel = null;
+    }
+
+    private void closeConnection() throws IOException {
+        RabbitUtils.closeConnection(connection);
+        connection = null;
     }
 }

@@ -94,7 +94,7 @@ public class MessageListenerContainer {
     /**
      * Stop message listener container.
      */
-    public void stop() {
+    public void stop() throws IOException, TimeoutException  {
         synchronized (lifecycleMonitor) {
             if (!running) {
                 throw new IllegalStateException();
@@ -121,21 +121,13 @@ public class MessageListenerContainer {
         }
     }
 
-    private void closeChannel() {
-        try {
-            RabbitUtils.closeChannel(channel);
-        } catch (IOException | TimeoutException ex) {
-            log.error(ex.getMessage());
-        }
+    private void closeChannel() throws IOException, TimeoutException {
+        RabbitUtils.closeChannel(channel);
         channel = null;
     }
 
-    private void closeConnection() {
-        try {
-            RabbitUtils.closeConnection(connection);
-        } catch (IOException ex) {
-            log.error(ex.getMessage());
-        }
+    private void closeConnection() throws IOException {
+        RabbitUtils.closeConnection(connection);
         connection = null;
     }
 
