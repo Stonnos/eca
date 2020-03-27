@@ -14,9 +14,12 @@ public class InstancesSetTableModel extends AbstractTableModel {
 
     public static final int BUTTON_INDEX = 4;
     public static final String RESULT_TITLE = "Посмотреть";
-
     private static final String[] TITLES = {"Название", "Объекты", "Атрибуты",
             "Классы", "Данные"};
+    private static final int RELATION_NAME_COLUMN_INDEX = 0;
+    private static final int NUM_INSTANCES_COLUMN_INDEX = 1;
+    private static final int NUM_ATTRIBUTES_COLUMN_INDEX = 2;
+    private static final int NUM_CLASSES_COLUMN_INDEX = 3;
 
     private ArrayList<Instances> instances = new ArrayList<>();
 
@@ -43,13 +46,13 @@ public class InstancesSetTableModel extends AbstractTableModel {
     public Object getValueAt(int row, int column) {
         Instances data = instances.get(row);
         switch (column) {
-            case 0:
+            case RELATION_NAME_COLUMN_INDEX:
                 return data.relationName();
-            case 1:
+            case NUM_INSTANCES_COLUMN_INDEX:
                 return data.numInstances();
-            case 2:
+            case NUM_ATTRIBUTES_COLUMN_INDEX:
                 return data.numAttributes();
-            case 3:
+            case NUM_CLASSES_COLUMN_INDEX:
                 return data.numClasses();
             default:
                 return RESULT_TITLE;
@@ -68,12 +71,7 @@ public class InstancesSetTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int column) {
-        switch (column) {
-            case BUTTON_INDEX:
-                return JButton.class;
-            default:
-                return String.class;
-        }
+        return column == BUTTON_INDEX ? JButton.class : String.class;
     }
 
 }

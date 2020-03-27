@@ -27,7 +27,7 @@ public class ConsoleTextArea {
      *
      * @return text area
      */
-    public synchronized static JTextArea getTextArea() {
+    public static synchronized JTextArea getTextArea() {
         if (textArea == null) {
             textArea = new JTextArea(ROWS, COLUMNS);
             textArea.setWrapStyleWord(true);

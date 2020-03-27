@@ -1,9 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.buffer;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -18,20 +16,13 @@ import java.awt.datatransfer.UnsupportedFlavorException;
  */
 public class ImageCopier implements Transferable, Copyable {
 
+    @Getter
+    @Setter
     private Image image;
 
     private static final DataFlavor[] FLAVORS = {
             DataFlavor.imageFlavor,
     };
-
-    /**
-     * Sets image object.
-     *
-     * @param image {@link Image} object
-     */
-    public void setImage(Image image) {
-        this.image = image;
-    }
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {

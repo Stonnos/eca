@@ -459,23 +459,8 @@ public abstract class ExperimentFrame extends JFrame {
         protected Void doInBackground() {
             try {
                 while (!isCancelled() && object.hasNext()) {
-
-                    try {
-                        EvaluationResults classifier = object.next();
-                        if (!isCancelled()) {
-                            experimentTable.addExperiment(classifier);
-                        }
-                    } catch (Exception e) {
-                        LoggerUtils.error(log, e);
-                    }
-
-                    if (!isCancelled()) {
-                        int percent = object.getPercent();
-                        if (percent != getProgress() && percent % 10 == 0) {
-                            log.info("Experiment {} progress: {} %.", experimentId, percent);
-                        }
-                        setProgress(percent);
-                    }
+                    performNextIteration();
+                    updateProgress();
                 }
             } catch (Throwable e) {
                 LoggerUtils.error(log, e);
@@ -498,6 +483,27 @@ public abstract class ExperimentFrame extends JFrame {
                         experiment.getEvaluationMethod(), createEvaluationParams()));
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
+            }
+        }
+
+        private void performNextIteration() {
+            try {
+                EvaluationResults classifier = object.next();
+                if (!isCancelled()) {
+                    experimentTable.addExperiment(classifier);
+                }
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+            }
+        }
+
+        private void updateProgress() {
+            if (!isCancelled()) {
+                int percent = object.getPercent();
+                if (percent != getProgress() && percent % 10 == 0) {
+                    log.info("Experiment {} progress: {} %.", experimentId, percent);
+                }
+                setProgress(percent);
             }
         }
 

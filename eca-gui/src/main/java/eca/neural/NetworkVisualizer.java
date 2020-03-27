@@ -448,6 +448,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
                 case Neuron.HIDDEN_LAYER:
                     paramsMap.put(LAYER_TEXT, HIDDEN_LAYER_TEXT);
                     break;
+                default:
+                    throw new IllegalStateException("Unexpected layer type!");
             }
             if (neuron.getType() != Neuron.IN_LAYER) {
                 paramsMap.put(ACTIVATION_FUNCTION_TEXT,
@@ -642,7 +644,8 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     }
 
     private void createNodes() {
-        double w = startX(), h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
+        double w = startX();
+        double h = startY(neuralNetwork.getMultilayerPerceptron().inLayerNeurons.length);
         for (Neuron n : neuralNetwork.getMultilayerPerceptron().inLayerNeurons) {
             nodes.add(new NeuronNode(n, new Ellipse2D.Double(w, h,
                     neuronDiam, neuronDiam)));

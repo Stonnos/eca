@@ -5,6 +5,7 @@
  */
 package eca.gui.frames.results;
 
+import com.google.common.collect.ImmutableList;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
@@ -26,19 +27,26 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.JDataTableBase;
+import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.models.EvaluationStatisticsModel;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
+import eca.regression.Logistic;
 import eca.report.ReportGenerator;
-import eca.report.evaluation.AttachmentImage;
-import eca.report.evaluation.EvaluationReport;
 import eca.report.evaluation.EvaluationReportHelper;
+import eca.report.model.AttachmentImage;
+import eca.report.model.DecisionTreeReport;
+import eca.report.model.EvaluationReport;
+import eca.report.model.LogisticCoefficientsModel;
+import eca.report.model.LogisticReport;
+import eca.report.model.NeuralNetworkReport;
 import eca.roc.RocCurve;
 import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
 import eca.util.Entry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -52,13 +60,15 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 
 /**
  * Classification results frame.
@@ -88,9 +98,6 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
     private static final int ATTACHMENT_TAB_INDEX = 3;
-
-    private static final String REFERENCE_KEY_STROKE = "F1";
-    private static final String SAVE_MODEL_KEY_STROKE = "ctrl S";
 
     private final Date creationDate = new Date();
     private final Classifier classifier;
@@ -164,13 +171,13 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_KEY_STROKE));
+        refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
         dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
 
-        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_MODEL_KEY_STROKE));
+        saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
 
         saveModelMenu.addActionListener(new SaveModelListener());
         inputMenu.addActionListener(new ActionListener() {
@@ -307,6 +314,12 @@ public class ClassificationResultsFrameBase extends JFrame {
      */
     private class SaveReportListener implements ActionListener {
 
+        List<EvaluationReportDataProvider> evaluationReportDataProviders =
+                ImmutableList.of(new DecisionTreeReportDataProvider(), new NeuralNetworkDataProvider(),
+                        new LogisticDataProvider());
+        DefaultEvaluationReportDataProvider defaultEvaluationReportDataProvider =
+                new DefaultEvaluationReportDataProvider();
+
         @Override
         public void actionPerformed(ActionEvent event) {
             File file;
@@ -325,38 +338,127 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            EvaluationReport evaluationReport =
-                    new EvaluationReport(createStatisticsMap(), data, evaluation, classifier,
-                            createAttachmentImagesList());
+            EvaluationReport evaluationReport = evaluationReportDataProviders
+                    .stream()
+                    .filter(p -> p.canHandle(classifier))
+                    .findFirst()
+                    .map(EvaluationReportDataProvider::populateEvaluationReportData)
+                    .orElse(defaultEvaluationReportDataProvider.populateEvaluationReportData());
             EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
         }
+    }
+
+    /**
+     * Evaluation report data provider.
+     *
+     * @param <C> - classifier generic type
+     * @param <T> - evaluation report generic type
+     */
+    @RequiredArgsConstructor
+    private abstract class EvaluationReportDataProvider<C, T extends EvaluationReport> {
+
+        private final Class<C> classifierClazz;
+
+        boolean canHandle(C report) {
+            return classifierClazz.isAssignableFrom(report.getClass());
+        }
+
+        T populateEvaluationReportData() {
+            T report = internalPopulateReportData();
+            report.setData(data);
+            report.setClassifier(classifier);
+            report.setEvaluation(evaluation);
+            report.setStatisticsMap(createStatisticsMap());
+            report.setRocCurveImage(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
+            return report;
+        }
+
+        abstract T internalPopulateReportData();
 
         Map<String, String> createStatisticsMap() {
             return evaluationStatisticsModel.getResults().stream().collect(
                     Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
         }
+    }
 
-        List<AttachmentImage> createAttachmentImagesList() {
-            List<AttachmentImage> attachmentImages = new ArrayList<>();
-            try {
-                attachmentImages.add(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
-                if (classifier instanceof DecisionTreeClassifier) {
-                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                    TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
-                    attachmentImages.add(
-                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
-                } else if (classifier instanceof NeuralNetwork) {
-                    JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
-                    NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
-                    attachmentImages.add(
-                            new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
-                }
-            } catch (Exception ex) {
-                LoggerUtils.error(log, ex);
-                JOptionPane.showMessageDialog(ClassificationResultsFrameBase.this, ex.getMessage(),
-                        null, JOptionPane.WARNING_MESSAGE);
-            }
-            return attachmentImages;
+    /**
+     * Decision tree report data provider.
+     */
+    private class DecisionTreeReportDataProvider
+            extends EvaluationReportDataProvider<DecisionTreeClassifier, DecisionTreeReport> {
+
+        DecisionTreeReportDataProvider() {
+            super(DecisionTreeClassifier.class);
+        }
+
+        @Override
+        DecisionTreeReport internalPopulateReportData() {
+            DecisionTreeReport decisionTreeReport = new DecisionTreeReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            TreeVisualizer treeVisualizer = (TreeVisualizer) scrollPane.getViewport().getView();
+            decisionTreeReport.setTreeImage(
+                    new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), treeVisualizer.getImage()));
+            return decisionTreeReport;
+        }
+    }
+
+    /**
+     * Neural network data provider.
+     */
+    private class NeuralNetworkDataProvider extends EvaluationReportDataProvider<NeuralNetwork, NeuralNetworkReport> {
+
+        NeuralNetworkDataProvider() {
+            super(NeuralNetwork.class);
+        }
+
+        @Override
+        NeuralNetworkReport internalPopulateReportData() {
+            NeuralNetworkReport neuralNetworkReport = new NeuralNetworkReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            NetworkVisualizer networkVisualizer = (NetworkVisualizer) scrollPane.getViewport().getView();
+            neuralNetworkReport.setNetworkImage(
+                    new AttachmentImage(pane.getTitleAt(ATTACHMENT_TAB_INDEX), networkVisualizer.getImage()));
+            return neuralNetworkReport;
+        }
+    }
+
+    /**
+     * Logistic data provider.
+     */
+    private class LogisticDataProvider extends EvaluationReportDataProvider<Logistic, LogisticReport> {
+
+        LogisticDataProvider() {
+            super(Logistic.class);
+        }
+
+        @Override
+        LogisticReport internalPopulateReportData() {
+            LogisticReport logisticReport = new LogisticReport();
+            JScrollPane scrollPane = (JScrollPane) pane.getComponent(ATTACHMENT_TAB_INDEX);
+            LogisticCoefficientsTable logisticCoefficientsTable =
+                    (LogisticCoefficientsTable) scrollPane.getViewport().getView();
+            LogisticCoefficientsModel logisticCoefficientsModel =
+                    new LogisticCoefficientsModel(pane.getTitleAt(ATTACHMENT_TAB_INDEX),
+                            logisticCoefficientsTable.getInstances(),
+                            logisticCoefficientsTable.getLogistic().coefficients());
+            logisticReport.setLogisticCoefficientsModel(logisticCoefficientsModel);
+            return logisticReport;
+        }
+    }
+
+    /**
+     * Default evaluation report data provider.
+     */
+    private class DefaultEvaluationReportDataProvider
+            extends EvaluationReportDataProvider<AbstractClassifier, EvaluationReport> {
+
+        DefaultEvaluationReportDataProvider() {
+            super(AbstractClassifier.class);
+        }
+
+        @Override
+        EvaluationReport internalPopulateReportData() {
+            return new EvaluationReport();
         }
     }
 }

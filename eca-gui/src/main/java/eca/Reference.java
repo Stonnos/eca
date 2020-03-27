@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca;
 
 import eca.util.FileUtils;
@@ -27,7 +22,9 @@ public class Reference {
     static {
         try {
             referenceFile = new File(FileUtils.getCurrentDir(), FILE_NAME);
-            referenceFile.setExecutable(true, false);
+            if (!referenceFile.setExecutable(true, false)) {
+                log.error("Can't load manual");
+            }
         } catch (Exception ex) {
             log.error("Can't load manual", ex);
         }

@@ -1,0 +1,27 @@
+.contingency-table {
+    margin: auto;
+    width: 90%;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.chi-squares-result {
+    margin: auto;
+    width: 90%;
+    background: white;
+    border: 1px solid black;
+}
+
+th, td {
+    border: 1px solid black;
+    background: #e2e2e2;
+}
+
+body {
+    background: rgb(198, 226, 255);
+}

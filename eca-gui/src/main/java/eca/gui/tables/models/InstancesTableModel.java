@@ -154,21 +154,9 @@ public class InstancesTableModel extends AbstractTableModel {
             } else {
                 switch (attributeType) {
                     case Attribute.DATE:
-                        try {
-                            Date dateX = simpleDateFormat.parse(x.toString());
-                            Date dateY = simpleDateFormat.parse(y.toString());
-                            return sign * dateX.compareTo(dateY);
-                        } catch (ParseException ex) {
-                            throw new IllegalArgumentException(ex.getMessage());
-                        }
+                        return sign * compareAsDate(x, y);
                     case Attribute.NUMERIC:
-                        try {
-                            Number numberX = format.parse(x.toString());
-                            Number numberY = format.parse(y.toString());
-                            return sign * Double.compare(numberX.doubleValue(), numberY.doubleValue());
-                        } catch (ParseException ex) {
-                            throw new IllegalArgumentException(ex.getMessage());
-                        }
+                        return sign * compareAsNumeric(x, y);
                     case Attribute.NOMINAL:
                         return sign * x.toString().compareTo(y.toString());
                     default:
@@ -222,6 +210,26 @@ public class InstancesTableModel extends AbstractTableModel {
         if (!Objects.equals(oldVal, val)) {
             values.get(i).set(j, val);
             modificationCount++;
+        }
+    }
+
+    private int compareAsDate(Object x, Object y) {
+        try {
+            Date dateX = simpleDateFormat.parse(x.toString());
+            Date dateY = simpleDateFormat.parse(y.toString());
+            return dateX.compareTo(dateY);
+        } catch (ParseException ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
+    }
+
+    private int compareAsNumeric(Object x, Object y) {
+        try {
+            Number numberX = format.parse(x.toString());
+            Number numberY = format.parse(y.toString());
+            return Double.compare(numberX.doubleValue(), numberY.doubleValue());
+        } catch (ParseException ex) {
+            throw new IllegalStateException(ex.getMessage());
         }
     }
 }

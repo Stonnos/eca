@@ -133,6 +133,16 @@ import java.util.Random;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.GuiUtils.getScreenHeight;
+import static eca.gui.GuiUtils.getScreenWidth;
+import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.LOAD_MODEL_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.OPEN_DB_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.OPEN_FILE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
+import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -153,7 +163,6 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
-    private static final String REQUEST_SENT_MESSAGE = "Пожалуйста подождите, идет отправка запроса..";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
@@ -263,7 +272,7 @@ public class JMainFrame extends JFrame {
         Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
         this.setLocationRelativeTo(null);
@@ -359,7 +368,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        DataInternalFrame(Instances data, JMenuItem menu, int digits) throws Exception {
+        DataInternalFrame(Instances data, JMenuItem menu, int digits) {
             this.setLayout(new GridBagLayout());
             this.createUpperPanel();
             this.createLowerPanel();
@@ -493,8 +502,7 @@ public class JMainFrame extends JFrame {
             attrScrollPane = new JScrollPane();
             attrScrollPane.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_AS_NEEDED);
             attrScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
-            double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT *
-                    Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+            double width = ATTRS_PANEL_WIDTH_COEFFICIENT * WIDTH_COEFFICIENT * getScreenWidth();
             attrScrollPane.setPreferredSize(new Dimension((int) width, ATTRS_PANEL_HEIGHT));
             classBox = new JComboBox<>();
             classBox.setBorder(PanelBorderUtils.createTitledBorder(CLASS_TITLE));
@@ -603,30 +611,37 @@ public class JMainFrame extends JFrame {
         processAsyncTask(progress, () -> callback.getResult().setVisible(true));
     }
 
-    private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
+    private void executeWithEcaService(final ClassifierOptionsDialogBase frame) {
         rabbitClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethodOptionsDialog.getEvaluationMethod())) {
             rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
             rabbitClient.setSeed(seed);
         }
-        CallbackAction callbackAction = () -> {
-            String correlationId = UUID.randomUUID().toString();
-            AbstractClassifier classifier = (AbstractClassifier) frame.classifier();
-            rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
-            EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                    .correlationId(correlationId)
-                    .requestType(EcaServiceRequestType.CLASSIFIER)
-                    .status(EcaServiceTrackStatus.REQUEST_SENT)
-                    .details(frame.getTitle())
-                    .relationName(frame.data().relationName())
-                    .additionalData(Utils.getClassifierInputOptionsMap(classifier))
-                    .build();
-            addEcaServiceTrack(ecaServiceTrack);
-        };
-        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
-        processAsyncTask(progress, () -> {
-        });
+        String correlationId = UUID.randomUUID().toString();
+        AbstractClassifier classifier = (AbstractClassifier) frame.classifier();
+        rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
+        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                .correlationId(correlationId)
+                .requestType(EcaServiceRequestType.CLASSIFIER)
+                .status(EcaServiceTrackStatus.REQUEST_SENT)
+                .details(frame.getTitle())
+                .relationName(frame.data().relationName())
+                .additionalData(Utils.getClassifierInputOptionsMap(classifier))
+                .build();
+        addEcaServiceTrack(ecaServiceTrack);
+    }
+
+    private void performTaskWithDataAndClassValidation(CallbackAction action) {
+        if (isDataAndClassValid()) {
+            try {
+                action.apply();
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                JOptionPane.showMessageDialog(JMainFrame.this,
+                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }
 
     private void processAsyncTask(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
@@ -674,8 +689,7 @@ public class JMainFrame extends JFrame {
     }
 
     private void createGUI() {
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize((int) (WIDTH_COEFFICIENT * dim.getWidth()), (int) (HEIGHT_COEFFICIENT * dim.getHeight()));
+        this.setSize((int) (WIDTH_COEFFICIENT * getScreenWidth()), (int) (HEIGHT_COEFFICIENT * getScreenHeight()));
         this.populateMenuBar();
         dataPanels.setBackground(Color.GRAY);
         this.add(dataPanels);
@@ -781,42 +795,24 @@ public class JMainFrame extends JFrame {
         JMenuItem cartItem = new JMenuItem(ClassifiersNamesDictionary.CART);
         JMenuItem chaidItem = new JMenuItem(ClassifiersNamesDictionary.CHAID);
         JMenuItem j48Item = new JMenuItem(ClassifiersNamesDictionary.J48);
-        id3Item.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3());
-            }
-        });
-        c45Item.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45());
-            }
-        });
-        cartItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.CART, new CART());
-            }
-        });
-        chaidItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createTreeOptionDialog(ClassifiersNamesDictionary.CHAID, new CHAID());
-            }
-        });
-        j48Item.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        id3Item.addActionListener(event -> performTaskWithDataAndClassValidation(
+                () -> createTreeOptionDialog(ClassifiersNamesDictionary.ID3, new ID3())));
+        c45Item.addActionListener(event -> performTaskWithDataAndClassValidation(
+                () -> createTreeOptionDialog(ClassifiersNamesDictionary.C45, new C45())));
+        cartItem.addActionListener(event -> performTaskWithDataAndClassValidation(
+                () -> createTreeOptionDialog(ClassifiersNamesDictionary.CART, new CART())));
+        chaidItem.addActionListener(event -> performTaskWithDataAndClassValidation(
+                () -> createTreeOptionDialog(ClassifiersNamesDictionary.CHAID, new CHAID())));
+        j48Item.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         J48OptionsDialog frame = new J48OptionsDialog(JMainFrame.this,
                                 ClassifiersNamesDictionary.J48, new J48(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
         treesMenu.add(id3Item);
         treesMenu.add(c45Item);
@@ -827,29 +823,22 @@ public class JMainFrame extends JFrame {
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
         logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
         classifiersMenu.add(logisticItem);
-        logisticItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        logisticItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         LogisticOptionsDialogBase frame = new LogisticOptionsDialogBase(JMainFrame.this,
                                 ClassifiersNamesDictionary.LOGISTIC, new Logistic(), dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
         JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
         mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
         classifiersMenu.add(mlpItem);
-        mlpItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        mlpItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
@@ -860,20 +849,14 @@ public class JMainFrame extends JFrame {
                                 dataBuilder.getResult());
                         executeIterativeBuilding(frame, NETWORK_BUILDING_PROGRESS_TITLE);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
         JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
         knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
-        knnItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        knnItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
@@ -882,46 +865,36 @@ public class JMainFrame extends JFrame {
                                 ClassifiersNamesDictionary.KNN, kNearestNeighbours, dataBuilder.getResult());
                         executeSimpleBuilding(frame);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(),
-                            null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
         JMenuItem heterogeneousItem = new JMenuItem(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE);
-        heterogeneousItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createEnsembleOptionDialog(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE,
-                        new HeterogeneousClassifier(), true);
-            }
-        });
+        heterogeneousItem.addActionListener(e ->
+                performTaskWithDataAndClassValidation(
+                        () -> createEnsembleOptionDialog(EnsemblesNamesDictionary.HETEROGENEOUS_ENSEMBLE,
+                                new HeterogeneousClassifier(), true))
+        );
         ensembleMenu.add(heterogeneousItem);
 
         JMenuItem boostingItem = new JMenuItem(EnsemblesNamesDictionary.BOOSTING);
-        boostingItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createEnsembleOptionDialog(EnsemblesNamesDictionary.BOOSTING,
-                        new AdaBoostClassifier(), false);
-            }
-        });
+        boostingItem.addActionListener(e ->
+                performTaskWithDataAndClassValidation(
+                        () -> createEnsembleOptionDialog(EnsemblesNamesDictionary.BOOSTING, new AdaBoostClassifier(),
+                                false))
+        );
 
         JMenuItem rndSubSpaceItem = new JMenuItem(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE);
-        rndSubSpaceItem.addActionListener(e -> {
-            if (isDataAndClassValid()) {
-                createEnsembleOptionDialog(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE,
-                        new ModifiedHeterogeneousClassifier(), true);
-            }
-        });
+        rndSubSpaceItem.addActionListener(e ->
+                performTaskWithDataAndClassValidation(
+                        () -> createEnsembleOptionDialog(EnsemblesNamesDictionary.MODIFIED_HETEROGENEOUS_ENSEMBLE,
+                                new ModifiedHeterogeneousClassifier(), true))
+        );
         ensembleMenu.add(rndSubSpaceItem);
         ensembleMenu.add(boostingItem);
 
         JMenuItem rndForestsItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_FORESTS);
-        rndForestsItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        rndForestsItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         RandomForests randomForests = new RandomForests(dataBuilder.getResult());
@@ -932,19 +905,13 @@ public class JMainFrame extends JFrame {
                                         dataBuilder.getResult());
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         ensembleMenu.add(rndForestsItem);
 
         JMenuItem extraTreesItem = new JMenuItem(EnsemblesNamesDictionary.EXTRA_TREES);
-        extraTreesItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        extraTreesItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         ExtraTreesClassifier extraTreesClassifier = new ExtraTreesClassifier(dataBuilder.getResult());
@@ -953,19 +920,13 @@ public class JMainFrame extends JFrame {
                                 EnsemblesNamesDictionary.EXTRA_TREES, extraTreesClassifier, dataBuilder.getResult());
                         executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         ensembleMenu.add(extraTreesItem);
 
         JMenuItem stackingItem = new JMenuItem(EnsemblesNamesDictionary.STACKING);
-        stackingItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        stackingItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         StackingClassifier stackingClassifier = new StackingClassifier();
@@ -975,19 +936,13 @@ public class JMainFrame extends JFrame {
                                 maximumFractionDigits);
                         executeSimpleBuilding(frame);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         ensembleMenu.add(stackingItem);
 
         JMenuItem rndNetworksItem = new JMenuItem(EnsemblesNamesDictionary.RANDOM_NETWORKS);
-        rndNetworksItem.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        rndNetworksItem.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         RandomNetworks randomNetworks = new RandomNetworks();
@@ -1000,13 +955,8 @@ public class JMainFrame extends JFrame {
                         executeIterativeBuilding(networkOptionsDialog,
                                 ENSEMBLE_BUILDING_PROGRESS_TITLE);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         ensembleMenu.add(rndNetworksItem);
     }
 
@@ -1021,9 +971,8 @@ public class JMainFrame extends JFrame {
         JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
         JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
 
-        aNeuralMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        aNeuralMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         NeuralNetwork neuralNetwork = new NeuralNetwork(dataBuilder.getResult());
@@ -1036,78 +985,47 @@ public class JMainFrame extends JFrame {
                                         maximumFractionDigits);
                         experimentFrame.setVisible(true);
                     });
+                })
+        );
 
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        modifiedHeteroEnsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        modifiedHeteroEnsMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new ModifiedHeterogeneousClassifier(),
                                     modifiedHeteroEnsMenu.getText(), dataBuilder.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        aHeteroEnsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        aHeteroEnsMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new HeterogeneousClassifier(), aHeteroEnsMenu.getText(),
                                     dataBuilder.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        aAdaBoostMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        aAdaBoostMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
                                     dataBuilder.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        aStackingMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        aStackingMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
                             () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
                                     dataBuilder.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        knnOptimizerMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        knnOptimizerMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
@@ -1120,17 +1038,11 @@ public class JMainFrame extends JFrame {
                                         JMainFrame.this, maximumFractionDigits);
                         automatedKNearestNeighboursFrame.setVisible(true);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        automatedRandomForestsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        automatedRandomForestsMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         AutomatedRandomForests automatedRandomForests =
@@ -1141,17 +1053,11 @@ public class JMainFrame extends JFrame {
                                         automatedRandomForests, JMainFrame.this, maximumFractionDigits);
                         automatedRandomForestsFrame.setVisible(true);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
-        automatedDecisionTreeMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        automatedDecisionTreeMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         AutomatedDecisionTree automatedDecisionTree =
@@ -1162,13 +1068,8 @@ public class JMainFrame extends JFrame {
                                         maximumFractionDigits);
                         automatedDecisionTreeFrame.setVisible(true);
                     });
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
 
         dataMinerMenu.add(aNeuralMenu);
         dataMinerMenu.add(aHeteroEnsMenu);
@@ -1183,42 +1084,30 @@ public class JMainFrame extends JFrame {
     private void fillStatisticsMenu(JMenu statisticsMenu) {
         JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
         attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
-        attrStatisticsMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        attrStatisticsMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         AttributesStatisticsFrame frame = new AttributesStatisticsFrame(dataBuilder.getResult(),
                                 JMainFrame.this, maximumFractionDigits);
                         frame.setVisible(true);
                     });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         statisticsMenu.add(attrStatisticsMenu);
 
         JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
         scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
-        scatterDiagramMenu.addActionListener(event -> {
-            if (isDataAndClassValid()) {
-                try {
+        scatterDiagramMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         ScatterDiagramsFrame scatterDiagramsFrame = new ScatterDiagramsFrame(dataBuilder.getResult(),
                                 JMainFrame.this);
                         scatterDiagramsFrame.setVisible(true);
                     });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
+                })
+        );
         statisticsMenu.add(scatterDiagramMenu);
 
         JMenuItem contingencyTablesMenu = new JMenuItem(CONTINGENCY_TABLES_MENU_TEXT);
@@ -1271,7 +1160,7 @@ public class JMainFrame extends JFrame {
     private void fillReferenceMenu(JMenu referenceMenu) {
         JMenuItem aboutProgramMenu = new JMenuItem(ABOUT_PROGRAM_MENU_TEXT);
         JMenuItem reference = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
-        reference.setAccelerator(KeyStroke.getKeyStroke("F1"));
+        reference.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
 
         aboutProgramMenu.addActionListener(new ActionListener() {
 
@@ -1347,19 +1236,19 @@ public class JMainFrame extends JFrame {
     private void fillFileMenu(JMenu fileMenu) {
         JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
         openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
-        openFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl O"));
+        openFileMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_FILE_MENU_KEY_STROKE));
         openFileMenu.addActionListener(openFileActionListener());
         fileMenu.add(openFileMenu);
 
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
         saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         disabledMenuElementList.add(saveFileMenu);
-        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
+        saveFileMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
         fileMenu.add(saveFileMenu);
         saveFileMenu.addActionListener(saveFileActionListener());
 
         JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
-        dbMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift D"));
+        dbMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_DB_MENU_KEY_STROKE));
         dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(dbMenu);
@@ -1367,20 +1256,20 @@ public class JMainFrame extends JFrame {
 
         JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
         dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
-        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
+        dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_DB_MENU_KEY_STROKE));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(dbSaverActionListener());
         fileMenu.add(dbSaverMenu);
 
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
-        urlMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift N"));
+        urlMenu.setAccelerator(KeyStroke.getKeyStroke(URL_MENU_KEY_STROKE));
         urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(urlLoaderActionListener());
 
         JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
-        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl M"));
+        loadModelMenu.setAccelerator(KeyStroke.getKeyStroke(LOAD_MODEL_KEY_STROKE));
         loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
@@ -1388,7 +1277,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
         generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
-        generatorMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl shift G"));
+        generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
         fileMenu.addSeparator();
         fileMenu.add(generatorMenu);
         generatorMenu.addActionListener(dataGeneratorActionListener());
@@ -1435,9 +1324,11 @@ public class JMainFrame extends JFrame {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        processAsyncTask(progress,
-                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifier(),
-                        frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits));
+        processAsyncTask(progress, () -> {
+            iterativeBuilder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
+            createEvaluationResultsAsync(frame.getTitle(), frame.classifier(),
+                    frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits);
+        });
     }
 
     private boolean isDataAndClassValid() {
@@ -1511,8 +1402,7 @@ public class JMainFrame extends JFrame {
         }
     }
 
-    private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier,
-                                          String title, Instances data) throws Exception {
+    private void createEnsembleExperiment(AbstractHeterogeneousClassifier classifier, String title, Instances data) {
         classifier.setClassifiersSet(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedHeterogeneousEnsemble automatedHeterogeneousEnsemble =
                 new AutomatedHeterogeneousEnsemble(classifier, data);
@@ -1523,8 +1413,7 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private void createStackingExperiment(StackingClassifier classifier,
-                                          String title, Instances data) throws Exception {
+    private void createStackingExperiment(StackingClassifier classifier, String title, Instances data) {
         classifier.setClassifiers(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking automatedStacking = new AutomatedStacking(classifier, data);
         automatedStacking.setSeed(seed);
@@ -1691,41 +1580,29 @@ public class JMainFrame extends JFrame {
                     JOptionPane.showMessageDialog(JMainFrame.this, ECA_SERVICE_DISABLED_MESSAGE, null,
                             JOptionPane.WARNING_MESSAGE);
                 } else {
-                    if (isDataAndClassValid()) {
-                        try {
-                            final DataBuilder dataBuilder = new DataBuilder();
-                            prepareTrainingData(dataBuilder, () -> {
-                                ExperimentRequestDialog experimentRequestDialog =
-                                        new ExperimentRequestDialog(JMainFrame.this);
-                                experimentRequestDialog.showDialog(experimentRequestDto);
-                                if (experimentRequestDialog.isDialogResult()) {
-                                    experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
-                                    experimentRequestDto.setData(dataBuilder.getResult());
-                                    CallbackAction callbackAction = () -> {
-                                        String correlationId = UUID.randomUUID().toString();
-                                        rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
-                                                correlationId);
-                                        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                                                .correlationId(correlationId)
-                                                .requestType(EcaServiceRequestType.EXPERIMENT)
-                                                .status(EcaServiceTrackStatus.REQUEST_SENT)
-                                                .details(experimentRequestDto.getExperimentType().getDescription())
-                                                .relationName(dataBuilder.getResult().relationName())
-                                                .build();
-                                        addEcaServiceTrack(ecaServiceTrack);
-                                    };
-                                    LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction,
-                                            REQUEST_SENT_MESSAGE);
-                                    processAsyncTask(progress, () -> {
-                                    });
-                                }
-                            });
-                        } catch (Exception e) {
-                            LoggerUtils.error(log, e);
-                            JOptionPane.showMessageDialog(JMainFrame.this,
-                                    e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                        }
-                    }
+                    performTaskWithDataAndClassValidation(() -> {
+                        final DataBuilder dataBuilder = new DataBuilder();
+                        prepareTrainingData(dataBuilder, () -> {
+                            ExperimentRequestDialog experimentRequestDialog =
+                                    new ExperimentRequestDialog(JMainFrame.this);
+                            experimentRequestDialog.showDialog(experimentRequestDto);
+                            if (experimentRequestDialog.isDialogResult()) {
+                                experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
+                                experimentRequestDto.setData(dataBuilder.getResult());
+                                String correlationId = UUID.randomUUID().toString();
+                                rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
+                                        correlationId);
+                                EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                        .correlationId(correlationId)
+                                        .requestType(EcaServiceRequestType.EXPERIMENT)
+                                        .status(EcaServiceTrackStatus.REQUEST_SENT)
+                                        .details(experimentRequestDto.getExperimentType().getDescription())
+                                        .relationName(dataBuilder.getResult().relationName())
+                                        .build();
+                                addEcaServiceTrack(ecaServiceTrack);
+                            }
+                        });
+                    });
                 }
             }
         };
@@ -1737,41 +1614,28 @@ public class JMainFrame extends JFrame {
                 JOptionPane.showMessageDialog(JMainFrame.this, ECA_SERVICE_DISABLED_MESSAGE, null,
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                if (isDataAndClassValid()) {
-                    try {
-                        final DataBuilder dataBuilder = new DataBuilder();
-                        prepareTrainingData(dataBuilder, () -> {
-                            CallbackAction callbackAction = () -> {
-                                String correlationId = UUID.randomUUID().toString();
-                                rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
-                                        correlationId);
-                                EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                                        .correlationId(correlationId)
-                                        .requestType(EcaServiceRequestType.OPTIMAL_CLASSIFIER)
-                                        .status(EcaServiceTrackStatus.REQUEST_SENT)
-                                        .relationName(dataBuilder.getResult().relationName())
-                                        .build();
-                                addEcaServiceTrack(ecaServiceTrack);
-                            };
-                            LoadDialog progress =
-                                    new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
-                            processAsyncTask(progress, () -> {
-                            });
-                        });
-                    } catch (Exception e) {
-                        LoggerUtils.error(log, e);
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                    }
-                }
+                performTaskWithDataAndClassValidation(() -> {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    prepareTrainingData(dataBuilder, () -> {
+                        String correlationId = UUID.randomUUID().toString();
+                        rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
+                                correlationId);
+                        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                .correlationId(correlationId)
+                                .requestType(EcaServiceRequestType.OPTIMAL_CLASSIFIER)
+                                .status(EcaServiceTrackStatus.REQUEST_SENT)
+                                .relationName(dataBuilder.getResult().relationName())
+                                .build();
+                        addEcaServiceTrack(ecaServiceTrack);
+                    });
+                });
             }
         };
     }
 
     private ActionListener contingencyTableActionListener() {
-        return event -> {
-            if (isDataAndClassValid()) {
-                try {
+        return event ->
+                performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
                         ContingencyTableOptionsDialog contingencyTableOptionsDialog = new
@@ -1806,13 +1670,7 @@ public class JMainFrame extends JFrame {
                         }
                         contingencyTableOptionsDialog.dispose();
                     });
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        };
+                });
     }
 
     private ActionListener openFileActionListener() {
@@ -1916,9 +1774,9 @@ public class JMainFrame extends JFrame {
                                     new DatabaseSaverAction(databaseSaver, dataBuilder.getResult()),
                                     DB_SAVE_PROGRESS_MESSAGE_TEXT);
                             processAsyncTask(progress, () ->
-                                JOptionPane.showMessageDialog(JMainFrame.this,
-                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
-                                        JOptionPane.INFORMATION_MESSAGE)
+                                    JOptionPane.showMessageDialog(JMainFrame.this,
+                                            String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
+                                            JOptionPane.INFORMATION_MESSAGE)
                             );
                         }
                         databaseSaverDialog.dispose();

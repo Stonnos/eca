@@ -1,16 +1,7 @@
 <html>
 <head>
     <style>
-        .attr {
-            font-weight: bold;
-            font-family: 'Arial';
-            font-size: 12
-        }
-
-        .val {
-            font-family: 'Arial';
-            font-size: 12
-        }
+        #include("styles/styles.css")
     </style>
 </head>
 <body>

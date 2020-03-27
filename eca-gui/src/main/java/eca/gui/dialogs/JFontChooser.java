@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.dialogs;
 
 import eca.config.ConfigurationService;
@@ -10,9 +5,10 @@ import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
-import eca.gui.logging.LoggerUtils;
+import eca.gui.font.FontManager;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.accessibility.Accessible;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
@@ -49,16 +45,6 @@ public class JFontChooser extends JDialog {
     private static final int ITALIC_ID = 2;
     private static final int BOLD_AND_ITALIC_ID = 3;
 
-    private static String[] availableFontNames;
-
-    static {
-        try {
-            availableFontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-        }
-    }
-
     private JComboBox<String> fontNameBox;
     private JComboBox<String> fontSize;
     private JComboBox<String> fontStyle;
@@ -77,6 +63,7 @@ public class JFontChooser extends JDialog {
         this.setModal(true);
         this.setResizable(false);
         this.createGUI(font);
+        this.setExample();
         this.pack();
         this.setLocationRelativeTo(parent);
     }
@@ -119,7 +106,6 @@ public class JFontChooser extends JDialog {
                 return Font.ITALIC;
             case BOLD_AND_ITALIC_ID:
                 return Font.BOLD | Font.ITALIC;
-
             default:
                 throw new IllegalArgumentException(String.format("Unexpected font index: %d", index));
         }
@@ -139,7 +125,7 @@ public class JFontChooser extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
         panel.setBorder(PanelBorderUtils.createTitledBorder(SELECT_FONT_TITLE));
-        //---------------------------------
+
         createFontSizeComponent(font);
         createFontStyleComponent(font);
         createFontTypeComponent(font);
@@ -147,15 +133,14 @@ public class JFontChooser extends JDialog {
         fontNameBox.addItemListener(listener);
         fontSize.addItemListener(listener);
         fontStyle.addItemListener(listener);
-        //----------------------------------
+
         exampleField = new JTextArea(EXAMPLE_FIELD_ROWS, EXAMPLE_FIELD_COLUMNS);
         exampleField.setWrapStyleWord(true);
         exampleField.setLineWrap(true);
         exampleField.setEditable(false);
         JScrollPane bottom = new JScrollPane(exampleField);
         bottom.setBorder(PanelBorderUtils.createTitledBorder(FONT_EXAMPLE_TITLE));
-        setExample();
-        //---------------------------------
+
         panel.add(new JLabel(FONT_TYPE_TITLE),
                 new GridBagConstraints(0, 0, 1, 1, 1, 1,
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
@@ -171,7 +156,7 @@ public class JFontChooser extends JDialog {
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
         panel.add(bottom, new GridBagConstraints(0, 3, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
-        //---------------------------------
+
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
@@ -179,19 +164,19 @@ public class JFontChooser extends JDialog {
             dialogResult = false;
             setVisible(false);
         });
-        //-----------------------------------------------
+
         okButton.addActionListener(e -> {
             dialogResult = true;
             setVisible(false);
         });
-        //--------------------------------------------------------------------
+
         this.add(panel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 10, 0), 0, 0));
         this.add(okButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 8, 3), 0, 0));
         this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
-        //-----------------------------------------------
+
         this.getRootPane().setDefaultButton(okButton);
     }
 
@@ -201,7 +186,6 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontSizeComponent(Font font) {
-        fontNameBox = new JComboBox<>(availableFontNames);
         fontSize = new JComboBox<>();
         fontSize.setPreferredSize(COMBO_BOX_DIM);
         for (int i = MIN_FONT_SIZE; i <= MAX_FONT_SIZE; i++) {
@@ -211,16 +195,24 @@ public class JFontChooser extends JDialog {
     }
 
     private void createFontTypeComponent(Font font) {
+        String[] availableFontNames = FontManager.getFontManager().getAvailableFontNames();
+        Font[] allFonts = FontManager.getFontManager().getAllFonts();
         fontNameBox = new JComboBox<>(availableFontNames);
         fontNameBox.setPreferredSize(COMBO_BOX_DIM);
+        fontNameBox.setPrototypeDisplayValue(allFonts[0].getFontName());
+        Accessible accessibleChild = fontNameBox.getUI().getAccessibleChild(fontNameBox, 0);
+        if (accessibleChild instanceof javax.swing.plaf.basic.ComboPopup) {
+            JList popupList = ((javax.swing.plaf.basic.ComboPopup) accessibleChild).getList();
+            popupList.setPrototypeCellValue(fontNameBox.getPrototypeDisplayValue());
+        }
         fontNameBox.setRenderer(new DefaultListCellRenderer() {
 
             @Override
             public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(jlist, o, i, bln, bln1);
                 if (i >= 0) {
-                    label.setFont(new Font(availableFontNames[i], Font.PLAIN, DEFAULT_FONT_SIZE));
-                    label.setText(availableFontNames[i]);
+                    label.setFont(allFonts[i]);
+                    label.setText(allFonts[i].getFontName());
                 }
                 return label;
             }
@@ -250,6 +242,8 @@ public class JFontChooser extends JDialog {
                         case BOLD_AND_ITALIC_ID:
                             label.setFont(new Font(DEFAULT_FONT_NAME, Font.BOLD | Font.ITALIC, DEFAULT_FONT_SIZE));
                             break;
+                        default:
+                            throw new IllegalStateException("Unexpected font style!");
                     }
                     label.setText(STYLES[i]);
                 }
@@ -273,7 +267,6 @@ public class JFontChooser extends JDialog {
             case Font.ITALIC | Font.BOLD:
                 fontStyle.setSelectedIndex(BOLD_AND_ITALIC_ID);
                 break;
-
             default:
                 throw new IllegalArgumentException(String.format("Unexpected font style: %d", font.getStyle()));
         }

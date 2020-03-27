@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implements ensemble table.
@@ -77,7 +78,7 @@ public class EnsembleTable extends JDataTableBase {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(
                     ReportGenerator.getClassifierInputOptionsAsHtml(ensembleModel().get(row), false));
-            this.setText(value.toString());
+            this.setText(Optional.ofNullable(value).map(Object::toString).orElse(null));
             this.setBorder(null);
             this.setFont(EnsembleTable.this.getTableHeader().getFont());
             return this;

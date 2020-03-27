@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.DecimalFormat;
 import java.util.Enumeration;
+import java.util.Optional;
 
 import static eca.gui.service.ValidationService.isNumericOverflow;
 import static eca.gui.service.ValidationService.parseDate;
@@ -49,6 +50,10 @@ public class ClassifyInstanceTable extends JDataTableBase {
     private static final String ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT = "Не задано значение атрибута '%s'";
     private static final String INVALID_ATTR_VALUE_ERROR_FORMAT = "Недопустимое значение атрибута '%s'";
     private static final String INTEGER_REGEX = "^[0-9]+$";
+
+    private static final IntegerDocument INTEGER_DOCUMENT = new IntegerDocument(INT_FIELD_LENGTH);
+    private static final DoubleDocument DOUBLE_DOCUMENT = new DoubleDocument(MAX_FIELD_LENGTH);
+    private static final LengthDocument LENGTH_DOCUMENT = new LengthDocument(MAX_FIELD_LENGTH);
 
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private final AttributeStatistics attributeStatistics;
@@ -159,7 +164,7 @@ public class ClassifyInstanceTable extends JDataTableBase {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ReportGenerator.getAttributeStatisticsAsHtml(data.attribute(i),
                     attributeStatistics));
-            this.setText(value.toString());
+            this.setText(Optional.ofNullable(value).map(Object::toString).orElse(null));
             this.setBorder(null);
             this.setFont(ClassifyInstanceTable.this.getTableHeader().getFont());
             return this;
@@ -184,15 +189,13 @@ public class ClassifyInstanceTable extends JDataTableBase {
             Instances data = getClassifyInstanceTableModel().data();
             int i = row >= data.classIndex() ? row + 1 : row;
             JTextField textField = (JTextField) component;
-
             if (data.attribute(i).isDate()) {
-                textField.setDocument(new LengthDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(LENGTH_DOCUMENT);
             } else if (data.attribute(i).isNumeric()) {
-                textField.setDocument(new DoubleDocument(MAX_FIELD_LENGTH));
+                textField.setDocument(DOUBLE_DOCUMENT);
             } else {
-                textField.setDocument(new IntegerDocument(INT_FIELD_LENGTH));
+                textField.setDocument(INTEGER_DOCUMENT);
             }
-
             return component;
         }
     }

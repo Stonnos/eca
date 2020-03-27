@@ -17,6 +17,7 @@ import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.AttributeStatistics;
 import eca.statistics.contingency.ChiSquareTestResult;
 import eca.util.Utils;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -35,6 +36,7 @@ import static eca.util.VelocityUtils.mergeContext;
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ReportGenerator {
 
     /**
@@ -126,13 +128,26 @@ public class ReportGenerator {
     /**
      * Returns classifier input options html string.
      *
-     * @param classifier classifier object
-     * @param extended   extended options info for ensemble algorithms
+     * @param classifier - classifier object
+     * @param extended   - extended options info for ensemble algorithms
      * @return classifier input options html string
      */
     public static String getClassifierInputOptionsAsHtml(Classifier classifier, boolean extended) {
         Template template = VelocityConfigService.getTemplate(CLASSIFIER_INPUT_OPTIONS_VM);
         VelocityContext context = new VelocityContext();
+        populateClassifierInputOptions(context, classifier, extended);
+        return mergeContext(template, context);
+    }
+
+    /**
+     * Populate classifier input options string.
+     *
+     * @param context    - velocity context
+     * @param classifier - classifier object
+     * @param extended   - extended options info for ensemble algorithms
+     */
+    public static void populateClassifierInputOptions(VelocityContext context, Classifier classifier,
+                                                      boolean extended) {
         context.put(OPTIONS_MAP, Utils.getClassifierInputOptionsMap((AbstractClassifier) classifier));
         boolean canHandleExtendedOptions = canHandleExtendedOptions(classifier, extended);
         context.put(EXTENDED_OPTIONS, canHandleExtendedOptions);
@@ -147,7 +162,6 @@ public class ReportGenerator {
                 fillStackingExtendedOptions(stackingClassifier, context);
             }
         }
-        return mergeContext(template, context);
     }
 
     /**

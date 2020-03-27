@@ -1,6 +1,7 @@
 package eca.report.evaluation;
 
 import eca.report.ReportService;
+import eca.report.model.EvaluationReport;
 import lombok.Getter;
 
 import java.io.File;
@@ -38,7 +39,7 @@ public abstract class AbstractEvaluationReportService implements ReportService {
      * @param file - file
      */
     public void setFile(File file) {
-        Objects.requireNonNull(file, "file isn't specified!");
+        Objects.requireNonNull(file, "File isn't specified!");
         validateFile(file);
         this.file = file;
     }

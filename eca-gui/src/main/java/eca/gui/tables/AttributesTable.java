@@ -50,10 +50,10 @@ public class AttributesTable extends JDataTableBase {
         TableColumn col = this.getColumnModel().getColumn(AttributesTableModel.LIST_INDEX);
         col.setCellEditor(new JComboBoxEditor(types));
         col.setCellRenderer(new ComboBoxRenderer());
-        //-------------------------------------------------
+
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem renameMenu = new JMenuItem(RENAME_ATTR_MENU_TEXT);
-        //-----------------------------------
+
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override
@@ -64,12 +64,12 @@ public class AttributesTable extends JDataTableBase {
 
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-
+                // Not implemented
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-
+                // Not implemented
             }
         });
 
@@ -183,7 +183,6 @@ public class AttributesTable extends JDataTableBase {
                     AttributesTable.this.getFont().getSize()));
             return c;
         }
-
     }
 
 } //End of class AttributesTable

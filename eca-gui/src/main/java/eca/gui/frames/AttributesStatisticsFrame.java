@@ -74,6 +74,9 @@ public class AttributesStatisticsFrame extends JFrame {
             new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL);
     private static final int START_ANGLE = 290;
     private static final float FOREGROUND_ALPHA = 0.70f;
+    private static final int STATISTICS_TABLE_NAME_COLUMN_WIDTH = 275;
+    private static final int DATA_INFO_TABLE_NAME_COLUMN_WIDTH = 175;
+    private static final int DEFAULT_STATISTICS_TABLE_NAME_COLUMN_WIDTH = 25;
 
     private static PieSectionLabelGenerator pieSectionLabelGenerator;
 
@@ -111,10 +114,10 @@ public class AttributesStatisticsFrame extends JFrame {
         this.frequencyDiagramModels = new FrequencyDiagramModel[data.numAttributes()];
         this.dataFrames = new DataFrame[data.numInstances()];
         this.statisticsTable = new JDataTableBase();
+        this.statisticsTable.setAutoResizeOff(false);
         DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
         decimalFormat.setMaximumFractionDigits(digits);
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
-        this.statisticsTable.setAutoResizeOff(false);
         this.createGUI();
         this.setLocationRelativeTo(parent);
     }
@@ -128,6 +131,7 @@ public class AttributesStatisticsFrame extends JFrame {
         JPanel dataInfoPanel = new JPanel(new GridBagLayout());
         dataInfoPanel.setBorder(PanelBorderUtils.createTitledBorder(DATA_INFO_TITLE));
         JDataTableBase dataInfoTable = new JDataTableBase(new DataInfoTableModel(data));
+        dataInfoTable.getColumnModel().getColumn(0).setPreferredWidth(DATA_INFO_TABLE_NAME_COLUMN_WIDTH);
         dataInfoTable.setAutoResizeOff(false);
         JScrollPane tablePane = new JScrollPane(dataInfoTable);
 
@@ -287,16 +291,19 @@ public class AttributesStatisticsFrame extends JFrame {
         attributesBox.addActionListener(e -> {
             int i = attributesBox.getSelectedIndex();
             Attribute a = data.attribute(i);
+            int firstColumnWidth = DEFAULT_STATISTICS_TABLE_NAME_COLUMN_WIDTH;
             if (attributesStatisticsTableModels[i] == null) {
                 if (a.isNominal()) {
                     attributesStatisticsTableModels[i]
                             = new NominalAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
                 } else {
+                    firstColumnWidth = STATISTICS_TABLE_NAME_COLUMN_WIDTH;
                     attributesStatisticsTableModels[i] =
                             new NumericAttributeTableModel(a, frequencyDiagramBuilder.getAttributeStatistics());
                 }
             }
             statisticsTable.setModel(attributesStatisticsTableModels[i]);
+            this.statisticsTable.getColumnModel().getColumn(0).setPreferredWidth(firstColumnWidth);
             attributeTypeLabel.setText(AttributesTypesDictionary.getType(a));
             showFrequencyDiagramPlot(i);
         });

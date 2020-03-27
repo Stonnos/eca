@@ -1,0 +1,63 @@
+.statistics-table {
+    margin: auto;
+    width: 50%;
+    margin-bottom: 30px;
+}
+
+.classification-cost-table {
+    margin: auto;
+    width: 80%;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
+.confusion-table {
+    margin: auto;
+    width: 90%;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
+.logistic-coefficients-table {
+    margin: auto;
+    width: 90%;
+    overflow: scroll;
+    margin-bottom: 30px;
+}
+
+.attachment {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+.inputOptions {
+    margin: auto;
+    margin-bottom: 30px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid black;
+    background: #e2e2e2;
+}
+
+body {
+    background: rgb(198, 226, 255);
+}
+
+.attr {
+    font-family: initial !important;
+    font-size: 16px !important
+}
+
+.val {
+    font-family: initial !important;
+    font-size: 16px !important;
+}

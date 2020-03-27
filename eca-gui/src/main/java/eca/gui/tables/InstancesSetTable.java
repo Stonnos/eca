@@ -17,6 +17,8 @@ import java.util.ArrayList;
 @Slf4j
 public class InstancesSetTable extends JDataTableBase {
 
+    private static final int BUTTON_WIDTH = 125;
+
     private JFrame parentFrame;
     private ArrayList<InstancesFrame> instancesFrameArrayList = new ArrayList<>();
 
@@ -27,6 +29,7 @@ public class InstancesSetTable extends JDataTableBase {
                 .setCellRenderer(new JButtonRenderer(InstancesSetTableModel.RESULT_TITLE));
         this.getColumnModel().getColumn(InstancesSetTableModel.BUTTON_INDEX)
                 .setCellEditor(new JButtonInstancesEditor());
+        this.getColumnModel().getColumn(InstancesSetTableModel.BUTTON_INDEX).setMinWidth(BUTTON_WIDTH);
         this.setAutoResizeOff(false);
     }
 

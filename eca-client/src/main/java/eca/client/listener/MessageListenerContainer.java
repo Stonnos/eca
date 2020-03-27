@@ -40,7 +40,7 @@ public class MessageListenerContainer {
      */
     @Getter
     @Setter
-    private Map<String, AbstractRabbitListenerAdapter> rabbitListenerAdapters = newHashMap();
+    private Map<String, AbstractRabbitListenerAdapter<?>> rabbitListenerAdapters = newHashMap();
 
     /**
      * Connection attempt interval in millis
@@ -94,7 +94,7 @@ public class MessageListenerContainer {
     /**
      * Stop message listener container.
      */
-    public void stop() {
+    public void stop() throws IOException, TimeoutException  {
         synchronized (lifecycleMonitor) {
             if (!running) {
                 throw new IllegalStateException();
@@ -104,6 +104,7 @@ public class MessageListenerContainer {
             closeConnection();
             started = false;
             running = false;
+            log.info("Message listener container has been stopped");
         }
     }
 
@@ -120,21 +121,13 @@ public class MessageListenerContainer {
         }
     }
 
-    private void closeChannel() {
-        try {
-            RabbitUtils.closeChannel(channel);
-        } catch (IOException | TimeoutException ex) {
-            log.error(ex.getMessage());
-        }
+    private void closeChannel() throws IOException, TimeoutException {
+        RabbitUtils.closeChannel(channel);
         channel = null;
     }
 
-    private void closeConnection() {
-        try {
-            RabbitUtils.closeConnection(connection);
-        } catch (IOException ex) {
-            log.error(ex.getMessage());
-        }
+    private void closeConnection() throws IOException {
+        RabbitUtils.closeConnection(connection);
         connection = null;
     }
 
@@ -142,7 +135,8 @@ public class MessageListenerContainer {
         if (!futureTask.isCancelled()) {
             try {
                 channel = connection.createChannel();
-                for (Map.Entry<String, AbstractRabbitListenerAdapter> adapterEntry : rabbitListenerAdapters.entrySet()) {
+                for (Map.Entry<String, AbstractRabbitListenerAdapter<?>> adapterEntry :
+                        rabbitListenerAdapters.entrySet()) {
                     String queue = declareReplyToQueue(adapterEntry.getKey(), channel);
                     adapterEntry.getValue().basicConsume(channel, queue);
                 }

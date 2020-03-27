@@ -1,0 +1,29 @@
+<html>
+<head>
+    <style>
+        #include("styles/evaluation-results.css")
+    </style>
+</head>
+<body>
+#parse("evaluationResultsReport.vm")
+
+<center>
+    <h3 style="margin: 15px;">Оценки коэффициентов модели</h3>
+</center>
+<table class="logistic-coefficients-table">
+    <tr>
+        #foreach($header in $logisticCoefficients.headers)
+            <th>$header</th>
+        #end
+    </tr>
+    #foreach($record in $logisticCoefficients.coefficientsRecords)
+        <tr>
+            <td>$record.attrValue</td>
+            #foreach($val in $record.coefficients)
+                <td>$val</td>
+            #end
+        </tr>
+    #end
+</table>
+</body>
+</html>

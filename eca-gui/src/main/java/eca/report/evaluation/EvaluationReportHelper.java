@@ -3,6 +3,7 @@ package eca.report.evaluation;
 import eca.data.FileUtils;
 import eca.report.evaluation.html.EvaluationHtmlReportService;
 import eca.report.evaluation.xls.EvaluationXlsReportService;
+import eca.report.model.EvaluationReport;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;

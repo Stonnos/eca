@@ -1,0 +1,14 @@
+<html>
+<head>
+    <style>
+        #include("styles/evaluation-results.css")
+    </style>
+</head>
+<body>
+#parse("evaluationResultsReport.vm")
+<figure class="attachment">
+    <p><img src="data:image/png;base64,$treeImage.base64String"></p>
+    <figcaption>$treeImage.title</figcaption>
+</figure>
+</body>
+</html>

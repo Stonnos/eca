@@ -178,12 +178,9 @@ public class JDataTableBase extends JTable {
      */
     private class JTableClipboard {
 
-        StringCopier stringCopier;
+        StringCopier stringCopier = new StringCopier();
 
         void copy(boolean copyHeaders) {
-            if (stringCopier == null) {
-                stringCopier = new StringCopier();
-            }
             stringCopier.setCopyString(JTableConverter.convertToString(JDataTableBase.this, copyHeaders));
             stringCopier.copy();
         }

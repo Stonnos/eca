@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Roman Batygin
@@ -118,7 +119,7 @@ public class ExperimentTable extends JDataTableBase {
             GuiUtils.updateForegroundAndBackGround(this, table, isSelected);
             this.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(experimentModel()
                     .getClassifier(row), false));
-            this.setText(value.toString());
+            this.setText(Optional.ofNullable(value).map(Object::toString).orElse(null));
             this.setBorder(null);
             this.setFont(ExperimentTable.this.getTableHeader().getFont());
             return this;

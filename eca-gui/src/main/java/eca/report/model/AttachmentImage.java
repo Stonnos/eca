@@ -1,4 +1,4 @@
-package eca.report.evaluation;
+package eca.report.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

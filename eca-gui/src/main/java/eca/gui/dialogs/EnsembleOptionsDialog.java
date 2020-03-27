@@ -82,8 +82,6 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     private JTextField numClassifiersTextField;
     private JTextField classifierMinErrorTextField;
     private JTextField classifierMaxErrorTextField;
-    private JList<String> algorithms;
-    private JList<String> selectedAlgorithms;
     private BaseClassifiersListModel baseClassifiersListModel;
     private JPanel samplePanel;
 
@@ -202,11 +200,11 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
 
     private JPanel createAlgorithmSelectionPanel(Dimension algorithmsPaneDim) {
         JPanel algorithmsPanel = new JPanel(new GridBagLayout());
-        algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
+        JList<String> algorithms = new JList<>(AVAILABLE_INDIVIDUAL_CLASSIFIERS);
         algorithms.setPreferredSize(algorithmsPaneDim);
         algorithms.setMinimumSize(algorithmsPaneDim);
         algorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        //-------------------------------------------------
+
         JScrollPane algorithmsPane = new JScrollPane(algorithms);
         algorithmsPane.setPreferredSize(algorithmsPaneDim);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TITLE));
@@ -225,7 +223,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
     private JPanel createSelectedAlgorithmsPanel(Dimension algorithmsPaneDim, int digits) {
         JPanel selectedAlgorithmsPanel = new JPanel(new GridBagLayout());
         baseClassifiersListModel = new BaseClassifiersListModel(data(), this, digits);
-        selectedAlgorithms = new JList<>(baseClassifiersListModel);
+        JList<String> selectedAlgorithms = new JList<>(baseClassifiersListModel);
         selectedAlgorithms.setMinimumSize(algorithmsPaneDim);
         selectedAlgorithms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane selectedPane = new JScrollPane(selectedAlgorithms);
@@ -269,7 +267,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         JRadioButton optimalClsRadioButton = new JRadioButton(CLS_SELECTION_METHOD[1]);
         clsGroup.add(randomClsRadioButton);
         clsGroup.add(optimalClsRadioButton);
-        //--------------------------------
+
         randomClsRadioButton.addItemListener(e -> {
             if (classifier() instanceof HeterogeneousClassifier) {
                 ((HeterogeneousClassifier) classifier()).setUseRandomClassifier(true);
@@ -327,7 +325,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         group.add(baggingRadioButton);
         group.add(randomRadioButton);
         group.add(randomBaggingRadioButton);
-        //--------------------------------
+
         initialRadioButton.addItemListener(e -> {
             if (classifier() instanceof HeterogeneousClassifier) {
                 ((HeterogeneousClassifier) classifier()).setSamplingMethod(SamplingMethod.INITIAL);
@@ -349,7 +347,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
             }
         });
         initialRadioButton.setSelected(true);
-        //-----------------------------------------------
+
         samplePanel.add(initialRadioButton, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
         samplePanel.add(baggingRadioButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,

@@ -1,13 +1,19 @@
 package eca.gui.frames;
 
+import eca.buffer.StringCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.dialogs.JFontChooser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author Roman Batygin
@@ -17,6 +23,7 @@ public class ConsoleFrame extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
+    private static final String DATA_COPY_MENU_TEXT = "Копировать";
     private static final String CONSOLE_TITLE = "Консоль";
     private static final String OPTIONS_MENU_TEXT = "Настройки";
     private static final String SELECTED_FONT_MENU_TEXT = "Выбор шрифта";
@@ -30,7 +37,7 @@ public class ConsoleFrame extends JFrame {
         this.textArea = textArea;
         this.setLayout(new GridBagLayout());
         this.setTitle(CONSOLE_TITLE);
-        this.createMenuBar();
+        this.createPopMenu();
         try {
             this.setIconImage(parent.getIconImage());
         } catch (Exception e) {
@@ -50,17 +57,13 @@ public class ConsoleFrame extends JFrame {
         this.setLocationRelativeTo(parent);
     }
 
-    private void createMenuBar() {
-        JMenuBar menu = new JMenuBar();
-        JMenu fileMenu = new JMenu(OPTIONS_MENU_TEXT);
+    private void createPopMenu() {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
+        copyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
         JMenuItem fontMenu = new JMenuItem(SELECTED_FONT_MENU_TEXT);
         JMenuItem backgroundColorMenu = new JMenuItem(BACKGROUND_COLOR_MENU_TEXT);
         JMenuItem fontColorMenu = new JMenuItem(FONT_COLOR_MENU_TEXT);
-        fileMenu.add(fontMenu);
-        fileMenu.add(fontColorMenu);
-        fileMenu.add(backgroundColorMenu);
-        menu.add(fileMenu);
-
         fontMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.FONT_ICON)));
         fontMenu.addActionListener(e -> {
             JFontChooser chooser = new JFontChooser(ConsoleFrame.this, textArea.getFont());
@@ -89,6 +92,37 @@ public class ConsoleFrame extends JFrame {
                 textArea.setBackground(selectedColor);
             }
         });
-        this.setJMenuBar(menu);
+        copyMenu.addActionListener(new ActionListener() {
+
+            StringCopier stringCopier = new StringCopier();
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                stringCopier.setCopyString(textArea.getSelectedText());
+                stringCopier.copy();
+            }
+        });
+        popupMenu.addPopupMenuListener(new PopupMenuListener() {
+
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+               copyMenu.setEnabled(!StringUtils.isEmpty(textArea.getSelectedText()));
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                // Not implemented
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                // Not implemented
+            }
+        });
+        popupMenu.add(fontMenu);
+        popupMenu.add(fontColorMenu);
+        popupMenu.add(backgroundColorMenu);
+        popupMenu.add(copyMenu);
+        textArea.setComponentPopupMenu(popupMenu);
     }
 }

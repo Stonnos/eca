@@ -1,5 +1,6 @@
 package eca.report.evaluation.xls;
 
+import com.google.common.collect.ImmutableList;
 import eca.core.evaluation.Evaluation;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
@@ -7,24 +8,30 @@ import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.StackingClassifier;
 import eca.report.evaluation.AbstractEvaluationReportService;
-import eca.report.evaluation.AttachmentImage;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import eca.report.model.AttachmentImage;
+import eca.report.model.DecisionTreeReport;
+import eca.report.model.EvaluationReport;
+import eca.report.model.LogisticReport;
+import eca.report.model.NeuralNetworkReport;
+import lombok.Cleanup;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -55,8 +62,6 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private static final int FONT_SIZE = 12;
     private static final int PICTURE_ANCHOR_COL1 = 5;
     private static final int PICTURE_ANCHOR_ROW1 = 5;
-    private static final short PICTURE_COL_1 = 0;
-    private static final short PICTURE_COL_2 = 0;
     private static final String ACTUAL_CLASS_TEXT = "Реальное";
     private static final String PREDICTED_VALUE_FORMAT = "%s (Прогнозное)";
     private static final String[] COST_CLASSIFICATION_HEADER =
@@ -74,19 +79,14 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private static final int FM_COL_IDX = 7;
     private static final int AUC_COL_IDX = 8;
 
+    private List<EvaluationReportHandler> evaluationReportHandlers =
+            ImmutableList.of(new DecisionTreeReportHandler(), new NeuralNetworkReportHandler(),
+                    new LogisticReportHandler());
+
     @Override
     public void saveReport() throws Exception {
         try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
-            Font font = createTitleFont(book);
-            CellStyle style = book.createCellStyle();
-            style.setFont(font);
-            createClassifierInputParamSheet(book, style);
-            createXlsResultsSheet(book, style);
-            if (getEvaluationReport().getAttachmentImages() != null) {
-                for (AttachmentImage attachmentImage : getEvaluationReport().getAttachmentImages()) {
-                    writeImage(getFile(), book, (BufferedImage) attachmentImage.getImage(), attachmentImage.getTitle());
-                }
-            }
+            populateReportData(book);
             book.write(stream);
         }
     }
@@ -110,6 +110,31 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         return font;
     }
 
+    private void populateRocCurveImage(Workbook book) throws Exception {
+        AttachmentImage rocCurveImage = getEvaluationReport().getRocCurveImage();
+        writeImage(book, (BufferedImage) rocCurveImage.getImage(), rocCurveImage.getTitle());
+    }
+
+    private void populateReportData(Workbook book) throws Exception {
+        Font font = createTitleFont(book);
+        CellStyle style = book.createCellStyle();
+        style.setFont(font);
+        createClassifierInputParamSheet(book, style);
+        createXlsResultsSheet(book, style);
+        populateRocCurveImage(book);
+        populateAdditionalReportData(book);
+    }
+
+    private void populateAdditionalReportData(Workbook workbook) throws Exception {
+        EvaluationReportHandler evaluationReportHandler = evaluationReportHandlers.stream()
+                .filter(h -> h.canHandle(getEvaluationReport()))
+                .findFirst()
+                .orElse(null);
+        if (evaluationReportHandler != null) {
+            evaluationReportHandler.populateReport(workbook, getEvaluationReport());
+        }
+    }
+
     private void createClassifierInputParamSheet(Workbook book, CellStyle style) {
         Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
         AbstractClassifier classifier = (AbstractClassifier) getEvaluationReport().getClassifier();
@@ -122,8 +147,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             AbstractHeterogeneousClassifier heterogeneousClassifier = (AbstractHeterogeneousClassifier) classifier;
             ClassifiersSet classifiersSet = heterogeneousClassifier.getClassifiersSet();
             setXlsEnsembleOptions(sheet, style, classifiersSet.toList());
-        }
-        if (classifier instanceof StackingClassifier) {
+        } else if (classifier instanceof StackingClassifier) {
             createTitle(sheet, style, CLASSIFIERS_INPUT_OPTIONS);
             StackingClassifier stackingClassifier = (StackingClassifier) classifier;
             setXlsEnsembleOptions(sheet, style, stackingClassifier.getClassifiers().toList());
@@ -198,12 +222,21 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         return cellStyle;
     }
 
+    private CellStyle createHeaderStyle(Workbook book) {
+        CellStyle style = createBorderedCellStyle(book);
+        Font font = book.createFont();
+        font.setBold(true);
+        style.setFont(font);
+        return style;
+    }
+
     private void createXlsResultsSheet(Workbook book, CellStyle style) {
         Sheet sheet = book.createSheet(RESULTS_TEXT);
         CellStyle tableStyle = createBorderedCellStyle(book);
+        CellStyle headerStyle = createHeaderStyle(book);
         createStatisticsTable(sheet, style, tableStyle);
-        createCostMatrix(sheet, style, tableStyle);
-        createMisClassificationMatrix(sheet, style, tableStyle);
+        createCostMatrix(sheet, style, tableStyle, headerStyle);
+        createMisClassificationMatrix(sheet, style, tableStyle, headerStyle);
     }
 
     private void createStatisticsTable(Sheet sheet, CellStyle style, CellStyle tableStyle) {
@@ -222,7 +255,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         });
     }
 
-    private void createMisClassificationMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle) {
+    private void createMisClassificationMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle,
+                                               CellStyle headerStyle) {
         Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
         Cell cell = row.createCell(0);
         cell.setCellStyle(titleStyle);
@@ -231,13 +265,13 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
         //Creates table header
         cell = row.createCell(0);
-        cell.setCellStyle(tableStyle);
+        cell.setCellStyle(headerStyle);
         cell.setCellValue(ACTUAL_CLASS_TEXT);
         sheet.autoSizeColumn(0);
         Attribute classAttribute = getEvaluationReport().getData().classAttribute();
         for (int i = 1; i <= classAttribute.numValues(); i++) {
             cell = row.createCell(i);
-            cell.setCellStyle(tableStyle);
+            cell.setCellStyle(headerStyle);
             cell.setCellValue(String.format(PREDICTED_VALUE_FORMAT, classAttribute.value(i - 1)));
             sheet.autoSizeColumn(i);
         }
@@ -257,78 +291,188 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         }
     }
 
-    private void createCostMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle) {
+    private void createCostMatrix(Sheet sheet, CellStyle titleStyle, CellStyle tableStyle, CellStyle headerStyle) {
         Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
         Cell cell = row.createCell(0);
         cell.setCellStyle(titleStyle);
         cell.setCellValue(RESULTS_TEXT);
         row = sheet.createRow(sheet.getPhysicalNumberOfRows());
-
         //Creates table header
         for (int i = 0; i < COST_CLASSIFICATION_HEADER.length; i++) {
             cell = row.createCell(i);
-            cell.setCellStyle(tableStyle);
+            cell.setCellStyle(headerStyle);
             cell.setCellValue(COST_CLASSIFICATION_HEADER[i]);
         }
-
         //Creates results table
         Attribute classAttribute = getEvaluationReport().getData().classAttribute();
-        Evaluation evaluation = getEvaluationReport().getEvaluation();
         for (int i = 0; i < classAttribute.numValues(); i++) {
             row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             for (int j = 0; j < COST_CLASSIFICATION_HEADER.length; j++) {
                 cell = row.createCell(j);
                 cell.setCellStyle(tableStyle);
-                switch (j) {
-                    case CLASS_COL_IDX:
-                        cell.setCellValue(classAttribute.value(i));
-                        break;
-                    case TP_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.truePositiveRate(i)));
-                        break;
-                    case FP_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.falsePositiveRate(i)));
-                        break;
-                    case TN_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.trueNegativeRate(i)));
-                        break;
-                    case FN_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.falseNegativeRate(i)));
-                        break;
-                    case RECALL_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.recall(i)));
-                        break;
-                    case PRECISION_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.precision(i)));
-                        break;
-                    case FM_COL_IDX:
-                        setCellValue(cell, getDecimalFormat().format(evaluation.fMeasure(i)));
-                        break;
-                    case AUC_COL_IDX:
-                        double aucValue = evaluation.areaUnderROC(i);
-                        setCellValue(cell, Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
-                        break;
-                }
+                setEvaluationResultsValue(cell, j, i);
             }
         }
     }
 
-    private void writeImage(File file, Workbook book, BufferedImage image, String title) throws Exception {
+    private void setEvaluationResultsValue(Cell cell, int column, int classIndex) {
+        Attribute classAttribute = getEvaluationReport().getData().classAttribute();
+        Evaluation evaluation = getEvaluationReport().getEvaluation();
+        switch (column) {
+            case CLASS_COL_IDX:
+                cell.setCellValue(classAttribute.value(classIndex));
+                break;
+            case TP_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.truePositiveRate(classIndex)));
+                break;
+            case FP_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.falsePositiveRate(classIndex)));
+                break;
+            case TN_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.trueNegativeRate(classIndex)));
+                break;
+            case FN_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.falseNegativeRate(classIndex)));
+                break;
+            case RECALL_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.recall(classIndex)));
+                break;
+            case PRECISION_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.precision(classIndex)));
+                break;
+            case FM_COL_IDX:
+                setCellValue(cell, getDecimalFormat().format(evaluation.fMeasure(classIndex)));
+                break;
+            case AUC_COL_IDX:
+                double aucValue = evaluation.areaUnderROC(classIndex);
+                setCellValue(cell, Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected column index!");
+        }
+    }
+
+    private void writeImage(Workbook book, BufferedImage image, String title) throws Exception {
         Sheet sheet = book.createSheet(title);
-        try (ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream()) {
-            ImageIO.write(image, PNG, byteArrayImg);
-            int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
-            ClientAnchor anchor;
-            if (file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension())) {
-                anchor = new HSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);
-            } else {
-                anchor = new XSSFClientAnchor(0, 0, 0, 0, PICTURE_COL_1, 0, PICTURE_COL_2, 0);
+        @Cleanup ByteArrayOutputStream byteArrayImg = new ByteArrayOutputStream();
+        ImageIO.write(image, PNG, byteArrayImg);
+        int pictureIdx = sheet.getWorkbook().addPicture(byteArrayImg.toByteArray(), Workbook.PICTURE_TYPE_PNG);
+        CreationHelper factory = book.getCreationHelper();
+        ClientAnchor anchor = factory.createClientAnchor();
+        anchor.setCol1(PICTURE_ANCHOR_COL1);
+        anchor.setRow1(PICTURE_ANCHOR_ROW1);
+        Drawing drawing = sheet.createDrawingPatriarch();
+        Picture pict = drawing.createPicture(anchor, pictureIdx);
+        pict.resize();
+    }
+
+    /**
+     * Evaluation report handler.
+     *
+     * @param <T> - evaluation report generic type
+     */
+    @RequiredArgsConstructor
+    private abstract class EvaluationReportHandler<T extends EvaluationReport> {
+
+        private final Class<T> reportClazz;
+
+        boolean canHandle(T report) {
+            return reportClazz.isAssignableFrom(report.getClass());
+        }
+
+        abstract void populateReport(Workbook workbook, T report) throws Exception;
+    }
+
+    /**
+     * Decision tree report handler.
+     */
+    private class DecisionTreeReportHandler extends EvaluationReportHandler<DecisionTreeReport> {
+
+        DecisionTreeReportHandler() {
+            super(DecisionTreeReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, DecisionTreeReport report) throws Exception {
+            AttachmentImage treeImage = report.getTreeImage();
+            writeImage(workbook, (BufferedImage) treeImage.getImage(), treeImage.getTitle());
+        }
+    }
+
+    /**
+     * Neural network report handler.
+     */
+    private class NeuralNetworkReportHandler extends EvaluationReportHandler<NeuralNetworkReport> {
+
+        NeuralNetworkReportHandler() {
+            super(NeuralNetworkReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, NeuralNetworkReport report) throws Exception {
+            AttachmentImage networkImage = report.getNetworkImage();
+            writeImage(workbook, (BufferedImage) networkImage.getImage(), networkImage.getTitle());
+        }
+    }
+
+    /**
+     * Logistic report handler.
+     */
+    private class LogisticReportHandler extends EvaluationReportHandler<LogisticReport> {
+
+        static final String INTERCEPT = "Intercept";
+        static final String ATTR_TEXT = "Атрибут";
+        static final String CLASS_FORMAT = "Класс %d";
+
+        LogisticReportHandler() {
+            super(LogisticReport.class);
+        }
+
+        @Override
+        void populateReport(Workbook workbook, LogisticReport report) throws Exception {
+            Sheet sheet = workbook.createSheet(report.getLogisticCoefficientsModel().getTitle());
+            populateCoefficients(workbook, sheet, report);
+        }
+
+        void populateCoefficients(Workbook book, Sheet sheet, LogisticReport report) {
+            CellStyle tableStyle = createBorderedCellStyle(book);
+            populateCoefficientsHeader(book, sheet, report);
+            Attribute classAttribute = report.getData().classAttribute();
+            double[][] coefficients = report.getLogisticCoefficientsModel().getCoefficients();
+            for (int i = 0; i < coefficients.length; i++) {
+                Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+                Cell cell = row.createCell(0);
+                cell.setCellStyle(tableStyle);
+                cell.setCellValue(getAttributeName(i, report.getLogisticCoefficientsModel().getMeta()));
+                sheet.autoSizeColumn(0);
+                for (int j = 0; j < classAttribute.numValues() - 1; j++) {
+                    int cellIdx = j + 1;
+                    cell = row.createCell(cellIdx);
+                    cell.setCellStyle(tableStyle);
+                    setCellValue(cell, getDecimalFormat().format(coefficients[i][j]));
+                    sheet.autoSizeColumn(cellIdx);
+                }
             }
-            anchor.setCol1(PICTURE_ANCHOR_COL1);
-            anchor.setRow1(PICTURE_ANCHOR_ROW1);
-            Drawing drawing = sheet.createDrawingPatriarch();
-            Picture pict = drawing.createPicture(anchor, pictureIdx);
-            pict.resize();
+        }
+
+        void populateCoefficientsHeader(Workbook book, Sheet sheet, LogisticReport report) {
+            CellStyle headerStyle = createHeaderStyle(book);
+            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
+            Cell cell = row.createCell(0);
+            cell.setCellStyle(headerStyle);
+            cell.setCellValue(ATTR_TEXT);
+            sheet.autoSizeColumn(0);
+            Attribute classAttribute = report.getData().classAttribute();
+            for (int i = 1; i < classAttribute.numValues(); i++) {
+                cell = row.createCell(i);
+                cell.setCellStyle(headerStyle);
+                cell.setCellValue(String.format(CLASS_FORMAT, i - 1));
+                sheet.autoSizeColumn(i);
+            }
+        }
+
+        String getAttributeName(int attrIndex, Instances data) {
+            return attrIndex == 0 ? INTERCEPT : data.attribute(attrIndex - 1).name();
         }
     }
 }
