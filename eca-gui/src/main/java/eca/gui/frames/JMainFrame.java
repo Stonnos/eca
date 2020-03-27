@@ -163,7 +163,6 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
-    private static final String REQUEST_SENT_MESSAGE = "Пожалуйста подождите, идет отправка запроса..";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
@@ -612,30 +611,25 @@ public class JMainFrame extends JFrame {
         processAsyncTask(progress, () -> callback.getResult().setVisible(true));
     }
 
-    private void executeWithEcaService(final ClassifierOptionsDialogBase frame) throws Exception {
+    private void executeWithEcaService(final ClassifierOptionsDialogBase frame) {
         rabbitClient.setEvaluationMethod(evaluationMethodOptionsDialog.getEvaluationMethod());
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethodOptionsDialog.getEvaluationMethod())) {
             rabbitClient.setNumFolds(evaluationMethodOptionsDialog.numFolds());
             rabbitClient.setNumTests(evaluationMethodOptionsDialog.numTests());
             rabbitClient.setSeed(seed);
         }
-        CallbackAction callbackAction = () -> {
-            String correlationId = UUID.randomUUID().toString();
-            AbstractClassifier classifier = (AbstractClassifier) frame.classifier();
-            rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
-            EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                    .correlationId(correlationId)
-                    .requestType(EcaServiceRequestType.CLASSIFIER)
-                    .status(EcaServiceTrackStatus.REQUEST_SENT)
-                    .details(frame.getTitle())
-                    .relationName(frame.data().relationName())
-                    .additionalData(Utils.getClassifierInputOptionsMap(classifier))
-                    .build();
-            addEcaServiceTrack(ecaServiceTrack);
-        };
-        LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
-        processAsyncTask(progress, () -> {
-        });
+        String correlationId = UUID.randomUUID().toString();
+        AbstractClassifier classifier = (AbstractClassifier) frame.classifier();
+        rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
+        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                .correlationId(correlationId)
+                .requestType(EcaServiceRequestType.CLASSIFIER)
+                .status(EcaServiceTrackStatus.REQUEST_SENT)
+                .details(frame.getTitle())
+                .relationName(frame.data().relationName())
+                .additionalData(Utils.getClassifierInputOptionsMap(classifier))
+                .build();
+        addEcaServiceTrack(ecaServiceTrack);
     }
 
     private void performTaskWithDataAndClassValidation(CallbackAction action) {
@@ -1595,23 +1589,17 @@ public class JMainFrame extends JFrame {
                             if (experimentRequestDialog.isDialogResult()) {
                                 experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
                                 experimentRequestDto.setData(dataBuilder.getResult());
-                                CallbackAction callbackAction = () -> {
-                                    String correlationId = UUID.randomUUID().toString();
-                                    rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
-                                            correlationId);
-                                    EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                                            .correlationId(correlationId)
-                                            .requestType(EcaServiceRequestType.EXPERIMENT)
-                                            .status(EcaServiceTrackStatus.REQUEST_SENT)
-                                            .details(experimentRequestDto.getExperimentType().getDescription())
-                                            .relationName(dataBuilder.getResult().relationName())
-                                            .build();
-                                    addEcaServiceTrack(ecaServiceTrack);
-                                };
-                                LoadDialog progress = new LoadDialog(JMainFrame.this, callbackAction,
-                                        REQUEST_SENT_MESSAGE);
-                                processAsyncTask(progress, () -> {
-                                });
+                                String correlationId = UUID.randomUUID().toString();
+                                rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
+                                        correlationId);
+                                EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                        .correlationId(correlationId)
+                                        .requestType(EcaServiceRequestType.EXPERIMENT)
+                                        .status(EcaServiceTrackStatus.REQUEST_SENT)
+                                        .details(experimentRequestDto.getExperimentType().getDescription())
+                                        .relationName(dataBuilder.getResult().relationName())
+                                        .build();
+                                addEcaServiceTrack(ecaServiceTrack);
                             }
                         });
                     });
@@ -1629,22 +1617,16 @@ public class JMainFrame extends JFrame {
                 performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder, () -> {
-                        CallbackAction callbackAction = () -> {
-                            String correlationId = UUID.randomUUID().toString();
-                            rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
-                                    correlationId);
-                            EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
-                                    .correlationId(correlationId)
-                                    .requestType(EcaServiceRequestType.OPTIMAL_CLASSIFIER)
-                                    .status(EcaServiceTrackStatus.REQUEST_SENT)
-                                    .relationName(dataBuilder.getResult().relationName())
-                                    .build();
-                            addEcaServiceTrack(ecaServiceTrack);
-                        };
-                        LoadDialog progress =
-                                new LoadDialog(JMainFrame.this, callbackAction, REQUEST_SENT_MESSAGE);
-                        processAsyncTask(progress, () -> {
-                        });
+                        String correlationId = UUID.randomUUID().toString();
+                        rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
+                                correlationId);
+                        EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
+                                .correlationId(correlationId)
+                                .requestType(EcaServiceRequestType.OPTIMAL_CLASSIFIER)
+                                .status(EcaServiceTrackStatus.REQUEST_SENT)
+                                .relationName(dataBuilder.getResult().relationName())
+                                .build();
+                        addEcaServiceTrack(ecaServiceTrack);
                     });
                 });
             }
