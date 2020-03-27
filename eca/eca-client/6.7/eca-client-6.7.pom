@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>eca</artifactId>
+        <groupId>eca</groupId>
+        <version>6.7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>eca-client</artifactId>
+    <version>6.7</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <jackson.version>2.10.3</jackson.version>
+        <jackson.databind.version>2.10.3</jackson.databind.version>
+        <amqp-client.version>5.7.3</amqp-client.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>eca</groupId>
+            <artifactId>eca-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>${amqp-client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.databind.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
