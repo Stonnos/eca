@@ -51,6 +51,7 @@ public class QueryFrame extends JFrame {
 
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
     private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в таблице!";
+    private static final String EXAMPLE_QUERY = "select * from table_name";
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
     private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
@@ -238,6 +239,7 @@ public class QueryFrame extends JFrame {
         Style style = styledDocument.addStyle(BLUE_STYLE_NAME, null);
         StyleConstants.setForeground(style, HIGHLIGHT_COLOR);
         styledDocument.setDocumentFilter(new SqlHighlightFilter());
+        queryArea.setText(EXAMPLE_QUERY);
     }
 
     private void initializeSql2003KeyWords() {
