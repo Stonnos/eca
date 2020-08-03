@@ -50,7 +50,7 @@ public class QueryFrame extends JFrame {
     private static final String START_BUTTON_TEXT = "Выполнить";
 
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
-    private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
+    private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в таблице!";
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
     private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
@@ -345,7 +345,8 @@ public class QueryFrame extends JFrame {
                         next = content.indexOf(word, next);
                         int end = next + word.length();
                         document.setCharacterAttributes(next, end,
-                                queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                                queryArea.getStyle(
+                                        sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
                                 true);
                         next = end;
                     }
