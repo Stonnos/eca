@@ -36,7 +36,7 @@ public class GuiUtils {
     }
 
     public static boolean isEmpty(JTextField jTextField) {
-        return !Optional.ofNullable(jTextField).map(JTextField::getText).isPresent()
+        return Optional.ofNullable(jTextField).map(JTextField::getText).isEmpty()
                 || StringUtils.isEmpty(jTextField.getText().trim());
     }
 
