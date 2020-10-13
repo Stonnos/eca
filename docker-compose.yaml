@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  ftp_server:
+    image: stilliard/pure-ftpd
+    container_name: ftp_server
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    volumes:
+      - ./automation/ftp/:/home/${FTP_USER}
+    environment:
+      PUBLICHOST: "localhost"
+      FTP_USER_NAME: ${FTP_USER}
+      FTP_USER_PASS: ${FTP_PASSWORD}
+      FTP_USER_HOME: /home/${FTP_USER}
