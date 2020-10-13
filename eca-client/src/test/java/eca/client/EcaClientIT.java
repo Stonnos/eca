@@ -39,6 +39,8 @@ class EcaClientIT {
 
     private RabbitClient rabbitClient;
 
+    private String replyTo;
+
     private EvaluationResponse evaluationResponse;
     private String actualCorrelationId;
 
@@ -49,6 +51,7 @@ class EcaClientIT {
     @BeforeEach
     void setup() {
         responseReceived = false;
+        replyTo = UUID.randomUUID().toString();
         expectedCorrelationId = UUID.randomUUID().toString();
         ConnectionFactory connectionFactory = ecaClientConfiguration.getConnectionFactory();
 
@@ -64,7 +67,7 @@ class EcaClientIT {
     void testSendEvaluationRequest() {
         Instances instances = loadInstances();
         CART cart = new CART();
-        rabbitClient.sendEvaluationRequest(cart, instances, "evaluation-response-test-queue", expectedCorrelationId);
+        rabbitClient.sendEvaluationRequest(cart, instances, replyTo, expectedCorrelationId);
         await().timeout(Duration.ofSeconds(REQUEST_TIMEOUT_SECONDS))
                 .until(() -> responseReceived);
         assertEquals(expectedCorrelationId, actualCorrelationId);
@@ -87,8 +90,7 @@ class EcaClientIT {
                     this.evaluationResponse = evaluationResponse;
                     this.responseReceived = true;
                 });
-        messageListenerContainer.getRabbitListenerAdapters().put("evaluation-response-test-queue",
-                evaluationListenerAdapter);
+        messageListenerContainer.getRabbitListenerAdapters().put(replyTo, evaluationListenerAdapter);
 
         messageListenerContainer.start();
         await().timeout(Duration.ofMinutes(CONNECTION_TIMEOUT_MINUTES))
