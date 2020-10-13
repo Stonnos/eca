@@ -12,7 +12,7 @@ import java.util.Properties;
  * @author Roman Batygin
  */
 @Slf4j
-public class EcaClientConfiguration {
+public class EcaClientTestConfiguration {
 
     private static final String APPLICATION_TEST_PROPERTIES = "application-test.properties";
     private static final String RABBIT_PASSWORD = "rabbit.password";
@@ -22,7 +22,7 @@ public class EcaClientConfiguration {
 
     private ConnectionFactory connectionFactory;
 
-    private static EcaClientConfiguration instance;
+    private static EcaClientTestConfiguration instance;
 
     private static Properties properties = new Properties();
 
@@ -34,7 +34,7 @@ public class EcaClientConfiguration {
         }
     }
 
-    private EcaClientConfiguration() {
+    private EcaClientTestConfiguration() {
     }
 
     /**
@@ -42,9 +42,9 @@ public class EcaClientConfiguration {
      *
      * @return eca client configuration object
      */
-    public static EcaClientConfiguration getInstance() {
+    public static EcaClientTestConfiguration getInstance() {
         if (instance == null) {
-            instance = new EcaClientConfiguration();
+            instance = new EcaClientTestConfiguration();
         }
         return instance;
     }

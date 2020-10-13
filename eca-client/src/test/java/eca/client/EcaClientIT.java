@@ -36,7 +36,7 @@ class EcaClientIT {
     private static final long CONNECTION_TIMEOUT_MINUTES = 1L;
     private static final long POLL_INTERVAL_SECONDS = 1L;
 
-    private final EcaClientConfiguration ecaClientConfiguration = EcaClientConfiguration.getInstance();
+    private final EcaClientTestConfiguration ecaClientConfiguration = EcaClientTestConfiguration.getInstance();
 
     private final MessageListenerContainer messageListenerContainer = new MessageListenerContainer();
 
