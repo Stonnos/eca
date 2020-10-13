@@ -25,6 +25,11 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Integration test for eca client api.
+ *
+ * @author Roman Batygin
+ */
 class EcaClientIT {
 
     private static final long REQUEST_TIMEOUT_SECONDS = 5L;
