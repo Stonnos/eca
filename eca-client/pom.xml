@@ -17,6 +17,7 @@
         <jackson.version>2.10.3</jackson.version>
         <jackson.databind.version>2.10.3</jackson.databind.version>
         <amqp-client.version>5.7.3</amqp-client.version>
+        <awaitility.version>4.0.3</awaitility.version>
     </properties>
 
     <dependencies>
@@ -42,6 +43,21 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.databind.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
