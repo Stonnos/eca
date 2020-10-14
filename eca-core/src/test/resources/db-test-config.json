@@ -60,5 +60,19 @@
         "expectedDataFile": "data/credit-g.arff"
       }
     ]
+  },
+  "MSSQL": {
+    "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "host": "localhost",
+    "port": 1434,
+    "dataBaseName": "mssqltestdb",
+    "login": "sa",
+    "password": "pa66word#!",
+    "dbTestDataList": [
+      {
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "data/credit-g.arff"
+      }
+    ]
   }
 }
