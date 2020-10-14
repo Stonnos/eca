@@ -21,6 +21,7 @@
         <guava.version>29.0-jre</guava.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
         <postresql.version>42.2.5</postresql.version>
+        <mysql.version>8.0.16</mysql.version>
         <unaccess.version>4.0.4</unaccess.version>
         <sqllite.version>3.27.2.1</sqllite.version>
     </properties>
@@ -92,6 +93,13 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqllite.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
             <scope>test</scope>
         </dependency>
 
