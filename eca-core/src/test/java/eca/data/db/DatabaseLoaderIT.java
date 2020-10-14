@@ -7,10 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 import static eca.TestHelperUtils.loadInstances;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -41,10 +42,9 @@ class DatabaseLoaderIT {
             try {
                 jdbcQueryExecutor.open();
                 performDatabaseTests(value);
+                jdbcQueryExecutor.close();
             } catch (Exception ex) {
                 fail(ex);
-            } finally {
-                close();
             }
         });
     }
@@ -54,7 +54,7 @@ class DatabaseLoaderIT {
             for (DbTestCase dbTestCase : databaseTestConfig.getTestCases()) {
                 executeQuery(dbTestCase);
             }
-         } catch (Exception ex) {
+        } catch (Exception ex) {
             fail(ex);
         }
     }
@@ -63,7 +63,10 @@ class DatabaseLoaderIT {
         jdbcQueryExecutor.setSource(dbTestCase.getSqlQuery());
         Instances actual = jdbcQueryExecutor.loadInstances();
         Instances expected = loadInstances(dbTestCase.getExpectedDataFile());
-        System.out.println(actual.equalHeadersMsg(expected));
+        assertNotNull(actual);
+        assertEquals(expected.numInstances(), actual.numInstances());
+        assertEquals(expected.numAttributes(), actual.numAttributes());
+        assertEquals(expected.numClasses(), actual.numClasses());
     }
 
     private ConnectionDescriptor createConnectionDescriptor(DataBaseType dataBaseType,
@@ -78,13 +81,5 @@ class DatabaseLoaderIT {
             connectionDescriptor.setPort(databaseTestConfig.getPort());
         }
         return connectionDescriptor;
-    }
-
-    private void close() {
-        try {
-            jdbcQueryExecutor.close();
-        } catch (SQLException e) {
-            fail(e);
-        }
     }
 }
