@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import static eca.TestHelperUtils.loadInstances;
@@ -41,22 +42,15 @@ class DatabaseLoaderIT {
             jdbcQueryExecutor.setConnectionDescriptor(connectionDescriptor);
             try {
                 jdbcQueryExecutor.open();
-                performDatabaseTests(value);
-                jdbcQueryExecutor.close();
+                for (DbTestCase dbTestCase : value.getTestCases()) {
+                    executeQuery(dbTestCase);
+                }
             } catch (Exception ex) {
                 fail(ex);
+            } finally {
+                close();
             }
         });
-    }
-
-    private void performDatabaseTests(DatabaseTestConfig databaseTestConfig) {
-        try {
-            for (DbTestCase dbTestCase : databaseTestConfig.getTestCases()) {
-                executeQuery(dbTestCase);
-            }
-        } catch (Exception ex) {
-            fail(ex);
-        }
     }
 
     private void executeQuery(DbTestCase dbTestCase) throws Exception {
@@ -81,5 +75,13 @@ class DatabaseLoaderIT {
             connectionDescriptor.setPort(databaseTestConfig.getPort());
         }
         return connectionDescriptor;
+    }
+
+    private void close() {
+        try {
+            jdbcQueryExecutor.close();
+        } catch (SQLException ex) {
+            fail(ex);
+        }
     }
 }
