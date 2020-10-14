@@ -1,6 +1,6 @@
 package eca.data.file;
 
-import eca.EcaCoreTestConfiguration;
+import eca.config.EcaCoreTestConfiguration;
 import eca.data.file.resource.UrlResource;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
