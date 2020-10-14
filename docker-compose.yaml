@@ -33,7 +33,7 @@ services:
     image: mysql:${MYSQL_VERSION}
     container_name: mysql-test-db
     volumes:
-      - ./automation/db/mysql/scripts/:/docker-entrypoint-initdb.d/
+      - ./automation/db/mysql/:/docker-entrypoint-initdb.d/
     ports:
       - "3307:3306"
     environment:
