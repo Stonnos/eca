@@ -18,7 +18,7 @@ public class TestHelperUtils {
     private static final String DATA_PATH = "iris.xls";
 
     /**
-     * Loafs instances from file.
+     * Loads instances from file.
      *
      * @return instances object
      */

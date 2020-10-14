@@ -8,8 +8,8 @@
     "password": "postgres",
     "testCases": [
       {
-        "query": "",
-        "expectedData": ""
+        "sqlQuery": "",
+        "expectedDataFile": ""
       }
     ]
   }

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static eca.TestHelperUtils.loadConfig;
 
 /**
@@ -65,7 +66,7 @@ public class EcaCoreTestConfiguration {
                     loadConfig(DB_CONFIG_PATH, new TypeReference<HashMap<DataBaseType, DatabaseTestConfig>>() {
                     });
         }
-        return databaseTestConfigMap;
+        return newHashMap(databaseTestConfigMap);
     }
 
     /**
