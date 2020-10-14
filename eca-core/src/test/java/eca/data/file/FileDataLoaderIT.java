@@ -30,27 +30,30 @@ class FileDataLoaderIT {
 
     @Test
     void testHttpLoading() throws Exception {
-        FileDataLoader dataLoader = new FileDataLoader();
-        dataLoader.setSource(new UrlResource(new URL(DATA_LOADING_HTTP_URL)));
-        Instances instances = dataLoader.loadInstances();
-        assertNotNull(instances);
-        assertEquals(EXPECTED_RELATION_NAME_FROM_HTTP, instances.relationName());
-        assertEquals(EXPECTED_NUM_ATTRIBUTES_FROM_HTTP, instances.numAttributes());
-        assertEquals(EXPECTED_NUM_INSTANCES_FROM_HTTP, instances.numInstances());
-        assertEquals(EXPECTED_NUM_CLASSES_FROM_HTTP, instances.numClasses());
+        testDataLoading(DATA_LOADING_HTTP_URL, EXPECTED_RELATION_NAME_FROM_HTTP, EXPECTED_NUM_INSTANCES_FROM_HTTP,
+                EXPECTED_NUM_ATTRIBUTES_FROM_HTTP, EXPECTED_NUM_CLASSES_FROM_HTTP);
     }
 
     @Test
     void testFtpLoading() throws Exception {
-        FileDataLoader dataLoader = new FileDataLoader();
         String url = String.format(DATA_LOADING_FTP_URL, EcaCoreTestConfiguration.getFtpUsername(),
                 EcaCoreTestConfiguration.getFtpPassword());
+        testDataLoading(url, EXPECTED_RELATION_NAME_FROM_FTP, EXPECTED_NUM_INSTANCES_FROM_FTP,
+                EXPECTED_NUM_ATTRIBUTES_FROM_FTP, EXPECTED_NUM_CLASSES_FROM_FTP);
+    }
+
+    private void testDataLoading(String url,
+                                 String expectedRelationName,
+                                 int expectedNumInstances,
+                                 int expectedNumAttributes,
+                                 int expectedNumClasses) throws Exception {
+        FileDataLoader dataLoader = new FileDataLoader();
         dataLoader.setSource(new UrlResource(new URL(url)));
         Instances instances = dataLoader.loadInstances();
         assertNotNull(instances);
-        assertEquals(EXPECTED_RELATION_NAME_FROM_FTP, instances.relationName());
-        assertEquals(EXPECTED_NUM_ATTRIBUTES_FROM_FTP, instances.numAttributes());
-        assertEquals(EXPECTED_NUM_INSTANCES_FROM_FTP, instances.numInstances());
-        assertEquals(EXPECTED_NUM_CLASSES_FROM_FTP, instances.numClasses());
+        assertEquals(expectedRelationName, instances.relationName());
+        assertEquals(expectedNumAttributes, instances.numAttributes());
+        assertEquals(expectedNumInstances, instances.numInstances());
+        assertEquals(expectedNumClasses, instances.numClasses());
     }
 }
