@@ -2,14 +2,18 @@
   "POSTGRESQL": {
     "driver": "org.postgresql.Driver",
     "host": "localhost",
-    "port": 5432,
-    "dataBaseName": "data_storage",
+    "port": 5436,
+    "dataBaseName": "postgres_test_db",
     "login": "postgres",
     "password": "postgres",
     "testCases": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
+      },
+      {
+        "sqlQuery": "select * from evaluation_log",
+        "expectedDataFile": "data/evaluation_log.xlsx"
       }
     ]
   },
