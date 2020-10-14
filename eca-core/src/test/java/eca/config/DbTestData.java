@@ -8,7 +8,7 @@ import lombok.Data;
  * @author Roman Batygin
  */
 @Data
-public class DbTestCase {
+public class DbTestData {
 
     /**
      * Expected sql query

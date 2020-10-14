@@ -1,7 +1,7 @@
 package eca.data.db;
 
 import eca.config.DatabaseTestConfig;
-import eca.config.DbTestCase;
+import eca.config.DbTestData;
 import eca.config.EcaCoreTestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,8 +42,8 @@ class DatabaseLoaderIT {
             jdbcQueryExecutor.setConnectionDescriptor(connectionDescriptor);
             try {
                 jdbcQueryExecutor.open();
-                for (DbTestCase dbTestCase : value.getTestCases()) {
-                    executeQuery(dbTestCase);
+                for (DbTestData dbTestData : value.getDbTestDataList()) {
+                    executeQuery(dbTestData);
                 }
             } catch (Exception ex) {
                 fail(ex);
@@ -53,10 +53,10 @@ class DatabaseLoaderIT {
         });
     }
 
-    private void executeQuery(DbTestCase dbTestCase) throws Exception {
-        jdbcQueryExecutor.setSource(dbTestCase.getSqlQuery());
+    private void executeQuery(DbTestData dbTestData) throws Exception {
+        jdbcQueryExecutor.setSource(dbTestData.getSqlQuery());
         Instances actual = jdbcQueryExecutor.loadInstances();
-        Instances expected = loadInstances(dbTestCase.getExpectedDataFile());
+        Instances expected = loadInstances(dbTestData.getExpectedDataFile());
         assertNotNull(actual);
         assertEquals(expected.numInstances(), actual.numInstances());
         assertEquals(expected.numAttributes(), actual.numAttributes());

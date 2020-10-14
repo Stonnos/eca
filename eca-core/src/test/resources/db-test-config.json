@@ -6,7 +6,7 @@
     "dataBaseName": "postgres_test_db",
     "login": "postgres",
     "password": "postgres",
-    "testCases": [
+    "dbTestDataList": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
@@ -24,7 +24,7 @@
     "dataBaseName": "mysql_test_db",
     "login": "mysql",
     "password": "mysql",
-    "testCases": [
+    "dbTestDataList": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
@@ -41,7 +41,7 @@
     "dataBaseName": "ms-access-test-db.accdb",
     "login": "",
     "password": "",
-    "testCases": [
+    "dbTestDataList": [
       {
         "sqlQuery": "select * from evaluation_log",
         "expectedDataFile": "data/evaluation_log.xlsx"
@@ -54,7 +54,7 @@
     "dataBaseName": "sqlite-test-db.sqlite",
     "login": "",
     "password": "",
-    "testCases": [
+    "dbTestDataList": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"

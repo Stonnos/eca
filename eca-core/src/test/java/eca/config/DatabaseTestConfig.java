@@ -37,7 +37,7 @@ public class DatabaseTestConfig {
      */
     private String password;
     /**
-     * Test cases
+     * Test data list
      */
-    private List<DbTestCase> testCases;
+    private List<DbTestData> dbTestDataList;
 }
