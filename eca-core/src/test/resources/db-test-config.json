@@ -9,7 +9,33 @@
     "testCases": [
       {
         "sqlQuery": "select * from credit",
-        "expectedDataFile": "credit-g.arff"
+        "expectedDataFile": "data/credit-g.arff"
+      }
+    ]
+  },
+  "MS_ACCESS": {
+    "driver": "net.ucanaccess.jdbc.UcanaccessDriver",
+    "host": "./src/test/resources/db/",
+    "dataBaseName": "ms-access-test-db.accdb",
+    "login": "",
+    "password": "",
+    "testCases": [
+      {
+        "sqlQuery": "select * from evaluation_log",
+        "expectedDataFile": "data/evaluation_log.xlsx"
+      }
+    ]
+  },
+  "SQLITE": {
+    "driver": "org.sqlite.JDBC",
+    "host": "./src/test/resources/db/",
+    "dataBaseName": "sqlite-test-db.sqlite",
+    "login": "",
+    "password": "",
+    "testCases": [
+      {
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "data/credit-g.arff"
       }
     ]
   }
