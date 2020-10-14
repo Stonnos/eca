@@ -2,14 +2,14 @@
   "POSTGRESQL": {
     "driver": "org.postgresql.Driver",
     "host": "localhost",
-    "port": 5433,
-    "dataBaseName": "test_db",
+    "port": 5432,
+    "dataBaseName": "data_storage",
     "login": "postgres",
     "password": "postgres",
     "testCases": [
       {
-        "sqlQuery": "",
-        "expectedDataFile": ""
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "credit-g.arff"
       }
     ]
   }
