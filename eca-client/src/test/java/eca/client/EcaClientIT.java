@@ -85,6 +85,7 @@ class EcaClientIT {
     void stop() throws IOException, TimeoutException {
         responseReceived = false;
         messageListenerContainer.stop();
+        rabbitClient.getRabbitSender().getConnectionManager().close();
     }
 
     private void startContainer(ConnectionFactory connectionFactory) {
