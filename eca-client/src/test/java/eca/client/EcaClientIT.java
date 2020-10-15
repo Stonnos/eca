@@ -55,7 +55,6 @@ class EcaClientIT {
 
     @BeforeEach
     void setup() {
-        responseReceived = false;
         replyTo = UUID.randomUUID().toString();
         expectedCorrelationId = UUID.randomUUID().toString();
         ConnectionFactory connectionFactory = ecaClientConfiguration.getConnectionFactory();
@@ -83,7 +82,6 @@ class EcaClientIT {
 
     @AfterEach
     void stop() throws IOException, TimeoutException {
-        responseReceived = false;
         messageListenerContainer.stop();
         rabbitClient.getRabbitSender().getConnectionManager().close();
     }
