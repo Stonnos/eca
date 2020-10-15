@@ -7,6 +7,8 @@ import weka.core.Instances;
 
 import java.net.URL;
 
+import static eca.AssertionUtils.assertInstances;
+import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -19,41 +21,31 @@ class FileDataLoaderIT {
 
     private static final String DATA_LOADING_HTTP_URL = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String DATA_LOADING_FTP_URL = "ftp://%s:%s@localhost/glass.arff";
-    private static final String EXPECTED_RELATION_NAME_FROM_HTTP = "IrisEX";
-    private static final int EXPECTED_NUM_ATTRIBUTES_FROM_HTTP = 5;
-    private static final int EXPECTED_NUM_INSTANCES_FROM_HTTP = 150;
-    private static final int EXPECTED_NUM_CLASSES_FROM_HTTP = 3;
-    private static final String EXPECTED_RELATION_NAME_FROM_FTP = "Glass";
-    private static final int EXPECTED_NUM_ATTRIBUTES_FROM_FTP = 10;
-    private static final int EXPECTED_NUM_INSTANCES_FROM_FTP = 214;
-    private static final int EXPECTED_NUM_CLASSES_FROM_FTP = 7;
+    private static final String DATA_GLASS_ARFF = "data/glass.arff";
+    private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     @Test
     void testHttpLoading() throws Exception {
-        testDataLoading(DATA_LOADING_HTTP_URL, EXPECTED_RELATION_NAME_FROM_HTTP, EXPECTED_NUM_INSTANCES_FROM_HTTP,
-                EXPECTED_NUM_ATTRIBUTES_FROM_HTTP, EXPECTED_NUM_CLASSES_FROM_HTTP);
+        testDataLoading(DATA_LOADING_HTTP_URL, DATA_IRIS_XLS);
     }
 
     @Test
     void testFtpLoading() throws Exception {
         String url = String.format(DATA_LOADING_FTP_URL, EcaCoreTestConfiguration.getFtpUsername(),
                 EcaCoreTestConfiguration.getFtpPassword());
-        testDataLoading(url, EXPECTED_RELATION_NAME_FROM_FTP, EXPECTED_NUM_INSTANCES_FROM_FTP,
-                EXPECTED_NUM_ATTRIBUTES_FROM_FTP, EXPECTED_NUM_CLASSES_FROM_FTP);
+        testDataLoading(url, DATA_GLASS_ARFF);
     }
 
     private void testDataLoading(String url,
-                                 String expectedRelationName,
-                                 int expectedNumInstances,
-                                 int expectedNumAttributes,
-                                 int expectedNumClasses) throws Exception {
+                                 String expectedInstancesFile) throws Exception {
+        Instances expected = loadInstances(expectedInstancesFile);
         FileDataLoader dataLoader = new FileDataLoader();
         dataLoader.setSource(new UrlResource(new URL(url)));
-        Instances instances = dataLoader.loadInstances();
-        assertNotNull(instances);
-        assertEquals(expectedRelationName, instances.relationName());
-        assertEquals(expectedNumAttributes, instances.numAttributes());
-        assertEquals(expectedNumInstances, instances.numInstances());
-        assertEquals(expectedNumClasses, instances.numClasses());
+        Instances actual = dataLoader.loadInstances();
+        assertNotNull(actual);
+        assertEquals(expected.numAttributes(), actual.numAttributes());
+        assertEquals(expected.numInstances(), actual.numInstances());
+        assertEquals(expected.numClasses(), actual.numClasses());
+        assertInstances(expected, actual);
     }
 }
