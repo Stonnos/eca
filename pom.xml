@@ -34,6 +34,7 @@
         <github.global.server>github</github.global.server>
         <github.maven-plugin>0.12</github.maven-plugin>
         <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
+        <maven-surefire-plugin>2.22.2</maven-surefire-plugin>
     </properties>
 
     <profiles>
@@ -42,11 +43,6 @@
             <id>quality</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                    </plugin>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -114,6 +110,12 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin}</version>
             </plugin>
 
             <plugin>
