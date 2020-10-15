@@ -1,5 +1,6 @@
 package eca;
 
+import eca.statistics.diagram.FrequencyData;
 import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -17,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 @UtilityClass
 public class AssertionUtils {
+
+    private static final double DELTA = 0.00001d;
 
     /**
      * Asserts instances. Compare all values.
@@ -43,5 +46,20 @@ public class AssertionUtils {
                 }
             });
         });
+    }
+
+    /**
+     * Asserts frequency data.
+     *
+     * @param frequencyData      - frequency data
+     * @param expectedLowerBound - expected interval lower bound
+     * @param expectedUpperBound - expected interval upper bound
+     * @param expectedFrequency  - expected frequency
+     */
+    public static void assertFrequencyData(FrequencyData frequencyData, double expectedLowerBound,
+                                           double expectedUpperBound, int expectedFrequency) {
+        assertEquals(expectedLowerBound, frequencyData.getLowerBound(), DELTA);
+        assertEquals(expectedUpperBound, frequencyData.getUpperBound(), DELTA);
+        assertEquals(expectedFrequency, frequencyData.getFrequency());
     }
 }
