@@ -12,6 +12,7 @@ import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -24,6 +25,7 @@ class ContingencyTableTest {
     private static final String DATA_CREDIT_G_ARFF = "data/credit-g.arff";
     private static final String SAVINGS_STATUS_ATTRIBUTE = "savings_status";
     private static final String JOB_ATTRIBUTE = "job";
+    private static final String DURATION_ATTRIBUTE = "duration";
     private static final String CLASS_ATTRIBUTE = "class";
     private static final int SCALE = 4;
     private static final double EXPECTED_ALPHA = 0.05d;
@@ -61,6 +63,13 @@ class ContingencyTableTest {
                 BigDecimal.valueOf(chiSquareTestResult.getChiSquaredValue()).setScale(SCALE, RoundingMode.HALF_UP);
         assertEquals(BigDecimal.valueOf(1.8852d), expectedChiSquareValue);
         assertFalse(chiSquareTestResult.isSignificant());
+    }
+
+    @Test
+    void testChiSquareTestForNumericAttribute() {
+        Attribute first = instances.attribute(DURATION_ATTRIBUTE);
+        Attribute second = instances.attribute(CLASS_ATTRIBUTE);
+        assertThrows(IllegalArgumentException.class, () -> calculateChiSquareTest(first, second));
     }
 
     private ChiSquareTestResult calculateChiSquareTest(Attribute first, Attribute second) {
