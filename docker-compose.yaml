@@ -50,5 +50,4 @@ services:
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: "Y"
-
       TZ: ${TIME_ZONE}
