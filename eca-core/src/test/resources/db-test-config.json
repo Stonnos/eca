@@ -8,10 +8,6 @@
     "password": "postgres",
     "dbTestDataList": [
       {
-        "sqlQuery": "select * from credit",
-        "expectedDataFile": "data/credit-g.arff"
-      },
-      {
         "sqlQuery": "select * from evaluation_log",
         "expectedDataFile": "data/evaluation_log.xlsx"
       }

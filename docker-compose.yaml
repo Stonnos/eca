@@ -41,6 +41,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TIME_ZONE}
 
   sql-server-test-db:
     build: ./automation/db/mssql/
@@ -50,3 +51,4 @@ services:
       SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
+      TZ: ${TIME_ZONE}

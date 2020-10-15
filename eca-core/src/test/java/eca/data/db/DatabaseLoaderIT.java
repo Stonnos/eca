@@ -10,6 +10,7 @@ import weka.core.Instances;
 import java.sql.SQLException;
 import java.util.Map;
 
+import static eca.AssertionUtils.assertInstances;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,6 +62,7 @@ class DatabaseLoaderIT {
         assertEquals(expected.numInstances(), actual.numInstances());
         assertEquals(expected.numAttributes(), actual.numAttributes());
         assertEquals(expected.numClasses(), actual.numClasses());
+        assertInstances(expected, actual);
     }
 
     private ConnectionDescriptor createConnectionDescriptor(DataBaseType dataBaseType,
