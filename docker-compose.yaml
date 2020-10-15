@@ -50,5 +50,5 @@ services:
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: "Y"
-      MSSQL_PID: "Express"
+
       TZ: ${TIME_ZONE}
