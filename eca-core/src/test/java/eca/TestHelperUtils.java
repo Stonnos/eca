@@ -4,10 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.FileResource;
+import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.IOUtils;
 import weka.core.Instances;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,6 +21,9 @@ import java.io.InputStream;
  */
 @UtilityClass
 public class TestHelperUtils {
+
+    private static final String USER_DIR = "user.dir";
+    private static final String TARGET = "/target/";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -51,6 +57,28 @@ public class TestHelperUtils {
         } catch (Exception ex) {
             throw new IllegalStateException(ex.getMessage());
         }
+    }
+
+    /**
+     * Gets target directory path.
+     *
+     * @return target directory path
+     */
+    public static String getTargetPath() {
+        return System.getProperty(USER_DIR) + TARGET;
+    }
+
+    /**
+     * Copy file from resource into target directory.
+     *
+     * @param file - file name
+     * @throws IOException in case of I/O error
+     */
+    public static void copyResource(String file) throws IOException {
+        @Cleanup InputStream inputStream = TestHelperUtils.class.getClassLoader().getResourceAsStream(file);
+        String target = String.format("%s%s", getTargetPath(), file);
+        @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(target);
+        IOUtils.copy(inputStream, fileOutputStream);
     }
 
 }

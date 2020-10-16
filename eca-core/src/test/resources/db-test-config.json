@@ -33,7 +33,7 @@
   },
   "MS_ACCESS": {
     "driver": "net.ucanaccess.jdbc.UcanaccessDriver",
-    "host": "./src/test/resources/db/",
+    "host": "./src/test/resources/",
     "dataBaseName": "ms-access-test-db.accdb",
     "login": "",
     "password": "",
@@ -46,7 +46,7 @@
   },
   "SQLITE": {
     "driver": "org.sqlite.JDBC",
-    "host": "./src/test/resources/db/",
+    "host": "./src/test/resources/",
     "dataBaseName": "sqlite-test-db.sqlite",
     "login": "",
     "password": "",

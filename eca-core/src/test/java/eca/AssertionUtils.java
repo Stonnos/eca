@@ -9,6 +9,7 @@ import weka.core.Instances;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -28,6 +29,10 @@ public class AssertionUtils {
      * @param actual   - actual instances
      */
     public static void assertInstances(Instances expected, Instances actual) {
+        assertNotNull(actual);
+        assertEquals(expected.numAttributes(), actual.numAttributes());
+        assertEquals(expected.numInstances(), actual.numInstances());
+        assertEquals(expected.numClasses(), actual.numClasses());
         IntStream.range(0, expected.numInstances()).forEach(i -> {
             Instance expectedInstance = expected.instance(i);
             Instance actualInstance = actual.instance(i);

@@ -9,8 +9,6 @@ import java.net.URL;
 
 import static eca.AssertionUtils.assertInstances;
 import static eca.TestHelperUtils.loadInstances;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Integration tests for data loading.
@@ -42,10 +40,6 @@ class FileDataLoaderIT {
         FileDataLoader dataLoader = new FileDataLoader();
         dataLoader.setSource(new UrlResource(new URL(url)));
         Instances actual = dataLoader.loadInstances();
-        assertNotNull(actual);
-        assertEquals(expected.numAttributes(), actual.numAttributes());
-        assertEquals(expected.numInstances(), actual.numInstances());
-        assertEquals(expected.numClasses(), actual.numClasses());
         assertInstances(expected, actual);
     }
 }
