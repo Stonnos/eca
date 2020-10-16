@@ -57,7 +57,7 @@ class ModelConverterTest {
                         classifier.getClass().getSimpleName());
         ModelConverter.saveModel(file, expected);
         //Compare models
-        ClassificationModel actual = (ClassificationModel) ModelConverter.loadModel(file);
+        ClassificationModel actual = ModelConverter.loadModel(file, ClassificationModel.class);
         assertNotNull(actual);
         assertEquals(expected.getDetails(), actual.getDetails());
         assertEquals(expected.getMaximumFractionDigits(), actual.getMaximumFractionDigits());
