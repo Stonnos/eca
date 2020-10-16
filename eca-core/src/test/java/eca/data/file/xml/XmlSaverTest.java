@@ -1,4 +1,4 @@
-package eca.data.file.text;
+package eca.data.file.xml;
 
 import eca.data.DataFileExtension;
 import eca.data.file.BaseFileSaverTest;
@@ -8,13 +8,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit tests for {@link DocxSaver} class.
+ * Unit tests for {@link XmlSaver} class.
  *
  * @author Roman Batygin
  */
-class DocxSaverTest extends BaseFileSaverTest {
+class XmlSaverTest extends BaseFileSaverTest {
 
-    private final DocxSaver dataSaver = new DocxSaver();
+    private final XmlSaver dataSaver = new XmlSaver();
 
     @Test
     void testSaveDataToTxtFile() {
@@ -23,6 +23,6 @@ class DocxSaverTest extends BaseFileSaverTest {
 
     @Override
     public List<DataFileExtension> getFileExtensions() {
-        return Collections.singletonList(DataFileExtension.DOCX);
+        return Collections.singletonList(DataFileExtension.XML);
     }
 }
