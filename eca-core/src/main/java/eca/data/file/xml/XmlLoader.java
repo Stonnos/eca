@@ -35,7 +35,9 @@ public class XmlLoader extends AbstractDataLoader<DataResource> {
             JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             XmlInstances xmlInstances = (XmlInstances) unmarshaller.unmarshal(reader);
-            return xmlInstancesConverter.convert(xmlInstances);
+            Instances instances = xmlInstancesConverter.convert(xmlInstances);
+            instances.setClassIndex(instances.numAttributes() - 1);
+            return instances;
         }
     }
 
