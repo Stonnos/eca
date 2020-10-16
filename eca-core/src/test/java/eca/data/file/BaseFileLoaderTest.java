@@ -16,7 +16,7 @@ import static eca.TestHelperUtils.loadInstances;
  *
  * @author Roman Batygin
  */
-public class BaseFileLoaderTest {
+public abstract class BaseFileLoaderTest {
 
     private static final String DATA_CREDIT_ARFF = "data/credit-g.arff";
 
