@@ -37,7 +37,11 @@ public class DatabaseTestConfig {
      */
     private String password;
     /**
-     * Test data list
+     * Select queries test data list
      */
-    private List<DbTestData> dbTestDataList;
+    private List<DbSelectQueryTestData> selectQueries;
+    /**
+     * Save data test data list
+     */
+    private List<String> saveDataFiles;
 }

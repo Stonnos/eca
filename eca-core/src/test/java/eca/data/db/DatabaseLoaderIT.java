@@ -1,6 +1,6 @@
 package eca.data.db;
 
-import eca.config.DbTestData;
+import eca.config.DbSelectQueryTestData;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
@@ -26,8 +26,8 @@ class DatabaseLoaderIT extends BaseDatabaseTest {
             jdbcQueryExecutor.setConnectionDescriptor(connectionDescriptor);
             try {
                 jdbcQueryExecutor.open();
-                for (DbTestData dbTestData : value.getDbTestDataList()) {
-                    executeQuery(dbTestData);
+                for (DbSelectQueryTestData dbSelectQueryTestData : value.getSelectQueries()) {
+                    executeQuery(dbSelectQueryTestData);
                 }
             } catch (Exception ex) {
                 fail(ex);
@@ -37,10 +37,10 @@ class DatabaseLoaderIT extends BaseDatabaseTest {
         });
     }
 
-    private void executeQuery(DbTestData dbTestData) throws Exception {
-        jdbcQueryExecutor.setSource(dbTestData.getSqlQuery());
+    private void executeQuery(DbSelectQueryTestData dbSelectQueryTestData) throws Exception {
+        jdbcQueryExecutor.setSource(dbSelectQueryTestData.getSqlQuery());
         Instances actual = jdbcQueryExecutor.loadInstances();
-        Instances expected = loadInstances(dbTestData.getExpectedDataFile());
+        Instances expected = loadInstances(dbSelectQueryTestData.getExpectedDataFile());
         assertInstances(expected, actual);
     }
 

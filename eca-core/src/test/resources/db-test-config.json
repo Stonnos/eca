@@ -6,11 +6,14 @@
     "dataBaseName": "postgres_test_db",
     "login": "postgres",
     "password": "postgres",
-    "dbTestDataList": [
+    "selectQueries": [
       {
         "sqlQuery": "select * from evaluation_log",
         "expectedDataFile": "data/evaluation_log.xlsx"
       }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
     ]
   },
   "MYSQL": {
@@ -20,7 +23,7 @@
     "dataBaseName": "mysql_test_db",
     "login": "mysql",
     "password": "mysql",
-    "dbTestDataList": [
+    "selectQueries": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
@@ -29,6 +32,9 @@
         "sqlQuery": "select * from evaluation_log",
         "expectedDataFile": "data/evaluation_log.xlsx"
       }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
     ]
   },
   "MS_ACCESS": {
@@ -37,11 +43,14 @@
     "dataBaseName": "ms-access-test-db.accdb",
     "login": "",
     "password": "",
-    "dbTestDataList": [
+    "selectQueries": [
       {
         "sqlQuery": "select * from evaluation_log",
         "expectedDataFile": "data/evaluation_log.xlsx"
       }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
     ]
   },
   "SQLITE": {
@@ -50,11 +59,14 @@
     "dataBaseName": "sqlite-test-db.sqlite",
     "login": "",
     "password": "",
-    "dbTestDataList": [
+    "selectQueries": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
       }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
     ]
   },
   "MSSQL": {
@@ -64,11 +76,14 @@
     "dataBaseName": "mssqltestdb",
     "login": "sa",
     "password": "pa66word#!",
-    "dbTestDataList": [
+    "selectQueries": [
       {
         "sqlQuery": "select * from credit",
         "expectedDataFile": "data/credit-g.arff"
       }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
     ]
   }
 }

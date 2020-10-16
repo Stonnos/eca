@@ -27,10 +27,9 @@ class DatabaseSaverIT extends BaseDatabaseTest {
 
     @Test
     void testSaveDataIntoDatabase() {
-        Instances instances = loadInstances("data/evaluation_log.xlsx");
         getDatabaseTestConfigMap().forEach((key, value) -> {
             ConnectionDescriptor connectionDescriptor = createConnectionDescriptor(key, value);
-            executeNextTest(instances, connectionDescriptor);
+            value.getSaveDataFiles().forEach(file ->  executeNextTest(file, connectionDescriptor));
         });
     }
 
@@ -43,8 +42,9 @@ class DatabaseSaverIT extends BaseDatabaseTest {
         return connectionDescriptor;
     }
 
-    private void executeNextTest(Instances expected, ConnectionDescriptor connectionDescriptor) {
+    private void executeNextTest(String fileName, ConnectionDescriptor connectionDescriptor) {
         try {
+            Instances expected = loadInstances(fileName);
             DatabaseSaver databaseSaver = initializeDatabaseSaver(connectionDescriptor);
             databaseSaver.write(expected);
             jdbcQueryExecutor.setConnectionDescriptor(connectionDescriptor);
