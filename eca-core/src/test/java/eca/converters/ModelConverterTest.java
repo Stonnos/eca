@@ -7,12 +7,11 @@ import eca.ensemble.HeterogeneousClassifier;
 import eca.regression.Logistic;
 import eca.trees.C45;
 import eca.trees.CART;
-import lombok.SneakyThrows;
+import eca.trees.ID3;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.io.File;
@@ -50,6 +49,7 @@ class ModelConverterTest {
         classifiers.addClassifier(new CART());
         classifiers.addClassifier(new Logistic());
         classifiers.addClassifier(new C45());
+        classifiers.addClassifier(new ID3());
         classifier.setClassifiersSet(classifiers);
         Evaluation evaluation = buildAndEvaluateModel(instances, classifier);
         ClassificationModel expected =
