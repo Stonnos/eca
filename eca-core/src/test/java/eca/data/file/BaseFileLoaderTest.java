@@ -2,6 +2,7 @@ package eca.data.file;
 
 import eca.data.AbstractDataLoader;
 import eca.data.file.resource.FileResource;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import weka.core.Instances;
 
@@ -27,7 +28,8 @@ public class BaseFileLoaderTest {
     }
 
     @SuppressWarnings("unchecked")
-    public void executeTest(AbstractDataLoader dataLoader, String testFile) throws Exception {
+    @SneakyThrows
+    public void executeTest(AbstractDataLoader dataLoader, String testFile) {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         dataLoader.setSource(new FileResource(new File(classLoader.getResource(testFile).getFile())));
         Instances actual = dataLoader.loadInstances();

@@ -16,12 +16,12 @@ class DATALoaderTest extends BaseFileLoaderTest {
     private final DATALoader dataLoader = new DATALoader();
 
     @Test
-    void testLoadDataFromTxtFile() throws Exception {
+    void testLoadDataFromTxtFile() {
         executeTest(dataLoader, DATA_CREDIT_TXT);
     }
 
     @Test
-    void testLoadDataFromDATAFile() throws Exception {
+    void testLoadDataFromDATAFile() {
         executeTest(dataLoader, DATA_CREDIT_DATA);
     }
 }

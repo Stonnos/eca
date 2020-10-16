@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.FileResource;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import weka.core.Instances;
@@ -35,12 +36,10 @@ public class TestHelperUtils {
      * @param <T>            - config generic type
      * @return config object
      */
+    @SneakyThrows
     public static <T> T loadConfig(String fileName, TypeReference<T> tTypeReference) {
-        try (InputStream inputStream = TestHelperUtils.class.getClassLoader().getResourceAsStream(fileName)) {
-            return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
-        } catch (IOException ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        @Cleanup InputStream inputStream = TestHelperUtils.class.getClassLoader().getResourceAsStream(fileName);
+        return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
     }
 
     /**
@@ -48,15 +47,12 @@ public class TestHelperUtils {
      *
      * @return instances object
      */
+    @SneakyThrows
     public static Instances loadInstances(String fileName) {
-        try {
-            ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-            FileDataLoader dataLoader = new FileDataLoader();
-            dataLoader.setSource(new FileResource(new File(classLoader.getResource(fileName).getFile())));
-            return dataLoader.loadInstances();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        FileDataLoader dataLoader = new FileDataLoader();
+        dataLoader.setSource(new FileResource(new File(classLoader.getResource(fileName).getFile())));
+        return dataLoader.loadInstances();
     }
 
     /**

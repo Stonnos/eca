@@ -15,7 +15,7 @@ class DocxLoaderTest extends BaseFileLoaderTest {
     private final DocxLoader dataLoader = new DocxLoader();
 
     @Test
-    void testLoadDataFromDocxFile() throws Exception {
+    void testLoadDataFromDocxFile() {
         executeTest(dataLoader, DATA_CREDIT_DOCX);
     }
 }

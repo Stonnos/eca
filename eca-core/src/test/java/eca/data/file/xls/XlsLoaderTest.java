@@ -16,12 +16,12 @@ class XlsLoaderTest extends BaseFileLoaderTest {
     private final XLSLoader xlsLoader = new XLSLoader();
 
     @Test
-    void testLoadDataFromXlsFile() throws Exception {
+    void testLoadDataFromXlsFile() {
         executeTest(xlsLoader, DATA_CREDIT_XLS);
     }
 
     @Test
-    void testLoadDataFromXlsxFile() throws Exception {
+    void testLoadDataFromXlsxFile() {
         executeTest(xlsLoader, DATA_CREDIT_XLSX);
     }
 }

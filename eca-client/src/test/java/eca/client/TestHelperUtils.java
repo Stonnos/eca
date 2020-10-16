@@ -2,6 +2,7 @@ package eca.client;
 
 import eca.data.file.resource.FileResource;
 import eca.data.file.xls.XLSLoader;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import weka.core.Instances;
 
@@ -22,15 +23,12 @@ public class TestHelperUtils {
      *
      * @return instances object
      */
+    @SneakyThrows
     public static Instances loadInstances() {
-        try {
-            ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-            XLSLoader dataLoader = new XLSLoader();
-            dataLoader.setSource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
-            return dataLoader.loadInstances();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        XLSLoader dataLoader = new XLSLoader();
+        dataLoader.setSource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
+        return dataLoader.loadInstances();
     }
 
 }

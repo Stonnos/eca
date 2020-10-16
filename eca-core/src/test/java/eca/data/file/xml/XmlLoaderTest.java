@@ -15,7 +15,7 @@ class XmlLoaderTest extends BaseFileLoaderTest {
     private final XmlLoader dataLoader = new XmlLoader();
 
     @Test
-    void testLoadDataFromXmlFile() throws Exception {
+    void testLoadDataFromXmlFile() {
         executeTest(dataLoader, DATA_CREDIT_XML);
     }
 }

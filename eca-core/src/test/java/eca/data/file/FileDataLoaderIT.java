@@ -2,6 +2,7 @@ package eca.data.file;
 
 import eca.config.EcaCoreTestConfiguration;
 import eca.data.file.resource.UrlResource;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
@@ -23,19 +24,19 @@ class FileDataLoaderIT {
     private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     @Test
-    void testHttpLoading() throws Exception {
+    void testHttpLoading() {
         testDataLoading(DATA_LOADING_HTTP_URL, DATA_IRIS_XLS);
     }
 
     @Test
-    void testFtpLoading() throws Exception {
+    void testFtpLoading() {
         String url = String.format(DATA_LOADING_FTP_URL, EcaCoreTestConfiguration.getFtpUsername(),
                 EcaCoreTestConfiguration.getFtpPassword());
         testDataLoading(url, DATA_GLASS_ARFF);
     }
 
-    private void testDataLoading(String url,
-                                 String expectedInstancesFile) throws Exception {
+    @SneakyThrows
+    private void testDataLoading(String url, String expectedInstancesFile) {
         Instances expected = loadInstances(expectedInstancesFile);
         FileDataLoader dataLoader = new FileDataLoader();
         dataLoader.setSource(new UrlResource(new URL(url)));
