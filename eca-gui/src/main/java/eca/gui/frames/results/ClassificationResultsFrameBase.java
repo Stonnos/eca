@@ -338,7 +338,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         }
 
         void saveReportToFile(File file) throws Exception {
-            EvaluationReport evaluationReport = evaluationReportDataProviders
+            EvaluationReport evaluationReport = (EvaluationReport) evaluationReportDataProviders
                     .stream()
                     .filter(p -> p.canHandle(classifier))
                     .findFirst()

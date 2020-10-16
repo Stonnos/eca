@@ -2,12 +2,14 @@ package eca;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eca.core.evaluation.Evaluation;
 import eca.data.file.FileDataLoader;
 import eca.data.file.resource.FileResource;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
+import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import java.io.File;
@@ -53,6 +55,21 @@ public class TestHelperUtils {
         FileDataLoader dataLoader = new FileDataLoader();
         dataLoader.setSource(new FileResource(new File(classLoader.getResource(fileName).getFile())));
         return dataLoader.loadInstances();
+    }
+
+    /**
+     * Builds and evaluate model using training data evaluation method.
+     *
+     * @param instances  - instances object
+     * @param classifier - classifier object
+     * @return evaluation object
+     */
+    @SneakyThrows
+    public static Evaluation buildAndEvaluateModel(Instances instances, Classifier classifier) {
+        classifier.buildClassifier(instances);
+        Evaluation evaluation = new Evaluation(instances);
+        evaluation.evaluateModel(classifier, instances);
+        return evaluation;
     }
 
     /**

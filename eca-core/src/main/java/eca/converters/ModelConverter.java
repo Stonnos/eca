@@ -21,7 +21,7 @@ public class ModelConverter {
      *
      * @param file  file object
      * @param model object
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static void saveModel(File file, Object model) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");

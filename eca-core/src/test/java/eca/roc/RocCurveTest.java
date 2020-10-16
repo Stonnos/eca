@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
+import static eca.TestHelperUtils.buildAndEvaluateModel;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,11 +31,9 @@ class RocCurveTest {
     }
 
     @Test
-    void testOptimalThresholdCalculation() throws Exception {
+    void testOptimalThresholdCalculation() {
         CART cart = new CART();
-        cart.buildClassifier(instances);
-        Evaluation evaluation = new Evaluation(instances);
-        evaluation.evaluateModel(cart, instances);
+        Evaluation evaluation = buildAndEvaluateModel(instances, cart);
         RocCurve rocCurve = new RocCurve(evaluation);
         int classIndex = instances.classAttribute().indexOfValue(IRIS_VIRGINICA);
         Instances rocCurveData = rocCurve.getROCCurve(classIndex);
