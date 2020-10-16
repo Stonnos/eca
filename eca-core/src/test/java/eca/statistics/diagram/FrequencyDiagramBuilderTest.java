@@ -45,7 +45,7 @@ class FrequencyDiagramBuilderTest {
         List<FrequencyData> frequencyData =
                 frequencyDiagramBuilder.calculateFrequencyDiagramDataForNumericAttribute(attribute);
         assertNotNull(frequencyData);
-        assertEquals(frequencyData.size(), 8);
+        assertEquals( 8, frequencyData.size());
         assertFrequencyData(frequencyData.get(0), 4.3d, 4.75d, 11);
         assertFrequencyData(frequencyData.get(1), 4.75d, 5.2d, 34);
         assertFrequencyData(frequencyData.get(2), 5.2d, 5.65d, 20);
@@ -54,6 +54,8 @@ class FrequencyDiagramBuilderTest {
         assertFrequencyData(frequencyData.get(5), 6.55d, 7d, 18);
         assertFrequencyData(frequencyData.get(6), 7d, 7.45d, 6);
         assertFrequencyData(frequencyData.get(7), 7.45d, 7.9d, 6);
+        int total = frequencyData.stream().mapToInt(FrequencyData::getFrequency).sum();
+        assertEquals(instances.numInstances(), total);
     }
 
     @Test
