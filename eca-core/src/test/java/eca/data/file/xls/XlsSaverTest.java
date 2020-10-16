@@ -1,4 +1,4 @@
-package eca.data.file.text;
+package eca.data.file.xls;
 
 import com.google.common.collect.ImmutableList;
 import eca.data.DataFileExtension;
@@ -8,21 +8,21 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 /**
- * Unit tests for {@link DATASaver} class.
+ * Unit tests for {@link XLSSaver} class.
  *
  * @author Roman Batygin
  */
-class DATASaverTest extends BaseFileSaverTest {
+class XlsSaverTest extends BaseFileSaverTest {
 
-    private final DATASaver dataSaver = new DATASaver();
+    private final XLSSaver dataSaver = new XLSSaver();
 
     @Test
-    void testSaveDataToTxtFile() {
+    void testSaveDataToXlsxFile() {
         executeTest(dataSaver);
     }
 
     @Override
     public List<DataFileExtension> getFileExtensions() {
-        return ImmutableList.of(DataFileExtension.TEXT, DataFileExtension.DATA);
+        return ImmutableList.of(DataFileExtension.XLSX, DataFileExtension.XLS);
     }
 }
