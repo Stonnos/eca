@@ -1,13 +1,14 @@
 package eca.roc;
 
 import eca.core.evaluation.Evaluation;
+import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
-import static eca.TestHelperUtils.buildAndEvaluateModel;
 import static eca.TestHelperUtils.loadInstances;
+import static eca.core.evaluation.EvaluationService.evaluateModel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -31,9 +32,9 @@ class RocCurveTest {
     }
 
     @Test
-    void testOptimalThresholdCalculation() {
+    void testOptimalThresholdCalculation() throws Exception {
         CART cart = new CART();
-        Evaluation evaluation = buildAndEvaluateModel(instances, cart);
+        Evaluation evaluation = evaluateModel(cart, instances, EvaluationMethod.TRAINING_DATA,0, 0, null);
         RocCurve rocCurve = new RocCurve(evaluation);
         int classIndex = instances.classAttribute().indexOfValue(IRIS_VIRGINICA);
         Instances rocCurveData = rocCurve.getROCCurve(classIndex);
