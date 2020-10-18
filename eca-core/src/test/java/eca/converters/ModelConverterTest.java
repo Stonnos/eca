@@ -20,6 +20,7 @@ import weka.core.Instances;
 
 import java.io.File;
 
+import static eca.TestHelperUtils.SEED;
 import static eca.TestHelperUtils.getTargetPath;
 import static eca.TestHelperUtils.loadInstances;
 import static eca.core.evaluation.EvaluationService.evaluateModel;
@@ -36,7 +37,6 @@ class ModelConverterTest {
     private static final String DATA_IRIS_XLS = "data/iris.xls";
     private static final int MAXIMUM_FRACTION_DIGITS = 4;
     private static final String CLASSIFIER_MODEL_FILE = "classifier-%s.model";
-    private static final int SEED = 1;
 
     private Instances instances;
     private File file;

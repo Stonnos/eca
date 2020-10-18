@@ -28,6 +28,8 @@ public class TestHelperUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    public static final int SEED = 1;
+
     /**
      * Load json config from specified file.
      *
