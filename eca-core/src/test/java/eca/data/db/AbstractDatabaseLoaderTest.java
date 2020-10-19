@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Roman Batygin
  */
-public abstract class AbstractDatabaseLoaderTest extends AbstractDatabaseTest {
+abstract class AbstractDatabaseLoaderTest extends AbstractDatabaseTest {
 
     private final JdbcQueryExecutor jdbcQueryExecutor = new JdbcQueryExecutor();
 

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author Roman Batygin
  */
-public class DatabaseSaverTest extends AbstractDatabaseSaverTest {
+class DatabaseSaverTest extends AbstractDatabaseSaverTest {
 
     @Test
     void testSaveDataToDatabase() {

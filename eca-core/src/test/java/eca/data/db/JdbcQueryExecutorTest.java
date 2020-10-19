@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author Roman Batygin
  */
-public class JdbcQueryExecutorTest extends AbstractDatabaseLoaderTest {
+class JdbcQueryExecutorTest extends AbstractDatabaseLoaderTest {
 
     @Test
     void testLoadDataFromDatabase() {
