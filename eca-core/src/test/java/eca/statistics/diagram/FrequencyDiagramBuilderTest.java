@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static eca.AssertionUtils.assertFrequencyData;
+import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,7 +26,6 @@ class FrequencyDiagramBuilderTest {
 
     private static final String CLASS_ATTRIBUTE = "class";
     private static final String X1_ATTRIBUTE = "x1";
-    private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     private Instances instances;
 

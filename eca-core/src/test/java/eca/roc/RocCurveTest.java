@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
+import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.loadInstances;
 import static eca.core.evaluation.EvaluationService.evaluateModel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class RocCurveTest {
 
-    private static final String DATA_IRIS_XLS = "data/iris.xls";
     private static final String IRIS_VIRGINICA = "Iris-virginica";
     private static final double EXPECTED_SENSITIVITY_POINT = 0.98d;
     private static final double EXPECTED_100_SPECIFICITY_POINT = 0.03d;

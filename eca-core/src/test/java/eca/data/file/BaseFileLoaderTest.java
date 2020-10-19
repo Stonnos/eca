@@ -9,6 +9,7 @@ import weka.core.Instances;
 import java.io.File;
 
 import static eca.AssertionUtils.assertInstances;
+import static eca.TestHelperUtils.DATA_CREDIT_ARFF;
 import static eca.TestHelperUtils.loadInstances;
 
 /**
@@ -17,8 +18,6 @@ import static eca.TestHelperUtils.loadInstances;
  * @author Roman Batygin
  */
 public abstract class BaseFileLoaderTest {
-
-    private static final String DATA_CREDIT_ARFF = "data/credit-g.arff";
 
     private Instances expected;
 

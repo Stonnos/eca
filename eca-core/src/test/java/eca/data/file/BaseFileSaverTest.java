@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.AssertionUtils.assertInstances;
+import static eca.TestHelperUtils.DATA_CREDIT_ARFF;
 import static eca.TestHelperUtils.getTargetPath;
 import static eca.TestHelperUtils.loadInstances;
 
@@ -24,7 +25,6 @@ import static eca.TestHelperUtils.loadInstances;
  */
 public abstract class BaseFileSaverTest {
 
-    private static final String DATA_CREDIT_ARFF = "data/credit-g.arff";
     private static final String DATA_FORMAT = "data-%d.%s";
 
     private Instances expected;

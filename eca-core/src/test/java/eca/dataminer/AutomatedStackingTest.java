@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
+import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.SEED;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Roman Batygin
  */
 class AutomatedStackingTest {
-
-    private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     private AutomatedStacking automatedStacking;
 

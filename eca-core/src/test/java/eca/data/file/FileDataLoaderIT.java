@@ -9,6 +9,8 @@ import weka.core.Instances;
 import java.net.URL;
 
 import static eca.AssertionUtils.assertInstances;
+import static eca.TestHelperUtils.DATA_GLASS_ARFF;
+import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.loadInstances;
 
 /**
@@ -20,8 +22,6 @@ class FileDataLoaderIT {
 
     private static final String DATA_LOADING_HTTP_URL = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String DATA_LOADING_FTP_URL = "ftp://%s:%s@localhost/glass.arff";
-    private static final String DATA_GLASS_ARFF = "data/glass.arff";
-    private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     @Test
     void testHttpLoading() {

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
+import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,8 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Roman Batygin
  */
 class AttributeStatisticsTest {
-
-    private static final String DATA_IRIS_XLS = "data/iris.xls";
 
     private static final String X1_ATTRIBUTE = "x1";
 

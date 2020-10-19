@@ -8,6 +8,7 @@ import weka.core.Instances;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static eca.TestHelperUtils.DATA_CREDIT_ARFF;
 import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ContingencyTableTest {
 
-    private static final String DATA_CREDIT_G_ARFF = "data/credit-g.arff";
     private static final String SAVINGS_STATUS_ATTRIBUTE = "savings_status";
     private static final String JOB_ATTRIBUTE = "job";
     private static final String DURATION_ATTRIBUTE = "duration";
@@ -35,7 +35,7 @@ class ContingencyTableTest {
 
     @BeforeEach
     void init() {
-        instances = loadInstances(DATA_CREDIT_G_ARFF);
+        instances = loadInstances(DATA_CREDIT_ARFF);
         contingencyTable = new ContingencyTable(instances);
     }
 
