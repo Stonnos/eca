@@ -4,6 +4,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.dto.ExperimentRequestDto;
+import eca.client.exception.EcaServiceException;
 import eca.client.util.RabbitUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,11 @@ import java.util.concurrent.TimeoutException;
 
 import static eca.client.TestHelperUtils.createExperimentRequestDto;
 import static eca.client.TestHelperUtils.loadInstances;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,6 +59,18 @@ class RabbitSenderTest {
         experimentRequestDto.setData(instances);
         AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
         rabbitSender.sendMessage(QUEUE, experimentRequestDto, properties);
-        verify(channel, atLeastOnce()).basicPublish(StringUtils.EMPTY, QUEUE, properties, jsonMessageConverter.toMessage(experimentRequestDto));
+        verify(channel, atLeastOnce()).basicPublish(StringUtils.EMPTY, QUEUE, properties,
+                jsonMessageConverter.toMessage(experimentRequestDto));
+    }
+
+    @Test
+    void testSendMessageWithException() throws IOException {
+        ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
+        experimentRequestDto.setData(instances);
+        AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
+        doThrow(new EcaServiceException(StringUtils.EMPTY)).when(channel).basicPublish(anyString(), anyString(), any(),
+                any());
+        assertThrows(EcaServiceException.class,
+                () -> rabbitSender.sendMessage(QUEUE, experimentRequestDto, properties));
     }
 }
