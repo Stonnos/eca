@@ -1,5 +1,8 @@
 package eca.client;
 
+import eca.client.dto.ExperimentRequestDto;
+import eca.client.dto.ExperimentType;
+import eca.core.evaluation.EvaluationMethod;
 import eca.data.file.resource.FileResource;
 import eca.data.file.xls.XLSLoader;
 import lombok.SneakyThrows;
@@ -29,6 +32,20 @@ public class TestHelperUtils {
         XLSLoader dataLoader = new XLSLoader();
         dataLoader.setSource(new FileResource(new File(classLoader.getResource(DATA_PATH).getFile())));
         return dataLoader.loadInstances();
+    }
+
+    /**
+     * Creates experiment request dto.
+     *
+     * @return experiment request dto
+     */
+    public static ExperimentRequestDto createExperimentRequestDto() {
+        ExperimentRequestDto experimentRequestDto = new ExperimentRequestDto();
+        experimentRequestDto.setFirstName("Roman");
+        experimentRequestDto.setEmail("test@mail.ru");
+        experimentRequestDto.setEvaluationMethod(EvaluationMethod.CROSS_VALIDATION);
+        experimentRequestDto.setExperimentType(ExperimentType.ADA_BOOST);
+        return experimentRequestDto;
     }
 
 }

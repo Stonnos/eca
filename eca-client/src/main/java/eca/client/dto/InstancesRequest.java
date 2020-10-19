@@ -1,7 +1,9 @@
 package eca.client.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import eca.client.json.InstancesSerializer;
+import eca.client.dto.databind.InstancesDeserializer;
+import eca.client.dto.databind.InstancesSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,5 +23,6 @@ public class InstancesRequest {
      * Training data
      */
     @JsonSerialize(using = InstancesSerializer.class)
+    @JsonDeserialize(using = InstancesDeserializer.class)
     private Instances data;
 }

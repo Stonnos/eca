@@ -1,4 +1,4 @@
-package eca.client.json;
+package eca.client.dto.databind;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
