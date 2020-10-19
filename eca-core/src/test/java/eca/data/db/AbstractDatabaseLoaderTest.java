@@ -11,7 +11,7 @@ import static eca.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Abstract class for database loader.
+ * Abstract class for database loader tests.
  *
  * @author Roman Batygin
  */
@@ -19,6 +19,7 @@ public abstract class AbstractDatabaseLoaderTest extends AbstractDatabaseTest {
 
     private final JdbcQueryExecutor jdbcQueryExecutor = new JdbcQueryExecutor();
 
+    @Override
     void executeTest(DataBaseType dataBaseType, DatabaseTestConfig databaseTestConfig) {
         ConnectionDescriptor connectionDescriptor = createConnectionDescriptor(dataBaseType, databaseTestConfig);
         jdbcQueryExecutor.setConnectionDescriptor(connectionDescriptor);

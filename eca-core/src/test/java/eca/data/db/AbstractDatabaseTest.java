@@ -38,4 +38,6 @@ public abstract class AbstractDatabaseTest {
         }
         return connectionDescriptor;
     }
+
+    abstract void executeTest(DataBaseType dataBaseType, DatabaseTestConfig databaseTestConfig);
 }
