@@ -1,7 +1,7 @@
 package eca.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import eca.data.db.DataBaseType;
+import eca.data.db.model.DataBaseType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

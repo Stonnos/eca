@@ -2,6 +2,7 @@ package eca.data.db;
 
 import eca.config.DatabaseTestConfig;
 import eca.config.EcaCoreTestConfiguration;
+import eca.data.db.model.DataBaseType;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 

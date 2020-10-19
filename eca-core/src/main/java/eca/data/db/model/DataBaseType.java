@@ -1,4 +1,4 @@
-package eca.data.db;
+package eca.data.db.model;
 
 import eca.core.DescriptiveEnum;
 

@@ -1,6 +1,7 @@
 package eca.data.db;
 
 import eca.config.DatabaseTestConfig;
+import eca.data.db.model.DataBaseType;
 import weka.core.Instances;
 
 import java.io.IOException;
