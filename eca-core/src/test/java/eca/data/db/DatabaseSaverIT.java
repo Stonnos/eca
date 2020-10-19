@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Roman Batygin
  */
-class DatabaseSaverIT extends BaseDatabaseTest {
+class DatabaseSaverIT extends AbstractDatabaseTest {
 
     private static final String TABLE_NAME_FORMAT = "data_%d";
     private static final String SELECT_QUERY = "select * from %s";

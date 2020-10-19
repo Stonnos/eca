@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author Roman Batygin
  */
-public abstract class BaseDatabaseTest {
+public abstract class AbstractDatabaseTest {
 
     private final ConnectionDescriptorBuilder connectionDescriptorBuilder = new ConnectionDescriptorBuilder();
 
