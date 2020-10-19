@@ -1,4 +1,4 @@
-package eca.statistics.contingency;
+package eca.statistics.contingency.model;
 
 import lombok.Data;
 

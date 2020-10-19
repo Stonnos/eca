@@ -1,5 +1,6 @@
 package eca.statistics.contingency;
 
+import eca.statistics.contingency.model.ChiSquareTestResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Attribute;

@@ -15,7 +15,7 @@ import eca.ensemble.EnsembleUtils;
 import eca.ensemble.StackingClassifier;
 import eca.report.contingency.ContingencyTableReportModel;
 import eca.statistics.AttributeStatistics;
-import eca.statistics.contingency.ChiSquareTestResult;
+import eca.statistics.contingency.model.ChiSquareTestResult;
 import eca.util.Utils;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
