@@ -18,6 +18,13 @@
         <jackson.databind.version>2.11.3</jackson.databind.version>
         <amqp-client.version>5.7.3</amqp-client.version>
         <awaitility.version>4.0.3</awaitility.version>
+        <sonar.coverage.exclusions>
+            **/model/**/*,
+            **/dto/**/*,
+            **/config/**/*,
+            **/exception/**/*,
+            **/dictionary/**/*
+        </sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
