@@ -5,6 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,5 +56,10 @@ class MessageListenerContainerTest {
         assertTrue(messageListenerContainer.isRunning());
         assertTrue(messageListenerContainer.isStarted());
         verify(evaluationListenerAdapter, atLeastOnce()).basicConsume(any(Channel.class), any());
+    }
+
+    @AfterEach
+    void stop() throws IOException, TimeoutException {
+        messageListenerContainer.stop();
     }
 }
