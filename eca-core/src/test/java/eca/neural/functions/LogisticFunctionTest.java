@@ -12,6 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class LogisticFunctionTest {
 
+    private static final double TEST_VALUE = 0.65d;
+
+    private LogisticFunction logisticFunction = new LogisticFunction(2d);
+
     @Test
     void testNegativeCoefficient() {
         LogisticFunction logisticFunction = new LogisticFunction();
@@ -20,8 +24,13 @@ class LogisticFunctionTest {
 
     @Test
     void testLogisticFunction() {
-        LogisticFunction logisticFunction = new LogisticFunction(2d);
-        double result = logisticFunction.process(0.65d);
+        double result = logisticFunction.process(TEST_VALUE);
         assertEquals(0.7858d, result, 0.0001d);
+    }
+
+    @Test
+    void testLogisticFunctionDerivative() {
+        double result = logisticFunction.derivative(TEST_VALUE);
+        assertEquals(0.3365d, result, 0.0001d);
     }
 }

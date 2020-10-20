@@ -11,10 +11,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class SoftSignFunctionTest {
 
+    private static final double TEST_VALUE = 0.9d;
+
+    private SoftSignFunction logisticFunction = new SoftSignFunction();
+
     @Test
     void testSoftSignFunction() {
-        SoftSignFunction logisticFunction = new SoftSignFunction();
-        double result = logisticFunction.process(0.9d);
+        double result = logisticFunction.process(TEST_VALUE);
         assertEquals(0.4736d, result, 0.0001d);
+    }
+
+    @Test
+    void testSoftSignFunctionDerivative() {
+        double result = logisticFunction.derivative(0.9d);
+        assertEquals(0.2770d, result, 0.0001d);
     }
 }
