@@ -34,6 +34,7 @@
         <github.global.server>github</github.global.server>
         <github.maven-plugin>0.12</github.maven-plugin>
         <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
+        <assertj.core.version>3.13.1</assertj.core.version>
         <maven-surefire-plugin>2.22.2</maven-surefire-plugin>
         <jacoco-plugin.version>0.8.5</jacoco-plugin.version>
         <jacoco.minCoverage>0</jacoco.minCoverage>
@@ -96,6 +97,13 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter-engine}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.core.version}</version>
             <scope>test</scope>
         </dependency>
 
