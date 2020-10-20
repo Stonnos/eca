@@ -1,5 +1,6 @@
 package eca.client;
 
+import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.ExperimentType;
 import eca.core.evaluation.EvaluationMethod;
@@ -7,6 +8,7 @@ import eca.data.file.resource.FileResource;
 import eca.data.file.xls.XLSLoader;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.io.File;
@@ -20,6 +22,8 @@ import java.io.File;
 public class TestHelperUtils {
 
     private static final String DATA_PATH = "iris.xls";
+    private static final String FIRST_NAME = "Roman";
+    private static final String EMAIL = "test@mail.ru";
 
     /**
      * Loads instances from file.
@@ -41,11 +45,28 @@ public class TestHelperUtils {
      */
     public static ExperimentRequestDto createExperimentRequestDto() {
         ExperimentRequestDto experimentRequestDto = new ExperimentRequestDto();
-        experimentRequestDto.setFirstName("Roman");
-        experimentRequestDto.setEmail("test@mail.ru");
+        experimentRequestDto.setFirstName(FIRST_NAME);
+        experimentRequestDto.setEmail(EMAIL);
         experimentRequestDto.setEvaluationMethod(EvaluationMethod.CROSS_VALIDATION);
         experimentRequestDto.setExperimentType(ExperimentType.ADA_BOOST);
         return experimentRequestDto;
+    }
+
+    /**
+     * Creates evaluation request.
+     *
+     * @param classifier       - classifier
+     * @param instances        - training data
+     * @param evaluationMethod - evaluation method
+     * @return evaluation request dto
+     */
+    public static EvaluationRequestDto createEvaluationRequestDto(AbstractClassifier classifier, Instances instances,
+                                                                  EvaluationMethod evaluationMethod) {
+        EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
+        evaluationRequestDto.setClassifier(classifier);
+        evaluationRequestDto.setData(instances);
+        evaluationRequestDto.setEvaluationMethod(evaluationMethod);
+        return evaluationRequestDto;
     }
 
 }
