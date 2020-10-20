@@ -45,7 +45,7 @@ class RandomForestsTest {
                 .map(InstancesHandler.class::cast)
                 .collect(Collectors.toList());
         assertThat(classifiers).hasSameSizeAs(instancesHandlers);
-        //Verify that all bootstrap sample has same size as initial training data
+        //Verify that all bootstrap samples has same size as initial training data
         instancesHandlers.forEach(
                 instancesHandler -> assertEquals(instances.numInstances(), instancesHandler.getData().numInstances()));
     }
