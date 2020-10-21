@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eca.data.db.model.DataBaseType;
 import eca.exception.ConfigException;
 import eca.util.FileUtils;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -145,7 +146,20 @@ public class ConfigurationService {
         }
     }
 
-    private static File getEcaServiceConfigFile() {
-        return new File(FileUtils.getCurrentDir(), ECA_SERVICE_CONFIG_PATH);
+    @SneakyThrows
+    private File getEcaServiceConfigFile() {
+        File file = new File(FileUtils.getCurrentDir(), ECA_SERVICE_CONFIG_PATH);
+        if (!file.isFile()) {
+            log.warn("File [{}] not exists. Create new one", ECA_SERVICE_CONFIG_PATH);
+            boolean created = file.createNewFile();
+            if (created) {
+                log.info("New [{}] file has been created", ECA_SERVICE_CONFIG_PATH);
+                ecaServiceConfig = new EcaServiceConfig();
+                saveEcaServiceConfig();
+            } else {
+                log.warn("Can't create file [{}]", ECA_SERVICE_CONFIG_PATH);
+            }
+        }
+        return file;
     }
 }
