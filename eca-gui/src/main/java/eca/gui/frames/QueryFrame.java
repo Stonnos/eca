@@ -59,6 +59,7 @@ public class QueryFrame extends JFrame {
     private static final String DEFAULT_STYLE_NAME = "default";
     private static final String SPACE_REGEX = "\\s";
     private static final Color HIGHLIGHT_COLOR = Color.BLUE;
+    private static final String SELECT_QUERY_EXAMPLE = "select * from table_name";
 
     private final JdbcQueryExecutor connection;
 
@@ -238,6 +239,7 @@ public class QueryFrame extends JFrame {
         Style style = styledDocument.addStyle(BLUE_STYLE_NAME, null);
         StyleConstants.setForeground(style, HIGHLIGHT_COLOR);
         styledDocument.setDocumentFilter(new SqlHighlightFilter());
+        queryArea.setText(SELECT_QUERY_EXAMPLE);
     }
 
     private void initializeSql2003KeyWords() {
