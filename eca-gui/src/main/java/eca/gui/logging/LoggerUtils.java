@@ -18,6 +18,6 @@ public class LoggerUtils {
      * @param ex     {@link Throwable} object
      */
     public static void error(Logger logger, Throwable ex) {
-        logger.error("There was an error: {}", ex.getMessage());
+        logger.error("There was an error: {}", ex.getMessage(), ex);
     }
 }

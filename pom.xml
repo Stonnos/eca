@@ -29,6 +29,7 @@
         <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
         <logback.version>1.2.3</logback.version>
+        <logstash.logback.version>6.4</logstash.logback.version>
         <slf4j.version>1.7.25</slf4j.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <github.global.server>github</github.global.server>
@@ -91,6 +92,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.logback.version}</version>
         </dependency>
 
         <dependency>

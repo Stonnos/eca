@@ -252,7 +252,7 @@ public class QueryFrame extends JFrame {
                 sql2003KeyWords.add(notAnsiSql2003Keyword.toLowerCase());
             }
         } catch (Exception ex) {
-            log.error("There was an error in sql 2003 keywords initialization: {}", ex.getMessage());
+            log.error("There was an error in sql 2003 keywords initialization: {}", ex.getMessage(), ex);
         }
     }
 
@@ -352,7 +352,7 @@ public class QueryFrame extends JFrame {
                         next = end;
                     }
                 } catch (BadLocationException ex) {
-                    log.error(ex.getMessage());
+                    log.error("Highlight sql words error: {}", ex.getMessage(), ex);
                 }
             });
         }

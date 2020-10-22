@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <conversionRule conversionWord="stacktrace"
+                    converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter"/>
+    
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} [%thread] %X{userLogin} %-5level %logger{36} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %X{userLogin} %-5level %logger{36} - %msg%stacktrace{5,20,1024,rootFirst}%n
             </Pattern>
         </layout>
     </appender>

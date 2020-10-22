@@ -26,7 +26,7 @@ public class Reference {
                 log.error("Can't load manual");
             }
         } catch (Exception ex) {
-            log.error("Can't load manual", ex);
+            log.error("Can't load manual: {}", ex.getMessage(), ex);
         }
     }
 

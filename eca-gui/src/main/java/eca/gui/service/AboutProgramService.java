@@ -48,8 +48,8 @@ public class AboutProgramService {
             StringWriter stringWriter = new StringWriter();
             template.merge(context, stringWriter);
             aboutProgramHtmlString = stringWriter.toString();
-        } catch (Exception e) {
-            log.error("Can't load velocity template", e);
+        } catch (Exception ex) {
+            log.error("Can't load velocity template: {}", ex.getMessage(), ex);
         }
     }
 
