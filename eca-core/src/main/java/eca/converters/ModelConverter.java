@@ -21,7 +21,7 @@ public class ModelConverter {
      *
      * @param file  file object
      * @param model object
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static void saveModel(File file, Object model) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
@@ -40,12 +40,13 @@ public class ModelConverter {
      * @return deserialize object
      * @throws Exception in case of error
      */
-    public static Object loadModel(File file) throws Exception {
+    public static <T> T loadModel(File file, Class<T> targetClazz) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
         if (!file.getName().endsWith(MODEL_EXTENSION)) {
             throw new IllegalArgumentException(
                     String.format("Can't load object from file '%s'", file.getAbsoluteFile()));
         }
-        return SerializationUtils.deserialize(file.getAbsolutePath());
+        Object result = SerializationUtils.deserialize(file.getAbsolutePath());
+        return targetClazz.cast(result);
     }
 }

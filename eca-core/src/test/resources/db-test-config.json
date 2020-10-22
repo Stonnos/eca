@@ -1,0 +1,89 @@
+{
+  "POSTGRESQL": {
+    "driver": "org.postgresql.Driver",
+    "host": "localhost",
+    "port": 5436,
+    "dataBaseName": "postgres_test_db",
+    "login": "postgres",
+    "password": "postgres",
+    "selectQueries": [
+      {
+        "sqlQuery": "select * from evaluation_log",
+        "expectedDataFile": "data/evaluation_log.xlsx"
+      }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
+    ]
+  },
+  "MYSQL": {
+    "driver": "com.mysql.cj.jdbc.Driver",
+    "host": "localhost",
+    "port": 3307,
+    "dataBaseName": "mysql_test_db",
+    "login": "mysql",
+    "password": "mysql",
+    "selectQueries": [
+      {
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "data/credit-g.arff"
+      },
+      {
+        "sqlQuery": "select * from evaluation_log",
+        "expectedDataFile": "data/evaluation_log.xlsx"
+      }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
+    ]
+  },
+  "MS_ACCESS": {
+    "driver": "net.ucanaccess.jdbc.UcanaccessDriver",
+    "host": "./src/test/resources/",
+    "dataBaseName": "ms-access-test-db.accdb",
+    "login": "",
+    "password": "",
+    "selectQueries": [
+      {
+        "sqlQuery": "select * from evaluation_log",
+        "expectedDataFile": "data/evaluation_log.xlsx"
+      }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
+    ]
+  },
+  "SQLITE": {
+    "driver": "org.sqlite.JDBC",
+    "host": "./src/test/resources/",
+    "dataBaseName": "sqlite-test-db.sqlite",
+    "login": "",
+    "password": "",
+    "selectQueries": [
+      {
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "data/credit-g.arff"
+      }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
+    ]
+  },
+  "MSSQL": {
+    "driver": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "host": "localhost",
+    "port": 1434,
+    "dataBaseName": "mssqltestdb",
+    "login": "sa",
+    "password": "pa66word#!",
+    "selectQueries": [
+      {
+        "sqlQuery": "select * from credit",
+        "expectedDataFile": "data/credit-g.arff"
+      }
+    ],
+    "saveDataFiles": [
+      "data/evaluation_log.xlsx"
+    ]
+  }
+}

@@ -32,7 +32,7 @@ public class VelocityConfigService {
             velocityEngine.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, IncludeRelativePath.class.getName());
             velocityEngine.init();
         } catch (Exception ex) {
-            log.error("Error in init velocity engine: ", ex);
+            log.error("Error in init velocity engine: {}", ex.getMessage(), ex);
         }
     }
 

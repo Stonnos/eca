@@ -2,6 +2,7 @@ package eca.statistics.contingency;
 
 import eca.core.InstancesHandler;
 import eca.statistics.Statistics;
+import eca.statistics.contingency.model.ChiSquareTestResult;
 import weka.core.Attribute;
 import weka.core.ContingencyTables;
 import weka.core.Instances;

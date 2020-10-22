@@ -527,7 +527,7 @@ public abstract class ExperimentFrame extends JFrame {
 
         @Override
         public void apply() throws Exception {
-            experiment = (ExperimentHistory) ModelConverter.loadModel(file);
+            experiment = ModelConverter.loadModel(file, ExperimentHistory.class);
         }
     }
 

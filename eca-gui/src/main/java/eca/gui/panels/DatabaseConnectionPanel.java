@@ -4,7 +4,7 @@ import eca.config.ConfigurationService;
 import eca.config.DatabaseConfig;
 import eca.data.db.ConnectionDescriptor;
 import eca.data.db.ConnectionDescriptorBuilder;
-import eca.data.db.DataBaseType;
+import eca.data.db.model.DataBaseType;
 import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.IntegerDocument;

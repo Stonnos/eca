@@ -1,6 +1,6 @@
 package eca.gui.actions;
 
-import eca.statistics.contingency.ChiSquareTestResult;
+import eca.statistics.contingency.model.ChiSquareTestResult;
 import eca.statistics.contingency.ContingencyTable;
 
 /**

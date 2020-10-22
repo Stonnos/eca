@@ -110,7 +110,7 @@ public class NeuralNetworkUtil {
      */
     public static int getMinNumNeuronsInHiddenLayer(Instances data) {
         int minNumNeurons = getMinLinksNum(data) / (data.numAttributes() + data.numClasses() - 1);
-        return minNumNeurons < MIN_NEURONS_NUM_IN_HIDDEN_LAYER ? MIN_NEURONS_NUM_IN_HIDDEN_LAYER : minNumNeurons;
+        return Math.max(minNumNeurons, MIN_NEURONS_NUM_IN_HIDDEN_LAYER);
     }
 
     /**

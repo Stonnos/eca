@@ -1,5 +1,7 @@
 package eca.data.db;
 
+import eca.data.db.model.DataBaseType;
+
 /**
  * Implements Microsoft SQL Server datasource descriptor.
  *

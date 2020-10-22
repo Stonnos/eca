@@ -17,25 +17,25 @@ public class EcaServiceConfig {
     /**
      * Eca - service enabled?
      */
-    private Boolean enabled;
+    private Boolean enabled = false;
 
     /**
      * Rabbit host
      */
-    private String host;
+    private String host = "localhost";
 
     /**
      * Rabbit port
      */
-    private int port;
+    private int port = 5672;
 
     /**
      * Rabbit username
      */
-    private String username;
+    private String username = "guest";
 
     /**
      * Rabbit password
      */
-    private String password;
+    private String password = "guest";
 }
