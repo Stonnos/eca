@@ -124,6 +124,8 @@ public class AutomatedStacking extends AbstractExperiment<StackingClassifier> {
                 case MODEL_LEARNING_STATE: {
                     return processModelLearningState();
                 }
+                default:
+                    throw new IllegalStateException(String.format("Unknown state [%d]", state));
             }
             return null;
         }

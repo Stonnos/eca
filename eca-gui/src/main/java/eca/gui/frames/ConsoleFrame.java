@@ -25,7 +25,6 @@ public class ConsoleFrame extends JFrame {
 
     private static final String DATA_COPY_MENU_TEXT = "Копировать";
     private static final String CONSOLE_TITLE = "Консоль";
-    private static final String OPTIONS_MENU_TEXT = "Настройки";
     private static final String SELECTED_FONT_MENU_TEXT = "Выбор шрифта";
     private static final String BACKGROUND_COLOR_MENU_TEXT = "Выбор цвета фона";
     private static final String FONT_COLOR_MENU_TEXT = "Выбор цвета шрифта";
