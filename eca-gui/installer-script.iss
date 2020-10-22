@@ -32,7 +32,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "target\ECA.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "target\eca-gui-6.7.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\eca-gui-6.8.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "target\ECAManual.pdf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "target\eca-service-config.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "COPYING"; DestDir: "{app}"; Flags: ignoreversion
