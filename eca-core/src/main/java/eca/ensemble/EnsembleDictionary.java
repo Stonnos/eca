@@ -23,6 +23,7 @@ public class EnsembleDictionary {
     public static final String INDIVIDUAL_CLASSIFIER_FORMAT = "Базовый классификатор %d:";
     public static final String BOOTSTRAP_SAMPLE_METHOD = "Бутстрэп-выборки";
     public static final String TRAINING_SAMPLE_METHOD = "Исходное обучающее множество";
+    public static final String NUM_FOLDS = "Число блоков:";
 
     public static final String META_CLASSIFIER = "Мета-классификатор:";
     public static final String META_SAMPLING_METHOD = "Метод формирования мета-признаков:";
