@@ -199,6 +199,7 @@ public class JMainFrame extends JFrame {
     private static final String DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT =
             "Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм";
     private static final String DATA_MINER_ADA_BOOST_MENU_TEXT = "Автоматическое построение: алгоритм AdaBoost";
+    private static final String DATA_MINER_DAGGING_MENU_TEXT = "Автоматическое построение: алгоритм Dagging";
     private static final String DATA_MINER_STACKING_MENU_TEXT = "Автоматическое построение: алгоритм Stacking";
     private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: случайные леса";
     private static final String INDIVIDUAL_CLASSIFIERS_MENU_TEXT = "Индувидуальные алгоритмы";
@@ -979,6 +980,7 @@ public class JMainFrame extends JFrame {
         JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
         JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
         JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
+        JMenuItem daggingMenu = new JMenuItem(DATA_MINER_DAGGING_MENU_TEXT);
 
         aNeuralMenu.addActionListener(event ->
                 performTaskWithDataAndClassValidation(() -> {
@@ -1020,6 +1022,15 @@ public class JMainFrame extends JFrame {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
                             () -> createEnsembleExperiment(new AdaBoostClassifier(), aAdaBoostMenu.getText(),
+                                    dataBuilder.getResult()));
+                })
+        );
+
+        daggingMenu.addActionListener(event ->
+                performTaskWithDataAndClassValidation(() -> {
+                    final DataBuilder dataBuilder = new DataBuilder();
+                    prepareTrainingData(dataBuilder,
+                            () -> createEnsembleExperiment(new DaggingClassifier(), daggingMenu.getText(),
                                     dataBuilder.getResult()));
                 })
         );
@@ -1088,6 +1099,7 @@ public class JMainFrame extends JFrame {
         dataMinerMenu.add(knnOptimizerMenu);
         dataMinerMenu.add(automatedRandomForestsMenu);
         dataMinerMenu.add(automatedDecisionTreeMenu);
+        dataMinerMenu.add(daggingMenu);
     }
 
     private void fillStatisticsMenu(JMenu statisticsMenu) {
