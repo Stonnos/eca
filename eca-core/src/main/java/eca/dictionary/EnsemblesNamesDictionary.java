@@ -19,4 +19,5 @@ public class EnsemblesNamesDictionary {
     public static final String EXTRA_TREES = "Алгоритм Extra trees";
     public static final String STACKING = "Алгоритм Stacking";
     public static final String RANDOM_NETWORKS = "Алгоритм Случайные сети";
+    public static final String DAGGING = "Алгоритм Dagging";
 }

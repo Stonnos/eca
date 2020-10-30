@@ -37,6 +37,7 @@ import eca.dictionary.EnsemblesNamesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.AdaBoostClassifier;
 import eca.ensemble.CVIterativeBuilder;
+import eca.ensemble.DaggingClassifier;
 import eca.ensemble.EnsembleUtils;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.ensemble.Iterable;
@@ -958,6 +959,14 @@ public class JMainFrame extends JFrame {
                 })
         );
         ensembleMenu.add(rndNetworksItem);
+
+        JMenuItem daggingItem = new JMenuItem(EnsemblesNamesDictionary.DAGGING);
+        daggingItem.addActionListener(e ->
+                performTaskWithDataAndClassValidation(
+                        () -> createEnsembleOptionDialog(EnsemblesNamesDictionary.DAGGING, new DaggingClassifier(),
+                                false))
+        );
+        ensembleMenu.add(daggingItem);
     }
 
     private void fillDataMinerMenu(JMenu dataMinerMenu) {

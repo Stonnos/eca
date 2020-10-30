@@ -237,8 +237,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
      */
     private void concurrentBuildClassifier(Instances data) throws Exception {
         initializeData(data);
-        initializeOptions();
         initializeSeeds();
+        initializeOptions();
         final CountDownLatch finishedLatch = new CountDownLatch(getNumIterations());
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
         for (int i = 0; i < getNumIterations(); i++) {
@@ -271,8 +271,8 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
 
         IterativeEnsembleBuilder(Instances data) throws Exception {
             initializeData(data);
-            initializeOptions();
             initializeSeeds();
+            initializeOptions();
         }
 
         @Override
