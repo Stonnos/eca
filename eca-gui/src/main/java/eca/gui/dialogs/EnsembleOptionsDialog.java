@@ -106,8 +106,8 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         super.showDialog();
     }
 
-    public void setSampleEnabled(boolean flag) {
-        ensembleOptionsTabbedPane.setEnabledAt(1, flag);
+    public void setAdditionalOptionsEnabled(boolean enabled) {
+        ensembleOptionsTabbedPane.setEnabledAt(1, enabled);
     }
 
     public void addClassifiers(ClassifiersSet classifiers) {

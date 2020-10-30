@@ -29,7 +29,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
         AutomatedHeterogeneousEnsemble exp = (AutomatedHeterogeneousEnsemble) this.getExperiment();
         EnsembleOptionsDialog options = new EnsembleOptionsDialog(this, OPTIONS_TITLE, exp.getClassifier(),
                 exp.getData(), getDigits());
-        options.setSampleEnabled(false);
+        options.setAdditionalOptionsEnabled(false);
         try {
             options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiersSet()));
             options.showDialog();

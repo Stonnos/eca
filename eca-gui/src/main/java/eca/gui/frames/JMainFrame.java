@@ -1380,14 +1380,14 @@ public class JMainFrame extends JFrame {
 
     private void createEnsembleOptionDialog(final String title,
                                             final AbstractHeterogeneousClassifier heterogeneousClassifier,
-                                            final boolean sample) {
+                                            final boolean additionalOptionsEnabled) {
         try {
             final DataBuilder dataBuilder = new DataBuilder();
             prepareTrainingData(dataBuilder, () -> {
                 heterogeneousClassifier.setSeed(seed);
                 EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
                         title, heterogeneousClassifier, dataBuilder.getResult(), maximumFractionDigits);
-                frame.setSampleEnabled(sample);
+                frame.setAdditionalOptionsEnabled(additionalOptionsEnabled);
                 executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
             });
         } catch (Exception e) {
