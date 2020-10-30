@@ -5,7 +5,6 @@
  */
 package eca.ensemble;
 
-import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.MajorityVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -19,17 +18,11 @@ import java.util.Random;
  * <p>
  * Set the number of iterations (Default: 10) <p>
  * <p>
- * Use weighted votes method. (Default: <tt>false</tt>) <p>
- * <p>
- * Use randomly classifiers selection. (Default: <tt>true</tt>) <p>
- * <p>
  * Set individual classifiers collection  <p>
  * <p>
  * Set minimum error threshold for including classifier in ensemble <p>
  * <p>
  * Set maximum error threshold for including classifier in ensemble <p>
- * <p>
- * Sets {@link Sampler} object. <p>
  *
  * @author Roman Batygin
  */
