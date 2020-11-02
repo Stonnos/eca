@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.core.evaluation.Evaluation;
 import eca.ensemble.voting.MajorityVoting;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -79,7 +80,10 @@ public class DaggingClassifier extends AbstractHeterogeneousClassifier {
     }
 
     @Override
-    protected synchronized void addClassifier(int iteration, Classifier classifier, Instances data) {
-        classifiers.add(new ClassifierOrderModel(classifier, iteration));
+    protected synchronized void addClassifier(int iteration, Classifier classifier, Instances data) throws Exception {
+        double error = Evaluation.error(classifier, data);
+        if (error > getMinError() && error < getMaxError()) {
+            classifiers.add(new ClassifierOrderModel(classifier, iteration, EnsembleUtils.getClassifierWeight(error)));
+        }
     }
 }
