@@ -19,6 +19,7 @@ public class EcaClientTestConfiguration {
     private static final String RABBIT_USERNAME = "rabbit.username";
     private static final String RABBIT_PORT = "rabbit.port";
     private static final String RABBIT_HOST = "rabbit.host";
+    private static final String EVALUATION_REQUEST_QUEUE = "queue.evaluation.request";
 
     private ConnectionFactory connectionFactory;
 
@@ -47,6 +48,15 @@ public class EcaClientTestConfiguration {
             instance = new EcaClientTestConfiguration();
         }
         return instance;
+    }
+
+    /**
+     * Gets evaluation request queue name.
+     *
+     * @return evaluation request queue name
+     */
+    public static String getEvaluationRequestQueue() {
+        return properties.getProperty(EVALUATION_REQUEST_QUEUE);
     }
 
     /**
