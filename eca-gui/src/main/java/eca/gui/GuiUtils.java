@@ -28,7 +28,7 @@ public class GuiUtils {
 
     private static final String INPUT_ERROR_TEXT = "Ошибка ввода";
     private static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
-    private static final int MAX_ERROR_MESSAGE_LENGTH = 512;
+    private static final int MAX_ERROR_MESSAGE_LENGTH = 1024;
     private static final String ERROR_MESSAGE_VM = "vm-templates/errorMessage.vm";
     private static final String ERROR_MESSAGE_PARAM = "errorMessage";
 
