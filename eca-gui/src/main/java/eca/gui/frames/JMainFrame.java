@@ -135,6 +135,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.LOAD_MODEL_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.OPEN_DB_MENU_KEY_STROKE;
@@ -636,19 +637,16 @@ public class JMainFrame extends JFrame {
         if (isDataAndClassValid()) {
             try {
                 action.apply();
-            } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(JMainFrame.this,
-                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
         }
     }
 
     private void processAsyncTask(ExecutorDialog executorDialog, CallbackAction successAction) throws Exception {
         ExecutorService.process(executorDialog, successAction,
-                () -> JOptionPane.showMessageDialog(JMainFrame.this,
-                        executorDialog.getErrorMessageText(), null,
-                        JOptionPane.WARNING_MESSAGE));
+                () -> showFormattedErrorMessageDialog(JMainFrame.this, executorDialog.getErrorMessageText()));
     }
 
     private void executeSimpleBuilding(ClassifierOptionsDialogBase frame) throws Exception {
@@ -1311,10 +1309,9 @@ public class JMainFrame extends JFrame {
                         processIterativeBuilding(frame, progressMessage);
                     }
                 }
-            } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(JMainFrame.this,
-                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
 
         }
@@ -1342,11 +1339,9 @@ public class JMainFrame extends JFrame {
     private boolean validateDataInternal(boolean validateClass) {
         try {
             selectedPanel().validateData(validateClass);
-        } catch (Exception e) {
-            LoggerUtils.error(log, e);
-            JOptionPane.showMessageDialog(JMainFrame.this,
-                    e.getMessage(),
-                    null, JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             return false;
         }
         return true;
@@ -1361,11 +1356,9 @@ public class JMainFrame extends JFrame {
                         = new DecisionTreeOptionsDialog(JMainFrame.this, title, tree, dataBuilder.getResult());
                 executeSimpleBuilding(frame);
             });
-        } catch (Exception e) {
-            LoggerUtils.error(log, e);
-            JOptionPane.showMessageDialog(JMainFrame.this,
-                    e.getMessage(),
-                    null, JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
         }
     }
 
@@ -1381,10 +1374,9 @@ public class JMainFrame extends JFrame {
                 frame.setSampleEnabled(sample);
                 executeIterativeBuilding(frame, ENSEMBLE_BUILDING_PROGRESS_TITLE);
             });
-        } catch (Exception e) {
-            LoggerUtils.error(log, e);
-            JOptionPane.showMessageDialog(JMainFrame.this,
-                    e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
         }
     }
 
@@ -1501,8 +1493,7 @@ public class JMainFrame extends JFrame {
                 classificationResultsFrameBase.setVisible(true);
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
-                JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
-                        null, JOptionPane.WARNING_MESSAGE);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
         };
     }
@@ -1524,9 +1515,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public Void caseErrorStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                ecaResponse.getErrorMessage(),
-                                null, JOptionPane.ERROR_MESSAGE);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ecaResponse.getErrorMessage());
                         return null;
                     }
 
@@ -1540,8 +1529,7 @@ public class JMainFrame extends JFrame {
                 });
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(JMainFrame.this,
-                        e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                showFormattedErrorMessageDialog(JMainFrame.this, e.getMessage());
             }
         };
     }
@@ -1747,10 +1735,9 @@ public class JMainFrame extends JFrame {
                         queryFrame.setVisible(true);
                     });
 
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                 }
             }
             conn.dispose();
@@ -1782,10 +1769,9 @@ public class JMainFrame extends JFrame {
                         databaseSaverDialog.dispose();
                     });
 
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this,
-                            e.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                 }
             }
         };
@@ -1806,10 +1792,9 @@ public class JMainFrame extends JFrame {
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
                             loader, DATA_LOADING_MESSAGE);
                     processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                    LoggerUtils.error(log, ex);
+                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                 }
             }
         };
@@ -1836,10 +1821,9 @@ public class JMainFrame extends JFrame {
                     });
 
                 }
-            } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
-                        null, JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
         };
     }
@@ -1856,8 +1840,7 @@ public class JMainFrame extends JFrame {
                     processAsyncTask(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
-                            null, JOptionPane.ERROR_MESSAGE);
+                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                 }
             }
         };

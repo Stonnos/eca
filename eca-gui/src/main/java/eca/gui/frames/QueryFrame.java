@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+
 /**
  * Frame for execution database queries.
  *
@@ -203,8 +205,7 @@ public class QueryFrame extends JFrame {
                     dispose();
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
-                            null, JOptionPane.WARNING_MESSAGE);
+                    showFormattedErrorMessageDialog(parentFrame, ex.getMessage());
                 }
 
             } else {
@@ -291,9 +292,7 @@ public class QueryFrame extends JFrame {
                 instancesSetTable.addInstances(data);
             } else {
                 if (errorMessage != null) {
-                    JOptionPane.showMessageDialog(QueryFrame.this,
-                            errorMessage,
-                            null, JOptionPane.WARNING_MESSAGE);
+                    showFormattedErrorMessageDialog(QueryFrame.this, errorMessage);
                 }
             }
         }
