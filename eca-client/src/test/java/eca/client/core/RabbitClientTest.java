@@ -30,9 +30,13 @@ import static org.mockito.Mockito.verify;
 class RabbitClientTest {
 
     private static final String REPLY_TO = "response-queue";
-    public static final int NUM_TESTS = 1;
-    public static final int NUM_FOLDS = 10;
-    public static final int SEED = 1;
+    private static final int NUM_TESTS = 1;
+    private static final int NUM_FOLDS = 10;
+    private static final int SEED = 1;
+
+    private static final String EXPERIMENT_REQUEST_QUEUE = "experiment-request-queue";
+    private static final String EVALUATION_OPTIMIZER_REQUEST_QUEUE = "evaluation-optimizer-request-queue";
+    private static final String EVALUATION_REQUEST_QUEUE = "evaluation-request-queue";
 
     private RabbitSender rabbitSender;
 
@@ -45,6 +49,9 @@ class RabbitClientTest {
         instances = loadInstances();
         rabbitSender = mock(RabbitSender.class);
         rabbitClient = new RabbitClient(rabbitSender);
+        rabbitClient.setEvaluationRequestQueue(EVALUATION_REQUEST_QUEUE);
+        rabbitClient.setEvaluationOptimizerRequestQueue(EVALUATION_OPTIMIZER_REQUEST_QUEUE);
+        rabbitClient.setEvaluationRequestQueue(EXPERIMENT_REQUEST_QUEUE);
     }
 
     @Test
@@ -101,7 +108,7 @@ class RabbitClientTest {
         EvaluationRequestDto expectedRequest =
                 createEvaluationRequestDto(cart, instances, EvaluationMethod.TRAINING_DATA);
         rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 
@@ -120,7 +127,7 @@ class RabbitClientTest {
         rabbitClient.setNumTests(NUM_TESTS);
         rabbitClient.setSeed(SEED);
         rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 }

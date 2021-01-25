@@ -4,7 +4,6 @@ import com.rabbitmq.client.AMQP;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
-import eca.client.util.Queues;
 import eca.core.evaluation.EvaluationMethod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +60,27 @@ public class RabbitClient {
     private Integer seed;
 
     /**
+     * Evaluation request queue.
+     */
+    @Getter
+    @Setter
+    private String evaluationRequestQueue;
+
+    /**
+     * Evaluation optimizer request queue.
+     */
+    @Getter
+    @Setter
+    private String evaluationOptimizerRequestQueue;
+
+    /**
+     * Experiment request queue.
+     */
+    @Getter
+    @Setter
+    private String experimentRequestQueue;
+
+    /**
      * Sends evaluation request.
      *
      * @param classifier    - classifier
@@ -76,7 +96,7 @@ public class RabbitClient {
                 classifier.getClass().getSimpleName(), data.relationName());
         EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, data);
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
-        rabbitSender.sendMessage(Queues.EVALUATION_REQUEST_QUEUE, evaluationRequestDto, basicProperties);
+        rabbitSender.sendMessage(evaluationRequestQueue, evaluationRequestDto, basicProperties);
         log.info("Request has been sent for model '{}', data '{}'.", classifier.getClass().getSimpleName(),
                 data.relationName());
     }
@@ -93,7 +113,7 @@ public class RabbitClient {
         log.info("Starting to send request into eca - service for experiment '{}', data '{}'.",
                 experimentRequestDto.getExperimentType(), experimentRequestDto.getData().relationName());
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
-        rabbitSender.sendMessage(Queues.EXPERIMENT_REQUEST_QUEUE, experimentRequestDto, basicProperties);
+        rabbitSender.sendMessage(experimentRequestQueue, experimentRequestDto, basicProperties);
         log.info("Request has been sent for experiment {}.", experimentRequestDto.getExperimentType());
     }
 
@@ -108,8 +128,7 @@ public class RabbitClient {
         Objects.requireNonNull(data, "Instances must be specified!");
         log.info("Starting to send evaluation request into eca - service for data '{}'.", data.relationName());
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
-        rabbitSender.sendMessage(Queues.EVALUATION_OPTIMIZER_REQUEST_QUEUE, new InstancesRequest(data),
-                basicProperties);
+        rabbitSender.sendMessage(evaluationOptimizerRequestQueue, new InstancesRequest(data), basicProperties);
         log.info("Evaluation request has been sent to eca - service for data '{}'.", data.relationName());
     }
 
