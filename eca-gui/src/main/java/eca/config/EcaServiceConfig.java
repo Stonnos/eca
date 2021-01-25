@@ -38,4 +38,19 @@ public class EcaServiceConfig {
      * Rabbit password
      */
     private String password = "guest";
+
+    /**
+     * Evaluation request queue.
+     */
+    private String evaluationRequestQueue = "evaluation-request-queue";
+
+    /**
+     * Evaluation optimizer request queue.
+     */
+    private String evaluationOptimizerRequestQueue = "evaluation-optimizer-request-queue";
+
+    /**
+     * Experiment request queue.
+     */
+    private String experimentRequestQueue = "experiment-request-queue";
 }

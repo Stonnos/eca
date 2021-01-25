@@ -1,11 +1,11 @@
 package eca.config;
 
 import com.rabbitmq.client.ConnectionFactory;
+import eca.client.converter.JsonMessageConverter;
+import eca.client.converter.MessageConverter;
 import eca.client.core.ConnectionManager;
 import eca.client.core.RabbitClient;
 import eca.client.core.RabbitSender;
-import eca.client.converter.JsonMessageConverter;
-import eca.client.converter.MessageConverter;
 import eca.client.listener.MessageListenerContainer;
 import lombok.Getter;
 
@@ -53,6 +53,9 @@ public class RabbitConfiguration {
         }
         ConnectionManager connectionManager = connectionManager(ecaServiceConfig);
         rabbitClient.getRabbitSender().setConnectionManager(connectionManager);
+        rabbitClient.setEvaluationRequestQueue(ecaServiceConfig.getEvaluationRequestQueue());
+        rabbitClient.setEvaluationOptimizerRequestQueue(ecaServiceConfig.getEvaluationOptimizerRequestQueue());
+        rabbitClient.setExperimentRequestQueue(ecaServiceConfig.getExperimentRequestQueue());
         return rabbitClient;
     }
 

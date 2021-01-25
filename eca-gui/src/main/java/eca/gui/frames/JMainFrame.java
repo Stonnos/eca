@@ -1213,7 +1213,9 @@ public class JMainFrame extends JFrame {
         ecaServiceOptionsMenu.addActionListener(e -> {
             EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
             EcaServiceConfig oldConfig = new EcaServiceConfig(ecaServiceConfig.getEnabled(), ecaServiceConfig.getHost(),
-                    ecaServiceConfig.getPort(), ecaServiceConfig.getUsername(), ecaServiceConfig.getPassword());
+                    ecaServiceConfig.getPort(), ecaServiceConfig.getUsername(), ecaServiceConfig.getPassword(),
+                    ecaServiceConfig.getEvaluationRequestQueue(), ecaServiceConfig.getEvaluationOptimizerRequestQueue(),
+                    ecaServiceConfig.getExperimentRequestQueue());
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
             if (ecaServiceOptionsDialog.isDialogResult()) {

@@ -69,5 +69,11 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
                 String.valueOf(CONFIG_SERVICE.getEcaServiceConfig().getPort())));
         options.add(new Entry<>(CommonDictionary.RABBIT_USERNAME, CONFIG_SERVICE.getEcaServiceConfig().getUsername()));
         options.add(new Entry<>(CommonDictionary.RABBIT_PASSWORD, CONFIG_SERVICE.getEcaServiceConfig().getPassword()));
+        options.add(new Entry<>(CommonDictionary.EVALUATION_REQUEST_QUEUE,
+                CONFIG_SERVICE.getEcaServiceConfig().getEvaluationRequestQueue()));
+        options.add(new Entry<>(CommonDictionary.EVALUATION_OPTIMIZER_REQUEST_QUEUE,
+                CONFIG_SERVICE.getEcaServiceConfig().getEvaluationOptimizerRequestQueue()));
+        options.add(new Entry<>(CommonDictionary.EXPERIMENT_REQUEST_QUEUE,
+                CONFIG_SERVICE.getEcaServiceConfig().getExperimentRequestQueue()));
     }
 }

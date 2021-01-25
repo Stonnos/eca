@@ -45,4 +45,7 @@ public class CommonDictionary {
     public static final String RABBIT_PORT = "eca.service.rabbit.port";
     public static final String RABBIT_USERNAME = "eca.service.rabbit.username";
     public static final String RABBIT_PASSWORD = "eca.service.rabbit.password";
+    public static final String EVALUATION_REQUEST_QUEUE = "eca.service.evaluation.request.queue";
+    public static final String EVALUATION_OPTIMIZER_REQUEST_QUEUE = "eca.service.evaluation.optimizer.request.queue";
+    public static final String EXPERIMENT_REQUEST_QUEUE = "eca.service.experiment.request.queue";
 }

@@ -4,7 +4,6 @@ import com.rabbitmq.client.AMQP;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
-import eca.client.util.Queues;
 import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +66,7 @@ class RabbitClientTest {
         experimentRequestDto.setData(instances);
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         rabbitClient.sendExperimentRequest(experimentRequestDto, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
                 expectedProperties);
     }
 
@@ -84,7 +83,7 @@ class RabbitClientTest {
         expectedRequest.setData(instances);
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         rabbitClient.sendEvaluationRequest(instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 
