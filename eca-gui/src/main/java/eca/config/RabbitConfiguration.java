@@ -53,9 +53,6 @@ public class RabbitConfiguration {
         }
         ConnectionManager connectionManager = connectionManager(ecaServiceConfig);
         rabbitClient.getRabbitSender().setConnectionManager(connectionManager);
-        rabbitClient.setEvaluationRequestQueue(ecaServiceConfig.getEvaluationRequestQueue());
-        rabbitClient.setEvaluationOptimizerRequestQueue(ecaServiceConfig.getEvaluationOptimizerRequestQueue());
-        rabbitClient.setExperimentRequestQueue(ecaServiceConfig.getExperimentRequestQueue());
         return rabbitClient;
     }
 

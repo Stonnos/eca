@@ -2,6 +2,7 @@ package eca.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  * @author Roman Batygin
  */
 @Data
+@EqualsAndHashCode(exclude = {"evaluationRequestQueue", "evaluationOptimizerRequestQueue", "experimentRequestQueue"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class EcaServiceConfig {

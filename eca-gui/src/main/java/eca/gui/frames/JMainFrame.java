@@ -1432,6 +1432,7 @@ public class JMainFrame extends JFrame {
 
     private void updateMessageListenerContainerConfiguration(EcaServiceConfig prevConfig) throws Exception {
         EcaServiceConfig currentConfig = CONFIG_SERVICE.getEcaServiceConfig();
+        //Restart message listener container if needs
         if (Boolean.TRUE.equals(currentConfig.getEnabled())) {
             if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
                 resetRabbitConfiguration();
@@ -1442,6 +1443,15 @@ public class JMainFrame extends JFrame {
         } else {
             resetRabbitConfiguration();
         }
+        updateQueues(currentConfig);
+    }
+
+    private void updateQueues(EcaServiceConfig ecaServiceConfig) {
+        Optional.ofNullable(rabbitClient).ifPresent(client -> {
+            client.setEvaluationRequestQueue(ecaServiceConfig.getEvaluationRequestQueue());
+            client.setEvaluationOptimizerRequestQueue(ecaServiceConfig.getEvaluationOptimizerRequestQueue());
+            client.setExperimentRequestQueue(ecaServiceConfig.getExperimentRequestQueue());
+        });
     }
 
     private void resetRabbitConfiguration() throws Exception {
