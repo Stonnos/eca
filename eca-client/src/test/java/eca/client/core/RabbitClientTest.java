@@ -50,7 +50,7 @@ class RabbitClientTest {
         rabbitClient = new RabbitClient(rabbitSender);
         rabbitClient.setEvaluationRequestQueue(EVALUATION_REQUEST_QUEUE);
         rabbitClient.setEvaluationOptimizerRequestQueue(EVALUATION_OPTIMIZER_REQUEST_QUEUE);
-        rabbitClient.setEvaluationRequestQueue(EXPERIMENT_REQUEST_QUEUE);
+        rabbitClient.setExperimentRequestQueue(EXPERIMENT_REQUEST_QUEUE);
     }
 
     @Test
