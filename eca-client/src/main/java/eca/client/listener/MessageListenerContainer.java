@@ -81,8 +81,8 @@ public class MessageListenerContainer {
                 throw new IllegalStateException();
             }
             Callable<Void> callable = () -> {
-                openConnection();
-                setupConsumers();
+                openConnection(futureTask);
+                setupConsumers(futureTask);
                 return null;
             };
             futureTask = new FutureTask<>(callable);
@@ -108,8 +108,8 @@ public class MessageListenerContainer {
         }
     }
 
-    private void openConnection() {
-        while (!futureTask.isCancelled() && connection == null) {
+    private void openConnection(FutureTask<Void> task) {
+        while (!task.isCancelled() && connection == null) {
             try {
                 log.info("Attempting connect to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
                 connection = connectionFactory.newConnection();
@@ -132,8 +132,8 @@ public class MessageListenerContainer {
         connection = null;
     }
 
-    private void setupConsumers() {
-        if (!futureTask.isCancelled()) {
+    private void setupConsumers(FutureTask<Void> task) {
+        if (!task.isCancelled()) {
             try {
                 channel = connection.createChannel();
                 for (Map.Entry<String, AbstractRabbitListenerAdapter<?>> adapterEntry :
