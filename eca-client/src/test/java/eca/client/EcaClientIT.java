@@ -63,7 +63,7 @@ class EcaClientIT {
         rabbitSender.setMessageConverter(messageConverter);
         rabbitSender.setConnectionManager(new ConnectionManager(connectionFactory));
         rabbitClient = new RabbitClient(rabbitSender);
-
+        rabbitClient.setEvaluationRequestQueue(EcaClientTestConfiguration.getEvaluationRequestQueue());
         startContainer(connectionFactory);
     }
 

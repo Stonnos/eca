@@ -12,6 +12,8 @@ import eca.gui.dialogs.EnsembleOptionsDialog;
 
 import javax.swing.*;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+
 /**
  * @author Roman Batygin
  */
@@ -34,8 +36,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame {
             options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiersSet()));
             options.showDialog();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(AutomatedHeterogeneousEnsembleFrame.this,
-                    ex.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            showFormattedErrorMessageDialog(AutomatedHeterogeneousEnsembleFrame.this, ex.getMessage());
         }
     }
 

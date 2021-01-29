@@ -2,6 +2,7 @@ package eca.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
  * @author Roman Batygin
  */
 @Data
+@EqualsAndHashCode(exclude = {"evaluationRequestQueue", "evaluationOptimizerRequestQueue", "experimentRequestQueue"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class EcaServiceConfig {
@@ -38,4 +40,19 @@ public class EcaServiceConfig {
      * Rabbit password
      */
     private String password = "guest";
+
+    /**
+     * Evaluation request queue.
+     */
+    private String evaluationRequestQueue = "evaluation-request-queue";
+
+    /**
+     * Evaluation optimizer request queue.
+     */
+    private String evaluationOptimizerRequestQueue = "evaluation-optimizer-request-queue";
+
+    /**
+     * Experiment request queue.
+     */
+    private String experimentRequestQueue = "experiment-request-queue";
 }

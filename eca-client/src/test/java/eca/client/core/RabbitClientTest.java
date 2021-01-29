@@ -4,7 +4,6 @@ import com.rabbitmq.client.AMQP;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
-import eca.client.util.Queues;
 import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,9 +29,13 @@ import static org.mockito.Mockito.verify;
 class RabbitClientTest {
 
     private static final String REPLY_TO = "response-queue";
-    public static final int NUM_TESTS = 1;
-    public static final int NUM_FOLDS = 10;
-    public static final int SEED = 1;
+    private static final int NUM_TESTS = 1;
+    private static final int NUM_FOLDS = 10;
+    private static final int SEED = 1;
+
+    private static final String EXPERIMENT_REQUEST_QUEUE = "experiment-request-queue";
+    private static final String EVALUATION_OPTIMIZER_REQUEST_QUEUE = "evaluation-optimizer-request-queue";
+    private static final String EVALUATION_REQUEST_QUEUE = "evaluation-request-queue";
 
     private RabbitSender rabbitSender;
 
@@ -45,6 +48,9 @@ class RabbitClientTest {
         instances = loadInstances();
         rabbitSender = mock(RabbitSender.class);
         rabbitClient = new RabbitClient(rabbitSender);
+        rabbitClient.setEvaluationRequestQueue(EVALUATION_REQUEST_QUEUE);
+        rabbitClient.setEvaluationOptimizerRequestQueue(EVALUATION_OPTIMIZER_REQUEST_QUEUE);
+        rabbitClient.setExperimentRequestQueue(EXPERIMENT_REQUEST_QUEUE);
     }
 
     @Test
@@ -60,7 +66,7 @@ class RabbitClientTest {
         experimentRequestDto.setData(instances);
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         rabbitClient.sendExperimentRequest(experimentRequestDto, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
                 expectedProperties);
     }
 
@@ -77,7 +83,7 @@ class RabbitClientTest {
         expectedRequest.setData(instances);
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         rabbitClient.sendEvaluationRequest(instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 
@@ -101,7 +107,7 @@ class RabbitClientTest {
         EvaluationRequestDto expectedRequest =
                 createEvaluationRequestDto(cart, instances, EvaluationMethod.TRAINING_DATA);
         rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 
@@ -120,7 +126,7 @@ class RabbitClientTest {
         rabbitClient.setNumTests(NUM_TESTS);
         rabbitClient.setSeed(SEED);
         rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(Queues.EVALUATION_REQUEST_QUEUE, expectedRequest,
+        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
 }

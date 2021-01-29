@@ -1,11 +1,11 @@
 package eca.config;
 
 import com.rabbitmq.client.ConnectionFactory;
+import eca.client.converter.JsonMessageConverter;
+import eca.client.converter.MessageConverter;
 import eca.client.core.ConnectionManager;
 import eca.client.core.RabbitClient;
 import eca.client.core.RabbitSender;
-import eca.client.converter.JsonMessageConverter;
-import eca.client.converter.MessageConverter;
 import eca.client.listener.MessageListenerContainer;
 import lombok.Getter;
 
