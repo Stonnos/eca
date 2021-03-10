@@ -56,7 +56,7 @@ public class EcaServiceResponseUtils {
                         .append(StringUtils.SPACE);
                 stringBuilder.append(MESSAGE)
                         .append(StringUtils.SPACE)
-                        .append(messageError.getFieldName());
+                        .append(messageError.getMessage());
             });
             return stringBuilder.toString();
         }
