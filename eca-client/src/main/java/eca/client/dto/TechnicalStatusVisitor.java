@@ -29,4 +29,11 @@ public interface TechnicalStatusVisitor<T> {
      * @return generic object
      */
     T caseTimeoutStatus();
+
+    /**
+     * Method executed in case if technical status is VALIDATION_ERROR.
+     *
+     * @return generic object
+     */
+    T caseValidationErrorStatus();
 }

@@ -35,6 +35,16 @@ public enum TechnicalStatus {
         public <T> T handle(TechnicalStatusVisitor<T> visitor) {
             return visitor.caseTimeoutStatus();
         }
+    },
+
+    /**
+     * Validation error status.
+     */
+    VALIDATION_ERROR {
+        @Override
+        public <T> T handle(TechnicalStatusVisitor<T> visitor) {
+            return visitor.caseValidationErrorStatus();
+        }
     };
 
     /**
