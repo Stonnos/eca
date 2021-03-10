@@ -19,6 +19,7 @@ public class EcaServiceResponseUtils {
     private static final String ERROR_CODE = "Error code:";
     private static final String MESSAGE = "Message:";
     private static final String COMMA_SEPARATOR = ",";
+    private static final String RAW_SEPARATOR = ";";
 
     /**
      * Gets first error message.
@@ -43,7 +44,7 @@ public class EcaServiceResponseUtils {
         if (Optional.ofNullable(ecaResponse).map(EcaResponse::getErrors).isPresent()) {
             StringBuilder stringBuilder = new StringBuilder(VALIDATION_ERRORS);
             ecaResponse.getErrors().forEach(messageError -> {
-                stringBuilder.append(StringUtils.LF);
+                stringBuilder.append(StringUtils.SPACE);
                 stringBuilder.append(FIELD_NAME)
                         .append(StringUtils.SPACE)
                         .append(messageError.getFieldName())
@@ -57,6 +58,7 @@ public class EcaServiceResponseUtils {
                 stringBuilder.append(MESSAGE)
                         .append(StringUtils.SPACE)
                         .append(messageError.getMessage());
+                stringBuilder.append(RAW_SEPARATOR);
             });
             return stringBuilder.toString();
         }
