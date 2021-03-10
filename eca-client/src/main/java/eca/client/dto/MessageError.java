@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * Message error model.
  *
@@ -27,7 +25,7 @@ public class MessageError {
     private String fieldName;
 
     /**
-     * Errors list
+     * Error message
      */
-    private List<MessageError> errors;
+    private String message;
 }

@@ -144,6 +144,8 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
+import static eca.util.EcaServiceResponseUtils.getFirstErrorAsString;
+import static eca.util.EcaServiceResponseUtils.getValidationErrorsAsString;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -1527,7 +1529,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public Void caseErrorStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this, ecaResponse.getErrorMessage());
+                        showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(ecaResponse));
                         return null;
                     }
 
@@ -1536,6 +1538,12 @@ public class JMainFrame extends JFrame {
                         JOptionPane.showMessageDialog(JMainFrame.this,
                                 EXPERIMENT_TIMEOUT_MESSAGE, null,
                                 JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+
+                    @Override
+                    public Void caseValidationErrorStatus() {
+                        showFormattedErrorMessageDialog(JMainFrame.this, getValidationErrorsAsString(ecaResponse));
                         return null;
                     }
                 });
@@ -1559,12 +1567,17 @@ public class JMainFrame extends JFrame {
 
             @Override
             public EvaluationResults caseErrorStatus() {
-                throw new IllegalStateException(evaluationResponse.getErrorMessage());
+                throw new IllegalStateException(getFirstErrorAsString(evaluationResponse));
             }
 
             @Override
             public EvaluationResults caseTimeoutStatus() {
                 throw new IllegalStateException(TIMEOUT_MESSAGE);
+            }
+
+            @Override
+            public EvaluationResults caseValidationErrorStatus() {
+                throw new IllegalStateException(getValidationErrorsAsString(evaluationResponse));
             }
         });
     }
