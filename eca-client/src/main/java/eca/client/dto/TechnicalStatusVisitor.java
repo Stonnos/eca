@@ -7,33 +7,25 @@ package eca.client.dto;
  * @author Roman Batygin
  */
 
-public interface TechnicalStatusVisitor<T> {
+public interface TechnicalStatusVisitor {
 
     /**
      * Method executed in case if technical status is SUCCESS.
-     *
-     * @return generic object
      */
-    T caseSuccessStatus();
+    void caseSuccessStatus();
 
     /**
      * Method executed in case if technical status is ERROR.
-     *
-     * @return generic object
      */
-    T caseErrorStatus();
+    void caseErrorStatus();
 
     /**
      * Method executed in case if technical status is TIMEOUT.
-     *
-     * @return generic object
      */
-    T caseTimeoutStatus();
+    void caseTimeoutStatus();
 
     /**
      * Method executed in case if technical status is VALIDATION_ERROR.
-     *
-     * @return generic object
      */
-    T caseValidationErrorStatus();
+    void caseValidationErrorStatus();
 }

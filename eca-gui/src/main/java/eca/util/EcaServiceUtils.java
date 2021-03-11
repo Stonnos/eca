@@ -1,6 +1,7 @@
 package eca.util;
 
 import eca.client.dto.EcaResponse;
+import eca.model.EcaServiceTrack;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
  * @author Roman Batygin
  */
 @UtilityClass
-public class EcaServiceResponseUtils {
+public class EcaServiceUtils {
 
     private static final String VALIDATION_ERRORS = "Validation errors:";
     private static final String FIELD_NAME = "Field name:";
@@ -20,6 +21,17 @@ public class EcaServiceResponseUtils {
     private static final String MESSAGE = "Message:";
     private static final String COMMA_SEPARATOR = ",";
     private static final String RAW_SEPARATOR = ";";
+
+    /**
+     * Gets eca - service track details as string or default value.
+     *
+     * @param ecaServiceTrack - eca - service track
+     * @param defaultValue    - default string value
+     * @return eca - service track details as string
+     */
+    public static String getEcaServiceTrackDetailsOrDefault(EcaServiceTrack ecaServiceTrack, String defaultValue) {
+        return !StringUtils.isBlank(ecaServiceTrack.getDetails()) ? ecaServiceTrack.getDetails() : defaultValue;
+    }
 
     /**
      * Gets first error message.

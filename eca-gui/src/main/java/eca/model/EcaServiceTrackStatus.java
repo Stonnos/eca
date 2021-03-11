@@ -12,14 +12,24 @@ import lombok.RequiredArgsConstructor;
 public enum EcaServiceTrackStatus implements DescriptiveEnum {
 
     /**
+     * Ready to sent
+     */
+    READY("Готов к отправке"),
+
+    /**
      * Request sent status
      */
     REQUEST_SENT("Запрос отправлен"),
 
     /**
-     * Response received status
+     * Completed status
      */
-    RESPONSE_RECEIVED("Получен ответ");
+    COMPLETED("Успешно завершен"),
+
+    /**
+     * Error status
+     */
+    ERROR("Ошибка");
 
     private final String description;
 

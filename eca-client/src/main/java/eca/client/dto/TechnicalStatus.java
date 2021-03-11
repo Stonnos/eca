@@ -12,8 +12,8 @@ public enum TechnicalStatus {
      */
     SUCCESS {
         @Override
-        public <T> T handle(TechnicalStatusVisitor<T> visitor) {
-            return visitor.caseSuccessStatus();
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseSuccessStatus();
         }
     },
 
@@ -22,8 +22,8 @@ public enum TechnicalStatus {
      */
     ERROR {
         @Override
-        public <T> T handle(TechnicalStatusVisitor<T> visitor) {
-            return visitor.caseErrorStatus();
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseErrorStatus();
         }
     },
 
@@ -32,8 +32,8 @@ public enum TechnicalStatus {
      */
     TIMEOUT {
         @Override
-        public <T> T handle(TechnicalStatusVisitor<T> visitor) {
-            return visitor.caseTimeoutStatus();
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseTimeoutStatus();
         }
     },
 
@@ -42,8 +42,8 @@ public enum TechnicalStatus {
      */
     VALIDATION_ERROR {
         @Override
-        public <T> T handle(TechnicalStatusVisitor<T> visitor) {
-            return visitor.caseValidationErrorStatus();
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseValidationErrorStatus();
         }
     };
 
@@ -51,9 +51,7 @@ public enum TechnicalStatus {
      * Visitor pattern common method
      *
      * @param visitor visitor class
-     * @param <T>     generic class
-     * @return generic class
      */
-    public abstract <T> T handle(TechnicalStatusVisitor<T> visitor);
+    public abstract void handle(TechnicalStatusVisitor visitor);
 
 }
