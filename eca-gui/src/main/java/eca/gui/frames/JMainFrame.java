@@ -136,6 +136,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+import static eca.gui.GuiUtils.showValidationErrorsDialog;
 import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.LOAD_MODEL_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.OPEN_DB_MENU_KEY_STROKE;
@@ -146,7 +147,6 @@ import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
-import static eca.util.EcaServiceUtils.getValidationErrorsAsString;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -1557,8 +1557,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public void caseValidationErrorStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this,
-                                getValidationErrorsAsString(evaluationResponse));
+                        showValidationErrorsDialog(JMainFrame.this, evaluationResponse);
                     }
                 });
             } catch (Exception ex) {
@@ -1595,7 +1594,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public void caseValidationErrorStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this, getValidationErrorsAsString(ecaResponse));
+                        showValidationErrorsDialog(JMainFrame.this, ecaResponse);
                     }
                 });
             } catch (Exception e) {

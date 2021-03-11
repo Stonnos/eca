@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables;
 
 import eca.gui.GuiUtils;
@@ -41,7 +36,7 @@ public class EcaServiceTrackTable extends JDataTableBase {
         trackStatusColorMap = newEnumMap(EcaServiceTrackStatus.class);
         trackStatusColorMap.put(EcaServiceTrackStatus.READY, Color.GRAY);
         trackStatusColorMap.put(EcaServiceTrackStatus.REQUEST_SENT, Color.BLUE);
-        trackStatusColorMap.put(EcaServiceTrackStatus.RESPONSE_RECEIVED, Color.GREEN);
+        trackStatusColorMap.put(EcaServiceTrackStatus.COMPLETED, Color.GREEN);
         trackStatusColorMap.put(EcaServiceTrackStatus.ERROR, Color.RED);
     }
 
