@@ -2,14 +2,9 @@ language: java
 jdk: openjdk8
 
 install: true
-addons:
-  sonarcloud:
-    organization: $ORGANIZATION_KEY
-    token: $SONAR_TOKEN
 
 stages:
   - name: test
-  - name: sonar_analysis
   - name: deploy
     if: branch = master
 
@@ -17,8 +12,6 @@ jobs:
   include:
     - stage: test
       script: mvn clean test
-    - stage: sonar_analysis
-      script: mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=$PROJECT_KEY
     - stage: deploy
       before_script:
         - cp settings.xml $HOME/.m2/
@@ -27,4 +20,3 @@ jobs:
 cache:
   directories:
     - $HOME/.m2
-    - $HOME/.sonar/cache
