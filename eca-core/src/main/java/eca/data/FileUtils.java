@@ -17,9 +17,8 @@ public class FileUtils {
     /**
      * Weka extensions
      */
-    private static final Set<String> WEKA_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.CSV.getExtendedExtension(), DataFileExtension.ARFF.getExtendedExtension(),
-                    DataFileExtension.JSON.getExtendedExtension());
+    private static final Set<String> WEKA_EXTENSIONS = ImmutableSet.of(DataFileExtension.CSV.getExtendedExtension(),
+            DataFileExtension.ARFF.getExtendedExtension());
 
     /**
      * Txt extensions

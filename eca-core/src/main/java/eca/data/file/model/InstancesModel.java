@@ -1,4 +1,4 @@
-package eca.data.file.xml.model;
+package eca.data.file.model;
 
 import lombok.Data;
 
@@ -24,7 +24,7 @@ import java.util.List;
         "instances"
 })
 @XmlRootElement(name = "xmlInstances")
-public class XmlInstances {
+public class InstancesModel {
 
     /**
      * Relation name
@@ -43,12 +43,12 @@ public class XmlInstances {
      */
     @XmlElement(name = "attribute")
     @XmlElementWrapper
-    private List<XmlAttribute> attributes;
+    private List<AttributeModel> attributes;
 
     /**
      * Data list
      */
     @XmlElement(name = "instance")
     @XmlElementWrapper
-    private List<XmlInstance> instances;
+    private List<InstanceModel> instances;
 }

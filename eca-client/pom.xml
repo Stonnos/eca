@@ -14,8 +14,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jackson.version>2.11.3</jackson.version>
-        <jackson.databind.version>2.11.3</jackson.databind.version>
         <amqp-client.version>5.7.3</amqp-client.version>
         <awaitility.version>4.0.3</awaitility.version>
         <mockito.version>3.2.4</mockito.version>
@@ -39,18 +37,6 @@
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>${amqp-client.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->

@@ -19,6 +19,7 @@
         <org-apache-commons.version>3.7</org-apache-commons.version>
         <commons.io.version>2.5</commons.io.version>
         <guava.version>29.0-jre</guava.version>
+        <jackson.version>2.11.3</jackson.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
         <postresql.version>42.2.5</postresql.version>
         <mysql.version>8.0.16</mysql.version>
@@ -73,14 +74,19 @@
             <version>${guava.version}</version>
         </dependency>
 
-        <!-- Dependencies to tests -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
-            <scope>test</scope>
         </dependency>
 
+        <!-- Dependencies to tests -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

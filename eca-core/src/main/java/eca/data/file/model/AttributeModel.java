@@ -1,4 +1,4 @@
-package eca.data.file.xml.model;
+package eca.data.file.model;
 
 import lombok.Data;
 
@@ -23,7 +23,7 @@ import java.util.List;
         "dateFormat",
         "values"
 })
-public class XmlAttribute {
+public class AttributeModel {
 
     /**
      * Attribute name

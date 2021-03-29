@@ -2,8 +2,8 @@ package eca.data.file.xml;
 
 import eca.data.AbstractDataSaver;
 import eca.data.DataFileExtension;
-import eca.data.file.xml.converter.XmlInstancesConverter;
-import eca.data.file.xml.model.XmlInstances;
+import eca.data.file.converter.InstancesConverter;
+import eca.data.file.model.InstancesModel;
 import weka.core.Instances;
 
 import javax.xml.bind.JAXBContext;
@@ -15,14 +15,14 @@ import java.io.File;
  */
 public class XmlSaver extends AbstractDataSaver {
 
-    private XmlInstancesConverter xmlInstancesConverter = new XmlInstancesConverter();
+    private InstancesConverter instancesConverter = new InstancesConverter();
 
     @Override
     public void write(Instances data) throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(XmlInstances.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(xmlInstancesConverter.convert(data), getFile());
+        marshaller.marshal(instancesConverter.convert(data), getFile());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package eca.data.file.xml.model;
+package eca.data.file.model;
 
 /**
  * Attribute type visitor.

@@ -3,6 +3,7 @@ package eca.data.file;
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
+import eca.data.file.json.JsonLoader;
 import eca.data.file.resource.DataResource;
 import eca.data.file.text.DATALoader;
 import eca.data.file.text.DocxLoader;
@@ -49,6 +50,8 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 data = loadData(new DocxLoader());
             } else if (getSource().getFile().endsWith(DataFileExtension.XML.getExtendedExtension())) {
                 data = loadData(new XmlLoader());
+            } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
+                data = loadData(new JsonLoader());
             } else {
                 throw new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile()));

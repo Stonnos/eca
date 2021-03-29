@@ -3,6 +3,7 @@ package eca.data.file;
 import eca.data.AbstractDataSaver;
 import eca.data.DataFileExtension;
 import eca.data.FileUtils;
+import eca.data.file.json.JsonSaver;
 import eca.data.file.text.DATASaver;
 import eca.data.file.text.DocxSaver;
 import eca.data.file.xls.XLSSaver;
@@ -11,7 +12,6 @@ import weka.core.Instances;
 import weka.core.converters.AbstractFileSaver;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVSaver;
-import weka.core.converters.JSONSaver;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,9 +49,9 @@ public class FileDataSaver {
     /**
      * Saves data to file.
      *
-     * @param file file object
-     * @param data <tt>Instances</tt> object
-     * @throws IOException
+     * @param file - file object
+     * @param data - instances object
+     * @throws IOException in case of error
      */
     public void saveData(File file, Instances data) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
@@ -64,6 +64,8 @@ public class FileDataSaver {
             writeData(new DocxSaver(), file, data);
         } else if (file.getName().endsWith(DataFileExtension.XML.getExtendedExtension())) {
             writeData(new XmlSaver(), file, data);
+        } else if (file.getName().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
+            writeData(new JsonSaver(), file, data);
         } else {
             AbstractFileSaver abstractFileSaver = createWekaFileSaver(file, data);
             abstractFileSaver.setFile(file);
@@ -85,8 +87,6 @@ public class FileDataSaver {
             abstractFileSaver = new CSVSaver();
         } else if (fileName.endsWith(DataFileExtension.ARFF.getExtendedExtension())) {
             abstractFileSaver = new ArffSaver();
-        } else if (fileName.endsWith(DataFileExtension.JSON.getExtendedExtension())) {
-            abstractFileSaver = new JSONSaver();
         } else {
             throw new IllegalArgumentException(
                     String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile()));
