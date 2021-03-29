@@ -20,8 +20,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class XmlLoader extends AbstractDataLoader<DataResource> {
 
-
-    private InstancesConverter instancesConverter = new InstancesConverter();
+    private static final InstancesConverter INSTANCES_CONVERTER = new InstancesConverter();
 
     @Override
     public Instances loadInstances() throws Exception {
@@ -30,7 +29,7 @@ public class XmlLoader extends AbstractDataLoader<DataResource> {
             JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             InstancesModel instancesModel = (InstancesModel) unmarshaller.unmarshal(reader);
-            Instances instances = instancesConverter.convert(instancesModel);
+            Instances instances = INSTANCES_CONVERTER.convert(instancesModel);
             instances.setClassIndex(instances.numAttributes() - 1);
             return instances;
         }

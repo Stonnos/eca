@@ -12,17 +12,19 @@ import java.io.File;
 
 /**
  * Implements saving data into xml file.
+ *
+ * @author Roman Batygin
  */
 public class XmlSaver extends AbstractDataSaver {
 
-    private InstancesConverter instancesConverter = new InstancesConverter();
+    private static final InstancesConverter INSTANCES_CONVERTER = new InstancesConverter();
 
     @Override
     public void write(Instances data) throws Exception {
         JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(instancesConverter.convert(data), getFile());
+        marshaller.marshal(INSTANCES_CONVERTER.convert(data), getFile());
     }
 
     @Override
