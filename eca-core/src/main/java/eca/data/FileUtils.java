@@ -23,21 +23,21 @@ public class FileUtils {
     /**
      * Txt extensions
      */
-    private static final Set<String> TXT_EXTENSIONS =
+    public static final Set<String> TXT_EXTENSIONS =
             ImmutableSet.of(DataFileExtension.TEXT.getExtendedExtension(),
                     DataFileExtension.DATA.getExtendedExtension());
 
     /**
      * Xls extensions
      */
-    private static final Set<String> XLS_EXTENSIONS =
+    public static final Set<String> XLS_EXTENSIONS =
             ImmutableSet.of(DataFileExtension.XLS.getExtendedExtension(),
                     DataFileExtension.XLSX.getExtendedExtension());
 
     /**
      * Docx extensions
      */
-    private static final Set<String> DOCX_EXTENSIONS =
+    public static final Set<String> DOCX_EXTENSIONS =
             Collections.singleton(DataFileExtension.DOCX.getExtendedExtension());
 
     /**
@@ -80,7 +80,14 @@ public class FileUtils {
         return containsExtension(fileName, DOCX_EXTENSIONS);
     }
 
-    private static boolean containsExtension(String fileName, Set<String> extensions) {
+    /**
+     * Checks that file belongs to extensions list.
+     *
+     * @param fileName   - file name
+     * @param extensions - extensions list
+     * @return {@code true} if file belongs to extensions list
+     */
+    public static boolean containsExtension(String fileName, Set<String> extensions) {
         return extensions.stream().anyMatch(fileName::endsWith);
     }
 }
