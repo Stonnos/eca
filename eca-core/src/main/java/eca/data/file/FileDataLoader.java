@@ -2,7 +2,8 @@ package eca.data.file;
 
 import eca.data.AbstractDataLoader;
 import eca.data.DataFileExtension;
-import eca.data.FileUtils;
+import eca.data.file.arff.ArffFileLoader;
+import eca.data.file.csv.CsvLoader;
 import eca.data.file.json.JsonLoader;
 import eca.data.file.resource.DataResource;
 import eca.data.file.text.DATALoader;
@@ -10,15 +11,20 @@ import eca.data.file.text.DocxLoader;
 import eca.data.file.xls.XLSLoader;
 import eca.data.file.xml.XmlLoader;
 import eca.util.Utils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import weka.core.Instances;
-import weka.core.converters.AbstractFileLoader;
-import weka.core.converters.ArffLoader;
-import weka.core.converters.CSVLoader;
-import weka.core.converters.JSONLoader;
 
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static eca.data.FileUtils.DOCX_EXTENSIONS;
+import static eca.data.FileUtils.TXT_EXTENSIONS;
+import static eca.data.FileUtils.XLS_EXTENSIONS;
+import static eca.data.FileUtils.containsExtension;
 
 /**
  * Class for loading input data from file.
@@ -30,33 +36,42 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
     private static final String FILE_EXTENSION_FORMAT = ".%s";
 
+    private static final List<LoaderConfig> LOADER_CONFIGS;
+
+    static {
+        LOADER_CONFIGS = newArrayList();
+        LOADER_CONFIGS.add(
+                new LoaderConfig(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()), new CsvLoader()));
+        LOADER_CONFIGS.add(new LoaderConfig(Collections.singleton(DataFileExtension.ARFF.getExtendedExtension()),
+                new ArffFileLoader()));
+        LOADER_CONFIGS.add(new LoaderConfig(TXT_EXTENSIONS, new DATALoader()));
+        LOADER_CONFIGS.add(new LoaderConfig(XLS_EXTENSIONS, new XLSLoader()));
+        LOADER_CONFIGS.add(new LoaderConfig(DOCX_EXTENSIONS, new DocxLoader()));
+        LOADER_CONFIGS.add(
+                new LoaderConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), new XmlLoader()));
+        LOADER_CONFIGS.add(new LoaderConfig(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()),
+                new JsonLoader()));
+    }
+
+    /**
+     * Data loader config.
+     */
+    @Data
+    @AllArgsConstructor
+    private static class LoaderConfig {
+        Set<String> extensions;
+        AbstractDataLoader<DataResource> dataLoader;
+    }
+
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        try (InputStream inputStream = getSource().openInputStream()) {
-            if (FileUtils.isWekaExtension(getSource().getFile())) {
-                AbstractFileLoader fileLoader = createWekaDataLoader();
-                fileLoader.setSource(inputStream);
-                data = fileLoader.getDataSet();
-                if (Objects.isNull(data)) {
-                    throw new IllegalArgumentException(
-                            String.format("Can't load data from file '%s'. Data is null!", getSource().getFile()));
-                }
-            } else if (FileUtils.isXlsExtension(getSource().getFile())) {
-                data = loadData(new XLSLoader());
-            } else if (FileUtils.isTxtExtension(getSource().getFile())) {
-                data = loadData(new DATALoader());
-            } else if (FileUtils.isDocxExtension(getSource().getFile())) {
-                data = loadData(new DocxLoader());
-            } else if (getSource().getFile().endsWith(DataFileExtension.XML.getExtendedExtension())) {
-                data = loadData(new XmlLoader());
-            } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
-                data = loadData(new JsonLoader());
-            } else {
-                throw new IllegalArgumentException(
-                        String.format("Can't load data from file '%s'", getSource().getFile()));
-            }
-        }
+        LoaderConfig loaderConfig = LOADER_CONFIGS.stream()
+                .filter(config -> containsExtension(getSource().getFile(), config.getExtensions()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("Can't load data from file '%s'", getSource().getFile())));
+        data = loadData(loaderConfig.getDataLoader());
         data.setClassIndex(data.numAttributes() - 1);
         return data;
     }
@@ -75,17 +90,5 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
         loader.setSource(getSource());
         loader.setDateFormat(getDateFormat());
         return loader.loadInstances();
-    }
-
-    private AbstractFileLoader createWekaDataLoader() {
-        if (getSource().getFile().endsWith(DataFileExtension.CSV.getExtendedExtension())) {
-            return new CSVLoader();
-        } else if (getSource().getFile().endsWith(DataFileExtension.ARFF.getExtendedExtension())) {
-            return new ArffLoader();
-        } else if (getSource().getFile().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
-            return new JSONLoader();
-        } else {
-            throw new IllegalArgumentException(String.format("Unexpected file format: %s", getSource().getFile()));
-        }
     }
 }
