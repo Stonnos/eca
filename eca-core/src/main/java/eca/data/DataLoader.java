@@ -18,7 +18,7 @@ public interface DataLoader {
      * Returns <tt>Instances</tt> object loaded from data resource.
      *
      * @return {@link Instances} object
-     * @throws Exception
+     * @throws Exception in case of error
      */
     Instances loadInstances() throws Exception;
 

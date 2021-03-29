@@ -27,11 +27,8 @@ public class JsonSaver extends AbstractDataSaver {
     }
 
     @Override
-    protected void validateFile(File file) {
-        super.validateFile(file);
-        if (!file.getName().endsWith(DataFileExtension.JSON.getExtendedExtension())) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
-        }
+    protected boolean isValidFile(File file) {
+        return file.getName().endsWith(DataFileExtension.JSON.getExtendedExtension());
     }
 
 }

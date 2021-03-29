@@ -51,7 +51,18 @@ public abstract class AbstractDataSaver implements DataSaver {
         this.dateFormat = dateFormat;
     }
 
-    protected void validateFile(File file) {
+    /**
+     * Checks if file is valid.
+     *
+     * @param file - file object
+     * @return {@code true} if file is valid
+     */
+    protected abstract boolean isValidFile(File file);
+
+    private void validateFile(File file) {
         Objects.requireNonNull(file, "File is not specified!");
+        if (!isValidFile(file)) {
+            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
+        }
     }
 }

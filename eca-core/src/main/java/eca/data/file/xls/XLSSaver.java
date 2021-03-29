@@ -46,11 +46,8 @@ public class XLSSaver extends AbstractDataSaver {
     }
 
     @Override
-    protected void validateFile(File file) {
-        super.validateFile(file);
-        if (!FileUtils.isXlsExtension(file.getName())) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
-        }
+    protected boolean isValidFile(File file) {
+        return FileUtils.isXlsExtension(file.getName());
     }
 
     private CellStyle createCellStyle(Workbook book) {
