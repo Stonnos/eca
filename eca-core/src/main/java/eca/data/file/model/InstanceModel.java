@@ -1,4 +1,4 @@
-package eca.data.file.xml.model;
+package eca.data.file.model;
 
 import lombok.Data;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "xmlInstance", propOrder = "values")
-public class XmlInstance {
+public class InstanceModel {
 
     /**
      * Values list

@@ -17,7 +17,7 @@ class XmlSaverTest extends BaseFileSaverTest {
     private final XmlSaver dataSaver = new XmlSaver();
 
     @Test
-    void testSaveDataToTxtFile() {
+    void testSaveDataToXmlFile() {
         executeTest(dataSaver);
     }
 

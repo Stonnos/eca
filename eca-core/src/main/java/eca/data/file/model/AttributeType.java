@@ -1,4 +1,4 @@
-package eca.data.file.xml.model;
+package eca.data.file.model;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

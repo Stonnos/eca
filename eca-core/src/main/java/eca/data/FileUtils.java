@@ -15,41 +15,24 @@ import java.util.Set;
 public class FileUtils {
 
     /**
-     * Weka extensions
-     */
-    private static final Set<String> WEKA_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.CSV.getExtendedExtension(), DataFileExtension.ARFF.getExtendedExtension(),
-                    DataFileExtension.JSON.getExtendedExtension());
-
-    /**
      * Txt extensions
      */
-    private static final Set<String> TXT_EXTENSIONS =
+    public static final Set<String> TXT_EXTENSIONS =
             ImmutableSet.of(DataFileExtension.TEXT.getExtendedExtension(),
                     DataFileExtension.DATA.getExtendedExtension());
 
     /**
      * Xls extensions
      */
-    private static final Set<String> XLS_EXTENSIONS =
+    public static final Set<String> XLS_EXTENSIONS =
             ImmutableSet.of(DataFileExtension.XLS.getExtendedExtension(),
                     DataFileExtension.XLSX.getExtendedExtension());
 
     /**
      * Docx extensions
      */
-    private static final Set<String> DOCX_EXTENSIONS =
+    public static final Set<String> DOCX_EXTENSIONS =
             Collections.singleton(DataFileExtension.DOCX.getExtendedExtension());
-
-    /**
-     * Returns true if specified file extension belongs to weka formats (csv, arff, json).
-     *
-     * @param fileName - file name
-     * @return true if specified file extension belongs to weka formats (csv, arff, json)
-     */
-    public static boolean isWekaExtension(String fileName) {
-        return containsExtension(fileName, WEKA_EXTENSIONS);
-    }
 
     /**
      * Returns true if specified file extension belongs to xls formats (xls, xlsx).
@@ -81,7 +64,14 @@ public class FileUtils {
         return containsExtension(fileName, DOCX_EXTENSIONS);
     }
 
-    private static boolean containsExtension(String fileName, Set<String> extensions) {
+    /**
+     * Checks that file belongs to extensions list.
+     *
+     * @param fileName   - file name
+     * @param extensions - extensions list
+     * @return {@code true} if file belongs to extensions list
+     */
+    public static boolean containsExtension(String fileName, Set<String> extensions) {
         return extensions.stream().anyMatch(fileName::endsWith);
     }
 }
