@@ -18,7 +18,7 @@
         <apache.poi.version>4.0.0</apache.poi.version>
         <org-apache-commons.version>3.7</org-apache-commons.version>
         <commons.io.version>2.5</commons.io.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <jackson.version>2.11.3</jackson.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
         <postresql.version>42.2.5</postresql.version>
