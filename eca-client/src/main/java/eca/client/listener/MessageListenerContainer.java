@@ -81,8 +81,8 @@ public class MessageListenerContainer {
                 throw new IllegalStateException();
             }
             Callable<Void> callable = () -> {
-                openConnection();
-                setupConsumers();
+                openConnection(futureTask);
+                setupConsumers(futureTask);
                 return null;
             };
             futureTask = new FutureTask<>(callable);
@@ -94,7 +94,7 @@ public class MessageListenerContainer {
     /**
      * Stop message listener container.
      */
-    public void stop() throws IOException, TimeoutException  {
+    public void stop() throws IOException, TimeoutException {
         synchronized (lifecycleMonitor) {
             if (!running) {
                 throw new IllegalStateException();
@@ -108,14 +108,15 @@ public class MessageListenerContainer {
         }
     }
 
-    private void openConnection() {
-        while (!futureTask.isCancelled() && connection == null) {
+    private void openConnection(FutureTask<Void> task) {
+        while (!task.isCancelled() && connection == null) {
             try {
                 log.info("Attempting connect to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
                 connection = connectionFactory.newConnection();
                 log.info("Connected to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
             } catch (Exception ex) {
-                log.error(ex.getMessage());
+                log.error("There was an error while attempting to connect to {}:{}: {}", connectionFactory.getHost(),
+                        connectionFactory.getPort(), ex.getMessage(), ex);
                 waitForNextAttempt();
             }
         }
@@ -131,8 +132,8 @@ public class MessageListenerContainer {
         connection = null;
     }
 
-    private void setupConsumers() {
-        if (!futureTask.isCancelled()) {
+    private void setupConsumers(FutureTask<Void> task) {
+        if (!task.isCancelled()) {
             try {
                 channel = connection.createChannel();
                 for (Map.Entry<String, AbstractRabbitListenerAdapter<?>> adapterEntry :
@@ -143,7 +144,7 @@ public class MessageListenerContainer {
                 started = true;
                 log.info("Consumers initialization has been finished");
             } catch (IOException ex) {
-                log.error("There was an error while initialize consumers: {}", ex.getMessage());
+                log.error("There was an error while initialize consumers: {}", ex.getMessage(), ex);
             }
         }
     }
@@ -152,7 +153,7 @@ public class MessageListenerContainer {
         try {
             Thread.sleep(connectionAttemptIntervalMillis);
         } catch (InterruptedException e) {
-            log.error(e.getMessage());
+            log.error("Interrupted while waiting for next attempt");
             Thread.currentThread().interrupt();
         }
     }

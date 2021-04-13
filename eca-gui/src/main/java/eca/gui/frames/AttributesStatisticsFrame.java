@@ -67,6 +67,7 @@ public class AttributesStatisticsFrame extends JFrame {
     private static final String FREQUENCY_DIAGRAM_DATA_TITLE = "Данные гистограммы";
     private static final String PLOT_TYPE_LABEL_TEXT = "Тип графика:";
     private static final String PIE_DIAGRAM_TITLE = "Круговая диаграмма";
+    private static final String PIE_DIAGRAM_TITLE_3D = "Круговая диаграмма 3D";
     private static final String FIRST_INTERVAL_FORMAT = "[%s; %s]";
     private static final String INTERVAL_FORMAT = "(%s; %s]";
     private static final Color FREQUENCY_DIAGRAM_BORDER_COLOR = Color.GRAY;
@@ -253,7 +254,7 @@ public class AttributesStatisticsFrame extends JFrame {
                     public JFreeChart casePie3dDiagram() {
                         DefaultPieDataset pieDataSet = createPieDataSet(frequencyDiagramModel);
                         JFreeChart chart =
-                                ChartFactory.createPieChart3D(PIE_DIAGRAM_TITLE, pieDataSet, true, false, false);
+                                ChartFactory.createPieChart3D(PIE_DIAGRAM_TITLE_3D, pieDataSet, true, false, false);
                         ((PiePlot) chart.getPlot()).setLabelGenerator(pieSectionLabelGenerator);
                         PiePlot3D plot = (PiePlot3D) chart.getPlot();
                         plot.setStartAngle(START_ANGLE);

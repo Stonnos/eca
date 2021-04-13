@@ -1,0 +1,6 @@
+TEST_DB_NAME=postgres_test_db
+BACKUPS_FOLDER=backups
+psql -v ON_ERROR_STOP=1 -U $POSTGRES_USER <<-EOSQL
+    CREATE DATABASE $TEST_DB_NAME;
+EOSQL
+pg_restore -U $POSTGRES_USER -d $TEST_DB_NAME $BACKUPS_FOLDER/postgres-test-db.backup

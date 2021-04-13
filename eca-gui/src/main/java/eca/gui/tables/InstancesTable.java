@@ -9,10 +9,10 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.filter.ConstantAttributesFilter;
 import eca.filter.FilterDictionary;
-import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
+import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.tables.models.InstancesTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.util.Entry;
@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
 import static eca.gui.service.ValidationService.parseDate;
 
@@ -301,8 +302,7 @@ public class InstancesTable extends JDataTableBase {
                                     ascending);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
-                            JOptionPane.showMessageDialog(InstancesTable.this.getRootPane(), ex.getMessage(), null,
-                                    JOptionPane.WARNING_MESSAGE);
+                            showFormattedErrorMessageDialog(InstancesTable.this.getRootPane(), ex.getMessage());
                         }
                     }
                 }

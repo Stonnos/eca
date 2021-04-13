@@ -26,11 +26,8 @@ public class DATASaver extends AbstractDataSaver {
     }
 
     @Override
-    protected void validateFile(File file) {
-        super.validateFile(file);
-        if (!FileUtils.isTxtExtension(file.getName())) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
-        }
+    protected boolean isValidFile(File file) {
+        return FileUtils.isTxtExtension(file.getName());
     }
 
     private List<String> createRows(Instances data) {

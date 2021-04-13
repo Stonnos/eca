@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.8</version>
+        <version>6.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-core</artifactId>
-    <version>6.8</version>
+    <version>6.8.3</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -18,8 +18,22 @@
         <apache.poi.version>4.0.0</apache.poi.version>
         <org-apache-commons.version>3.7</org-apache-commons.version>
         <commons.io.version>2.5</commons.io.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
+        <jackson.version>2.11.3</jackson.version>
+        <jackson-databind.version>2.11.3</jackson-databind.version>
+        <postresql.version>42.2.5</postresql.version>
+        <mysql.version>8.0.16</mysql.version>
+        <unaccess.version>4.0.4</unaccess.version>
+        <sqllite.version>3.27.2.1</sqllite.version>
+        <mssql.version>7.2.1.jre8</mssql.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
+        <sonar.coverage.exclusions>
+            **/model/**/*,
+            **/dto/**/*,
+            **/config/**/*,
+            **/exception/**/*,
+            **/dictionary/**/*
+        </sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
@@ -59,6 +73,56 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
+
+        <!-- Dependencies to tests -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postresql.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.sf.ucanaccess/ucanaccess -->
+        <dependency>
+            <groupId>net.sf.ucanaccess</groupId>
+            <artifactId>ucanaccess</artifactId>
+            <version>${unaccess.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqllite.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

@@ -5,18 +5,25 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.8</version>
+        <version>6.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-client</artifactId>
-    <version>6.8</version>
+    <version>6.8.3</version>
     <packaging>jar</packaging>
 
     <properties>
-        <jackson.version>2.10.3</jackson.version>
-        <jackson.databind.version>2.10.3</jackson.databind.version>
         <amqp-client.version>5.7.3</amqp-client.version>
+        <awaitility.version>4.0.3</awaitility.version>
+        <mockito.version>3.2.4</mockito.version>
+        <sonar.coverage.exclusions>
+            **/model/**/*,
+            **/dto/**/*,
+            **/config/**/*,
+            **/exception/**/*,
+            **/dictionary/**/*
+        </sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
@@ -32,16 +39,19 @@
             <version>${amqp-client.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

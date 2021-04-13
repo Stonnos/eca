@@ -39,11 +39,8 @@ public class DocxSaver extends AbstractDataSaver {
     }
 
     @Override
-    protected void validateFile(File file) {
-        super.validateFile(file);
-        if (!FileUtils.isDocxExtension(file.getName())) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
-        }
+    protected boolean isValidFile(File file) {
+       return FileUtils.isDocxExtension(file.getName());
     }
 
     private String createHeader(Instances data) {

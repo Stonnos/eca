@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+
 /**
  * Implements basic experiment frame.
  *
@@ -327,14 +329,11 @@ public abstract class ExperimentFrame extends JFrame {
                             experimentTable.setExperiment(history.getExperiment());
                             setResults(history);
                         }
-                    }, () -> JOptionPane.showMessageDialog(ExperimentFrame.this,
-                            loadDialog.getErrorMessageText(),
-                            null, JOptionPane.WARNING_MESSAGE));
+                    }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
 
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
-                    JOptionPane.showMessageDialog(ExperimentFrame.this,
-                            e.getMessage(), null, JOptionPane.ERROR_MESSAGE);
+                    showFormattedErrorMessageDialog(ExperimentFrame.this, e.getMessage());
                 }
             }
         });
@@ -527,7 +526,7 @@ public abstract class ExperimentFrame extends JFrame {
 
         @Override
         public void apply() throws Exception {
-            experiment = (ExperimentHistory) ModelConverter.loadModel(file);
+            experiment = ModelConverter.loadModel(file, ExperimentHistory.class);
         }
     }
 

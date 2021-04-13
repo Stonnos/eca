@@ -12,6 +12,8 @@ import eca.gui.dialogs.StackingOptionsDialog;
 
 import javax.swing.*;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+
 /**
  * @author Roman Batygin
  */
@@ -35,9 +37,7 @@ public class AutomatedStackingFrame extends ExperimentFrame {
             options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiers()));
             options.showDialog();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    e.getMessage(),
-                    null, JOptionPane.WARNING_MESSAGE);
+            showFormattedErrorMessageDialog(this, e.getMessage());
         }
     }
 

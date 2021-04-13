@@ -1,6 +1,6 @@
 package eca.report.contingency;
 
-import eca.statistics.contingency.ChiSquareTestResult;
+import eca.statistics.contingency.model.ChiSquareTestResult;
 import lombok.Data;
 import weka.core.Attribute;
 

@@ -16,7 +16,7 @@ public abstract class JButtonEditor extends DefaultCellEditor {
     private JButton button;
     private boolean isPushed;
 
-    public JButtonEditor(String text) {
+    protected JButtonEditor(String text) {
         super(new JCheckBox());
         this.setClickCountToStart(0);
         button = new JButton(text);

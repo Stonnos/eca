@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  ftp_server:
+    image: stilliard/pure-ftpd
+    container_name: ftp_server
+    ports:
+      - "21:21"
+      - "30000-30009:30000-30009"
+    volumes:
+      - ./automation/ftp/:/home/${FTP_USER}
+    environment:
+      PUBLICHOST: "localhost"
+      FTP_USER_NAME: ${FTP_USER}
+      FTP_USER_PASS: ${FTP_PASSWORD}
+      FTP_USER_HOME: /home/${FTP_USER}
+
+  postgres-test-db:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: postgres-test-db
+    volumes:
+      - ./automation/db/postgres/postgresinit.sh:/docker-entrypoint-initdb.d/postgresinit.sh
+      - ./automation/db/postgres/backups:/backups
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TIME_ZONE}
+      PGTZ: ${TIME_ZONE}
+
+  mysql-test-db:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql-test-db
+    volumes:
+      - ./automation/db/mysql/:/docker-entrypoint-initdb.d/
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TIME_ZONE}
+
+  sql-server-test-db:
+    build: ./automation/db/mssql/
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+      TZ: ${TIME_ZONE}

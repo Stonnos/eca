@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.8</version>
+        <version>6.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.8</version>
+    <version>6.8.3</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -28,6 +28,7 @@
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
         <installer-script>compile-installer.bat</installer-script>
     </properties>
 

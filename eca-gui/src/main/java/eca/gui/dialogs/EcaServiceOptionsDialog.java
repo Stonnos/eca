@@ -21,7 +21,7 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
-    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(500, 150);
+    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(625, 150);
 
     private boolean dialogResult;
 
@@ -105,6 +105,15 @@ public class EcaServiceOptionsDialog extends JDialog {
                 break;
             case CommonDictionary.RABBIT_PASSWORD:
                 CONFIG_SERVICE.getEcaServiceConfig().setPassword(entry.getValue());
+                break;
+            case CommonDictionary.EVALUATION_REQUEST_QUEUE:
+                CONFIG_SERVICE.getEcaServiceConfig().setEvaluationRequestQueue(entry.getValue());
+                break;
+            case CommonDictionary.EVALUATION_OPTIMIZER_REQUEST_QUEUE:
+                CONFIG_SERVICE.getEcaServiceConfig().setEvaluationOptimizerRequestQueue(entry.getValue());
+                break;
+            case CommonDictionary.EXPERIMENT_REQUEST_QUEUE:
+                CONFIG_SERVICE.getEcaServiceConfig().setExperimentRequestQueue(entry.getValue());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));

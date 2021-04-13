@@ -6,6 +6,9 @@
 package eca.data.db;
 
 import eca.data.AbstractDataLoader;
+import eca.data.db.model.ColumnData;
+import eca.data.db.model.DataBaseType;
+import eca.data.db.model.ResultData;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
 import weka.core.DenseInstance;

@@ -3,5 +3,8 @@
   "host": "localhost",
   "port": 5672,
   "username": "guest",
-  "password": "guest"
+  "password": "guest",
+  "evaluationRequestQueue": "evaluation-request-queue",
+  "evaluationOptimizerRequestQueue": "evaluation-optimizer-request-queue",
+  "experimentRequestQueue": "experiment-request-queue"
 }

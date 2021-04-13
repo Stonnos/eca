@@ -54,7 +54,8 @@ public class AnsiSqlKeywords {
             List<String> words = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
             return Collections.unmodifiableList(words);
         } catch (Exception ex) {
-            log.error("There was an error while loading data from file {}: {}", SQL2003_KEYWORDS_TXT, ex.getMessage());
+            log.error("There was an error while loading data from file {}: {}", SQL2003_KEYWORDS_TXT, ex.getMessage(),
+                    ex);
         }
         return Collections.emptyList();
     }

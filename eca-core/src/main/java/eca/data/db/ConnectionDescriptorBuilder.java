@@ -1,5 +1,7 @@
 package eca.data.db;
 
+import eca.data.db.model.DataBaseTypeVisitor;
+
 /**
  * Class for creation {@link ConnectionDescriptor} objects.
  *

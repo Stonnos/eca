@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+
 /**
  * Frame for execution database queries.
  *
@@ -50,8 +52,7 @@ public class QueryFrame extends JFrame {
     private static final String START_BUTTON_TEXT = "Выполнить";
 
     private static final Font QUERY_AREA_FONT = new Font("Arial", Font.PLAIN, 14);
-    private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в таблице!";
-    private static final String EXAMPLE_QUERY = "select * from table_name";
+    private static final String CREATE_SAMPLE_ERROR_MESSAGE = "Необходимо сформировать выборку и выбрать ее в списке!";
     private static final int URL_FIELD_LENGTH = 30;
     private static final int USER_FIELD_LENGTH = 10;
     private static final Dimension QUERY_BUTTON_DIM = new Dimension(150, 25);
@@ -60,6 +61,7 @@ public class QueryFrame extends JFrame {
     private static final String DEFAULT_STYLE_NAME = "default";
     private static final String SPACE_REGEX = "\\s";
     private static final Color HIGHLIGHT_COLOR = Color.BLUE;
+    private static final String SELECT_QUERY_EXAMPLE = "select * from table_name";
 
     private final JdbcQueryExecutor connection;
 
@@ -203,8 +205,7 @@ public class QueryFrame extends JFrame {
                     dispose();
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
-                    JOptionPane.showMessageDialog(parentFrame, ex.getMessage(),
-                            null, JOptionPane.WARNING_MESSAGE);
+                    showFormattedErrorMessageDialog(parentFrame, ex.getMessage());
                 }
 
             } else {
@@ -239,7 +240,7 @@ public class QueryFrame extends JFrame {
         Style style = styledDocument.addStyle(BLUE_STYLE_NAME, null);
         StyleConstants.setForeground(style, HIGHLIGHT_COLOR);
         styledDocument.setDocumentFilter(new SqlHighlightFilter());
-        queryArea.setText(EXAMPLE_QUERY);
+        queryArea.setText(SELECT_QUERY_EXAMPLE);
     }
 
     private void initializeSql2003KeyWords() {
@@ -252,7 +253,7 @@ public class QueryFrame extends JFrame {
                 sql2003KeyWords.add(notAnsiSql2003Keyword.toLowerCase());
             }
         } catch (Exception ex) {
-            log.error("There was an error in sql 2003 keywords initialization: {}", ex.getMessage());
+            log.error("There was an error in sql 2003 keywords initialization: {}", ex.getMessage(), ex);
         }
     }
 
@@ -291,9 +292,7 @@ public class QueryFrame extends JFrame {
                 instancesSetTable.addInstances(data);
             } else {
                 if (errorMessage != null) {
-                    JOptionPane.showMessageDialog(QueryFrame.this,
-                            errorMessage,
-                            null, JOptionPane.WARNING_MESSAGE);
+                    showFormattedErrorMessageDialog(QueryFrame.this, errorMessage);
                 }
             }
         }
@@ -353,7 +352,7 @@ public class QueryFrame extends JFrame {
                         next = end;
                     }
                 } catch (BadLocationException ex) {
-                    log.error(ex.getMessage());
+                    log.error("Highlight sql words error: {}", ex.getMessage(), ex);
                 }
             });
         }

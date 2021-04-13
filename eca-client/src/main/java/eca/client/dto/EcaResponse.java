@@ -2,6 +2,8 @@ package eca.client.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Eca - service response basic model.
  *
@@ -20,8 +22,9 @@ public class EcaResponse {
      */
     private TechnicalStatus status;
 
+
     /**
-     * Error message
+     * Errors list
      */
-    private String errorMessage;
+    private List<MessageError> errors;
 }

@@ -5,6 +5,7 @@
  */
 package eca.data.db;
 
+import eca.data.db.model.DataBaseType;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
