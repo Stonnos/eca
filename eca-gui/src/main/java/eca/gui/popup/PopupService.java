@@ -21,7 +21,7 @@ public class PopupService {
 
     private static final int MAX_POPUPS_AT_TIME = 3;
 
-    private static final long POPUP_VISIBILITY_TIME_MILLIS = 15000L;
+    private static final long POPUP_VISIBILITY_TIME_MILLIS = 2000L;
 
     private static final int POPUP_MARGIN_LEFT = 275;
     private static final int POPUP_MARGIN_TOP = 50;
@@ -71,7 +71,6 @@ public class PopupService {
             } finally {
                 popupDescriptor.getPopup().hide();
                 popups.remove(popupDescriptor);
-                log.info("Popups: [{}]", popups.size());
             }
         }).start();
     }
@@ -104,7 +103,6 @@ public class PopupService {
         closeButton.addActionListener(evt -> {
             popup.hide();
             popups.remove(popupDescriptor);
-            log.info("Popups: [{}]", popups.size());
         });
         infoPanel.add(messageLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.CENTER,
