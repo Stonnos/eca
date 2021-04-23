@@ -1,0 +1,12 @@
+<html>
+<head>
+    <style>
+        #include("styles/messages.css")
+    </style>
+</head>
+<body>
+   <div class="info-message">
+       <p>$message</p>
+   </div>
+</body>
+</html>

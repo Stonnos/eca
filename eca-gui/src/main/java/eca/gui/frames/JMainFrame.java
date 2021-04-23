@@ -46,6 +46,7 @@ import eca.ensemble.RandomNetworks;
 import eca.ensemble.StackingClassifier;
 import eca.ensemble.forests.ExtraTreesClassifier;
 import eca.ensemble.forests.RandomForests;
+import eca.gui.ButtonUtils;
 import eca.gui.ConsoleTextArea;
 import eca.gui.EvaluationResultsHistoryModel;
 import eca.gui.PanelBorderUtils;
@@ -145,6 +146,7 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
+import static eca.gui.service.TemplateService.getInfoMessageAsHtml;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
@@ -219,7 +221,6 @@ public class JMainFrame extends JFrame {
 
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
             "Ваша заявка на эксперимент '%s' была успешно создана, пожалуйста ожидайте ответное письмо на email.";
-    private static final String EXPERIMENT_TIMEOUT_MESSAGE = "There was a timeout.";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -244,6 +245,10 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
+    private static final long POPUP_VISIBILITY_TIME_MILLIS = 1500L;
+    private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен";
+    private static final int POPUP_MARGIN_LEFT = 275;
+    private static final int POPUP_MARGIN_TOP = 50;
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -271,6 +276,8 @@ public class JMainFrame extends JFrame {
     private String experimentQueue;
 
     private boolean rabbitStarted;
+
+    private final PopupFactory popupFactory = new PopupFactory();
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -328,6 +335,39 @@ public class JMainFrame extends JFrame {
             }
         });
     }
+
+    private void showInfoPopup(String infoMessage) {
+        Popup popup = createInfoMessagePopup(infoMessage);
+        new Thread(() -> {
+            popup.show();
+            try {
+                Thread.sleep(POPUP_VISIBILITY_TIME_MILLIS);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            } finally {
+                popup.hide();
+            }
+        }).start();
+    }
+
+    private Popup createInfoMessagePopup(String message) {
+        JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBackground(Color.WHITE);
+        infoPanel.setBorder(PanelBorderUtils.createEtchedBorder());
+        Popup popup = popupFactory.getPopup(this, infoPanel, this.getX() + this.getWidth() - POPUP_MARGIN_LEFT,
+                this.getY() + POPUP_MARGIN_TOP);
+        JLabel messageLabel = new JLabel(getInfoMessageAsHtml(message));
+        JButton closeButton = ButtonUtils.createCloseButton();
+        closeButton.addActionListener(evt -> popup.hide());
+        infoPanel.add(messageLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.CENTER,
+                new Insets(0, 0, 0, 0), 0, 0));
+        infoPanel.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets(4, 0, 4, 0), 0, 0));
+        return popup;
+    }
+
 
     /**
      * Implements data internal frame. This class provides the main
@@ -636,6 +676,7 @@ public class JMainFrame extends JFrame {
         try {
             rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
+            showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE);
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -1552,7 +1593,8 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public void caseTimeoutStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(evaluationResponse));
+                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
+                                JOptionPane.ERROR_MESSAGE);
                     }
 
                     @Override
@@ -1587,8 +1629,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                EXPERIMENT_TIMEOUT_MESSAGE, null,
+                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
                                 JOptionPane.ERROR_MESSAGE);
                     }
 
@@ -1641,6 +1682,7 @@ public class JMainFrame extends JFrame {
                                     rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
                                             correlationId);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
+                                    showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE);
                                 } catch (Exception ex) {
                                     LoggerUtils.error(log, ex);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -1675,6 +1717,7 @@ public class JMainFrame extends JFrame {
                             rabbitClient.sendEvaluationRequest(dataBuilder.getResult(), evaluationQueue,
                                     correlationId);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
+                            showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
