@@ -8,7 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static eca.gui.service.TemplateService.getInfoMessageAsHtml;
 
@@ -27,7 +28,7 @@ public class PopupService {
 
     private final PopupFactory popupFactory = new PopupFactory();
 
-    private final ConcurrentLinkedDeque<PopupDescriptor> popups = new ConcurrentLinkedDeque<>();
+    private final Deque<PopupDescriptor> popups = new ArrayDeque<>();
 
     /**
      * Popup descriptor.
@@ -60,8 +61,7 @@ public class PopupService {
         if (popups.size() == MAX_POPUPS_AT_TIME) {
             return;
         }
-        PopupDescriptor popupDescriptor = createInfoMessagePopup(infoMessage, component);
-        popups.addLast(popupDescriptor);
+        PopupDescriptor popupDescriptor = createAndAddPopupDescriptor(infoMessage, component);
         new Thread(() -> {
             popupDescriptor.getPopup().show();
             try {
@@ -74,6 +74,12 @@ public class PopupService {
                 log.info("Popups: [{}]", popups.size());
             }
         }).start();
+    }
+
+    private synchronized PopupDescriptor createAndAddPopupDescriptor(String infoMessage, Component component) {
+        PopupDescriptor popupDescriptor = createInfoMessagePopup(infoMessage, component);
+        popups.addLast(popupDescriptor);
+        return popupDescriptor;
     }
 
     private int calculatePopupY(Component component) {

@@ -244,7 +244,8 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
-    private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен";
+    private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
+    private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1531,6 +1532,7 @@ public class JMainFrame extends JFrame {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), evaluationResponse);
+                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
@@ -1577,6 +1579,7 @@ public class JMainFrame extends JFrame {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), ecaResponse);
+                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 ecaResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
