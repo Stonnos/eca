@@ -1,6 +1,7 @@
 package eca.gui;
 
 import eca.config.ConfigurationService;
+import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
 
 import javax.swing.*;
@@ -39,13 +40,14 @@ public class EvaluationResultsHistoryModel extends DefaultListModel<String> {
 
     public void removeItem(int i) {
         synchronized (lifecycleMonitor) {
-            resultsFrameBases.remove(i);
-            remove(i);
+            ClassificationResultsFrameBase classifierOptionsDialogBase = resultsFrameBases.remove(i);
+            classifierOptionsDialogBase.dispose();
         }
     }
 
     public void removeAllItems() {
         synchronized (lifecycleMonitor) {
+            resultsFrameBases.forEach(ClassificationResultsFrameBase::dispose);
             resultsFrameBases.clear();
             clear();
         }
