@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static eca.gui.service.TemplateService.getInfoMessageAsHtml;
 
@@ -28,7 +27,7 @@ public class PopupService {
 
     private final PopupFactory popupFactory = new PopupFactory();
 
-    private final Deque<PopupDescriptor> popups = new ArrayDeque<>();
+    private final ConcurrentLinkedDeque<PopupDescriptor> popups = new ConcurrentLinkedDeque<>();
 
     /**
      * Popup descriptor.
