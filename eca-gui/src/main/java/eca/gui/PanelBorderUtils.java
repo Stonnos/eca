@@ -23,11 +23,14 @@ public class PanelBorderUtils {
 
     public static TitledBorder createTitledBorder(String title) {
         TitledBorder border = new TitledBorder(title);
-        border.setBorder(new EtchedBorder(COLOR, null));
+        border.setBorder(createEtchedBorder());
         border.setTitlePosition(TitledBorder.TOP);
         border.setTitleFont(BORDER_FONT);
         border.setTitleJustification(TitledBorder.CENTER);
         return border;
     }
 
+    public static EtchedBorder createEtchedBorder() {
+        return new EtchedBorder(COLOR, null);
+    }
 }
