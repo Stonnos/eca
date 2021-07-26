@@ -11,6 +11,7 @@ import eca.data.file.xls.XLSSaver;
 import eca.data.file.xml.XmlSaver;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
 import java.io.File;
@@ -32,6 +33,7 @@ import static eca.data.FileUtils.containsExtension;
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class FileDataSaver {
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
@@ -93,12 +95,14 @@ public class FileDataSaver {
     public void saveData(File file, Instances data) throws Exception {
         Objects.requireNonNull(file, "File is not specified!");
         Objects.requireNonNull(data, "Data is not specified!");
+        log.info("Starting to save instances [{}] to file [{}]", data.relationName(), file.getAbsolutePath());
         SaverConfig saverConfig = SAVE_CONFIGS.stream()
                 .filter(config -> containsExtension(file.getName(), config.getExtensions()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile())));
         writeData(saverConfig.getDataSaver(), file, data);
+        log.info("Instances [{}] has been saved to file [{}]", data.relationName(), file.getAbsolutePath());
     }
 
     private void writeData(AbstractDataSaver saver, File file, Instances data) throws Exception {

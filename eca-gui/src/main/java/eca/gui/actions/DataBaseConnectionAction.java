@@ -6,10 +6,12 @@
 package eca.gui.actions;
 
 import eca.data.db.JdbcQueryExecutor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Roman Batygin
  */
+@Slf4j
 public class DataBaseConnectionAction implements CallbackAction {
 
     private final JdbcQueryExecutor connection;
@@ -20,6 +22,8 @@ public class DataBaseConnectionAction implements CallbackAction {
 
     @Override
     public void apply() throws Exception {
+        log.info("Attempting connect to database [{}]", connection.getConnectionDescriptor().getUrl());
         connection.open();
+        log.info("Connected to database [{}]", connection.getConnectionDescriptor().getUrl());
     }
 }

@@ -13,6 +13,7 @@ import eca.data.file.xml.XmlLoader;
 import eca.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import static eca.data.FileUtils.containsExtension;
  *
  * @author Roman Batygin
  */
+@Slf4j
 public class FileDataLoader extends AbstractDataLoader<DataResource> {
 
     private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
@@ -65,6 +67,7 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
 
     @Override
     public Instances loadInstances() throws Exception {
+        log.info("Starting to load instances from [{}]", getSource().getFile());
         Instances data;
         LoaderConfig loaderConfig = LOADER_CONFIGS.stream()
                 .filter(config -> containsExtension(getSource().getFile(), config.getExtensions()))
@@ -73,6 +76,7 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                         String.format("Can't load data from file '%s'", getSource().getFile())));
         data = loadData(loaderConfig.getDataLoader());
         data.setClassIndex(data.numAttributes() - 1);
+        log.info("Instances has been loaded from [{}]", getSource().getFile());
         return data;
     }
 
