@@ -21,7 +21,7 @@
         <guava.version>30.0-jre</guava.version>
         <jackson.version>2.11.3</jackson.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
-        <postresql.version>42.2.5</postresql.version>
+        <postresql.version>42.2.23</postresql.version>
         <mysql.version>8.0.26</mysql.version>
         <unaccess.version>4.0.4</unaccess.version>
         <sqllite.version>3.27.2.1</sqllite.version>
