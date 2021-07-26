@@ -17,7 +17,7 @@
         <weka.version>3.9.1</weka.version>
         <apache.poi.version>4.0.0</apache.poi.version>
         <org-apache-commons.version>3.7</org-apache-commons.version>
-        <commons.io.version>2.7</commons.io.version>
+        <commons.io.version>2.8.0</commons.io.version>
         <guava.version>30.0-jre</guava.version>
         <jackson.version>2.11.3</jackson.version>
         <jackson-databind.version>2.11.3</jackson-databind.version>
