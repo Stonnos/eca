@@ -32,6 +32,21 @@ public class SqlQueryHelper {
     private String dateColumnType = SqlTypeUtils.DATETIME_TYPE;
 
     /**
+     * Numeric column type
+     */
+    private String numericColumnType = SqlTypeUtils.NUMERIC_TYPE;
+
+    /**
+     * Varchar column type
+     */
+    private String varcharColumnType = String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH);
+
+    /**
+     * Using date as string?
+     */
+    private boolean useDateInStringFormat = false;
+
+    /**
      * Formats attribute name to database column format for create table query.
      *
      * @param attribute    - attribute
@@ -41,11 +56,11 @@ public class SqlQueryHelper {
     public String formatAttribute(Attribute attribute, String columnFormat) {
         String attributeName = normalizeName(attribute.name());
         if (attribute.isNominal()) {
-            return String.format(columnFormat, attributeName, String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH));
+            return String.format(columnFormat, attributeName, varcharColumnType);
         } else if (attribute.isDate()) {
             return String.format(columnFormat, attributeName, dateColumnType);
         } else if (attribute.isNumeric()) {
-            return String.format(columnFormat, attributeName, SqlTypeUtils.NUMERIC_TYPE);
+            return String.format(columnFormat, attributeName, numericColumnType);
         } else {
             throw new IllegalArgumentException(
                     String.format("Unexpected attribute '%s' type!", attribute.name()));
@@ -66,7 +81,8 @@ public class SqlQueryHelper {
             String val = eca.util.Utils.removeQuotes(instance.stringValue(attribute));
             return truncateStringValue(val);
         } else if (attribute.isDate()) {
-            return Timestamp.valueOf(instance.stringValue(attribute));
+            return useDateInStringFormat ? instance.stringValue(attribute) :
+                    Timestamp.valueOf(instance.stringValue(attribute));
         } else if (attribute.isNumeric()) {
             return instance.value(attribute);
         } else {

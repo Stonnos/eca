@@ -15,6 +15,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
+import static eca.data.db.SqlTypeUtils.REAL_COLUMN_TYPE;
+import static eca.data.db.SqlTypeUtils.TEXT_COLUMN_TYPE;
+import static eca.data.db.SqlTypeUtils.TIMESTAMP_TYPE;
+
 /**
  * Implements instances saving into database.
  *
@@ -127,7 +131,7 @@ public class DatabaseSaver implements DataSaver {
 
             @Override
             public Void casePostgreSQL() {
-                sqlQueryHelper.setDateColumnType(SqlTypeUtils.TIMESTAMP_TYPE);
+                sqlQueryHelper.setDateColumnType(TIMESTAMP_TYPE);
                 return null;
             }
 
@@ -143,6 +147,10 @@ public class DatabaseSaver implements DataSaver {
 
             @Override
             public Void caseSQLite() {
+                sqlQueryHelper.setNumericColumnType(REAL_COLUMN_TYPE);
+                sqlQueryHelper.setDateColumnType(TEXT_COLUMN_TYPE);
+                sqlQueryHelper.setVarcharColumnType(TEXT_COLUMN_TYPE);
+                sqlQueryHelper.setUseDateInStringFormat(true);
                 return null;
             }
         });
