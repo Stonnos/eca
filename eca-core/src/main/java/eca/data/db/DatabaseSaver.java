@@ -10,6 +10,8 @@ import weka.core.Instances;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 
@@ -57,6 +59,7 @@ public class DatabaseSaver implements DataSaver {
         Class.forName(connectionDescriptor.getDriver());
         Connection connection = null;
         Statement statement = null;
+        PreparedStatement preparedStatement = null;
         try {
             connection = DriverManager.getConnection(connectionDescriptor.getUrl(), connectionDescriptor.getLogin(),
                     connectionDescriptor.getPassword());
@@ -66,23 +69,51 @@ public class DatabaseSaver implements DataSaver {
             statement.execute(sqlQueryHelper.buildCreateTableQuery(tableName, data));
             log.info("Table '{}' has been created", tableName);
             log.info("Starting to insert rows into table '{}'", tableName);
-            for (Instance instance : data) {
-                statement.execute(sqlQueryHelper.buildInsertQuery(tableName, data, instance));
-            }
+            String insertQuery = sqlQueryHelper.buildPreparedInsertQuery(tableName, data);
+            preparedStatement = connection.prepareStatement(insertQuery);
+            saveInstances(data, preparedStatement);
             connection.commit();
             log.info("Data has been saved into table '{}'", tableName);
         } catch (Exception ex) {
-            if (connection != null) {
-                connection.rollback();
-            }
+            rollback(connection);
             throw new Exception(ex.getMessage());
         } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
+            closeStatement(statement);
+            closeStatement(preparedStatement);
+            closeConnection(connection);
+        }
+    }
+
+    private void saveInstances(Instances data, PreparedStatement preparedStatement) throws SQLException {
+        for (Instance instance : data) {
+            prepareInstance(instance, preparedStatement);
+            preparedStatement.addBatch();
+        }
+        preparedStatement.executeBatch();
+    }
+
+    private void prepareInstance(Instance instance, PreparedStatement preparedStatement) throws SQLException {
+        Object[] preparedValues = sqlQueryHelper.prepareQueryParameters(instance);
+        for (int i = 0; i < preparedValues.length; i++) {
+            preparedStatement.setObject(i + 1, preparedValues[i]);
+        }
+    }
+
+    private void closeStatement(Statement statement) throws SQLException {
+        if (statement != null) {
+            statement.close();
+        }
+    }
+
+    private void closeConnection(Connection connection) throws SQLException {
+        if (connection != null) {
+            connection.close();
+        }
+    }
+
+    private void rollback(Connection connection) throws SQLException {
+        if (connection != null) {
+            connection.rollback();
         }
     }
 
