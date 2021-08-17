@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.data.db;
 
 import eca.data.AbstractDataLoader;
 import eca.data.db.model.ColumnData;
-import eca.data.db.model.DataBaseType;
 import eca.data.db.model.ResultData;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -80,7 +74,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
      * Retrieves list of all of this database's SQL keywords that are NOT also SQL:2003 keywords.
      *
      * @return the list of this database's keywords that are not also SQL:2003 keywords
-     * @exception SQLException if a database access error occurs
+     * @throws SQLException if a database access error occurs
      */
     public String[] getSqlKeywords() throws SQLException {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
@@ -157,7 +151,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
             ColumnData columnData = resultData.getColumnData().get(i);
             if (isNumeric(columnData.getType())) {
                 attr.add(new Attribute(columnData.getName()));
-            } else if (canHandleAsDate(columnData.getType())) {
+            } else if (isDate(columnData.getType())) {
                 attr.add(new Attribute(columnData.getName(), getDateFormat()));
             } else {
                 attr.add(new Attribute(columnData.getName(), createNominalAttribute(resultData.getData(), i)));
@@ -206,7 +200,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
                     row.add(null);
                 } else if (isNumeric(metaData.getColumnType(i))) {
                     row.add(result.getDouble(i));
-                } else if (canHandleAsDate(metaData.getColumnType(i))) {
+                } else if (isDate(metaData.getColumnType(i))) {
                     row.add(getDateValue(result, metaData, i));
                 } else {
                     row.add(getStringValue(result, i));
@@ -235,9 +229,5 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     private String getStringValue(ResultSet result, int column) throws SQLException {
         String stringValue = result.getObject(column).toString().trim();
         return !StringUtils.isEmpty(stringValue) ? stringValue : null;
-    }
-
-    private boolean canHandleAsDate(int columnType) {
-        return !DataBaseType.SQLITE.equals(connectionDescriptor.getDataBaseType()) && isDate(columnType);
     }
 }

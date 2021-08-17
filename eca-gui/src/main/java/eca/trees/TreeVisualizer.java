@@ -481,7 +481,12 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
         g.setStroke(linkStroke);
         double x = p.x1() + index * (p.width() / (p.childrenNum() - 1));
         g.draw(new Line2D.Double(x, p.y2(), child.centerX(), child.y1()));
-        double xt = (x + child.centerX()) / 2.0;
+        double xt;
+        if (x < child.centerX()) {
+            xt = (x + child.centerX()) / 2.0;
+        } else {
+            xt = child.x1();
+        }
         double yt = (p.y2() + child.y1()) / 2.0;
         g.setColor(ruleColor);
         g.setFont(ruleFont);

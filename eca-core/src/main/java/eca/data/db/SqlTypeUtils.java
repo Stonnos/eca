@@ -29,6 +29,16 @@ public class SqlTypeUtils {
     public static final String TIMESTAMP_TYPE = "TIMESTAMP";
 
     /**
+     * Real column type
+     */
+    public static final String REAL_COLUMN_TYPE = "REAL";
+
+    /**
+     * Text column type
+     */
+    public static final String TEXT_COLUMN_TYPE = "TEXT";
+
+    /**
      * Available column types of numeric attribute
      **/
     private static final int[] NUMERIC_TYPES = {Types.DOUBLE, Types.FLOAT,

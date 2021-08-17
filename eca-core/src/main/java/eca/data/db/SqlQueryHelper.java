@@ -5,8 +5,8 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.util.stream.IntStream;
 
 /**
  * SQL helper class.
@@ -17,22 +17,34 @@ import java.util.Date;
 public class SqlQueryHelper {
 
     private static final String DELIMITER = "_";
-    private static final String STRING_VALUE_FORMAT = "'%s'";
     private static final int VARCHAR_LENGTH = 255;
     private static final String VARCHAR_TYPE_FORMAT = "VARCHAR(%d)";
-    private static final String NULL_VALUE = "NULL";
     private static final String CREATE_TABLE_QUERY_FORMAT = "CREATE TABLE %s (%s)";
     private static final String COLUMN_FORMAT = "%s %s, ";
     private static final String LAST_COLUMN_FORMAT = "%s %s";
     private static final String INSERT_QUERY_FORMAT = "INSERT INTO %s VALUES(%s)";
     private static final String VALUE_DELIMITER_FORMAT = "%s, ";
+    private static final String PREPARED_QUERY_PARAMETER = "?";
 
     /**
      * Date column type
      */
     private String dateColumnType = SqlTypeUtils.DATETIME_TYPE;
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    /**
+     * Numeric column type
+     */
+    private String numericColumnType = SqlTypeUtils.NUMERIC_TYPE;
+
+    /**
+     * Varchar column type
+     */
+    private String varcharColumnType = String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH);
+
+    /**
+     * Using date as string?
+     */
+    private boolean useDateInStringFormat = false;
 
     /**
      * Formats attribute name to database column format for create table query.
@@ -44,11 +56,11 @@ public class SqlQueryHelper {
     public String formatAttribute(Attribute attribute, String columnFormat) {
         String attributeName = normalizeName(attribute.name());
         if (attribute.isNominal()) {
-            return String.format(columnFormat, attributeName, String.format(VARCHAR_TYPE_FORMAT, VARCHAR_LENGTH));
+            return String.format(columnFormat, attributeName, varcharColumnType);
         } else if (attribute.isDate()) {
             return String.format(columnFormat, attributeName, dateColumnType);
         } else if (attribute.isNumeric()) {
-            return String.format(columnFormat, attributeName, SqlTypeUtils.NUMERIC_TYPE);
+            return String.format(columnFormat, attributeName, numericColumnType);
         } else {
             throw new IllegalArgumentException(
                     String.format("Unexpected attribute '%s' type!", attribute.name()));
@@ -62,17 +74,17 @@ public class SqlQueryHelper {
      * @param attribute - attribute
      * @return formatted value
      */
-    public String formatValue(Instance instance, Attribute attribute) {
+    public Object getValue(Instance instance, Attribute attribute) {
         if (instance.isMissing(attribute)) {
-            return NULL_VALUE;
+            return null;
         } else if (attribute.isNominal()) {
             String val = eca.util.Utils.removeQuotes(instance.stringValue(attribute));
-            return String.format(STRING_VALUE_FORMAT, truncateStringValue(val));
+            return truncateStringValue(val);
         } else if (attribute.isDate()) {
-            return String.format(STRING_VALUE_FORMAT,
-                    simpleDateFormat.format(new Date((long) instance.value(attribute))));
+            return useDateInStringFormat ? instance.stringValue(attribute) :
+                    Timestamp.valueOf(instance.stringValue(attribute));
         } else if (attribute.isNumeric()) {
-            return String.valueOf(instance.value(attribute));
+            return instance.value(attribute);
         } else {
             throw new IllegalArgumentException(
                     String.format("Unexpected attribute '%s' type!", attribute.name()));
@@ -96,20 +108,31 @@ public class SqlQueryHelper {
     }
 
     /**
-     * Builds 'INSERT QUERY' sql query for specified instance.
+     * Builds 'INSERT QUERY' sql query for specified instances.
      *
      * @param tableName - table name
      * @param instances - instances
-     * @param instance  - instance
      * @return 'INSERT QUERY' sql query string
      */
-    public String buildInsertQuery(String tableName, Instances instances, Instance instance) {
+    public String buildPreparedInsertQuery(String tableName, Instances instances) {
         StringBuilder queryString = new StringBuilder();
         for (int i = 0; i < instances.numAttributes() - 1; i++) {
-            queryString.append(String.format(VALUE_DELIMITER_FORMAT, formatValue(instance, instances.attribute(i))));
+            queryString.append(String.format(VALUE_DELIMITER_FORMAT, PREPARED_QUERY_PARAMETER));
         }
-        queryString.append(formatValue(instance, instances.attribute(instances.numAttributes() - 1)));
+        queryString.append(PREPARED_QUERY_PARAMETER);
         return String.format(INSERT_QUERY_FORMAT, tableName, queryString);
+    }
+
+    /**
+     * Prepares insert query parameters.
+     *
+     * @param instance - instance object
+     * @return insert query parameters
+     */
+    public Object[] prepareQueryParameters(Instance instance) {
+        return IntStream.range(0, instance.numAttributes())
+                .mapToObj(i -> getValue(instance, instance.attribute(i)))
+                .toArray();
     }
 
     /**
