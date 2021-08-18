@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.data.FileUtils.DOCX_EXTENSIONS;
@@ -43,17 +44,16 @@ public class FileDataSaver {
     static {
         SAVE_CONFIGS = newArrayList();
         SAVE_CONFIGS.add(
-                new SaverConfig(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()), new CsvSaver()));
+                new SaverConfig(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()), CsvSaver::new));
+        SAVE_CONFIGS.add(new SaverConfig(Collections.singleton(DataFileExtension.ARFF.getExtendedExtension()),
+                ArffFileSaver::new));
+        SAVE_CONFIGS.add(new SaverConfig(TXT_EXTENSIONS, DATASaver::new));
+        SAVE_CONFIGS.add(new SaverConfig(XLS_EXTENSIONS, XLSSaver::new));
+        SAVE_CONFIGS.add(new SaverConfig(DOCX_EXTENSIONS, DocxSaver::new));
         SAVE_CONFIGS.add(
-                new SaverConfig(Collections.singleton(DataFileExtension.ARFF.getExtendedExtension()),
-                        new ArffFileSaver()));
-        SAVE_CONFIGS.add(new SaverConfig(TXT_EXTENSIONS, new DATASaver()));
-        SAVE_CONFIGS.add(new SaverConfig(XLS_EXTENSIONS, new XLSSaver()));
-        SAVE_CONFIGS.add(new SaverConfig(DOCX_EXTENSIONS, new DocxSaver()));
+                new SaverConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), XmlSaver::new));
         SAVE_CONFIGS.add(
-                new SaverConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), new XmlSaver()));
-        SAVE_CONFIGS.add(
-                new SaverConfig(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()), new JsonSaver()));
+                new SaverConfig(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()), JsonSaver::new));
     }
 
     /**
@@ -63,7 +63,7 @@ public class FileDataSaver {
     @AllArgsConstructor
     private static class SaverConfig {
         Set<String> extensions;
-        AbstractDataSaver dataSaver;
+        Supplier<AbstractDataSaver> dataSaverSupplier;
     }
 
     /**
@@ -101,7 +101,7 @@ public class FileDataSaver {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile())));
-        writeData(saverConfig.getDataSaver(), file, data);
+        writeData(saverConfig.getDataSaverSupplier().get(), file, data);
         log.info("Instances [{}] has been saved to file [{}]", data.relationName(), file.getAbsolutePath());
     }
 

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.data.FileUtils.DOCX_EXTENSIONS;
@@ -43,16 +44,16 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     static {
         LOADER_CONFIGS = newArrayList();
         LOADER_CONFIGS.add(
-                new LoaderConfig(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()), new CsvLoader()));
+                new LoaderConfig(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()), CsvLoader::new));
         LOADER_CONFIGS.add(new LoaderConfig(Collections.singleton(DataFileExtension.ARFF.getExtendedExtension()),
-                new ArffFileLoader()));
-        LOADER_CONFIGS.add(new LoaderConfig(TXT_EXTENSIONS, new DATALoader()));
-        LOADER_CONFIGS.add(new LoaderConfig(XLS_EXTENSIONS, new XLSLoader()));
-        LOADER_CONFIGS.add(new LoaderConfig(DOCX_EXTENSIONS, new DocxLoader()));
+                ArffFileLoader::new));
+        LOADER_CONFIGS.add(new LoaderConfig(TXT_EXTENSIONS, DATALoader::new));
+        LOADER_CONFIGS.add(new LoaderConfig(XLS_EXTENSIONS, XLSLoader::new));
+        LOADER_CONFIGS.add(new LoaderConfig(DOCX_EXTENSIONS, DocxLoader::new));
         LOADER_CONFIGS.add(
-                new LoaderConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), new XmlLoader()));
+                new LoaderConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), XmlLoader::new));
         LOADER_CONFIGS.add(new LoaderConfig(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()),
-                new JsonLoader()));
+                JsonLoader::new));
     }
 
     /**
@@ -62,7 +63,7 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     @AllArgsConstructor
     private static class LoaderConfig {
         Set<String> extensions;
-        AbstractDataLoader<DataResource> dataLoader;
+        Supplier<AbstractDataLoader<DataResource>> dataLoaderSupplier;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile())));
-        data = loadData(loaderConfig.getDataLoader());
+        data = loadData(loaderConfig.getDataLoaderSupplier().get());
         data.setClassIndex(data.numAttributes() - 1);
         log.info("Instances has been loaded from [{}]", getSource().getFile());
         return data;
