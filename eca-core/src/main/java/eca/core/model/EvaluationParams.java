@@ -1,4 +1,4 @@
-package eca.converters.model;
+package eca.core.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -7,11 +7,12 @@ package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.config.registry.SingletonRegistry;
-import eca.converters.ModelConverter;
-import eca.converters.model.EvaluationParams;
-import eca.converters.model.ExperimentHistory;
+import eca.core.ModelSerializationHelper;
+import eca.core.model.EvaluationParams;
+import eca.core.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
+import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
@@ -297,7 +298,7 @@ public abstract class ExperimentFrame extends JFrame {
                             new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
-                        ModelConverter.saveModel(file,
+                        ModelSerializationHelper.serialize(file,
                                 new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
                                         experiment.getData(), experiment.getEvaluationMethod(),
                                         createEvaluationParams()));
@@ -526,7 +527,7 @@ public abstract class ExperimentFrame extends JFrame {
 
         @Override
         public void apply() throws Exception {
-            experiment = ModelConverter.loadModel(file, ExperimentHistory.class);
+            experiment = ModelSerializationHelper.deserialize(new FileResource(file), ExperimentHistory.class);
         }
     }
 

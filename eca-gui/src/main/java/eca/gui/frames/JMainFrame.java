@@ -14,7 +14,7 @@ import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
 import eca.config.registry.SingletonRegistry;
-import eca.converters.model.ClassificationModel;
+import eca.core.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;

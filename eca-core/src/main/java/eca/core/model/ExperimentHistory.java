@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.converters.model;
+package eca.core.model;
 
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;

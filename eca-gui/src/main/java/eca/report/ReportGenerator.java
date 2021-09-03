@@ -6,7 +6,7 @@
 package eca.report;
 
 import eca.config.VelocityConfigService;
-import eca.converters.model.ExperimentHistory;
+import eca.core.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationResults;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
