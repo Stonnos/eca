@@ -14,17 +14,18 @@ import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
 import eca.config.registry.SingletonRegistry;
-import eca.core.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
+import eca.core.model.ClassificationModel;
 import eca.data.db.DatabaseSaver;
 import eca.data.db.JdbcQueryExecutor;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
 import eca.data.file.resource.FileResource;
 import eca.data.file.resource.UrlResource;
+import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedDecisionTree;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedKNearestNeighbours;
@@ -55,6 +56,7 @@ import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
+import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
 import eca.gui.actions.UrlLoader;
@@ -168,6 +170,8 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
+    private static final String MODEL_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка модели...";
+    private static final String EXPERIMENT_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка эксперимента...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
@@ -189,6 +193,7 @@ public class JMainFrame extends JFrame {
     private static final String DB_CONNECTION_WAITING_MESSAGE =
             "Пожалуйста подождите, идет подключение к базе данных...";
     private static final String LOAD_MODEL_MENU_TEXT = "Загрузить модель";
+    private static final String LOAD_EXPERIMENT_MENU_TEXT = "Загрузить эксперимент";
     private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
     private static final String URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
@@ -1289,6 +1294,12 @@ public class JMainFrame extends JFrame {
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
+        JMenuItem loadExperimentMenu = new JMenuItem(LOAD_EXPERIMENT_MENU_TEXT);
+        loadExperimentMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(loadExperimentMenu);
+        loadExperimentMenu.addActionListener(loadExperimentActionListener());
+
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
         generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
         generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
@@ -1880,7 +1891,7 @@ public class JMainFrame extends JFrame {
                 if (file != null) {
                     ModelLoader loader = new ModelLoader(file);
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, MODEL_BUILDING_MESSAGE);
+                            loader, MODEL_LOADING_MESSAGE);
 
                     processAsyncTask(progress, () -> {
                         ClassificationModel classificationModel = loader.getResult();
@@ -1890,6 +1901,31 @@ public class JMainFrame extends JFrame {
                                 classificationModel.getClassifier().getClass().getSimpleName());
                         createEvaluationResultsAsync(title, classificationModel.getClassifier(),
                                 classificationModel.getData(), classificationModel.getEvaluation(), digits);
+                    });
+
+                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
+        };
+    }
+
+    private ActionListener loadExperimentActionListener() {
+        return event -> {
+            try {
+                OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
+                File file = fileChooser.openFile(JMainFrame.this);
+                if (file != null) {
+                    ExperimentLoader loader = new ExperimentLoader(new FileResource(file));
+                    LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                            loader, EXPERIMENT_LOADING_MESSAGE);
+                    processAsyncTask(loadDialog, () -> {
+                        AbstractExperiment<?> experiment = loader.getResult();
+                        ExperimentFrame<?> experimentFrame =
+                                ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
+                                        this.maximumFractionDigits);
+                        experimentFrame.setVisible(true);
                     });
 
                 }

@@ -122,6 +122,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             }
         });
         this.createGUI();
+        this.displayResults(experiment);
         this.setLocationRelativeTo(parent);
     }
 
@@ -144,9 +145,12 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private void displayResults(T experimentHistory) {
-        experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
-                CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
-        experimentResultsPane.setCaretPosition(0);
+        if (experimentHistory.getHistory() != null && !experimentHistory.getHistory().isEmpty()) {
+            experimentTable.setRenderer(Color.RED);
+            experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
+                    CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
+            experimentResultsPane.setCaretPosition(0);
+        }
     }
 
     protected abstract void initializeExperimentOptions();
@@ -387,7 +391,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                         JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE, null,
                                 JOptionPane.WARNING_MESSAGE);
                     } else {
-                        experimentTable.setRenderer(Color.RED);
                         experimentTable.setExperiment(loaderExperiment.getHistory());
                         displayResults(loaderExperiment);
                     }
@@ -463,7 +466,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         @Override
         protected void done() {
             setProgress(100);
-            experimentTable.setRenderer(Color.RED);
             setStateForButtons(true);
             setStateForOptions(true);
             experimentTable.sort();
