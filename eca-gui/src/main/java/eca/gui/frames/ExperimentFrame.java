@@ -3,15 +3,14 @@ package eca.gui.frames;
 import eca.config.ConfigurationService;
 import eca.config.registry.SingletonRegistry;
 import eca.core.ModelSerializationHelper;
-import eca.core.model.EvaluationParams;
-import eca.core.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
+import eca.dataminer.ClassifierComparator;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.CallbackAction;
+import eca.gui.actions.AbstractCallback;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
@@ -75,8 +74,10 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
-    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Недопустимая история эксперимента!";
+    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Загружена недопустимая история эксперимента!";
     private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
+
+    private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
@@ -146,7 +147,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         }
     }
 
-    private void setResults(ExperimentHistory experimentHistory) {
+    private void displayResults(T experimentHistory) {
         experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
                 CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
         experimentResultsPane.setCaretPosition(0);
@@ -294,10 +295,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                             new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                     File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                     if (file != null) {
-                        ModelSerializationHelper.serialize(file,
-                                new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
-                                        experiment.getData(), experiment.getEvaluationMethod(),
-                                        createEvaluationParams()));
+                        ModelSerializationHelper.serialize(file, experiment);
                     }
                 }
             } catch (Exception e) {
@@ -317,14 +315,14 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                             loader, LOAD_EXPERIMENT_TITLE);
 
                     ExecutorService.process(loadDialog, () -> {
-                        ExperimentHistory history = loader.getExperiment();
-                        if (!experiment.getExperimentType().equals(history.getType())) {
+                        T loaderExperiment = loader.getResult();
+                        if (!experiment.getExperimentType().equals(loaderExperiment.getExperimentType())) {
                             JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE,
                                     null, JOptionPane.WARNING_MESSAGE);
                         } else {
                             experimentTable.setRenderer(Color.RED);
-                            experimentTable.setExperiment(history.getExperiment());
-                            setResults(history);
+                            experimentTable.setExperiment(loaderExperiment.getHistory());
+                            displayResults(loaderExperiment);
                         }
                     }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
 
@@ -406,11 +404,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         experimentProgressBar.setStringPainted(true);
     }
 
-    private EvaluationParams createEvaluationParams() {
-        return EvaluationMethod.TRAINING_DATA.equals(experiment.getEvaluationMethod()) ? null :
-                new EvaluationParams(experiment.getNumFolds(), experiment.getNumTests());
-    }
-
     private class TimeWorker extends SwingWorker<Void, Void> {
 
         @Override
@@ -472,11 +465,10 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             experimentTable.setRenderer(Color.RED);
             setStateForButtons(true);
             setStateForOptions(true);
+            experiment.getHistory().sort(CLASSIFIER_COMPARATOR);
             experimentTable.sort();
             if (!error) {
-                setResults(new ExperimentHistory(experiment.getExperimentType(),
-                        experimentTable.experimentModel().getExperiment(), experiment.getData(),
-                        experiment.getEvaluationMethod(), createEvaluationParams()));
+                displayResults(experiment);
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }
@@ -508,22 +500,17 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     /**
      * Implements experiment loading callback action.
      */
-    private static class ExperimentLoader implements CallbackAction {
+    private class ExperimentLoader extends AbstractCallback<T> {
 
-        ExperimentHistory experiment;
         final File file;
 
         ExperimentLoader(File file) {
             this.file = file;
         }
 
-        ExperimentHistory getExperiment() {
-            return experiment;
-        }
-
         @Override
-        public void apply() throws Exception {
-            experiment = ModelSerializationHelper.deserialize(new FileResource(file), ExperimentHistory.class);
+        protected T performAndGetResult() throws Exception {
+            return ModelSerializationHelper.deserialize(new FileResource(file), experimentClass);
         }
     }
 

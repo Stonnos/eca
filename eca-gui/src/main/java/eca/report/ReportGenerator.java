@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.report;
 
 import eca.config.VelocityConfigService;
-import eca.core.model.ExperimentHistory;
 import eca.core.evaluation.EvaluationResults;
+import eca.dataminer.AbstractExperiment;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
@@ -83,8 +78,6 @@ public class ReportGenerator {
     private static final String META_CLASSIFIER_FORMAT = "Мета - классификатор: %s";
     private static final String TRAINING_DATA_METHOD_TEXT = "Использование обучающей выборки";
     private static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
-    private static final String KV_CROSS_VALIDATION = "k * V блочная кросс - проверка";
-
 
     /**
      * Returns attribute statistics html string.
@@ -192,7 +185,7 @@ public class ReportGenerator {
      * @param resultsSize       - results size
      * @return experiment results as html string
      */
-    public static String getExperimentResultsAsHtml(ExperimentHistory experimentHistory, int resultsSize) {
+    public static String getExperimentResultsAsHtml(AbstractExperiment<?> experimentHistory, int resultsSize) {
         Template template = VelocityConfigService.getTemplate(EXPERIMENT_RESULTS_VM);
         VelocityContext context = new VelocityContext();
         fillExperimentInputOptions(experimentHistory, context);
@@ -218,11 +211,11 @@ public class ReportGenerator {
         return allOptionsMap;
     }
 
-    private static void fillExperimentBestClassifiers(ExperimentHistory experimentHistory, int resultsSize,
+    private static void fillExperimentBestClassifiers(AbstractExperiment<?> experimentHistory, int resultsSize,
                                                       VelocityContext velocityContext) {
         LinkedHashMap<String, Map<String, String>> allOptionsMap = new LinkedHashMap<>();
-        for (int i = 0; i < Integer.min(experimentHistory.getExperiment().size(), resultsSize); i++) {
-            EvaluationResults evaluationResults = experimentHistory.getExperiment().get(i);
+        for (int i = 0; i < Integer.min(experimentHistory.getHistory().size(), resultsSize); i++) {
+            EvaluationResults evaluationResults = experimentHistory.getHistory().get(i);
             Classifier classifier = evaluationResults.getClassifier();
             allOptionsMap.put(String.format(CLASSIFIER_KEY_FORMAT, classifier.getClass().getSimpleName(), i),
                     Utils.getClassifierInputOptionsMap((AbstractClassifier) classifier));
@@ -230,28 +223,24 @@ public class ReportGenerator {
         velocityContext.put(CLASSIFIERS_OPTIONS, allOptionsMap);
     }
 
-    private static void fillExperimentInputOptions(ExperimentHistory experimentHistory,
+    private static void fillExperimentInputOptions(AbstractExperiment<?> experimentHistory,
                                                    VelocityContext velocityContext) {
-        velocityContext.put(RELATION_NAME, experimentHistory.getDataSet().relationName());
-        velocityContext.put(NUM_INSTANCES, experimentHistory.getDataSet().numInstances());
-        velocityContext.put(NUM_ATTRIBUTES, experimentHistory.getDataSet().numAttributes());
-        velocityContext.put(NUM_CLASSES, experimentHistory.getDataSet().numClasses());
-        velocityContext.put(CLASS_ATTRIBUTE, experimentHistory.getDataSet().classAttribute().name());
+        velocityContext.put(RELATION_NAME, experimentHistory.getData().relationName());
+        velocityContext.put(NUM_INSTANCES, experimentHistory.getData().numInstances());
+        velocityContext.put(NUM_ATTRIBUTES, experimentHistory.getData().numAttributes());
+        velocityContext.put(NUM_CLASSES, experimentHistory.getData().numClasses());
+        velocityContext.put(CLASS_ATTRIBUTE, experimentHistory.getData().classAttribute().name());
 
         switch (experimentHistory.getEvaluationMethod()) {
             case TRAINING_DATA:
                 velocityContext.put(EVALUATION_METHOD, TRAINING_DATA_METHOD_TEXT);
                 break;
             case CROSS_VALIDATION:
-                if (experimentHistory.getEvaluationParams() == null) {
-                    velocityContext.put(EVALUATION_METHOD, KV_CROSS_VALIDATION);
-                } else {
-                    String evaluationMethod = String.format(CROSS_VALIDATION_METHOD_FORMAT,
-                            (experimentHistory.getEvaluationParams().getNumTests() > 1 ?
-                                    experimentHistory.getEvaluationParams().getNumTests() + "*" : StringUtils.EMPTY),
-                            experimentHistory.getEvaluationParams().getNumFolds());
-                    velocityContext.put(EVALUATION_METHOD, evaluationMethod);
-                }
+                String numTests = experimentHistory.getNumTests() > 1 ? experimentHistory.getNumTests() + "*" :
+                        StringUtils.EMPTY;
+                String evaluationMethod =
+                        String.format(CROSS_VALIDATION_METHOD_FORMAT, numTests, experimentHistory.getNumFolds());
+                velocityContext.put(EVALUATION_METHOD, evaluationMethod);
                 break;
             default:
                 throw new IllegalArgumentException(

@@ -14,6 +14,7 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Randomizable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,7 +37,7 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public abstract class AbstractExperiment<T extends Classifier>
-        implements Experiment<T>, IterableExperiment, Randomizable {
+        implements Experiment<T>, IterableExperiment, Randomizable, Serializable {
 
     /**
      * Experiment history
