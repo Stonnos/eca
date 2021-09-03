@@ -68,7 +68,7 @@ public class ExperimentFrameFactory {
 
         @Override
         public AutomatedDecisionTreeFrame get(AutomatedDecisionTree experiment, JFrame parent, int digits) {
-            return new AutomatedDecisionTreeFrame("", experiment, parent, digits);
+            return new AutomatedDecisionTreeFrame(experiment, parent, digits);
         }
     }
 
@@ -95,7 +95,7 @@ public class ExperimentFrameFactory {
 
         @Override
         public AutomatedRandomForestsFrame get(AutomatedRandomForests experiment, JFrame parent, int digits) {
-            return new AutomatedRandomForestsFrame("", experiment, parent, digits);
+            return new AutomatedRandomForestsFrame(experiment, parent, digits);
         }
     }
 
@@ -114,7 +114,7 @@ public class ExperimentFrameFactory {
 
         @Override
         public AutomatedStackingFrame get(AutomatedStacking experiment, JFrame parent, int digits) {
-            return new AutomatedStackingFrame("", experiment, parent, digits);
+            return new AutomatedStackingFrame(experiment, parent, digits);
         }
     }
 }

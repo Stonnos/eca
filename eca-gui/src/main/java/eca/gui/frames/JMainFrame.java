@@ -1032,8 +1032,7 @@ public class JMainFrame extends JFrame {
                 performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
-                            () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
-                                    dataBuilder.getResult()));
+                            () -> createStackingExperiment(new StackingClassifier(), dataBuilder.getResult()));
                 })
         );
 
@@ -1062,8 +1061,8 @@ public class JMainFrame extends JFrame {
                                 new AutomatedRandomForests(dataBuilder.getResult());
                         automatedRandomForests.setSeed(seed);
                         AutomatedRandomForestsFrame automatedRandomForestsFrame =
-                                new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
-                                        automatedRandomForests, JMainFrame.this, maximumFractionDigits);
+                                new AutomatedRandomForestsFrame(automatedRandomForests, JMainFrame.this,
+                                        maximumFractionDigits);
                         automatedRandomForestsFrame.setVisible(true);
                     });
                 })
@@ -1076,8 +1075,8 @@ public class JMainFrame extends JFrame {
                         AutomatedDecisionTree automatedDecisionTree =
                                 new AutomatedDecisionTree(dataBuilder.getResult());
                         automatedDecisionTree.setSeed(seed);
-                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
-                                (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
+                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame =
+                                new AutomatedDecisionTreeFrame(automatedDecisionTree, JMainFrame.this,
                                         maximumFractionDigits);
                         automatedDecisionTreeFrame.setVisible(true);
                     });
@@ -1422,12 +1421,11 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private void createStackingExperiment(StackingClassifier classifier, String title, Instances data) {
+    private void createStackingExperiment(StackingClassifier classifier, Instances data) {
         classifier.setClassifiers(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking automatedStacking = new AutomatedStacking(classifier, data);
         automatedStacking.setSeed(seed);
-        AutomatedStackingFrame frame
-                = new AutomatedStackingFrame(title, automatedStacking, this, maximumFractionDigits);
+        AutomatedStackingFrame frame = new AutomatedStackingFrame(automatedStacking, this, maximumFractionDigits);
         frame.setVisible(true);
     }
 

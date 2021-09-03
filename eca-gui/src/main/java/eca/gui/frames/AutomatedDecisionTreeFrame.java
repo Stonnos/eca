@@ -10,14 +10,15 @@ import javax.swing.*;
  */
 public class AutomatedDecisionTreeFrame extends ExperimentFrame<AutomatedDecisionTree> {
 
+    private static final String TITLE = "Автоматическое построение: деревья решений";
     private static final String OPTIONS_TITLE = "Настройки";
     private static final String EXPERIMENTS_NUMBER_TITLE = "Число экспериментов:";
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 1000000;
 
-    public AutomatedDecisionTreeFrame(String title, AutomatedDecisionTree experiment, JFrame parent, int digits) {
+    public AutomatedDecisionTreeFrame(AutomatedDecisionTree experiment, JFrame parent, int digits) {
         super(AutomatedDecisionTree.class, experiment, parent, digits);
-        this.setTitle(title);
+        this.setTitle(TITLE);
     }
 
     @Override

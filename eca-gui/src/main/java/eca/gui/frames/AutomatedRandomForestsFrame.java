@@ -12,9 +12,11 @@ import javax.swing.*;
  */
 public class AutomatedRandomForestsFrame extends ExperimentFrame<AutomatedRandomForests> {
 
-    public AutomatedRandomForestsFrame(String title, AutomatedRandomForests experiment, JFrame parent, int digits) {
+    private static final String TITLE = "Автоматическое построение: случайные леса";
+
+    public AutomatedRandomForestsFrame(AutomatedRandomForests experiment, JFrame parent, int digits) {
         super(AutomatedRandomForests.class, experiment, parent, digits);
-        this.setTitle(title);
+        this.setTitle(TITLE);
     }
 
     @Override

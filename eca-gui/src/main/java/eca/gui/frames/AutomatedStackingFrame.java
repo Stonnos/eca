@@ -13,11 +13,12 @@ import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
  */
 public class AutomatedStackingFrame extends ExperimentFrame<AutomatedStacking> {
 
+    private static final String TITLE = "Автоматическое построение: алгоритм Stacking";
     private static final String OPTIONS_TITLE = "Настройка параметров";
 
-    public AutomatedStackingFrame(String title, AutomatedStacking experiment, JFrame parent, int digits) {
+    public AutomatedStackingFrame(AutomatedStacking experiment, JFrame parent, int digits) {
         super(AutomatedStacking.class, experiment, parent, digits);
-        this.setTitle(title);
+        this.setTitle(TITLE);
     }
 
     @Override
