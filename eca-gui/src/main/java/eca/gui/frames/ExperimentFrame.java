@@ -7,7 +7,6 @@ import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
-import eca.dataminer.ClassifierComparator;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
@@ -32,7 +31,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -77,17 +75,15 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Загружена недопустимая история эксперимента!";
     private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
 
-    private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
-
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
 
     @Getter
     private final Class<T> experimentClass;
     @Getter
-    private final T experiment;
-    @Getter
     private final int digits;
+    @Getter
+    private final T experiment;
 
     private JProgressBar experimentProgressBar;
     private JTextPane experimentResultsPane;
@@ -225,7 +221,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private JScrollPane createExperimentHistoryScrollPane() {
-        experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
+        experimentTable = new ExperimentTable(experiment.getHistory(), this, digits);
         JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
         experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         return experimentHistoryScrollPane;
@@ -273,6 +269,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             setStateForOptions(false);
             experimentTable.setRenderer(Color.BLACK);
             experimentTable.clear();
+            experimentTable.setExperiment(experiment.getHistory());
             doBegin();
             worker.execute();
             timer.execute();
@@ -465,7 +462,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             experimentTable.setRenderer(Color.RED);
             setStateForButtons(true);
             setStateForOptions(true);
-            experiment.getHistory().sort(CLASSIFIER_COMPARATOR);
             experimentTable.sort();
             if (!error) {
                 displayResults(experiment);
@@ -476,9 +472,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
         private void performNextIteration() {
             try {
-                EvaluationResults classifier = object.next();
+                object.next();
                 if (!isCancelled()) {
-                    experimentTable.addExperiment(classifier);
+                    experimentTable.notifyInsertedResults();
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);

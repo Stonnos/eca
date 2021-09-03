@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
@@ -64,8 +59,7 @@ public class ExperimentTableModel extends AbstractTableModel {
         return experiment.size();
     }
 
-    public void add(EvaluationResults val) {
-        experiment.add(val);
+    public void notifyInsertedResults() {
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
@@ -76,6 +70,11 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     public void sort() {
         experiment.sort(CLASSIFIER_COMPARATOR);
+        fireTableDataChanged();
+    }
+
+    public void setExperiment(List<EvaluationResults> experiment) {
+        this.experiment = experiment;
         fireTableDataChanged();
     }
 
