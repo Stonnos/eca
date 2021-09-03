@@ -150,6 +150,7 @@ import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
+import static eca.util.UrlUtils.isValidUrl;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -251,6 +252,7 @@ public class JMainFrame extends JFrame {
                     CommonDictionary.ECA_SERVICE_ENABLED);
     private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
     private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
+    private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1866,7 +1868,9 @@ public class JMainFrame extends JFrame {
                     URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                     null, DEFAULT_URL_FOR_DATA_LOADING);
 
-            if (dataUrl != null) {
+            if (!isValidUrl(dataUrl)) {
+                showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+            } else {
                 try {
                     FileDataLoader dataLoader = new FileDataLoader();
                     dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
