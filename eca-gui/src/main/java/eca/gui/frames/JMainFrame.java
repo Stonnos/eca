@@ -194,7 +194,7 @@ public class JMainFrame extends JFrame {
     private static final String DB_CONNECTION_WAITING_MESSAGE =
             "Пожалуйста подождите, идет подключение к базе данных...";
     private static final String LOAD_MODEL_MENU_TEXT = "Загрузить модель";
-    private static final String LOAD_EXPERIMENT_MENU_TEXT = "Загрузить эксперимент";
+    private static final String LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT = "Загрузить эксперимент";
     private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
     private static final String URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
@@ -253,6 +253,8 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
     private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
+    private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
+    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1296,11 +1298,16 @@ public class JMainFrame extends JFrame {
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
-        JMenuItem loadExperimentMenu = new JMenuItem(LOAD_EXPERIMENT_MENU_TEXT);
-        loadExperimentMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        JMenuItem loadExperimentFromFileMenu = new JMenuItem(LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT);
+        loadExperimentFromFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
         fileMenu.addSeparator();
-        fileMenu.add(loadExperimentMenu);
-        loadExperimentMenu.addActionListener(loadExperimentActionListener());
+        fileMenu.add(loadExperimentFromFileMenu);
+        loadExperimentFromFileMenu.addActionListener(loadExperimentFromFileActionListener());
+
+        JMenuItem loadExperimentFromUrlMenu = new JMenuItem(LOAD_EXPERIMENT_FORM_NET_TEXT);
+        loadExperimentFromUrlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        fileMenu.add(loadExperimentFromUrlMenu);
+        loadExperimentFromUrlMenu.addActionListener(loadExperimentFromUrlActionListener());
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
         generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
@@ -1867,21 +1874,22 @@ public class JMainFrame extends JFrame {
             String dataUrl = (String) JOptionPane.showInputDialog(JMainFrame.this,
                     URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                     null, DEFAULT_URL_FOR_DATA_LOADING);
-
-            if (!isValidUrl(dataUrl)) {
-                showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
-            } else {
-                try {
-                    FileDataLoader dataLoader = new FileDataLoader();
-                    dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
-                    dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                    UrlLoader loader = new UrlLoader(dataLoader);
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, DATA_LOADING_MESSAGE);
-                    processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            if (dataUrl != null) {
+                if (!isValidUrl(dataUrl)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        FileDataLoader dataLoader = new FileDataLoader();
+                        dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
+                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                        UrlLoader loader = new UrlLoader(dataLoader);
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                loader, DATA_LOADING_MESSAGE);
+                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
                 }
             }
         };
@@ -1915,27 +1923,40 @@ public class JMainFrame extends JFrame {
         };
     }
 
-    private ActionListener loadExperimentActionListener() {
+    private ActionListener loadExperimentFromFileActionListener() {
         return event -> {
             try {
                 OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
                 File file = fileChooser.openFile(JMainFrame.this);
                 if (file != null) {
                     ExperimentLoader loader = new ExperimentLoader(new FileResource(file));
-                    LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
-                            loader, EXPERIMENT_LOADING_MESSAGE);
-                    processAsyncTask(loadDialog, () -> {
-                        AbstractExperiment<?> experiment = loader.getResult();
-                        ExperimentFrame<?> experimentFrame =
-                                ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
-                                        this.maximumFractionDigits);
-                        experimentFrame.setVisible(true);
-                    });
-
+                    processExperimentLoading(loader);
                 }
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
                 showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
+        };
+    }
+
+    private ActionListener loadExperimentFromUrlActionListener() {
+        return event -> {
+            String url = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                    URL_FILE_TEXT, DOWNLOAD_EXPERIMENT_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, null);
+            if (url != null) {
+                if (!isValidUrl(url)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        URL experimentUrl = new URL(url.trim());
+                        ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
+                        processExperimentLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
             }
         };
     }
@@ -1956,6 +1977,18 @@ public class JMainFrame extends JFrame {
                 }
             }
         };
+    }
+
+    private void processExperimentLoading(ExperimentLoader loader) throws Exception {
+        LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                loader, EXPERIMENT_LOADING_MESSAGE);
+        processAsyncTask(loadDialog, () -> {
+            AbstractExperiment<?> experiment = loader.getResult();
+            ExperimentFrame<?> experimentFrame =
+                    ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
+                            this.maximumFractionDigits);
+            experimentFrame.setVisible(true);
+        });
     }
 
     private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {
