@@ -50,10 +50,6 @@ public class ModelSerializationHelper {
      */
     public static <T> T deserialize(DataResource<?> dataResource, Class<T> targetClazz) throws IOException {
         Objects.requireNonNull(dataResource, "Data resource is not specified!");
-        if (!dataResource.getFile().endsWith(MODEL_EXTENSION)) {
-            throw new IllegalArgumentException(
-                    String.format("Can't load model from file '%s'", dataResource.getFile()));
-        }
         @Cleanup InputStream inputStream = dataResource.openInputStream();
         Object result = SerializationUtils.deserialize(inputStream);
         return targetClazz.cast(result);
