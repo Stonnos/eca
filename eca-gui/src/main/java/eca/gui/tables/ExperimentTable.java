@@ -142,7 +142,7 @@ public class ExperimentTable extends JDataTableBase {
         @Override
         protected void doAfterPushing() {
             try {
-                if (classificationResultsFrameBases.get(index) == null) {
+                if (!classificationResultsFrameBases.containsKey(index)) {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
                     ClassificationResultsFrameBase result =
