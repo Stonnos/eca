@@ -70,7 +70,7 @@ public class ExperimentTable extends JDataTableBase {
         experimentModel().notifyInsertedResults();
     }
 
-    public void setExperiment(List<EvaluationResults> evaluationResults) {
+    public void initializeExperimentHistory(List<EvaluationResults> evaluationResults) {
         clear();
         experimentModel().setExperiment(evaluationResults);
     }

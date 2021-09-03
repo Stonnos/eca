@@ -345,8 +345,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         setStateForButtons(false);
         setStateForOptions(false);
         experimentTable.setRenderer(Color.BLACK);
-        experimentTable.clear();
-        experimentTable.setExperiment(experiment.getHistory());
+        experimentTable.initializeExperimentHistory(experiment.getHistory());
         doBegin();
         worker.execute();
         timer.execute();
@@ -391,7 +390,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                         JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE, null,
                                 JOptionPane.WARNING_MESSAGE);
                     } else {
-                        experimentTable.setExperiment(loaderExperiment.getHistory());
+                        experimentTable.initializeExperimentHistory(loaderExperiment.getHistory());
                         displayResults(loaderExperiment);
                     }
                 }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
