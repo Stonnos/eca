@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
@@ -27,6 +22,7 @@ import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.ExperimentTable;
 import eca.report.ReportGenerator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -40,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
@@ -50,7 +47,7 @@ import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
  * @author Roman Batygin
  */
 @Slf4j
-public abstract class ExperimentFrame extends JFrame {
+public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -84,7 +81,12 @@ public abstract class ExperimentFrame extends JFrame {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
 
-    private final AbstractExperiment experiment;
+    @Getter
+    private final Class<T> experimentClass;
+    @Getter
+    private final T experiment;
+    @Getter
+    private final int digits;
 
     private JProgressBar experimentProgressBar;
     private JTextPane experimentResultsPane;
@@ -105,9 +107,11 @@ public abstract class ExperimentFrame extends JFrame {
     private ExperimentTable experimentTable;
     private SwingWorker<Void, Void> worker;
     private SwingWorker<Void, Void> timer;
-    private final int digits;
 
-    protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) {
+    protected ExperimentFrame(Class<T> experimentClass, T experiment, JFrame parent, int digits) {
+        Objects.requireNonNull(experimentClass, "Expected not null experiment class");
+        Objects.requireNonNull(experiment, "Expected not null experiment");
+        this.experimentClass = experimentClass;
         this.experiment = experiment;
         this.digits = digits;
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -122,14 +126,6 @@ public abstract class ExperimentFrame extends JFrame {
         });
         this.createGUI();
         this.setLocationRelativeTo(parent);
-    }
-
-    public AbstractExperiment getExperiment() {
-        return experiment;
-    }
-
-    public int getDigits() {
-        return digits;
     }
 
     private void setStateForButtons(boolean flag) {
@@ -156,7 +152,7 @@ public abstract class ExperimentFrame extends JFrame {
         experimentResultsPane.setCaretPosition(0);
     }
 
-    protected abstract void setOptions();
+    protected abstract void initializeExperimentOptions();
 
     protected void doBegin() {
         experimentProgressBar.setValue(0);
@@ -284,7 +280,7 @@ public abstract class ExperimentFrame extends JFrame {
         });
 
         stopButton.addActionListener(e -> worker.cancel(true));
-        optionsButton.addActionListener(e -> setOptions());
+        optionsButton.addActionListener(e -> initializeExperimentOptions());
 
         saveButton.addActionListener(event -> {
             try {

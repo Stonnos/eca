@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
-import eca.dataminer.AbstractExperiment;
+import eca.dataminer.AutomatedNeuralNetwork;
 import eca.gui.dialogs.SpinnerDialog;
 
 import javax.swing.*;
@@ -13,7 +8,7 @@ import javax.swing.*;
 /**
  * @author Roman Batygin
  */
-public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
+public class AutomatedNeuralNetworkFrame extends ExperimentFrame<AutomatedNeuralNetwork> {
 
     private static final String TITLE_TEXT = "Автоматическое построение нейронных сетей";
     private static final String OPTIONS_TITLE = "Настройки";
@@ -21,13 +16,13 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame {
     private static final int MIN_ITERATIONS = 10;
     private static final int MAX_ITERATIONS = 10000;
 
-    public AutomatedNeuralNetworkFrame(AbstractExperiment experiment, JFrame parent, int digits) {
-        super(experiment, parent, digits);
+    public AutomatedNeuralNetworkFrame(AutomatedNeuralNetwork experiment, JFrame parent, int digits) {
+        super(AutomatedNeuralNetwork.class, experiment, parent, digits);
         this.setTitle(TITLE_TEXT);
     }
 
     @Override
-    protected void setOptions() {
+    protected void initializeExperimentOptions() {
         SpinnerDialog dialog =
                 new SpinnerDialog(this, OPTIONS_TITLE, NETWORKS_NUMBER_TITLE,
                         getExperiment().getNumIterations(), MIN_ITERATIONS, MAX_ITERATIONS);
