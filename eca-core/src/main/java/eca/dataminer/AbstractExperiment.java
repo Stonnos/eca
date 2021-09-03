@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for automatic selection of optimal options
@@ -184,6 +185,27 @@ public abstract class AbstractExperiment<T extends Classifier>
     @Override
     public List<EvaluationResults> getHistory() {
         return experiment;
+    }
+
+    /**
+     * Sorts experiment history by best results.
+     */
+    public void sortByBestResults() {
+        experiment.sort(new ClassifierComparator());
+    }
+
+    /**
+     * Reduces experiment history to specified size.
+     *
+     * @param size - results size
+     */
+    public void reduce(int size) {
+        List<EvaluationResults> evaluationResults = experiment.stream()
+                .limit(size)
+                .collect(Collectors.toList());
+        clearHistory();
+        experiment.ensureCapacity(size);
+        experiment.addAll(evaluationResults);
     }
 
     /**

@@ -467,7 +467,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             setProgress(100);
             setStateForButtons(true);
             setStateForOptions(true);
-            experimentTable.sort();
+            experiment.sortByBestResults();
+            experimentTable.notifyDataChanged();
             if (!error) {
                 displayResults(experiment);
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
@@ -479,7 +480,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             try {
                 object.next();
                 if (!isCancelled()) {
-                    experimentTable.notifyInsertedResults();
+                    experimentTable.notifyLastInsertedResults();
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);

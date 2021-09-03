@@ -1,7 +1,6 @@
 package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
-import eca.dataminer.ClassifierComparator;
 import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 
@@ -21,7 +20,6 @@ public class ExperimentTableModel extends AbstractTableModel {
     public static final int RESULTS_INDEX = 3;
     public static final String RESULT_TITLE = "Посмотреть";
 
-    private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
     private static final String[] TITLES = {"№", "Классификатор", "Точность, %", "Результаты"};
 
     private List<EvaluationResults> experiment;
@@ -59,17 +57,12 @@ public class ExperimentTableModel extends AbstractTableModel {
         return experiment.size();
     }
 
-    public void notifyInsertedResults() {
+    public void notifyLastInsertedResults() {
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
     public void clear() {
         experiment.clear();
-        fireTableDataChanged();
-    }
-
-    public void sort() {
-        experiment.sort(CLASSIFIER_COMPARATOR);
         fireTableDataChanged();
     }
 

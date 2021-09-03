@@ -66,8 +66,12 @@ public class ExperimentTable extends JDataTableBase {
         return (ExperimentTableModel) this.getModel();
     }
 
-    public void notifyInsertedResults() {
-        experimentModel().notifyInsertedResults();
+    public void notifyLastInsertedResults() {
+        experimentModel().notifyLastInsertedResults();
+    }
+
+    public void notifyDataChanged() {
+        experimentModel().fireTableDataChanged();
     }
 
     public void initializeExperimentHistory(List<EvaluationResults> evaluationResults) {
@@ -96,10 +100,6 @@ public class ExperimentTable extends JDataTableBase {
             }
         };
         this.getColumnModel().getColumn(ExperimentTableModel.ACCURACY_INDEX).setCellRenderer(renderer);
-    }
-
-    public void sort() {
-        experimentModel().sort();
     }
 
     /**
