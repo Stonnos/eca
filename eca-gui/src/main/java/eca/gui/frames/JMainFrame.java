@@ -1548,6 +1548,40 @@ public class JMainFrame extends JFrame {
         });
     }
 
+    private void updateEcaServiceTrackStatus(String correlationId, ExperimentResponse experimentResponse) {
+        experimentResponse.getStatus().handle(new TechnicalStatusVisitor() {
+            @Override
+            public void caseSuccessStatus() {
+                experimentResponse.getRequestStage().handle(new RequestStageVisitor() {
+                    @Override
+                    public void caseCreated() {
+                        updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.IN_PROGRESS);
+                    }
+
+                    @Override
+                    public void caseFinished() {
+                        updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.COMPLETED);
+                    }
+                });
+            }
+
+            @Override
+            public void caseErrorStatus() {
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
+            }
+
+            @Override
+            public void caseTimeoutStatus() {
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
+            }
+
+            @Override
+            public void caseValidationErrorStatus() {
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
+            }
+        });
+    }
+
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
         return (evaluationResponse, basicProperties) -> {
             try {
