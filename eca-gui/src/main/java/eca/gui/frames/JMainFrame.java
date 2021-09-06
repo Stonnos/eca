@@ -4,6 +4,8 @@ import eca.client.core.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
+import eca.client.dto.ExperimentResponse;
+import eca.client.dto.RequestStageVisitor;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
@@ -244,7 +246,8 @@ public class JMainFrame extends JFrame {
 
     private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
     private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
-    private static final String TIMEOUT_MESSAGE = "Произошел таймаут";
+    private static final String EVALUATION_TIMEOUT_MESSAGE = "Произошел таймаут при построении модели";
+    private static final String EXPERIMENT_TIMEOUT_MESSAGE = "Произошел таймаут при построении эксперимента";
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
@@ -253,6 +256,8 @@ public class JMainFrame extends JFrame {
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
     private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
+    private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
+            "Эксперимент %s успешно завершен. Вы хотите загрузить результаты?";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1511,7 +1516,7 @@ public class JMainFrame extends JFrame {
 
     private void addExperimentListenerAdapterIfAbsent() {
         if (!messageListenerContainer.getRabbitListenerAdapters().containsKey(experimentQueue)) {
-            MessageHandler<EcaResponse> experimentMessageHandler = createExperimentMessageHandler();
+            MessageHandler<ExperimentResponse> experimentMessageHandler = createExperimentMessageHandler();
             ExperimentListenerAdapter experimentListenerAdapter =
                     new ExperimentListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
                             experimentMessageHandler);
@@ -1574,7 +1579,7 @@ public class JMainFrame extends JFrame {
 
                     @Override
                     public void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
+                        JOptionPane.showMessageDialog(JMainFrame.this, EVALUATION_TIMEOUT_MESSAGE, null,
                                 JOptionPane.ERROR_MESSAGE);
                     }
 
@@ -1590,34 +1595,32 @@ public class JMainFrame extends JFrame {
         };
     }
 
-    private MessageHandler<EcaResponse> createExperimentMessageHandler() {
-        return (ecaResponse, basicProperties) -> {
+    private MessageHandler<ExperimentResponse> createExperimentMessageHandler() {
+        return (experimentResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), ecaResponse);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), experimentResponse);
                 popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
-                ecaResponse.getStatus().handle(new TechnicalStatusVisitor() {
+                experimentResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDetails()),
-                                null, JOptionPane.INFORMATION_MESSAGE);
+                        handleExperimentSuccessResponse(experimentResponse, ecaServiceTrack);
                     }
 
                     @Override
                     public void caseErrorStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(ecaResponse));
+                        showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(experimentResponse));
                     }
 
                     @Override
                     public void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
+                        JOptionPane.showMessageDialog(JMainFrame.this, EXPERIMENT_TIMEOUT_MESSAGE, null,
                                 JOptionPane.ERROR_MESSAGE);
                     }
 
                     @Override
                     public void caseValidationErrorStatus() {
-                        showValidationErrorsDialog(JMainFrame.this, ecaResponse);
+                        showValidationErrorsDialog(JMainFrame.this, experimentResponse);
                     }
                 });
             } catch (Exception e) {
@@ -1985,6 +1988,36 @@ public class JMainFrame extends JFrame {
                     ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
                             this.maximumFractionDigits);
             experimentFrame.setVisible(true);
+        });
+    }
+
+    private void handleExperimentSuccessResponse(ExperimentResponse experimentResponse,
+                                                 EcaServiceTrack ecaServiceTrack) {
+        experimentResponse.getRequestStage().handle(new RequestStageVisitor() {
+            @Override
+            public void caseCreated() {
+                JOptionPane.showMessageDialog(JMainFrame.this,
+                        String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDetails()),
+                        null, JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void caseFinished() {
+                int result = JOptionPane.showConfirmDialog(JMainFrame.this,
+                        String.format(EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT,
+                                ecaServiceTrack.getDetails()), null, JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    try {
+                        URL experimentUrl = new URL(experimentResponse.getDownloadUrl());
+                        ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
+                        processExperimentLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
+            }
         });
     }
 

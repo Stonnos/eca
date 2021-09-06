@@ -10,7 +10,7 @@ import java.util.List;
  * @author Roman Batygin
  */
 @Data
-public class EcaResponse {
+public abstract class EcaResponse {
 
     /**
      * Request unique identifier
@@ -21,7 +21,6 @@ public class EcaResponse {
      * Technical status
      */
     private TechnicalStatus status;
-
 
     /**
      * Errors list
