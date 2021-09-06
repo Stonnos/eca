@@ -11,6 +11,7 @@ import eca.neural.NeuralNetwork;
 import eca.trees.DecisionTreeClassifier;
 import lombok.experimental.UtilityClass;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -35,14 +36,14 @@ public class ExperimentNamesFactory {
     public static final String DATA_MINER_KNN =
             "Автоматическое построение: алгоритм k - взвешенных ближайших соседей";
 
-    private static final Map<Class<?>, String> EXPERIMENT_TITLES_MAP = newHashMap();
+    private static final Map<Class<?>, String> EXPERIMENT_TITLES_MAP = new LinkedHashMap<>();
 
     static {
         EXPERIMENT_TITLES_MAP.put(DecisionTreeClassifier.class, DATA_MINER_DECISION_TREE);
         EXPERIMENT_TITLES_MAP.put(NeuralNetwork.class, DATA_MINER_NETWORKS);
         EXPERIMENT_TITLES_MAP.put(KNearestNeighbours.class, DATA_MINER_KNN);
-        EXPERIMENT_TITLES_MAP.put(HeterogeneousClassifier.class, DATA_MINER_HETEROGENEOUS_ENSEMBLE);
         EXPERIMENT_TITLES_MAP.put(ModifiedHeterogeneousClassifier.class, DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE);
+        EXPERIMENT_TITLES_MAP.put(HeterogeneousClassifier.class, DATA_MINER_HETEROGENEOUS_ENSEMBLE);
         EXPERIMENT_TITLES_MAP.put(AdaBoostClassifier.class, DATA_MINER_ADA_BOOST);
         EXPERIMENT_TITLES_MAP.put(StackingClassifier.class, DATA_MINER_STACKING);
         EXPERIMENT_TITLES_MAP.put(RandomForests.class, DATA_MINER_RANDOM_FORESTS);
@@ -56,7 +57,7 @@ public class ExperimentNamesFactory {
      */
     public static String getExperimentName(AbstractExperiment<?> experiment) {
         return EXPERIMENT_TITLES_MAP.entrySet().stream()
-                .filter(entry -> experiment.getClass().isAssignableFrom(entry.getKey()))
+                .filter(entry -> entry.getKey().isAssignableFrom(experiment.getClassifier().getClass()))
                 .map(Map.Entry::getValue)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Can't get experiment [%s] name",
