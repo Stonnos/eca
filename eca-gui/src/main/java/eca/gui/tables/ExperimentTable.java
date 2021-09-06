@@ -3,6 +3,7 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
+import eca.dataminer.ClassifierComparator;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
@@ -66,8 +67,14 @@ public class ExperimentTable extends JDataTableBase {
         return (ExperimentTableModel) this.getModel();
     }
 
-    public void notifyLastInsertedResults() {
+    public void addEvaluationResults(EvaluationResults evaluationResults) {
+        experimentModel().getExperiment().add(evaluationResults);
         experimentModel().notifyLastInsertedResults();
+    }
+
+    public void sortByBestResults() {
+        experimentModel().getExperiment().sort(new ClassifierComparator());
+        notifyDataChanged();
     }
 
     public void notifyDataChanged() {

@@ -31,6 +31,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -225,7 +226,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private JScrollPane createExperimentHistoryScrollPane() {
-        experimentTable = new ExperimentTable(experiment.getHistory(), this, digits);
+        experimentTable = new ExperimentTable(new ArrayList<>(experiment.getHistory()), this, digits);
         JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
         experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         return experimentHistoryScrollPane;
@@ -345,7 +346,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         setStateForButtons(false);
         setStateForOptions(false);
         experimentTable.setRenderer(Color.BLACK);
-        experimentTable.initializeExperimentHistory(experiment.getHistory());
+        experiment.clearHistory();
+        experimentTable.clear();
         doBegin();
         worker.execute();
         timer.execute();
@@ -467,8 +469,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             setProgress(100);
             setStateForButtons(true);
             setStateForOptions(true);
-            experiment.sortByBestResults();
-            experimentTable.notifyDataChanged();
+            experimentTable.sortByBestResults();
             if (!error) {
                 displayResults(experiment);
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
@@ -478,9 +479,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
         private void performNextIteration() {
             try {
-                object.next();
+                EvaluationResults evaluationResults = object.next();
                 if (!isCancelled()) {
-                    experimentTable.notifyLastInsertedResults();
+                    experimentTable.addEvaluationResults(evaluationResults);
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
