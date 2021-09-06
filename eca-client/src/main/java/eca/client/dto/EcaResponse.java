@@ -10,7 +10,7 @@ import java.util.List;
  * @author Roman Batygin
  */
 @Data
-public abstract class EcaResponse {
+public class EcaResponse {
 
     /**
      * Request unique identifier
