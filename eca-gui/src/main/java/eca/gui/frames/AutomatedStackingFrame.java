@@ -7,18 +7,18 @@ import eca.gui.dialogs.StackingOptionsDialog;
 import javax.swing.*;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
 
 /**
  * @author Roman Batygin
  */
 public class AutomatedStackingFrame extends ExperimentFrame<AutomatedStacking> {
 
-    private static final String TITLE = "Автоматическое построение: алгоритм Stacking";
     private static final String OPTIONS_TITLE = "Настройка параметров";
 
     public AutomatedStackingFrame(AutomatedStacking experiment, JFrame parent, int digits) {
         super(AutomatedStacking.class, experiment, parent, digits);
-        this.setTitle(TITLE);
+        this.setTitle(DATA_MINER_STACKING);
     }
 
     @Override

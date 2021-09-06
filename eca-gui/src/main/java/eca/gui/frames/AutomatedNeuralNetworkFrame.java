@@ -5,12 +5,13 @@ import eca.gui.dialogs.SpinnerDialog;
 
 import javax.swing.*;
 
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_NETWORKS;
+
 /**
  * @author Roman Batygin
  */
 public class AutomatedNeuralNetworkFrame extends ExperimentFrame<AutomatedNeuralNetwork> {
 
-    private static final String TITLE_TEXT = "Автоматическое построение нейронных сетей";
     private static final String OPTIONS_TITLE = "Настройки";
     private static final String NETWORKS_NUMBER_TITLE = "Количество сетей:";
     private static final int MIN_ITERATIONS = 10;
@@ -18,7 +19,7 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame<AutomatedNeural
 
     public AutomatedNeuralNetworkFrame(AutomatedNeuralNetwork experiment, JFrame parent, int digits) {
         super(AutomatedNeuralNetwork.class, experiment, parent, digits);
-        this.setTitle(TITLE_TEXT);
+        this.setTitle(DATA_MINER_NETWORKS);
     }
 
     @Override

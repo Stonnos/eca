@@ -149,6 +149,14 @@ import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
 import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_ADA_BOOST;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_DECISION_TREE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_HETEROGENEOUS_ENSEMBLE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_KNN;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_NETWORKS;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_RANDOM_FORESTS;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
 import static eca.util.UrlUtils.isValidUrl;
@@ -204,14 +212,6 @@ public class JMainFrame extends JFrame {
     private static final String EXIT_MENU_TEXT = "Выход";
     private static final String ABOUT_PROGRAM_MENU_TEXT = "О программе";
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
-    private static final String DATA_MINER_NETWORKS_MENU_TEXT = "Автоматическое построение: нейронные сети";
-    private static final String DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT =
-            "Автоматическое построение: неоднородный ансамблевый алгоритм";
-    private static final String DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT =
-            "Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм";
-    private static final String DATA_MINER_ADA_BOOST_MENU_TEXT = "Автоматическое построение: алгоритм AdaBoost";
-    private static final String DATA_MINER_STACKING_MENU_TEXT = "Автоматическое построение: алгоритм Stacking";
-    private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: случайные леса";
     private static final String INDIVIDUAL_CLASSIFIERS_MENU_TEXT = "Индувидуальные алгоритмы";
     private static final String ENSEMBLE_CLASSIFIERS_MENU_TEXT = "Ансамблевые алгоритмы";
     private static final String DECISION_TREES_MENU_TEXT = "Деревья решений";
@@ -220,8 +220,6 @@ public class JMainFrame extends JFrame {
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String EXCEED_DATA_LIST_SIZE_ERROR_FORMAT = "Число листов с данными не должно превышать %d!";
     private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
-    private static final String KNN_OPTIMIZER_MENU_TEXT =
-            "Автоматическое построение: алгоритм k - взвешенных ближайших соседей";
     private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
@@ -234,7 +232,6 @@ public class JMainFrame extends JFrame {
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
-    private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
     private static final String SCATTER_DIAGRAM_MENU_TEXT = "Построение диаграмм рассеяния";
     private static final String DB_SAVE_MENU_TEXT = "Сохранить данные в базу данных";
     private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
@@ -984,15 +981,15 @@ public class JMainFrame extends JFrame {
     }
 
     private void fillDataMinerMenu(JMenu dataMinerMenu) {
-        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS_MENU_TEXT);
-        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
+        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS);
+        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE);
         JMenuItem modifiedHeteroEnsMenu =
-                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
-        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
-        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
-        JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
-        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
-        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
+                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE);
+        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST);
+        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING);
+        JMenuItem knnOptimizerMenu = new JMenuItem(DATA_MINER_KNN);
+        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS);
+        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE);
 
         aNeuralMenu.addActionListener(event ->
                 performTaskWithDataAndClassValidation(() -> {

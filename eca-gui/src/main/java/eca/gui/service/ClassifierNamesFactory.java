@@ -17,6 +17,7 @@ import eca.trees.CART;
 import eca.trees.CHAID;
 import eca.trees.ID3;
 import eca.trees.J48;
+import lombok.experimental.UtilityClass;
 import weka.classifiers.Classifier;
 
 import java.util.Map;
@@ -24,10 +25,11 @@ import java.util.Map;
 import static com.google.common.collect.Maps.newHashMap;
 
 /**
- * Title service.
+ * Classifier names factory.
  *
  * @author Roman Batygin
  */
+@UtilityClass
 public class ClassifierNamesFactory {
 
     private static final Map<Class<?>, String> CLASSIFIERS_TITLES_MAP = newHashMap();

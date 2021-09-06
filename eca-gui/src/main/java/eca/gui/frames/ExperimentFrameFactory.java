@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static eca.gui.service.ExperimentNamesFactory.getExperimentName;
 
 /**
  * Experiment frames helper class.
@@ -105,7 +106,8 @@ public class ExperimentFrameFactory {
         @Override
         public AutomatedHeterogeneousEnsembleFrame get(AutomatedHeterogeneousEnsemble experiment, JFrame parent,
                                                        int digits) {
-            return new AutomatedHeterogeneousEnsembleFrame("", experiment, parent, digits);
+            String title = getExperimentName(experiment);
+            return new AutomatedHeterogeneousEnsembleFrame(title, experiment, parent, digits);
         }
     }
 

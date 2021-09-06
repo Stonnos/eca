@@ -5,6 +5,8 @@ import eca.gui.dialogs.AutomatedRandomForestsOptionsDialog;
 
 import javax.swing.*;
 
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_RANDOM_FORESTS;
+
 /**
  * Implements frame for automatic selection of optimal options for Random forests algorithm hierarchy.
  *
@@ -12,11 +14,9 @@ import javax.swing.*;
  */
 public class AutomatedRandomForestsFrame extends ExperimentFrame<AutomatedRandomForests> {
 
-    private static final String TITLE = "Автоматическое построение: случайные леса";
-
     public AutomatedRandomForestsFrame(AutomatedRandomForests experiment, JFrame parent, int digits) {
         super(AutomatedRandomForests.class, experiment, parent, digits);
-        this.setTitle(TITLE);
+        this.setTitle(DATA_MINER_RANDOM_FORESTS);
     }
 
     @Override
