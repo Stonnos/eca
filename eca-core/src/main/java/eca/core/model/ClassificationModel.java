@@ -41,9 +41,4 @@ public class ClassificationModel implements java.io.Serializable {
      * Maximum fraction digits
      */
     private Integer maximumFractionDigits;
-
-    /**
-     * Details string
-     */
-    private String details;
 }

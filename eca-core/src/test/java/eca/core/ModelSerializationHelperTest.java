@@ -64,14 +64,12 @@ class ModelSerializationHelperTest {
         classifier.setClassifiersSet(classifiers);
         Evaluation evaluation = evaluateModel(classifier, instances, EvaluationMethod.TRAINING_DATA,0, 0, null);
         ClassificationModel expected =
-                new ClassificationModel(classifier, instances, evaluation, MAXIMUM_FRACTION_DIGITS,
-                        classifier.getClass().getSimpleName());
+                new ClassificationModel(classifier, instances, evaluation, MAXIMUM_FRACTION_DIGITS);
         ModelSerializationHelper.serialize(file, expected);
         //Compare models
         FileResource fileResource = new FileResource(file);
         ClassificationModel actual = ModelSerializationHelper.deserialize(fileResource, ClassificationModel.class);
         assertNotNull(actual);
-        assertEquals(expected.getDetails(), actual.getDetails());
         assertEquals(expected.getMaximumFractionDigits(), actual.getMaximumFractionDigits());
         assertEquals(expected.getData().relationName(),  actual.getData().relationName());
         assertEquals(expected.getEvaluation().pctCorrect(), actual.getEvaluation().pctCorrect());

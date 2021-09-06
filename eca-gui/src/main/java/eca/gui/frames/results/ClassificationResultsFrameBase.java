@@ -10,8 +10,8 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
 import eca.core.ModelSerializationHelper;
-import eca.core.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
+import eca.core.model.ClassificationModel;
 import eca.gui.PanelBorderUtils;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
@@ -297,9 +297,9 @@ public class ClassificationResultsFrameBase extends JFrame {
                 fileChooser.setSelectedFile(new File(ClassifierIndexerService.getIndex(classifier())));
                 File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {
-                    ModelSerializationHelper.serialize(file,
-                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits,
-                                    getTitle()));
+                    ClassificationModel classificationModel =
+                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits);
+                    ModelSerializationHelper.serialize(file, classificationModel);
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);

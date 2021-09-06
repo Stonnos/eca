@@ -148,6 +148,7 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
 import static eca.util.UrlUtils.isValidUrl;
@@ -1907,10 +1908,9 @@ public class JMainFrame extends JFrame {
 
                     processAsyncTask(progress, () -> {
                         ClassificationModel classificationModel = loader.getResult();
-                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits()).orElse(
-                                maximumFractionDigits);
-                        String title = Optional.ofNullable(classificationModel.getDetails()).orElse(
-                                classificationModel.getClassifier().getClass().getSimpleName());
+                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
+                                .orElse(maximumFractionDigits);
+                        String title = getClassifierName(classificationModel.getClassifier());
                         createEvaluationResultsAsync(title, classificationModel.getClassifier(),
                                 classificationModel.getData(), classificationModel.getEvaluation(), digits);
                     });
