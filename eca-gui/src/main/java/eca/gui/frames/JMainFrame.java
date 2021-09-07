@@ -257,7 +257,7 @@ public class JMainFrame extends JFrame {
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
     private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
     private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
-            "Эксперимент %s успешно завершен. Загрузить результаты?";
+            "Эксперимент '%s' успешно завершен. Загрузить результаты?";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
