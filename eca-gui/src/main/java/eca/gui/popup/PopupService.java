@@ -20,7 +20,7 @@ public class PopupService {
 
     private static final int MAX_POPUPS_AT_TIME = 3;
 
-    private static final long POPUP_VISIBILITY_TIME_MILLIS = 2000L;
+    private static final long POPUP_VISIBILITY_TIME_MILLIS = 3000L;
 
     private static final int POPUP_MARGIN_LEFT = 275;
     private static final int POPUP_MARGIN_TOP = 50;
