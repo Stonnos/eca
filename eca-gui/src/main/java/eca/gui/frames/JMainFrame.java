@@ -132,6 +132,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -1628,6 +1629,8 @@ public class JMainFrame extends JFrame {
                         JOptionPane.INFORMATION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
+                        Objects.requireNonNull(experimentResponse.getDownloadUrl(),
+                                "Can't load experiment for null url");
                         URL experimentUrl = new URL(experimentResponse.getDownloadUrl());
                         ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
                         processExperimentLoading(loader);
