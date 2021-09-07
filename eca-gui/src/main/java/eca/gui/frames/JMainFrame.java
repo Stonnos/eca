@@ -1625,7 +1625,7 @@ public class JMainFrame extends JFrame {
                 int result = JOptionPane.showConfirmDialog(JMainFrame.this,
                         String.format(EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT,
                                 ecaServiceTrack.getDetails()), null, JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
+                        JOptionPane.INFORMATION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
                     try {
                         URL experimentUrl = new URL(experimentResponse.getDownloadUrl());
