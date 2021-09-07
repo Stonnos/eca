@@ -225,7 +225,7 @@ public class JMainFrame extends JFrame {
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
-            "Ваша заявка на эксперимент '%s' была успешно создана, пожалуйста ожидайте ответное письмо на email.";
+            "Ваша заявка на эксперимент '%s' была успешно создана.";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
