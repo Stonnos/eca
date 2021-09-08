@@ -6,10 +6,14 @@ import eca.client.core.ConnectionManager;
 import eca.client.core.RabbitClient;
 import eca.client.core.RabbitSender;
 import eca.client.dto.EvaluationResponse;
+import eca.client.dto.ExperimentRequestDto;
+import eca.client.dto.ExperimentResponse;
 import eca.client.dto.TechnicalStatus;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
+import eca.client.listener.adapter.ExperimentListenerAdapter;
 import eca.trees.CART;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +24,7 @@ import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+import static eca.client.TestHelperUtils.createExperimentRequestDto;
 import static eca.client.TestHelperUtils.loadInstances;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,9 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author Roman Batygin
  */
+@Slf4j
 class EcaClientIT {
 
-    private static final long REQUEST_TIMEOUT_SECONDS = 5L;
+    private static final long EVALUATION_REQUEST_TIMEOUT_SECONDS = 5L;
+    private static final long EXPERIMENT_REQUEST_TIMEOUT_SECONDS = 60L;
     private static final long CONNECTION_TIMEOUT_MINUTES = 1L;
     private static final long POLL_INTERVAL_SECONDS = 1L;
 
@@ -44,9 +51,13 @@ class EcaClientIT {
 
     private RabbitClient rabbitClient;
 
-    private String replyTo;
+    private String evaluationReplyTo;
+    private String experimentReplyTo;
+
+    private Instances instances;
 
     private EvaluationResponse evaluationResponse;
+    private ExperimentResponse experimentResponse;
     private String actualCorrelationId;
 
     private String expectedCorrelationId;
@@ -55,29 +66,44 @@ class EcaClientIT {
 
     @BeforeEach
     void setup() {
-        replyTo = UUID.randomUUID().toString();
+        instances = loadInstances();
+        responseReceived = false;
+        evaluationReplyTo = UUID.randomUUID().toString();
+        experimentReplyTo = UUID.randomUUID().toString();
         expectedCorrelationId = UUID.randomUUID().toString();
         ConnectionFactory connectionFactory = ecaClientConfiguration.getConnectionFactory();
-
         RabbitSender rabbitSender = new RabbitSender();
         rabbitSender.setMessageConverter(messageConverter);
         rabbitSender.setConnectionManager(new ConnectionManager(connectionFactory));
         rabbitClient = new RabbitClient(rabbitSender);
         rabbitClient.setEvaluationRequestQueue(EcaClientTestConfiguration.getEvaluationRequestQueue());
+        rabbitClient.setExperimentRequestQueue(EcaClientTestConfiguration.getExperimentRequestQueue());
         startContainer(connectionFactory);
     }
 
     @Test
     void testSendEvaluationRequest() {
-        Instances instances = loadInstances();
         CART cart = new CART();
-        rabbitClient.sendEvaluationRequest(cart, instances, replyTo, expectedCorrelationId);
-        await().timeout(Duration.ofSeconds(REQUEST_TIMEOUT_SECONDS))
+        rabbitClient.sendEvaluationRequest(cart, instances, evaluationReplyTo, expectedCorrelationId);
+        await().timeout(Duration.ofSeconds(EVALUATION_REQUEST_TIMEOUT_SECONDS))
                 .until(() -> responseReceived);
         assertEquals(expectedCorrelationId, actualCorrelationId);
         assertNotNull(evaluationResponse);
         assertNotNull(evaluationResponse.getEvaluationResults());
         assertEquals(TechnicalStatus.SUCCESS, evaluationResponse.getStatus());
+    }
+
+    @Test
+    void testSendExperimentRequest() {
+        ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
+        experimentRequestDto.setData(instances);
+        rabbitClient.sendExperimentRequest(experimentRequestDto, experimentReplyTo, expectedCorrelationId);
+        await().timeout(Duration.ofSeconds(EXPERIMENT_REQUEST_TIMEOUT_SECONDS))
+                .until(() -> responseReceived);
+        assertEquals(expectedCorrelationId, actualCorrelationId);
+        assertNotNull(experimentResponse);
+        assertNotNull(experimentResponse.getDownloadUrl());
+        assertEquals(TechnicalStatus.SUCCESS, experimentResponse.getStatus());
     }
 
     @AfterEach
@@ -94,7 +120,23 @@ class EcaClientIT {
                     this.evaluationResponse = evaluationResponse;
                     this.responseReceived = true;
                 });
-        messageListenerContainer.getRabbitListenerAdapters().put(replyTo, evaluationListenerAdapter);
+        messageListenerContainer.getRabbitListenerAdapters().put(evaluationReplyTo, evaluationListenerAdapter);
+
+        ExperimentListenerAdapter experimentListenerAdapter =
+                new ExperimentListenerAdapter(messageConverter, (experimentResponse, properties) -> {
+                    this.actualCorrelationId = properties.getCorrelationId();
+                    if (TechnicalStatus.IN_PROGRESS.equals(experimentResponse.getStatus())) {
+                        log.info("Experiment request [{}] has been created for correlation id [{}]",
+                                experimentResponse.getRequestId(), properties.getCorrelationId());
+                    } else {
+                        log.info("Received experiment [{}] response with status [{}] for correlation id [{}]",
+                                experimentResponse.getRequestId(), experimentResponse.getStatus(),
+                                properties.getCorrelationId());
+                        this.experimentResponse = experimentResponse;
+                        this.responseReceived = true;
+                    }
+                });
+        messageListenerContainer.getRabbitListenerAdapters().put(experimentReplyTo, experimentListenerAdapter);
 
         messageListenerContainer.start();
         await().timeout(Duration.ofMinutes(CONNECTION_TIMEOUT_MINUTES))
