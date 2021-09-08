@@ -3,6 +3,7 @@ package eca.core;
 import eca.data.file.resource.DataResource;
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
+@Slf4j
 @UtilityClass
 public class ModelSerializationHelper {
 
@@ -37,8 +39,10 @@ public class ModelSerializationHelper {
             throw new IllegalArgumentException(String.format("Can't save object %s to file '%s'",
                     model, targetFile.getAbsoluteFile()));
         }
+        log.info("Starting to save model to file [{}]", targetFile.getAbsolutePath());
         @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(targetFile.getAbsoluteFile());
         SerializationUtils.serialize(model, fileOutputStream);
+        log.info("Model has been saved to file [{}]", targetFile.getAbsolutePath());
     }
 
     /**
@@ -50,8 +54,11 @@ public class ModelSerializationHelper {
      */
     public static <T> T deserialize(DataResource<?> dataResource, Class<T> targetClazz) throws IOException {
         Objects.requireNonNull(dataResource, "Data resource is not specified!");
+        log.info("Starting to load model from [{}]", dataResource.getFile());
         @Cleanup InputStream inputStream = dataResource.openInputStream();
         Object result = SerializationUtils.deserialize(inputStream);
-        return targetClazz.cast(result);
+        T model = targetClazz.cast(result);
+        log.info("Model has been loaded from [{}]", dataResource.getFile());
+        return model;
     }
 }
