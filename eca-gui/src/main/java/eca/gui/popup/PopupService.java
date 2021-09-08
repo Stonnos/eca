@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static eca.gui.service.TemplateService.getInfoMessageAsHtml;
@@ -57,11 +58,7 @@ public class PopupService {
      * @param component   - parent component
      */
     public void showInfoPopup(String infoMessage, Component component) {
-        if (popups.size() == MAX_POPUPS_AT_TIME) {
-            return;
-        }
-        PopupDescriptor popupDescriptor = createAndAddPopupDescriptor(infoMessage, component);
-        new Thread(() -> {
+        createAndAddPopupDescriptor(infoMessage, component).ifPresent(popupDescriptor -> new Thread(() -> {
             popupDescriptor.getPopup().show();
             try {
                 Thread.sleep(POPUP_VISIBILITY_TIME_MILLIS);
@@ -71,13 +68,17 @@ public class PopupService {
                 popupDescriptor.getPopup().hide();
                 popups.remove(popupDescriptor);
             }
-        }).start();
+        }).start());
     }
 
-    private synchronized PopupDescriptor createAndAddPopupDescriptor(String infoMessage, Component component) {
+    private synchronized Optional<PopupDescriptor> createAndAddPopupDescriptor(String infoMessage,
+                                                                               Component component) {
+        if (popups.size() == MAX_POPUPS_AT_TIME) {
+            return Optional.empty();
+        }
         PopupDescriptor popupDescriptor = createInfoMessagePopup(infoMessage, component);
         popups.addLast(popupDescriptor);
-        return popupDescriptor;
+        return Optional.of(popupDescriptor);
     }
 
     private int calculatePopupY(Component component) {
