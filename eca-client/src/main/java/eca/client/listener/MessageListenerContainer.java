@@ -11,11 +11,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static eca.client.util.RabbitUtils.declareReplyToQueue;
@@ -48,6 +50,13 @@ public class MessageListenerContainer {
     @Getter
     @Setter
     private long connectionAttemptIntervalMillis = 2000L;
+
+    /**
+     * Callback after success connection
+     */
+    @Getter
+    @Setter
+    private Consumer<ConnectionFactory> successCallback;
 
     private Connection connection;
 
@@ -143,6 +152,7 @@ public class MessageListenerContainer {
                 }
                 started = true;
                 log.info("Consumers initialization has been finished");
+                Optional.ofNullable(successCallback).ifPresent(consumer -> consumer.accept(connectionFactory));
             } catch (IOException ex) {
                 log.error("There was an error while initialize consumers: {}", ex.getMessage(), ex);
             }

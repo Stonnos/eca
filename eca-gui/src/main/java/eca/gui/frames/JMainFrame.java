@@ -258,6 +258,7 @@ public class JMainFrame extends JFrame {
     private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
     private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
             "Эксперимент '%s' успешно завершен. Загрузить результаты?";
+    private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1461,6 +1462,11 @@ public class JMainFrame extends JFrame {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
+        messageListenerContainer.setSuccessCallback(connectionFactory -> {
+            popupService.showInfoPopup(
+                    String.format(SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT, connectionFactory.getHost(),
+                            connectionFactory.getPort()), this);
+        });
         addEvaluationListenerAdapterIfAbsent();
         addExperimentListenerAdapterIfAbsent();
         messageListenerContainer.start();
