@@ -27,7 +27,7 @@ public class UrlResource extends AbstractResource<URL> {
      */
     public UrlResource(URL resource) {
         super(resource);
-        if (!Utils.contains(PROTOCOLS, resource.getProtocol(), String::endsWith)) {
+        if (!Utils.contains(PROTOCOLS, resource.getProtocol(), String::equals)) {
             throw new IllegalArgumentException(String.format(FileDataDictionary.BAD_PROTOCOL_ERROR_FORMAT,
                     Arrays.asList(PROTOCOLS)));
         }

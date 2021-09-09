@@ -36,7 +36,7 @@ public class Utils {
      */
     public static <T> boolean contains(T[] list, T val, BiPredicate<T, T> predicate) {
         for (T x : list) {
-            if (predicate.test(val, x)) {
+            if (predicate.test(x, val)) {
                 return true;
             }
         }
