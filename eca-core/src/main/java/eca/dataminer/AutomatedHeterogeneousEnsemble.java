@@ -55,11 +55,6 @@ public class AutomatedHeterogeneousEnsemble extends AbstractExperiment<AbstractH
                 ExperimentUtil.getNumClassifiersCombinations(getClassifier().getClassifiersSet().size());
     }
 
-    @Override
-    public String getExperimentType() {
-        return String.format("%s_%s", super.getExperimentType(), getClassifier().getClass().getSimpleName());
-    }
-
     private int getAdditionalParamCombinationsNum() {
         if (getClassifier() instanceof HeterogeneousClassifier) {
             return SAMPLE_METHOD.length * CLASSIFIER_SELECTION_METHOD.length * VOTING_METHOD.length;

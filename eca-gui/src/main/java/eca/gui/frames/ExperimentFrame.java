@@ -18,6 +18,7 @@ import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ExecutorService;
+import eca.gui.service.ExperimentNamesFactory;
 import eca.gui.tables.ExperimentTable;
 import eca.report.ReportGenerator;
 import lombok.Getter;
@@ -73,7 +74,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
-    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Загружена недопустимая история эксперимента!";
+    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE_FORMAT =
+            "Загружен недопустимый эксперимент '%s'. Допускается загрузка эксперимента типа '%s'!";
     private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -387,13 +389,20 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                         loader, LOAD_EXPERIMENT_TITLE);
 
                 ExecutorService.process(loadDialog, () -> {
-                    T loaderExperiment = loader.getResult();
-                    if (!experiment.getExperimentType().equals(loaderExperiment.getExperimentType())) {
-                        JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE, null,
-                                JOptionPane.WARNING_MESSAGE);
+                    AbstractExperiment<?> loaderExperiment = loader.getResult();
+                    String loadedExperimentAlg = loaderExperiment.getClassifier().getClass().getSimpleName();
+                    String currentExperimentAlg = experiment.getClassifier().getClass().getSimpleName();
+                    if (!experiment.getClass().equals(loaderExperiment.getClass())
+                            || !currentExperimentAlg.equals(loadedExperimentAlg)) {
+                        String loadedExperimentName = ExperimentNamesFactory.getExperimentName(loaderExperiment);
+                        String actualExperimentName = getTitle();
+                        String errorMessage =
+                                String.format(INVALID_EXPERIMENT_TYPE_MESSAGE_FORMAT, loadedExperimentName,
+                                        actualExperimentName);
+                        showFormattedErrorMessageDialog(ExperimentFrame.this, errorMessage);
                     } else {
                         experimentTable.initializeExperimentHistory(loaderExperiment.getHistory());
-                        displayResults(loaderExperiment);
+                        displayResults(experimentClass.cast(loaderExperiment));
                     }
                 }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
 
@@ -503,7 +512,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     /**
      * Implements experiment loading callback action.
      */
-    private class ExperimentLoader extends AbstractCallback<T> {
+    private static class ExperimentLoader extends AbstractCallback<AbstractExperiment<?>> {
 
         final File file;
 
@@ -512,8 +521,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         }
 
         @Override
-        protected T performAndGetResult() throws Exception {
-            return ModelSerializationHelper.deserialize(new FileResource(file), experimentClass);
+        protected AbstractExperiment<?> performAndGetResult() throws Exception {
+            return ModelSerializationHelper.deserialize(new FileResource(file), AbstractExperiment.class);
         }
     }
 
