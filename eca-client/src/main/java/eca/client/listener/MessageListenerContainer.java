@@ -56,7 +56,7 @@ public class MessageListenerContainer {
      */
     @Setter
     @Getter
-    private int connectionMaxAttempts = 3;
+    private int connectionMaxAttempts = 10;
 
     /**
      * Callback after success connection
@@ -113,16 +113,7 @@ public class MessageListenerContainer {
                 throw new IllegalStateException();
             }
             retries = new AtomicInteger();
-            Callable<Void> callable = () -> {
-                boolean connected = openConnection(futureTask);
-                if (!connected) {
-                    failedCallback.accept(connectionFactory);
-                } else {
-                    addShutdownListener();
-                    setupConsumers(futureTask);
-                }
-                return null;
-            };
+            Callable<Void> callable = connectionCallable();
             futureTask = new FutureTask<>(callable);
             executorService.execute(futureTask);
             running = true;
@@ -144,6 +135,19 @@ public class MessageListenerContainer {
             running = false;
             log.info("Message listener container has been stopped");
         }
+    }
+
+    private Callable<Void> connectionCallable() {
+        return  () -> {
+            boolean connected = openConnection(futureTask);
+            if (!connected) {
+                failedCallback.accept(connectionFactory);
+            } else {
+                addShutdownListener();
+                setupConsumers(futureTask);
+            }
+            return null;
+        };
     }
 
     private void addShutdownListener() {
