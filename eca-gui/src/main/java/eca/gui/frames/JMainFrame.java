@@ -260,7 +260,7 @@ public class JMainFrame extends JFrame {
             "Эксперимент '%s' успешно завершен. Загрузить результаты?";
     private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
     private static final String RABBIT_CONNECTION_FAILED_MESSAGE_FORMAT =
-            "Не удалось установить соединение с %s:%d. Попробуйте снова";
+            "Не удалось установить соединение с %s:%d";
     private static final String RABBIT_CONNECTION_MESSAGE_FORMAT = "Подключение к %s:%d...";
     private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
 
