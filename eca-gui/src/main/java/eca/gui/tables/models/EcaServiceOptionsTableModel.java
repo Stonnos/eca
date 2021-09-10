@@ -7,6 +7,9 @@ import eca.util.Entry;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author Roman Batygin
@@ -18,7 +21,21 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
+    private static final Map<String, String> OPTION_DESCRIPTION_MAP = newHashMap();
+
     private ArrayList<Entry<String, String>> options = new ArrayList<>();
+
+    static {
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.ECA_SERVICE_ENABLED, "Вкл./выкл. использование сервиса");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.RABBIT_HOST, "Хост брокера сообщений");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.RABBIT_PORT, "Порт брокера сообщений");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.RABBIT_USERNAME, "Имя пользователя");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.RABBIT_PASSWORD, "Пароль");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.EVALUATION_REQUEST_QUEUE, "Очередь для построения классификаторов");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.EVALUATION_OPTIMIZER_REQUEST_QUEUE,
+                "Очередь для построения оптимальных классификаторов");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.EXPERIMENT_REQUEST_QUEUE, "Очередь для построения экспериментов");
+    }
 
     public EcaServiceOptionsTableModel() {
         init();
@@ -41,8 +58,8 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Entry entry = options.get(row);
-        return column == 0 ? entry.getKey() : entry.getValue();
+        Entry<String, String> entry = options.get(row);
+        return column == 0 ? OPTION_DESCRIPTION_MAP.getOrDefault(entry.getKey(), entry.getKey()) : entry.getValue();
     }
 
     @Override
