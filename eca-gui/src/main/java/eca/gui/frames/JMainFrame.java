@@ -303,6 +303,16 @@ public class JMainFrame extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
+    public void initializeMessageListenerContainer() {
+        try {
+            generateQueueNames();
+            updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+        }
+    }
+
     private void init() {
         try {
             this.setTitle(CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getTitle());
@@ -314,8 +324,6 @@ public class JMainFrame extends JFrame {
             this.setIconImage(ImageIO.read(CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON)));
             this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
             initTooltipDismissDelay();
-            generateQueueNames();
-            updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -1512,7 +1520,7 @@ public class JMainFrame extends JFrame {
             if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
                 popupService.showInfoPopup(
                         String.format(RABBIT_CONNECTION_MESSAGE_FORMAT, currentConfig.getHost(),
-                                currentConfig.getPort()) , this);
+                                currentConfig.getPort()), this);
                 resetRabbitConfiguration();
                 configureAndStartMessageListenerContainer();
                 configureRabbitClient();
