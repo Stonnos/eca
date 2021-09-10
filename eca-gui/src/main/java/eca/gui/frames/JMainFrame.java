@@ -259,6 +259,10 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
             "Эксперимент '%s' успешно завершен. Загрузить результаты?";
     private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
+    private static final String RABBIT_CONNECTION_FAILED_MESSAGE_FORMAT =
+            "Не удалось установить соединение с %s:%d. Попробуйте снова";
+    private static final String RABBIT_CONNECTION_MESSAGE_FORMAT = "Подключение к %s:%d...";
+    private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -287,7 +291,7 @@ public class JMainFrame extends JFrame {
     private String evaluationQueue;
     private String experimentQueue;
 
-    private boolean rabbitStarted;
+    private volatile boolean rabbitStarted;
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -1462,14 +1466,43 @@ public class JMainFrame extends JFrame {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
+        addConnectionSuccessCallback();
+        addConnectionFailedCallback();
+        addConnectionShutdownCallback();
+        addEvaluationListenerAdapterIfAbsent();
+        addExperimentListenerAdapterIfAbsent();
+        messageListenerContainer.start();
+    }
+
+    private void addConnectionSuccessCallback() {
         messageListenerContainer.setSuccessCallback(connectionFactory -> {
             popupService.showInfoPopup(
                     String.format(SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT, connectionFactory.getHost(),
                             connectionFactory.getPort()), this);
         });
-        addEvaluationListenerAdapterIfAbsent();
-        addExperimentListenerAdapterIfAbsent();
-        messageListenerContainer.start();
+    }
+
+    private void addConnectionShutdownCallback() {
+        messageListenerContainer.setShutdownCallback(connectionFactory -> {
+            popupService.showInfoPopup(
+                    String.format(RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT, connectionFactory.getHost(),
+                            connectionFactory.getPort()), this);
+        });
+    }
+
+    private void addConnectionFailedCallback() {
+        messageListenerContainer.setFailedCallback(connectionFactory -> {
+            try {
+                popupService.showInfoPopup(
+                        String.format(RABBIT_CONNECTION_FAILED_MESSAGE_FORMAT, connectionFactory.getHost(),
+                                connectionFactory.getPort()), this);
+                resetRabbitConfiguration();
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void updateMessageListenerContainerConfiguration(EcaServiceConfig prevConfig) throws Exception {
@@ -1477,6 +1510,9 @@ public class JMainFrame extends JFrame {
         //Restart message listener container if needs
         if (Boolean.TRUE.equals(currentConfig.getEnabled())) {
             if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
+                popupService.showInfoPopup(
+                        String.format(RABBIT_CONNECTION_MESSAGE_FORMAT, currentConfig.getHost(),
+                                currentConfig.getPort()) , this);
                 resetRabbitConfiguration();
                 configureAndStartMessageListenerContainer();
                 configureRabbitClient();
