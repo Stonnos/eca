@@ -144,6 +144,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createSearchMenuItem() {
         JMenuItem searchMenuItem = new JMenuItem(SEARCH_MENU_TEXT);
+        searchMenuItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SEARCH_ICON)));
         searchMenuItem.addActionListener(actionEvent -> {
             TextSearchDialog textSearchDialog = new TextSearchDialog();
             textSearchDialog.setVisible(true);
