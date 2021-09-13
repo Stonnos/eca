@@ -216,16 +216,20 @@ public class ConsoleFrame extends JFrame {
             textField.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent documentEvent) {
-                    searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
+                    handleUpdate();
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent documentEvent) {
-                    searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
+                    handleUpdate();
                 }
 
                 @Override
                 public void changedUpdate(DocumentEvent documentEvent) {
+                    handleUpdate();
+                }
+
+                void handleUpdate() {
                     searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
                 }
             });
