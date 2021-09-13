@@ -16,6 +16,7 @@ public class ConsoleTextArea {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final int ROWS = 30;
     private static final int COLUMNS = 85;
+    private static final Color SELECTION_COLOR = Color.YELLOW;
 
     private static JTextArea textArea;
 
@@ -36,6 +37,7 @@ public class ConsoleTextArea {
             textArea.setFont(DEFAULT_TEXT_AREA_FONT);
             textArea.setBackground(CONSOLE_COLOR);
             textArea.setForeground(TEXT_COLOR);
+            textArea.setSelectionColor(SELECTION_COLOR);
         }
         return textArea;
     }

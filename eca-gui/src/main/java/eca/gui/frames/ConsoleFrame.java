@@ -3,17 +3,21 @@ package eca.gui.frames;
 import eca.buffer.StringCopier;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.core.TextSearcher;
 import eca.gui.ButtonUtils;
 import eca.gui.dialogs.JFontChooser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 /**
  * @author Roman Batygin
@@ -29,8 +33,8 @@ public class ConsoleFrame extends JFrame {
     private static final String BACKGROUND_COLOR_MENU_TEXT = "Выбор цвета фона";
     private static final String FONT_COLOR_MENU_TEXT = "Выбор цвета шрифта";
     private static final String SEARCH_MENU_TEXT = "Поиск";
-    private static final Dimension SEARCH_TEXT_PREFERRED_SIZE = new Dimension(250, 25);
-    private static final Dimension SEARCH_BUTTON_PREFERRED_SIZE = new Dimension(150, 25);
+    private static final Dimension SEARCH_TEXT_PREFERRED_SIZE = new Dimension(225, 25);
+    private static final Dimension SEARCH_BUTTON_PREFERRED_SIZE = new Dimension(140, 25);
 
     private JTextArea textArea;
 
@@ -153,6 +157,10 @@ public class ConsoleFrame extends JFrame {
         static final String SEARCH_BUTTON_TEXT = "Найти далее";
         static final int DIALOG_MARGIN_LEFT = 25;
         static final int DIALOG_MARGIN_TOP = 40;
+        static final String MATCH_NOT_FOUND_TEXT_FORMAT = "Не удалось найти '%s'";
+
+        String searchTerm;
+        TextSearcher textSearcher;
 
         TextSearchDialog() {
             super(ConsoleFrame.this, TITLE);
@@ -172,25 +180,74 @@ public class ConsoleFrame extends JFrame {
 
         void createGUI() {
             JPanel optionPanel = new JPanel(new GridBagLayout());
-            JTextField textField = new JTextField();
-            textField.setPreferredSize(SEARCH_TEXT_PREFERRED_SIZE);
-            optionPanel.add(textField, new GridBagConstraints(0, 0, 1, 1, 1, 1,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
             JButton searchButton = ButtonUtils.createButton(SEARCH_BUTTON_TEXT);
             searchButton.setPreferredSize(SEARCH_BUTTON_PREFERRED_SIZE);
             searchButton.setMinimumSize(SEARCH_BUTTON_PREFERRED_SIZE);
+            searchButton.setEnabled(false);
+
+            JTextField searchTextField = createSearchTextField(searchButton);
+
             JButton cancelButton = ButtonUtils.createCancelButton();
 
-            cancelButton.addActionListener(e -> setVisible(false));
-            searchButton.addActionListener(e -> {
+            cancelButton.addActionListener(e -> {
+                clearSelection();
+                setVisible(false);
             });
+            searchButton.addActionListener(searchListener(searchTextField));
+            optionPanel.add(searchTextField, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 5), 0, 0));
             this.add(optionPanel, new GridBagConstraints(0, 0, 2, 1, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 10, 0), 0, 0));
             this.add(searchButton, new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                    GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 8, 3), 0, 0));
+                    GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 8, 3), 0, 0));
             this.add(cancelButton, new GridBagConstraints(1, 1, 1, 1, 1, 1,
-                    GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 0), 0, 0));
+                    GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 3, 8, 5), 0, 0));
             this.getRootPane().setDefaultButton(searchButton);
+        }
+
+        private void clearSelection() {
+            textArea.setSelectionStart(0);
+            textArea.setSelectionEnd(0);
+        }
+
+        JTextField createSearchTextField(JButton searchButton) {
+            JTextField textField = new JTextField();
+            textField.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent documentEvent) {
+                    searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent documentEvent) {
+                    searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent documentEvent) {
+                    searchButton.setEnabled(StringUtils.isNotBlank(textField.getText()));
+                }
+            });
+            textField.setPreferredSize(SEARCH_TEXT_PREFERRED_SIZE);
+            return textField;
+        }
+
+        ActionListener searchListener(JTextField textField) {
+            return event -> {
+                if (!Objects.equals(searchTerm, textField.getText())) {
+                    searchTerm = textField.getText();
+                    textSearcher = new TextSearcher(textArea.getText(), searchTerm);
+                }
+                if (!textSearcher.find()) {
+                    clearSelection();
+                    JOptionPane.showMessageDialog(ConsoleFrame.this,
+                            String.format(MATCH_NOT_FOUND_TEXT_FORMAT, searchTerm), null,
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    textArea.setSelectionStart(textSearcher.getCurrentMatchStartPosition());
+                    textArea.setSelectionEnd(textSearcher.getCurrentMatchEndPosition());
+                }
+            };
         }
 
     }
