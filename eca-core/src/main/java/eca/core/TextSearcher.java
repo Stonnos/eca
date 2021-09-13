@@ -22,9 +22,9 @@ public class TextSearcher {
     private int cursor = 0;
 
     @Getter
-    private int currentMatchStartPosition = -1;
+    private int currentMatchStartPosition = OUT_OF_RANGE;
     @Getter
-    private int currentMatchEndPosition = -1;
+    private int currentMatchEndPosition = OUT_OF_RANGE;
 
     /**
      * Constructor with parameters.
