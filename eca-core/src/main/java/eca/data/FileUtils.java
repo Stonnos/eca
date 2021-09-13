@@ -3,6 +3,7 @@ package eca.data;
 import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.Set;
@@ -92,7 +93,7 @@ public class FileUtils {
      * @return {@code true} if train data is valid
      */
     public static boolean isValidTrainDataFile(String fileName) {
-        if (fileName != null) {
+        if (StringUtils.isNotEmpty(fileName)) {
             String extension = FilenameUtils.getExtension(fileName);
             return ALL_EXTENSIONS.contains(extension);
         }
