@@ -94,22 +94,22 @@ public class PopupService {
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBackground(Color.WHITE);
         infoPanel.setBorder(PanelBorderUtils.createEtchedBorder());
-        int x = component.getX() + component.getWidth() - POPUP_MARGIN_LEFT;
-        int y = calculatePopupY(component);
-        Popup popup = popupFactory.getPopup(component, infoPanel, x, y);
-        PopupDescriptor popupDescriptor = new PopupDescriptor(popup, x, y);
         JLabel messageLabel = new JLabel(getInfoMessageAsHtml(message));
         JButton closeButton = ButtonUtils.createCloseButton();
-        closeButton.addActionListener(evt -> {
-            popup.hide();
-            popups.remove(popupDescriptor);
-        });
         infoPanel.add(messageLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.CENTER,
                 new Insets(0, 0, 0, 0), 0, 0));
         infoPanel.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
+        int x = component.getX() + component.getWidth() - POPUP_MARGIN_LEFT;
+        int y = calculatePopupY(component);
+        Popup popup = popupFactory.getPopup(component, infoPanel, x, y);
+        PopupDescriptor popupDescriptor = new PopupDescriptor(popup, x, y);
+        closeButton.addActionListener(evt -> {
+            popup.hide();
+            popups.remove(popupDescriptor);
+        });
         return popupDescriptor;
     }
 }
