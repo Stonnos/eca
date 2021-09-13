@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 
 /**
- * Case sensitive text searcher.
+ * Case insensitive text searcher.
  *
  * @author Roman Batygin
  */
