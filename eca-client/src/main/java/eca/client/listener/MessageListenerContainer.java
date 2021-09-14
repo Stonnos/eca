@@ -140,9 +140,7 @@ public class MessageListenerContainer {
     private Callable<Void> connectionCallable() {
         return  () -> {
             boolean connected = openConnection(futureTask);
-            if (!connected) {
-                failedCallback.accept(connectionFactory);
-            } else {
+            if (connected) {
                 addShutdownListener();
                 setupConsumers(futureTask);
             }
@@ -171,6 +169,7 @@ public class MessageListenerContainer {
                 if (retries.incrementAndGet() >= connectionMaxAttempts) {
                     log.warn("Attempts number to connect to the [{}:{}] has been exceeded",
                             connectionFactory.getHost(), connectionFactory.getPort());
+                    failedCallback.accept(connectionFactory);
                     break;
                 } else {
                     waitForNextAttempt();
