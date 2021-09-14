@@ -14,9 +14,11 @@ import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Randomizable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class for automatic selection of optimal options
@@ -36,7 +38,7 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public abstract class AbstractExperiment<T extends Classifier>
-        implements Experiment<T>, IterableExperiment, Randomizable {
+        implements Experiment<T>, IterableExperiment, Randomizable, Serializable {
 
     /**
      * Experiment history
@@ -186,12 +188,24 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     /**
-     * Gets experiment type to identify experiment algorithm.
-     *
-     * @return experiment type
+     * Sorts experiment history by best results.
      */
-    public String getExperimentType() {
-        return getClass().getSimpleName();
+    public void sortByBestResults() {
+        experiment.sort(new ClassifierComparator());
+    }
+
+    /**
+     * Reduces experiment history to specified size.
+     *
+     * @param size - results size
+     */
+    public void reduce(int size) {
+        List<EvaluationResults> evaluationResults = experiment.stream()
+                .limit(size)
+                .collect(Collectors.toList());
+        clearHistory();
+        experiment.ensureCapacity(size);
+        experiment.addAll(evaluationResults);
     }
 
     protected final EvaluationResults evaluateModel(Classifier model) throws Exception {

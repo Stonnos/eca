@@ -22,7 +22,6 @@ public class EcaResponse {
      */
     private TechnicalStatus status;
 
-
     /**
      * Errors list
      */

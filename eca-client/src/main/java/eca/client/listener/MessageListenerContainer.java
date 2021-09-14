@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static eca.client.util.RabbitUtils.declareReplyToQueue;
@@ -49,6 +51,34 @@ public class MessageListenerContainer {
     @Setter
     private long connectionAttemptIntervalMillis = 2000L;
 
+    /**
+     * Connection max attempts
+     */
+    @Setter
+    @Getter
+    private int connectionMaxAttempts = 10;
+
+    /**
+     * Callback after success connection
+     */
+    @Getter
+    @Setter
+    private Consumer<ConnectionFactory> successCallback;
+
+    /**
+     * Callback after connection retries exceeded
+     */
+    @Getter
+    @Setter
+    private Consumer<ConnectionFactory> failedCallback;
+
+    /**
+     * Callback after connection shutdown
+     */
+    @Getter
+    @Setter
+    private Consumer<ConnectionFactory> shutdownCallback;
+
     private Connection connection;
 
     private Channel channel;
@@ -62,6 +92,8 @@ public class MessageListenerContainer {
 
     @Getter
     private volatile boolean started;
+
+    private AtomicInteger retries;
 
     private final Object lifecycleMonitor = new Object();
 
@@ -80,11 +112,8 @@ public class MessageListenerContainer {
             if (running) {
                 throw new IllegalStateException();
             }
-            Callable<Void> callable = () -> {
-                openConnection(futureTask);
-                setupConsumers(futureTask);
-                return null;
-            };
+            retries = new AtomicInteger();
+            Callable<Void> callable = connectionCallable();
             futureTask = new FutureTask<>(callable);
             executorService.execute(futureTask);
             running = true;
@@ -108,18 +137,46 @@ public class MessageListenerContainer {
         }
     }
 
-    private void openConnection(FutureTask<Void> task) {
+    private Callable<Void> connectionCallable() {
+        return  () -> {
+            boolean connected = openConnection(futureTask);
+            if (connected) {
+                addShutdownListener();
+                setupConsumers(futureTask);
+            }
+            return null;
+        };
+    }
+
+    private void addShutdownListener() {
+        connection.addShutdownListener(cause -> {
+            log.warn("Connection [{}:{}] shutdown: {}", connectionFactory.getHost(),
+                    connectionFactory.getPort(), cause.getMessage());
+            shutdownCallback.accept(connectionFactory);
+        });
+    }
+
+    private boolean openConnection(FutureTask<Void> task) {
         while (!task.isCancelled() && connection == null) {
             try {
                 log.info("Attempting connect to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
                 connection = connectionFactory.newConnection();
                 log.info("Connected to {}:{}", connectionFactory.getHost(), connectionFactory.getPort());
+                return true;
             } catch (Exception ex) {
                 log.error("There was an error while attempting to connect to {}:{}: {}", connectionFactory.getHost(),
                         connectionFactory.getPort(), ex.getMessage(), ex);
-                waitForNextAttempt();
+                if (retries.incrementAndGet() >= connectionMaxAttempts) {
+                    log.warn("Attempts number to connect to the [{}:{}] has been exceeded",
+                            connectionFactory.getHost(), connectionFactory.getPort());
+                    failedCallback.accept(connectionFactory);
+                    break;
+                } else {
+                    waitForNextAttempt();
+                }
             }
         }
+        return false;
     }
 
     private void closeChannel() throws IOException, TimeoutException {
@@ -143,8 +200,10 @@ public class MessageListenerContainer {
                 }
                 started = true;
                 log.info("Consumers initialization has been finished");
+                successCallback.accept(connectionFactory);
             } catch (IOException ex) {
                 log.error("There was an error while initialize consumers: {}", ex.getMessage(), ex);
+                failedCallback.accept(connectionFactory);
             }
         }
     }

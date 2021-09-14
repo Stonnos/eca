@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eca.converters.model;
+package eca.core.model;
 
 import eca.core.evaluation.Evaluation;
 import lombok.AllArgsConstructor;
@@ -41,9 +41,4 @@ public class ClassificationModel implements java.io.Serializable {
      * Maximum fraction digits
      */
     private Integer maximumFractionDigits;
-
-    /**
-     * Details string
-     */
-    private String details;
 }

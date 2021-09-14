@@ -10,23 +10,23 @@ import eca.data.file.text.DATALoader;
 import eca.data.file.text.DocxLoader;
 import eca.data.file.xls.XLSLoader;
 import eca.data.file.xml.XmlLoader;
-import eca.util.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.data.FileUtils.ALL_EXTENSIONS;
 import static eca.data.FileUtils.DOCX_EXTENSIONS;
 import static eca.data.FileUtils.TXT_EXTENSIONS;
 import static eca.data.FileUtils.XLS_EXTENSIONS;
 import static eca.data.FileUtils.containsExtension;
+import static eca.data.FileUtils.isValidTrainDataFile;
 
 /**
  * Class for loading input data from file.
@@ -35,9 +35,6 @@ import static eca.data.FileUtils.containsExtension;
  */
 @Slf4j
 public class FileDataLoader extends AbstractDataLoader<DataResource> {
-
-    private static final String[] FILE_EXTENSIONS = DataFileExtension.getExtensions();
-    private static final String FILE_EXTENSION_FORMAT = ".%s";
 
     private static final List<LoaderConfig> LOADER_CONFIGS;
 
@@ -84,10 +81,9 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     @Override
     protected void validateSource(DataResource dataResource) {
         super.validateSource(dataResource);
-        if (!Utils.contains(FILE_EXTENSIONS, dataResource.getFile(),
-                (x, y) -> x.endsWith(String.format(FILE_EXTENSION_FORMAT, y)))) {
+        if (!isValidTrainDataFile(dataResource.getFile())) {
             throw new IllegalArgumentException(String.format(FileDataDictionary.BAD_FILE_EXTENSION_ERROR_FORMAT,
-                    Arrays.asList(FILE_EXTENSIONS)));
+                    ALL_EXTENSIONS));
         }
     }
 

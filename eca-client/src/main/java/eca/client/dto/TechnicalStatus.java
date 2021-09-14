@@ -18,6 +18,16 @@ public enum TechnicalStatus {
     },
 
     /**
+     * In progress status.
+     */
+    IN_PROGRESS {
+        @Override
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseInProgressStatus();
+        }
+    },
+
+    /**
      * Error status.
      */
     ERROR {

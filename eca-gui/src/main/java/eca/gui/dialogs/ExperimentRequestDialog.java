@@ -37,6 +37,8 @@ public class ExperimentRequestDialog extends JDialog {
     private static final String NOT_SAME_ALPHABETIC_ERROR =
             "Имя должно начинаться с большой буквы\nи состоять из символов одного алфавита!";
     private static final String INVALID_EMAIL_FORMAT_ERROR = "Введен некорректный e-mail!";
+    private static final String FIRST_NAME_TOOLTIP_TEXT = "Укажите ваше имя";
+    private static final String EMAIL_FIELD_TOOLTIP_TEXT = "Укажите Email для получения результатов эксперимента";
 
     private JTextField firstNameTextField;
     private JTextField emailTextField;
@@ -77,10 +79,12 @@ public class ExperimentRequestDialog extends JDialog {
         firstNameTextField = new JTextField(TEXT_LENGTH);
         firstNameTextField.setDocument(new LengthDocument(FIRST_NAME_MAX_LENGTH));
         firstNameTextField.setInputVerifier(new TextFieldInputVerifier());
+        firstNameTextField.setToolTipText(FIRST_NAME_TOOLTIP_TEXT);
 
         emailTextField = new JTextField(TEXT_LENGTH);
         emailTextField.setDocument(new LengthDocument(EMAIL_MAX_LENGTH));
         emailTextField.setInputVerifier(new TextFieldInputVerifier());
+        emailTextField.setToolTipText(EMAIL_FIELD_TOOLTIP_TEXT);
 
         experimentTypeBox = new JComboBox<>(EnumUtils.getDescriptions(ExperimentType.class));
 

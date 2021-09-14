@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
-import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedStacking;
 import eca.ensemble.ClassifiersSet;
 import eca.gui.dialogs.StackingOptionsDialog;
@@ -13,28 +7,29 @@ import eca.gui.dialogs.StackingOptionsDialog;
 import javax.swing.*;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
 
 /**
  * @author Roman Batygin
  */
-public class AutomatedStackingFrame extends ExperimentFrame {
+public class AutomatedStackingFrame extends ExperimentFrame<AutomatedStacking> {
 
     private static final String OPTIONS_TITLE = "Настройка параметров";
 
-    public AutomatedStackingFrame(String title, AbstractExperiment experiment, JFrame parent, int digits) {
-        super(experiment, parent, digits);
-        this.setTitle(title);
+    public AutomatedStackingFrame(AutomatedStacking experiment, JFrame parent, int digits) {
+        super(AutomatedStacking.class, experiment, parent, digits);
+        this.setTitle(DATA_MINER_STACKING);
     }
 
     @Override
-    protected void setOptions() {
-        AutomatedStacking exp = (AutomatedStacking) this.getExperiment();
-        StackingOptionsDialog options
-                = new StackingOptionsDialog(this, OPTIONS_TITLE,
-                exp.getClassifier(), exp.getData(), getDigits());
+    protected void initializeExperimentOptions() {
+        AutomatedStacking automatedStacking = this.getExperiment();
+        StackingOptionsDialog options =
+                new StackingOptionsDialog(this, OPTIONS_TITLE, automatedStacking.getClassifier(),
+                        automatedStacking.getData(), getDigits());
         options.setMetaClassifierSelectionEnabled(false);
         try {
-            options.addClassifiers(new ClassifiersSet(exp.getClassifier().getClassifiers()));
+            options.addClassifiers(new ClassifiersSet(automatedStacking.getClassifier().getClassifiers()));
             options.showDialog();
         } catch (Exception e) {
             showFormattedErrorMessageDialog(this, e.getMessage());

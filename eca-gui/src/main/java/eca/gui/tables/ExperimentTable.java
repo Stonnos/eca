@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
+import eca.dataminer.ClassifierComparator;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
@@ -26,9 +22,11 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * @author Roman Batygin
@@ -41,7 +39,7 @@ public class ExperimentTable extends JDataTableBase {
     private static final int INDEX_COLUMN_MAX_WIDTH = 50;
 
     private final JFrame parentFrame;
-    private final ArrayList<ClassificationResultsFrameBase> classificationResultsFrameBases = new ArrayList<>();
+    private final Map<Integer, ClassificationResultsFrameBase> classificationResultsFrameBases = newHashMap();
 
     public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) {
         super(new ExperimentTableModel(experiment, digits));
@@ -69,16 +67,23 @@ public class ExperimentTable extends JDataTableBase {
         return (ExperimentTableModel) this.getModel();
     }
 
-    public void addExperiment(EvaluationResults val) {
-        experimentModel().add(val);
-        classificationResultsFrameBases.add(null);
+    public void addEvaluationResults(EvaluationResults evaluationResults) {
+        experimentModel().getExperiment().add(evaluationResults);
+        experimentModel().notifyLastInsertedResults();
     }
 
-    public void setExperiment(List<EvaluationResults> evaluationResults) {
+    public void sortByBestResults() {
+        experimentModel().getExperiment().sort(new ClassifierComparator());
+        notifyDataChanged();
+    }
+
+    public void notifyDataChanged() {
+        experimentModel().fireTableDataChanged();
+    }
+
+    public void initializeExperimentHistory(List<EvaluationResults> evaluationResults) {
         clear();
-        for (EvaluationResults results : evaluationResults) {
-            addExperiment(results);
-        }
+        experimentModel().setExperiment(evaluationResults);
     }
 
     public void clear() {
@@ -102,10 +107,6 @@ public class ExperimentTable extends JDataTableBase {
             }
         };
         this.getColumnModel().getColumn(ExperimentTableModel.ACCURACY_INDEX).setCellRenderer(renderer);
-    }
-
-    public void sort() {
-        experimentModel().sort();
     }
 
     /**
@@ -148,7 +149,7 @@ public class ExperimentTable extends JDataTableBase {
         @Override
         protected void doAfterPushing() {
             try {
-                if (classificationResultsFrameBases.get(index) == null) {
+                if (!classificationResultsFrameBases.containsKey(index)) {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
                     ClassificationResultsFrameBase result =
@@ -156,7 +157,7 @@ public class ExperimentTable extends JDataTableBase {
                                     classifierDescriptor.getClassifier().getClass().getSimpleName(),
                                     classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
                                     model.digits());
-                    classificationResultsFrameBases.set(index, result);
+                    classificationResultsFrameBases.put(index, result);
                 }
                 classificationResultsFrameBases.get(index).setVisible(true);
             } catch (Exception e) {

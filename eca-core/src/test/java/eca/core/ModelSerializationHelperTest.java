@@ -1,8 +1,9 @@
-package eca.converters;
+package eca.core;
 
-import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
+import eca.core.model.ClassificationModel;
+import eca.data.file.resource.FileResource;
 import eca.ensemble.ClassifiersSet;
 import eca.ensemble.HeterogeneousClassifier;
 import eca.metrics.KNearestNeighbours;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  *
  * @author Roman Batygin
  */
-class ModelConverterTest {
+class ModelSerializationHelperTest {
 
     private static final int MAXIMUM_FRACTION_DIGITS = 4;
     private static final String CLASSIFIER_MODEL_FILE = "classifier-%s.model";
@@ -63,13 +64,12 @@ class ModelConverterTest {
         classifier.setClassifiersSet(classifiers);
         Evaluation evaluation = evaluateModel(classifier, instances, EvaluationMethod.TRAINING_DATA,0, 0, null);
         ClassificationModel expected =
-                new ClassificationModel(classifier, instances, evaluation, MAXIMUM_FRACTION_DIGITS,
-                        classifier.getClass().getSimpleName());
-        ModelConverter.saveModel(file, expected);
+                new ClassificationModel(classifier, instances, evaluation, MAXIMUM_FRACTION_DIGITS);
+        ModelSerializationHelper.serialize(file, expected);
         //Compare models
-        ClassificationModel actual = ModelConverter.loadModel(file, ClassificationModel.class);
+        FileResource fileResource = new FileResource(file);
+        ClassificationModel actual = ModelSerializationHelper.deserialize(fileResource, ClassificationModel.class);
         assertNotNull(actual);
-        assertEquals(expected.getDetails(), actual.getDetails());
         assertEquals(expected.getMaximumFractionDigits(), actual.getMaximumFractionDigits());
         assertEquals(expected.getData().relationName(),  actual.getData().relationName());
         assertEquals(expected.getEvaluation().pctCorrect(), actual.getEvaluation().pctCorrect());

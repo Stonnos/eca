@@ -34,8 +34,9 @@ public class EcaServiceTrackTable extends JDataTableBase {
 
     static {
         trackStatusColorMap = newEnumMap(EcaServiceTrackStatus.class);
-        trackStatusColorMap.put(EcaServiceTrackStatus.READY, Color.GRAY);
-        trackStatusColorMap.put(EcaServiceTrackStatus.REQUEST_SENT, Color.BLUE);
+        trackStatusColorMap.put(EcaServiceTrackStatus.READY, Color.BLACK);
+        trackStatusColorMap.put(EcaServiceTrackStatus.REQUEST_SENT, Color.GRAY);
+        trackStatusColorMap.put(EcaServiceTrackStatus.IN_PROGRESS, Color.BLUE);
         trackStatusColorMap.put(EcaServiceTrackStatus.COMPLETED, Color.GREEN);
         trackStatusColorMap.put(EcaServiceTrackStatus.ERROR, Color.RED);
     }

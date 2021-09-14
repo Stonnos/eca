@@ -4,6 +4,7 @@ import eca.client.core.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
+import eca.client.dto.ExperimentResponse;
 import eca.client.dto.TechnicalStatusVisitor;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
@@ -14,17 +15,18 @@ import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
 import eca.config.registry.SingletonRegistry;
-import eca.converters.model.ClassificationModel;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
+import eca.core.model.ClassificationModel;
 import eca.data.db.DatabaseSaver;
 import eca.data.db.JdbcQueryExecutor;
 import eca.data.file.FileDataLoader;
 import eca.data.file.FileDataSaver;
 import eca.data.file.resource.FileResource;
 import eca.data.file.resource.UrlResource;
+import eca.dataminer.AbstractExperiment;
 import eca.dataminer.AutomatedDecisionTree;
 import eca.dataminer.AutomatedHeterogeneousEnsemble;
 import eca.dataminer.AutomatedKNearestNeighbours;
@@ -55,6 +57,7 @@ import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
+import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.ModelLoader;
 import eca.gui.actions.UrlLoader;
@@ -129,6 +132,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -146,8 +150,18 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_ADA_BOOST;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_DECISION_TREE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_HETEROGENEOUS_ENSEMBLE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_KNN;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_NETWORKS;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_RANDOM_FORESTS;
+import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
+import static eca.util.UrlUtils.isValidUrl;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -168,6 +182,8 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
     private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
+    private static final String MODEL_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка модели...";
+    private static final String EXPERIMENT_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка эксперимента...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
     private static final String FILE_MENU_TEXT = "Файл";
     private static final String CLASSIFIERS_MENU_TEXT = "Классификаторы";
@@ -189,6 +205,7 @@ public class JMainFrame extends JFrame {
     private static final String DB_CONNECTION_WAITING_MESSAGE =
             "Пожалуйста подождите, идет подключение к базе данных...";
     private static final String LOAD_MODEL_MENU_TEXT = "Загрузить модель";
+    private static final String LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT = "Загрузить эксперимент";
     private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
     private static final String URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
@@ -197,14 +214,6 @@ public class JMainFrame extends JFrame {
     private static final String EXIT_MENU_TEXT = "Выход";
     private static final String ABOUT_PROGRAM_MENU_TEXT = "О программе";
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
-    private static final String DATA_MINER_NETWORKS_MENU_TEXT = "Автоматическое построение: нейронные сети";
-    private static final String DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT =
-            "Автоматическое построение: неоднородный ансамблевый алгоритм";
-    private static final String DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT =
-            "Автоматическое построение: модифицированный неоднородный ансамблевый алгоритм";
-    private static final String DATA_MINER_ADA_BOOST_MENU_TEXT = "Автоматическое построение: алгоритм AdaBoost";
-    private static final String DATA_MINER_STACKING_MENU_TEXT = "Автоматическое построение: алгоритм Stacking";
-    private static final String DATA_MINER_RANDOM_FORESTS_MENU_TEXT = "Автоматическое построение: случайные леса";
     private static final String INDIVIDUAL_CLASSIFIERS_MENU_TEXT = "Индувидуальные алгоритмы";
     private static final String ENSEMBLE_CLASSIFIERS_MENU_TEXT = "Ансамблевые алгоритмы";
     private static final String DECISION_TREES_MENU_TEXT = "Деревья решений";
@@ -213,13 +222,11 @@ public class JMainFrame extends JFrame {
     private static final String DEFAULT_URL_FOR_DATA_LOADING = "http://kt.ijs.si/Branax/Repository/WEKA/Iris.xls";
     private static final String EXCEED_DATA_LIST_SIZE_ERROR_FORMAT = "Число листов с данными не должно превышать %d!";
     private static final String CONSOLE_MENU_TEXT = "Открыть консоль";
-    private static final String KNN_OPTIMIZER_MENU_TEXT =
-            "Автоматическое построение: алгоритм k - взвешенных ближайших соседей";
     private static final String EXPERIMENT_REQUEST_MENU_TEXT = "Создать заявку на эксперимент";
     private static final String BUILD_TRAINING_DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
-            "Ваша заявка на эксперимент '%s' была успешно создана, пожалуйста ожидайте ответное письмо на email.";
+            "Ваша заявка на эксперимент '%s' была успешно создана.";
 
     private static final double WIDTH_COEFFICIENT = 0.8;
     private static final double HEIGHT_COEFFICIENT = 0.9;
@@ -227,7 +234,6 @@ public class JMainFrame extends JFrame {
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
     private static final String OPTIMAL_CLASSIFIER_MENU_TEXT = "Подобрать оптимальный классификатор";
-    private static final String DATA_MINER_DECISION_TREE_MENU_TEXT = "Автоматическое построение: деревья решений";
     private static final String SCATTER_DIAGRAM_MENU_TEXT = "Построение диаграмм рассеяния";
     private static final String DB_SAVE_MENU_TEXT = "Сохранить данные в базу данных";
     private static final String DB_SAVE_PROGRESS_MESSAGE_TEXT = "Пожалуйста подождите, идет сохранение данных...";
@@ -240,12 +246,23 @@ public class JMainFrame extends JFrame {
 
     private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
     private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
-    private static final String TIMEOUT_MESSAGE = "Произошел таймаут";
+    private static final String EVALUATION_TIMEOUT_MESSAGE = "Произошел таймаут при построении модели";
+    private static final String EXPERIMENT_TIMEOUT_MESSAGE = "Произошел таймаут при построении эксперимента";
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
     private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
     private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
+    private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
+    private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
+    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
+    private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
+            "Эксперимент '%s' успешно завершен. Загрузить результаты?";
+    private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
+    private static final String RABBIT_CONNECTION_FAILED_MESSAGE_FORMAT =
+            "Не удалось установить соединение с %s:%d";
+    private static final String RABBIT_CONNECTION_MESSAGE_FORMAT = "Подключение к %s:%d...";
+    private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -274,7 +291,7 @@ public class JMainFrame extends JFrame {
     private String evaluationQueue;
     private String experimentQueue;
 
-    private boolean rabbitStarted;
+    private volatile boolean rabbitStarted;
 
     public JMainFrame() {
         Locale.setDefault(Locale.ENGLISH);
@@ -284,6 +301,16 @@ public class JMainFrame extends JFrame {
         this.setEnabledMenuComponents(false);
         this.createWindowListener();
         this.setLocationRelativeTo(null);
+    }
+
+    public void initializeMessageListenerContainer() {
+        try {
+            generateQueueNames();
+            updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+        }
     }
 
     private void init() {
@@ -297,8 +324,6 @@ public class JMainFrame extends JFrame {
             this.setIconImage(ImageIO.read(CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON)));
             this.resultHistoryFrame = new ClassificationResultHistoryFrame(this, new EvaluationResultsHistoryModel());
             initTooltipDismissDelay();
-            generateQueueNames();
-            updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
         } catch (Exception e) {
             LoggerUtils.error(log, e);
         }
@@ -974,15 +999,15 @@ public class JMainFrame extends JFrame {
     }
 
     private void fillDataMinerMenu(JMenu dataMinerMenu) {
-        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS_MENU_TEXT);
-        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
+        JMenuItem aNeuralMenu = new JMenuItem(DATA_MINER_NETWORKS);
+        JMenuItem aHeteroEnsMenu = new JMenuItem(DATA_MINER_HETEROGENEOUS_ENSEMBLE);
         JMenuItem modifiedHeteroEnsMenu =
-                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE_MENU_TEXT);
-        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST_MENU_TEXT);
-        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING_MENU_TEXT);
-        JMenuItem knnOptimizerMenu = new JMenuItem(KNN_OPTIMIZER_MENU_TEXT);
-        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS_MENU_TEXT);
-        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE_MENU_TEXT);
+                new JMenuItem(DATA_MINER_MODIFIED_HETEROGENEOUS_ENSEMBLE);
+        JMenuItem aAdaBoostMenu = new JMenuItem(DATA_MINER_ADA_BOOST);
+        JMenuItem aStackingMenu = new JMenuItem(DATA_MINER_STACKING);
+        JMenuItem knnOptimizerMenu = new JMenuItem(DATA_MINER_KNN);
+        JMenuItem automatedRandomForestsMenu = new JMenuItem(DATA_MINER_RANDOM_FORESTS);
+        JMenuItem automatedDecisionTreeMenu = new JMenuItem(DATA_MINER_DECISION_TREE);
 
         aNeuralMenu.addActionListener(event ->
                 performTaskWithDataAndClassValidation(() -> {
@@ -1032,8 +1057,7 @@ public class JMainFrame extends JFrame {
                 performTaskWithDataAndClassValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
                     prepareTrainingData(dataBuilder,
-                            () -> createStackingExperiment(new StackingClassifier(), aStackingMenu.getText(),
-                                    dataBuilder.getResult()));
+                            () -> createStackingExperiment(new StackingClassifier(), dataBuilder.getResult()));
                 })
         );
 
@@ -1062,8 +1086,8 @@ public class JMainFrame extends JFrame {
                                 new AutomatedRandomForests(dataBuilder.getResult());
                         automatedRandomForests.setSeed(seed);
                         AutomatedRandomForestsFrame automatedRandomForestsFrame =
-                                new AutomatedRandomForestsFrame(automatedRandomForestsMenu.getText(),
-                                        automatedRandomForests, JMainFrame.this, maximumFractionDigits);
+                                new AutomatedRandomForestsFrame(automatedRandomForests, JMainFrame.this,
+                                        maximumFractionDigits);
                         automatedRandomForestsFrame.setVisible(true);
                     });
                 })
@@ -1076,8 +1100,8 @@ public class JMainFrame extends JFrame {
                         AutomatedDecisionTree automatedDecisionTree =
                                 new AutomatedDecisionTree(dataBuilder.getResult());
                         automatedDecisionTree.setSeed(seed);
-                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame = new AutomatedDecisionTreeFrame
-                                (automatedDecisionTreeMenu.getText(), automatedDecisionTree, JMainFrame.this,
+                        AutomatedDecisionTreeFrame automatedDecisionTreeFrame =
+                                new AutomatedDecisionTreeFrame(automatedDecisionTree, JMainFrame.this,
                                         maximumFractionDigits);
                         automatedDecisionTreeFrame.setVisible(true);
                     });
@@ -1290,6 +1314,17 @@ public class JMainFrame extends JFrame {
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
+        JMenuItem loadExperimentFromFileMenu = new JMenuItem(LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT);
+        loadExperimentFromFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        fileMenu.addSeparator();
+        fileMenu.add(loadExperimentFromFileMenu);
+        loadExperimentFromFileMenu.addActionListener(loadExperimentFromFileActionListener());
+
+        JMenuItem loadExperimentFromUrlMenu = new JMenuItem(LOAD_EXPERIMENT_FORM_NET_TEXT);
+        loadExperimentFromUrlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        fileMenu.add(loadExperimentFromUrlMenu);
+        loadExperimentFromUrlMenu.addActionListener(loadExperimentFromUrlActionListener());
+
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
         generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
         generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
@@ -1422,12 +1457,11 @@ public class JMainFrame extends JFrame {
         frame.setVisible(true);
     }
 
-    private void createStackingExperiment(StackingClassifier classifier, String title, Instances data) {
+    private void createStackingExperiment(StackingClassifier classifier, Instances data) {
         classifier.setClassifiers(ExperimentUtil.builtClassifiersSet(data, maximumFractionDigits));
         AutomatedStacking automatedStacking = new AutomatedStacking(classifier, data);
         automatedStacking.setSeed(seed);
-        AutomatedStackingFrame frame
-                = new AutomatedStackingFrame(title, automatedStacking, this, maximumFractionDigits);
+        AutomatedStackingFrame frame = new AutomatedStackingFrame(automatedStacking, this, maximumFractionDigits);
         frame.setVisible(true);
     }
 
@@ -1440,9 +1474,43 @@ public class JMainFrame extends JFrame {
         EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
         messageListenerContainer =
                 RabbitConfiguration.getRabbitConfiguration().configureMessageListenerContainer(ecaServiceConfig);
+        addConnectionSuccessCallback();
+        addConnectionFailedCallback();
+        addConnectionShutdownCallback();
         addEvaluationListenerAdapterIfAbsent();
         addExperimentListenerAdapterIfAbsent();
         messageListenerContainer.start();
+    }
+
+    private void addConnectionSuccessCallback() {
+        messageListenerContainer.setSuccessCallback(connectionFactory -> {
+            popupService.showInfoPopup(
+                    String.format(SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT, connectionFactory.getHost(),
+                            connectionFactory.getPort()), this);
+        });
+    }
+
+    private void addConnectionShutdownCallback() {
+        messageListenerContainer.setShutdownCallback(connectionFactory -> {
+            popupService.showInfoPopup(
+                    String.format(RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT, connectionFactory.getHost(),
+                            connectionFactory.getPort()), this);
+        });
+    }
+
+    private void addConnectionFailedCallback() {
+        messageListenerContainer.setFailedCallback(connectionFactory -> {
+            try {
+                popupService.showInfoPopup(
+                        String.format(RABBIT_CONNECTION_FAILED_MESSAGE_FORMAT, connectionFactory.getHost(),
+                                connectionFactory.getPort()), this);
+                resetRabbitConfiguration();
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
+                        null, JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
     private void updateMessageListenerContainerConfiguration(EcaServiceConfig prevConfig) throws Exception {
@@ -1450,6 +1518,9 @@ public class JMainFrame extends JFrame {
         //Restart message listener container if needs
         if (Boolean.TRUE.equals(currentConfig.getEnabled())) {
             if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
+                popupService.showInfoPopup(
+                        String.format(RABBIT_CONNECTION_MESSAGE_FORMAT, currentConfig.getHost(),
+                                currentConfig.getPort()), this);
                 resetRabbitConfiguration();
                 configureAndStartMessageListenerContainer();
                 configureRabbitClient();
@@ -1495,7 +1566,7 @@ public class JMainFrame extends JFrame {
 
     private void addExperimentListenerAdapterIfAbsent() {
         if (!messageListenerContainer.getRabbitListenerAdapters().containsKey(experimentQueue)) {
-            MessageHandler<EcaResponse> experimentMessageHandler = createExperimentMessageHandler();
+            MessageHandler<ExperimentResponse> experimentMessageHandler = createExperimentMessageHandler();
             ExperimentListenerAdapter experimentListenerAdapter =
                     new ExperimentListenerAdapter(RabbitConfiguration.getRabbitConfiguration().getMessageConverter(),
                             experimentMessageHandler);
@@ -1508,6 +1579,11 @@ public class JMainFrame extends JFrame {
             @Override
             public void caseSuccessStatus() {
                 updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.COMPLETED);
+            }
+
+            @Override
+            public void caseInProgressStatus() {
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.IN_PROGRESS);
             }
 
             @Override
@@ -1552,13 +1628,18 @@ public class JMainFrame extends JFrame {
                     }
 
                     @Override
+                    public void caseInProgressStatus() {
+                        //Not implemented
+                    }
+
+                    @Override
                     public void caseErrorStatus() {
                         showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(evaluationResponse));
                     }
 
                     @Override
                     public void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
+                        JOptionPane.showMessageDialog(JMainFrame.this, EVALUATION_TIMEOUT_MESSAGE, null,
                                 JOptionPane.ERROR_MESSAGE);
                     }
 
@@ -1574,41 +1655,65 @@ public class JMainFrame extends JFrame {
         };
     }
 
-    private MessageHandler<EcaResponse> createExperimentMessageHandler() {
-        return (ecaResponse, basicProperties) -> {
+    private MessageHandler<ExperimentResponse> createExperimentMessageHandler() {
+        return (experimentResponse, basicProperties) -> {
             try {
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), ecaResponse);
+                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), experimentResponse);
                 popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
-                ecaResponse.getStatus().handle(new TechnicalStatusVisitor() {
-                    @Override
-                    public void caseSuccessStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this,
-                                String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDetails()),
-                                null, JOptionPane.INFORMATION_MESSAGE);
-                    }
-
-                    @Override
-                    public void caseErrorStatus() {
-                        showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(ecaResponse));
-                    }
-
-                    @Override
-                    public void caseTimeoutStatus() {
-                        JOptionPane.showMessageDialog(JMainFrame.this, TIMEOUT_MESSAGE, null,
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-
-                    @Override
-                    public void caseValidationErrorStatus() {
-                        showValidationErrorsDialog(JMainFrame.this, ecaResponse);
-                    }
-                });
+                handleExperimentResponse(experimentResponse, ecaServiceTrack);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 showFormattedErrorMessageDialog(JMainFrame.this, e.getMessage());
             }
         };
+    }
+
+    private void handleExperimentResponse(ExperimentResponse experimentResponse, EcaServiceTrack ecaServiceTrack) {
+        experimentResponse.getStatus().handle(new TechnicalStatusVisitor() {
+            @Override
+            public void caseSuccessStatus() {
+                int result = JOptionPane.showConfirmDialog(JMainFrame.this,
+                        String.format(EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT,
+                                ecaServiceTrack.getDetails()), null, JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    try {
+                        Objects.requireNonNull(experimentResponse.getDownloadUrl(),
+                                "Can't load experiment for null url");
+                        URL experimentUrl = new URL(experimentResponse.getDownloadUrl());
+                        ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
+                        processExperimentLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void caseInProgressStatus() {
+                JOptionPane.showMessageDialog(JMainFrame.this,
+                        String.format(EXPERIMENT_SUCCESS_MESSAGE_FORMAT, ecaServiceTrack.getDetails()),
+                        null, JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void caseErrorStatus() {
+                showFormattedErrorMessageDialog(JMainFrame.this, getFirstErrorAsString(experimentResponse));
+            }
+
+            @Override
+            public void caseTimeoutStatus() {
+                JOptionPane.showMessageDialog(JMainFrame.this, EXPERIMENT_TIMEOUT_MESSAGE, null,
+                        JOptionPane.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void caseValidationErrorStatus() {
+                showValidationErrorsDialog(JMainFrame.this, experimentResponse);
+            }
+        });
     }
 
     private EcaServiceTrack getEcaServiceTrack(String correlationId) {
@@ -1856,19 +1961,22 @@ public class JMainFrame extends JFrame {
             String dataUrl = (String) JOptionPane.showInputDialog(JMainFrame.this,
                     URL_FILE_TEXT, LOAD_DATA_FROM_NET_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                     null, DEFAULT_URL_FOR_DATA_LOADING);
-
             if (dataUrl != null) {
-                try {
-                    FileDataLoader dataLoader = new FileDataLoader();
-                    dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
-                    dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                    UrlLoader loader = new UrlLoader(dataLoader);
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, DATA_LOADING_MESSAGE);
-                    processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                if (!isValidUrl(dataUrl)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        FileDataLoader dataLoader = new FileDataLoader();
+                        dataLoader.setSource(new UrlResource(new URL(dataUrl.trim())));
+                        dataLoader.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                        UrlLoader loader = new UrlLoader(dataLoader);
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                loader, DATA_LOADING_MESSAGE);
+                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
                 }
             }
         };
@@ -1882,14 +1990,13 @@ public class JMainFrame extends JFrame {
                 if (file != null) {
                     ModelLoader loader = new ModelLoader(file);
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, MODEL_BUILDING_MESSAGE);
+                            loader, MODEL_LOADING_MESSAGE);
 
                     processAsyncTask(progress, () -> {
                         ClassificationModel classificationModel = loader.getResult();
-                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits()).orElse(
-                                maximumFractionDigits);
-                        String title = Optional.ofNullable(classificationModel.getDetails()).orElse(
-                                classificationModel.getClassifier().getClass().getSimpleName());
+                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
+                                .orElse(maximumFractionDigits);
+                        String title = getClassifierName(classificationModel.getClassifier());
                         createEvaluationResultsAsync(title, classificationModel.getClassifier(),
                                 classificationModel.getData(), classificationModel.getEvaluation(), digits);
                     });
@@ -1898,6 +2005,44 @@ public class JMainFrame extends JFrame {
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
                 showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
+        };
+    }
+
+    private ActionListener loadExperimentFromFileActionListener() {
+        return event -> {
+            try {
+                OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
+                File file = fileChooser.openFile(JMainFrame.this);
+                if (file != null) {
+                    ExperimentLoader loader = new ExperimentLoader(new FileResource(file));
+                    processExperimentLoading(loader);
+                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
+        };
+    }
+
+    private ActionListener loadExperimentFromUrlActionListener() {
+        return event -> {
+            String url = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                    URL_FILE_TEXT, DOWNLOAD_EXPERIMENT_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, null);
+            if (url != null) {
+                if (!isValidUrl(url)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        URL experimentUrl = new URL(url.trim());
+                        ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
+                        processExperimentLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
             }
         };
     }
@@ -1918,6 +2063,18 @@ public class JMainFrame extends JFrame {
                 }
             }
         };
+    }
+
+    private void processExperimentLoading(ExperimentLoader loader) throws Exception {
+        LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                loader, EXPERIMENT_LOADING_MESSAGE);
+        processAsyncTask(loadDialog, () -> {
+            AbstractExperiment<?> experiment = loader.getResult();
+            ExperimentFrame<?> experimentFrame =
+                    ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
+                            this.maximumFractionDigits);
+            experimentFrame.setVisible(true);
+        });
     }
 
     private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {

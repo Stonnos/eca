@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static eca.gui.service.TemplateService.getInfoMessageAsHtml;
@@ -20,10 +21,10 @@ public class PopupService {
 
     private static final int MAX_POPUPS_AT_TIME = 3;
 
-    private static final long POPUP_VISIBILITY_TIME_MILLIS = 2000L;
+    private static final long POPUP_VISIBILITY_TIME_MILLIS = 4000L;
 
     private static final int POPUP_MARGIN_LEFT = 275;
-    private static final int POPUP_MARGIN_TOP = 50;
+    private static final int POPUP_MARGIN_TOP = 70;
 
     private final PopupFactory popupFactory = new PopupFactory();
 
@@ -57,11 +58,7 @@ public class PopupService {
      * @param component   - parent component
      */
     public void showInfoPopup(String infoMessage, Component component) {
-        if (popups.size() == MAX_POPUPS_AT_TIME) {
-            return;
-        }
-        PopupDescriptor popupDescriptor = createAndAddPopupDescriptor(infoMessage, component);
-        new Thread(() -> {
+        createAndAddPopupDescriptor(infoMessage, component).ifPresent(popupDescriptor -> new Thread(() -> {
             popupDescriptor.getPopup().show();
             try {
                 Thread.sleep(POPUP_VISIBILITY_TIME_MILLIS);
@@ -71,13 +68,17 @@ public class PopupService {
                 popupDescriptor.getPopup().hide();
                 popups.remove(popupDescriptor);
             }
-        }).start();
+        }).start());
     }
 
-    private synchronized PopupDescriptor createAndAddPopupDescriptor(String infoMessage, Component component) {
+    private synchronized Optional<PopupDescriptor> createAndAddPopupDescriptor(String infoMessage,
+                                                                               Component component) {
+        if (popups.size() == MAX_POPUPS_AT_TIME) {
+            return Optional.empty();
+        }
         PopupDescriptor popupDescriptor = createInfoMessagePopup(infoMessage, component);
         popups.addLast(popupDescriptor);
-        return popupDescriptor;
+        return Optional.of(popupDescriptor);
     }
 
     private int calculatePopupY(Component component) {
@@ -93,22 +94,22 @@ public class PopupService {
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBackground(Color.WHITE);
         infoPanel.setBorder(PanelBorderUtils.createEtchedBorder());
-        int x = component.getX() + component.getWidth() - POPUP_MARGIN_LEFT;
-        int y = calculatePopupY(component);
-        Popup popup = popupFactory.getPopup(component, infoPanel, x, y);
-        PopupDescriptor popupDescriptor = new PopupDescriptor(popup, x, y);
         JLabel messageLabel = new JLabel(getInfoMessageAsHtml(message));
         JButton closeButton = ButtonUtils.createCloseButton();
-        closeButton.addActionListener(evt -> {
-            popup.hide();
-            popups.remove(popupDescriptor);
-        });
         infoPanel.add(messageLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.CENTER,
                 new Insets(0, 0, 0, 0), 0, 0));
         infoPanel.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets(4, 0, 4, 0), 0, 0));
+        int x = component.getX() + component.getWidth() - POPUP_MARGIN_LEFT;
+        int y = calculatePopupY(component);
+        Popup popup = popupFactory.getPopup(component, infoPanel, x, y);
+        PopupDescriptor popupDescriptor = new PopupDescriptor(popup, x, y);
+        closeButton.addActionListener(evt -> {
+            popup.hide();
+            popups.remove(popupDescriptor);
+        });
         return popupDescriptor;
     }
 }

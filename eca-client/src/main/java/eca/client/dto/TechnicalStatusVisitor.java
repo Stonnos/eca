@@ -15,6 +15,11 @@ public interface TechnicalStatusVisitor {
     void caseSuccessStatus();
 
     /**
+     * Method executed in case if technical status is IN_PROGRESS.
+     */
+    void caseInProgressStatus();
+
+    /**
      * Method executed in case if technical status is ERROR.
      */
     void caseErrorStatus();
