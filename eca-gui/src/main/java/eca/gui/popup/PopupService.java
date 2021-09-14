@@ -24,7 +24,7 @@ public class PopupService {
     private static final long POPUP_VISIBILITY_TIME_MILLIS = 4000L;
 
     private static final int POPUP_MARGIN_LEFT = 275;
-    private static final int POPUP_MARGIN_TOP = 50;
+    private static final int POPUP_MARGIN_TOP = 70;
 
     private final PopupFactory popupFactory = new PopupFactory();
 

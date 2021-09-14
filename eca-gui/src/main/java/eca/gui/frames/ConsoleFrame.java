@@ -157,7 +157,7 @@ public class ConsoleFrame extends JFrame {
         static final String TITLE = "Поиск";
         static final String SEARCH_BUTTON_TEXT = "Найти далее";
         static final int DIALOG_MARGIN_LEFT = 25;
-        static final int DIALOG_MARGIN_TOP = 40;
+        static final int DIALOG_MARGIN_TOP = 55;
         static final String MATCH_NOT_FOUND_TEXT_FORMAT = "Не удалось найти '%s'";
 
         String searchTerm;
