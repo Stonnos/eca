@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Result data model.
+ * Instances result set model.
  *
  * @author Roman Batygin
  */
