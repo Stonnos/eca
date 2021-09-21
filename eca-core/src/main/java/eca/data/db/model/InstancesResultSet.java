@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
-public class ResultData {
+public class InstancesResultSet {
 
     /**
      * Table name
