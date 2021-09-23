@@ -33,7 +33,7 @@ public class InstancesConverter {
     public InstancesModel convert(Instances data) {
         InstancesModel instancesModel = new InstancesModel();
         instancesModel.setRelationName(data.relationName());
-        if (data.classIndex() > 0) {
+        if (data.classIndex() >= 0) {
             instancesModel.setClassName(data.classAttribute().name());
         }
         instancesModel.setAttributes(convertAttributes(data));
