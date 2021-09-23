@@ -2,6 +2,8 @@ package eca.data;
 
 import weka.core.Instances;
 
+import java.io.File;
+
 /**
  * Data saver interface.
  *
@@ -10,9 +12,10 @@ import weka.core.Instances;
 public interface DataSaver {
 
     /**
-     * Saves instances.
+     * Saves instances to specified file.
      *
      * @param data - instances
+     * @param file - file
      */
-    void write(Instances data) throws Exception;
+    void write(Instances data, File file) throws Exception;
 }

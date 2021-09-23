@@ -9,6 +9,7 @@ import weka.core.Instances;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.File;
+import java.util.Collections;
 
 /**
  * Implements saving data into xml file.
@@ -19,17 +20,16 @@ public class XmlSaver extends AbstractDataSaver {
 
     private static final InstancesConverter INSTANCES_CONVERTER = new InstancesConverter();
 
-    @Override
-    public void write(Instances data) throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(INSTANCES_CONVERTER.convert(data), getFile());
+    public XmlSaver() {
+        super(Collections.singleton(DataFileExtension.XML.getExtendedExtension()));
     }
 
     @Override
-    protected boolean isValidFile(File file) {
-        return file.getName().endsWith(DataFileExtension.XML.getExtendedExtension());
+    protected void internalWrite(Instances data, File file) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(INSTANCES_CONVERTER.convert(data), file);
     }
 
 }

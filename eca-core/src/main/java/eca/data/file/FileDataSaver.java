@@ -106,8 +106,7 @@ public class FileDataSaver {
     }
 
     private void writeData(AbstractDataSaver saver, File file, Instances data) throws Exception {
-        saver.setFile(file);
         saver.setDateFormat(dateFormat);
-        saver.write(data);
+        saver.write(data, file);
     }
 }

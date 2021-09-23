@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import static eca.util.Utils.getAttributesAsString;
+
 /**
  * Implements saving data into docx file.
  *
@@ -18,14 +20,16 @@ import java.io.IOException;
  */
 public class DocxSaver extends AbstractDataSaver {
 
-    private static final String HEADER_FORMAT = ",%s";
+    public DocxSaver() {
+        super(FileUtils.DOCX_EXTENSIONS);
+    }
 
     @Override
-    public void write(Instances data) throws IOException {
-        try (XWPFDocument document = new XWPFDocument(); FileOutputStream out = new FileOutputStream(getFile())) {
+    protected void internalWrite(Instances data, File file) throws IOException {
+        try (XWPFDocument document = new XWPFDocument(); FileOutputStream out = new FileOutputStream(file)) {
             XWPFParagraph paragraph = document.createParagraph();
             XWPFRun run = paragraph.createRun();
-            run.setText(createHeader(data));
+            run.setText(getAttributesAsString(data));
             if (!data.isEmpty()) {
                 run.addBreak();
                 for (int i = 0; i < data.numInstances() - 1; i++) {
@@ -36,18 +40,5 @@ public class DocxSaver extends AbstractDataSaver {
             }
             document.write(out);
         }
-    }
-
-    @Override
-    protected boolean isValidFile(File file) {
-       return FileUtils.isDocxExtension(file.getName());
-    }
-
-    private String createHeader(Instances data) {
-        StringBuilder header = new StringBuilder(data.attribute(0).name());
-        for (int i = 1; i < data.numAttributes(); i++) {
-            header.append(String.format(HEADER_FORMAT, data.attribute(i).name()));
-        }
-        return header.toString();
     }
 }

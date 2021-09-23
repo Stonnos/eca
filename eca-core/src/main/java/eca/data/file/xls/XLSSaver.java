@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Implements saving {@link Instances} into XLS file.
@@ -34,20 +33,18 @@ public class XLSSaver extends AbstractDataSaver {
 
     private static final short FONT_SIZE = 12;
 
+    public XLSSaver() {
+        super(FileUtils.XLS_EXTENSIONS);
+    }
+
     @Override
-    public void write(Instances data) throws IOException {
-        Objects.requireNonNull(data, "Data is not specified!");
-        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
+    protected void internalWrite(Instances data, File file) throws IOException {
+        try (FileOutputStream stream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
             Sheet sheet = book.createSheet(data.relationName());
             fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
             fillDataCells(data, book, sheet);
             book.write(stream);
         }
-    }
-
-    @Override
-    protected boolean isValidFile(File file) {
-        return FileUtils.isXlsExtension(file.getName());
     }
 
     private CellStyle createCellStyle(Workbook book) {

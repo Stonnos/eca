@@ -21,6 +21,7 @@ import java.util.function.BiPredicate;
 @UtilityClass
 public class Utils {
 
+    private static final String HEADER_FORMAT = ",%s";
     private static final String MISSING_VALUE = "?";
     private static final String QUOTE = "'";
     private static final char POINT = '.';
@@ -70,6 +71,20 @@ public class Utils {
             }
             return values;
         }
+    }
+
+    /**
+     * Gets comma separated attributes as string.
+     *
+     * @param data - instances object
+     * @return attributes as string
+     */
+    public static String getAttributesAsString(Instances data) {
+        StringBuilder header = new StringBuilder(data.attribute(0).name());
+        for (int i = 1; i < data.numAttributes(); i++) {
+            header.append(String.format(HEADER_FORMAT, data.attribute(i).name()));
+        }
+        return header.toString();
     }
 
     /**

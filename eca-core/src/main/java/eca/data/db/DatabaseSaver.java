@@ -1,6 +1,5 @@
 package eca.data.db;
 
-import eca.data.DataSaver;
 import eca.data.db.model.DataBaseTypeVisitor;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ import static eca.data.db.SqlTypeUtils.TIMESTAMP_TYPE;
  * @author Roman Batygin
  */
 @Slf4j
-public class DatabaseSaver implements DataSaver {
+public class DatabaseSaver {
 
     /**
      * Connection descriptor
@@ -57,7 +56,12 @@ public class DatabaseSaver implements DataSaver {
         this.initSqlQueryHelper();
     }
 
-    @Override
+    /**
+     * Saves data into database.
+     *
+     * @param data - instances object
+     * @throws Exception in case of errors
+     */
     public void write(Instances data) throws Exception {
         log.info("Staring to save data into table '{}'", tableName);
         Class.forName(connectionDescriptor.getDriver());

@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eca.util.Utils.getAttributesAsString;
+
 /**
  * Implements saving data into text file.
  *
@@ -17,31 +19,20 @@ import java.util.List;
  */
 public class DATASaver extends AbstractDataSaver {
 
-    private static final String HEADER_FORMAT = ",%s";
-
-    @Override
-    public void write(Instances data) throws IOException {
-        List<String> rows = createRows(data);
-        org.apache.commons.io.FileUtils.writeLines(getFile(), StandardCharsets.UTF_8.name(), rows);
+    public DATASaver() {
+        super(FileUtils.TXT_EXTENSIONS);
     }
 
     @Override
-    protected boolean isValidFile(File file) {
-        return FileUtils.isTxtExtension(file.getName());
+    protected void internalWrite(Instances data, File file) throws IOException {
+        List<String> rows = createRows(data);
+        org.apache.commons.io.FileUtils.writeLines(file, StandardCharsets.UTF_8.name(), rows);
     }
 
     private List<String> createRows(Instances data) {
         List<String> rows = new ArrayList<>(data.numInstances());
-        rows.add(createHeader(data));
+        rows.add(getAttributesAsString(data));
         data.forEach(instance -> rows.add(instance.toString()));
         return rows;
-    }
-
-    private String createHeader(Instances data) {
-        StringBuilder header = new StringBuilder(data.attribute(0).name());
-        for (int i = 1; i < data.numAttributes(); i++) {
-            header.append(String.format(HEADER_FORMAT, data.attribute(i).name()));
-        }
-        return header.toString();
     }
 }

@@ -6,6 +6,7 @@ import weka.core.Instances;
 import weka.core.converters.CSVSaver;
 
 import java.io.File;
+import java.util.Collections;
 
 /**
  * Implements saving data into csv file.
@@ -14,17 +15,18 @@ import java.io.File;
  */
 public class CsvSaver extends AbstractDataSaver {
 
+    /**
+     * Default constructor.
+     */
+    public CsvSaver() {
+        super(Collections.singleton(DataFileExtension.CSV.getExtendedExtension()));
+    }
+
     @Override
-    public void write(Instances data) throws Exception {
+    protected void internalWrite(Instances data, File file) throws Exception {
         CSVSaver csvSaver = new CSVSaver();
-        csvSaver.setFile(getFile());
+        csvSaver.setFile(file);
         csvSaver.setInstances(data);
         csvSaver.writeBatch();
     }
-
-    @Override
-    protected boolean isValidFile(File file) {
-        return file.getName().endsWith(DataFileExtension.CSV.getExtendedExtension());
-    }
-
 }
