@@ -6,6 +6,7 @@ import weka.core.Instances;
 import weka.core.converters.CSVSaver;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Collections;
 
 /**
@@ -26,6 +27,14 @@ public class CsvSaver extends AbstractDataSaver {
     protected void internalWrite(Instances data, File file) throws Exception {
         CSVSaver csvSaver = new CSVSaver();
         csvSaver.setFile(file);
+        csvSaver.setInstances(data);
+        csvSaver.writeBatch();
+    }
+
+    @Override
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        CSVSaver csvSaver = new CSVSaver();
+        csvSaver.setDestination(outputStream);
         csvSaver.setInstances(data);
         csvSaver.writeBatch();
     }

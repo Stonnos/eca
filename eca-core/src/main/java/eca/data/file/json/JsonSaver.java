@@ -8,6 +8,7 @@ import eca.data.file.model.InstancesModel;
 import weka.core.Instances;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Collections;
 
 /**
@@ -29,5 +30,11 @@ public class JsonSaver extends AbstractDataSaver {
     protected void internalWrite(Instances data, File file) throws Exception {
         InstancesModel instances = INSTANCES_CONVERTER.convert(data);
         OBJECT_MAPPER.writeValue(file, instances);
+    }
+
+    @Override
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        InstancesModel instances = INSTANCES_CONVERTER.convert(data);
+        OBJECT_MAPPER.writeValue(outputStream, instances);
     }
 }

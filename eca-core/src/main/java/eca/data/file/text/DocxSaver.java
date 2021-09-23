@@ -9,7 +9,7 @@ import weka.core.Instances;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.OutputStream;
 
 import static eca.util.Utils.getAttributesAsString;
 
@@ -25,8 +25,15 @@ public class DocxSaver extends AbstractDataSaver {
     }
 
     @Override
-    protected void internalWrite(Instances data, File file) throws IOException {
-        try (XWPFDocument document = new XWPFDocument(); FileOutputStream out = new FileOutputStream(file)) {
+    protected void internalWrite(Instances data, File file) throws Exception {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+           write(data, fileOutputStream);
+        }
+    }
+
+    @Override
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        try (XWPFDocument document = new XWPFDocument()) {
             XWPFParagraph paragraph = document.createParagraph();
             XWPFRun run = paragraph.createRun();
             run.setText(getAttributesAsString(data));
@@ -38,7 +45,7 @@ public class DocxSaver extends AbstractDataSaver {
                 }
                 run.setText(data.lastInstance().toString());
             }
-            document.write(out);
+            document.write(outputStream);
         }
     }
 }
