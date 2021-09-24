@@ -97,7 +97,9 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(getSource())) {
             InstancesResultSet instancesResultSet = instancesExtractor.extractData(resultSet);
-            return instancesResultSetConverter.convert(instancesResultSet);
+            Instances instances = instancesResultSetConverter.convert(instancesResultSet);
+            instances.setClassIndex(instances.numAttributes() - 1);
+            return instances;
         }
     }
 }

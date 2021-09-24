@@ -65,7 +65,6 @@ public class InstancesResultSetConverter {
             }
             instances.add(obj);
         }
-        instances.setClassIndex(instances.numAttributes() - 1);
         return instances;
     }
 
