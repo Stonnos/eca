@@ -46,8 +46,7 @@ public abstract class BaseFileSaverTest {
     @SneakyThrows
     public void executeTest(AbstractDataSaver dataSaver) {
         for (File file : targetFiles) {
-            dataSaver.setFile(file);
-            dataSaver.write(expected);
+            dataSaver.write(expected, file);
             FileDataLoader fileDataLoader = new FileDataLoader();
             fileDataLoader.setSource(new FileResource(file));
             Instances actual = fileDataLoader.loadInstances();

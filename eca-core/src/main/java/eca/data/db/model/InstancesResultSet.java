@@ -6,13 +6,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Result data model.
+ * Instances result set model.
  *
  * @author Roman Batygin
  */
 @Data
 @AllArgsConstructor
-public class ResultData {
+public class InstancesResultSet {
 
     /**
      * Table name

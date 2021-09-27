@@ -1,36 +1,29 @@
 package eca.data;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import weka.core.Instances;
+
 import java.io.File;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Abstract class for saving data.
  *
  * @author Roman Batygin
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractDataSaver implements DataSaver {
 
-    private File file;
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * Sets file object.
-     *
-     * @param file {@link File} object
+     * Supported extensions
      */
-    public void setFile(File file) {
-        validateFile(file);
-        this.file = file;
-    }
-
-    /**
-     * Returns source file.
-     *
-     * @return source file
-     */
-    public File getFile() {
-        return file;
-    }
+    @Getter
+    private final Set<String> supportedExtensions;
 
     /**
      * Returns date format.
@@ -51,18 +44,25 @@ public abstract class AbstractDataSaver implements DataSaver {
         this.dateFormat = dateFormat;
     }
 
-    /**
-     * Checks if file is valid.
-     *
-     * @param file - file object
-     * @return {@code true} if file is valid
-     */
-    protected abstract boolean isValidFile(File file);
+    @Override
+    public void write(Instances data, File file) throws Exception {
+        Objects.requireNonNull(data, "Instances ins't specified!");
+        validateFile(file);
+        internalWrite(data, file);
+    }
+
+    protected abstract void internalWrite(Instances data, File file) throws Exception;
+
+    private boolean isValidExtension(File file) {
+        return FileUtils.containsExtension(file.getName(), supportedExtensions);
+    }
 
     private void validateFile(File file) {
         Objects.requireNonNull(file, "File is not specified!");
-        if (!isValidFile(file)) {
-            throw new IllegalArgumentException(String.format("Unexpected extension for file: %s!", file.getName()));
+        if (!isValidExtension(file)) {
+            throw new IllegalArgumentException(
+                    String.format("Unexpected extension for file: %s! Expected one of %s", file.getName(),
+                            supportedExtensions));
         }
     }
 }

@@ -8,6 +8,8 @@ import eca.data.file.model.InstancesModel;
 import weka.core.Instances;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.util.Collections;
 
 /**
  * Implements saving data into json file.
@@ -20,15 +22,19 @@ public class JsonSaver extends AbstractDataSaver {
 
     private static final InstancesConverter INSTANCES_CONVERTER = new InstancesConverter();
 
+    public JsonSaver() {
+        super(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()));
+    }
+
     @Override
-    public void write(Instances data) throws Exception {
+    protected void internalWrite(Instances data, File file) throws Exception {
         InstancesModel instances = INSTANCES_CONVERTER.convert(data);
-        OBJECT_MAPPER.writeValue(getFile(), instances);
+        OBJECT_MAPPER.writeValue(file, instances);
     }
 
     @Override
-    protected boolean isValidFile(File file) {
-        return file.getName().endsWith(DataFileExtension.JSON.getExtendedExtension());
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        InstancesModel instances = INSTANCES_CONVERTER.convert(data);
+        OBJECT_MAPPER.writeValue(outputStream, instances);
     }
-
 }
