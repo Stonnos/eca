@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.ensemble;
 
 import eca.core.evaluation.Evaluation;
@@ -20,7 +15,7 @@ import java.util.Random;
  * <p>
  * Sets the number of folds <p>
  * <p>
- * Sets the number of validations <p>
+ * Sets the number of tests <p>
  *
  * @author Roman Batygin
  */
@@ -42,9 +37,9 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private final int numFolds;
 
     /**
-     * Number of validations
+     * Number of tests
      **/
-    private final int numValidations;
+    private final int numTests;
 
     private Random random;
 
@@ -54,36 +49,38 @@ public class CVIterativeBuilder extends IterativeBuilder {
     private final Evaluation evaluation;
 
     private int cvIndex = -1;
-    private int validIndex;
+    private int testIdx;
     private Instances currentSet;
     private double[] error;
 
     /**
      * Creates <tt>CVIterativeBuilder</tt> object with given options.
      *
-     * @param classifier     iterable classifier object.
-     * @param data           <tt>Instances</tt> object (training set)
-     * @param numFolds       number of folds
-     * @param numValidations number of validations
-     * @throws Exception
+     * @param classifier - iterable classifier object.
+     * @param data       - instances (training set)
+     * @param numFolds   - folds number
+     * @param numTests   - tests number
+     * @param seed       - seed value
+     * @throws Exception in case of error
      */
     public CVIterativeBuilder(Iterable classifier,
-                              Instances data, int numFolds, int numValidations, Random random) throws Exception {
+                              Instances data, int numFolds, int numTests, int seed) throws Exception {
         this.classifier = classifier;
         this.data = new Instances(data);
         this.currentSet = data;
         this.evaluation = new Evaluation(data);
         this.evaluation.setFolds(numFolds);
-        this.evaluation.setValidationsNum(numValidations);
+        this.evaluation.setNumTests(numTests);
+        this.evaluation.setSeed(seed);
         this.numFolds = numFolds;
-        this.numValidations = numValidations;
-        this.random = random;
-        error = new double[numValidations * numFolds];
+        this.numTests = numTests;
+        this.random = new Random(seed);
+        error = new double[numTests * numFolds];
     }
 
     @Override
     public int numIterations() {
-        return numFolds * numValidations + 1;
+        return numFolds * numTests + 1;
     }
 
     @Override
@@ -96,7 +93,7 @@ public class CVIterativeBuilder extends IterativeBuilder {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-        for (; validIndex < numValidations; validIndex++) {
+        for (; testIdx < numTests; testIdx++) {
 
             for (cvIndex++; cvIndex < numFolds; ) {
                 if (cvIndex == 0) {

@@ -23,7 +23,8 @@ public class EvaluationService {
      * @param evaluationMethod - {@link EvaluationMethod} type
      * @param numFolds         - number of folds for k * V cross validation method
      * @param numTests         - number of tests for k * V cross validation method
-     * @return {@link Evaluation} object
+     * @param seed             - seed value for k * V cross validation method
+     * @return evaluation object
      * @throws Exception in case of error
      */
     public static Evaluation evaluateModel(Classifier model,
@@ -31,7 +32,7 @@ public class EvaluationService {
                                            EvaluationMethod evaluationMethod,
                                            int numFolds,
                                            int numTests,
-                                           Random random) throws Exception {
+                                           int seed) throws Exception {
         Evaluation evaluation = new Evaluation(data);
         evaluationMethod.accept(new EvaluationMethodVisitor() {
             @Override
@@ -43,7 +44,7 @@ public class EvaluationService {
             @Override
             public void crossValidateModel() throws Exception {
                 evaluation.kCrossValidateModel(AbstractClassifier.makeCopy(model), data,
-                        numFolds, numTests, random);
+                        numFolds, numTests, seed);
                 model.buildClassifier(data);
             }
         });

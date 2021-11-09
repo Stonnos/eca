@@ -97,7 +97,7 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
         String evaluationMethodStr;
         if (evaluation.isKCrossValidationMethod()) {
             evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
-                    (evaluation.getValidationsNum() > 1 ? evaluation.getValidationsNum() + "*" : StringUtils.EMPTY),
+                    (evaluation.getNumTests() > 1 ? evaluation.getNumTests() + "*" : StringUtils.EMPTY),
                     evaluation.numFolds());
         } else {
             evaluationMethodStr = TRAINING_DATA_METHOD_TEXT;

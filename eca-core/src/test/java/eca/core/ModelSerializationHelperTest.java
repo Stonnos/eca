@@ -62,7 +62,7 @@ class ModelSerializationHelperTest {
         neuralNetwork.setSeed(SEED);
         classifiers.addClassifier(neuralNetwork);
         classifier.setClassifiersSet(classifiers);
-        Evaluation evaluation = evaluateModel(classifier, instances, EvaluationMethod.TRAINING_DATA,0, 0, null);
+        Evaluation evaluation = evaluateModel(classifier, instances, EvaluationMethod.TRAINING_DATA, 0, 0, 0);
         ClassificationModel expected =
                 new ClassificationModel(classifier, instances, evaluation, MAXIMUM_FRACTION_DIGITS);
         ModelSerializationHelper.serialize(file, expected);
@@ -71,13 +71,13 @@ class ModelSerializationHelperTest {
         ClassificationModel actual = ModelSerializationHelper.deserialize(fileResource, ClassificationModel.class);
         assertNotNull(actual);
         assertEquals(expected.getMaximumFractionDigits(), actual.getMaximumFractionDigits());
-        assertEquals(expected.getData().relationName(),  actual.getData().relationName());
+        assertEquals(expected.getData().relationName(), actual.getData().relationName());
         assertEquals(expected.getEvaluation().pctCorrect(), actual.getEvaluation().pctCorrect());
         assertEquals(expected.getEvaluation().meanAbsoluteError(), actual.getEvaluation().meanAbsoluteError());
     }
 
     @AfterEach
     void delete() {
-         FileUtils.deleteQuietly(file);
+        FileUtils.deleteQuietly(file);
     }
 }
