@@ -31,6 +31,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_CLASSE
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_INSTANCES_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_TEST_INSTANCES;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.ROOT_MEAN_SQUARED_ERROR_TEXT;
+import static eca.gui.dictionary.EvaluationStatisticsDictionary.SEED_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TOTAL_TIME_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TRAINING_DATA_METHOD_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.VARIANCE_ERROR_TEXT;
@@ -44,7 +45,6 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
     private static final String TIMEZONE = "GMT";
 
     private static final String[] TITLE = {"Статистика", "Значение"};
-    public static final String SEED_TEXT = "Начальное значение (Seed) для k*V блочной кросс проверки";
 
     @Getter
     private final List<Entry<String, String>> results = new ArrayList<>();
