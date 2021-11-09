@@ -25,6 +25,7 @@ public class PopupService {
 
     private static final int POPUP_MARGIN_LEFT = 275;
     private static final int POPUP_MARGIN_TOP = 70;
+    private static final int POPUP_MARGIN_BOTTOM = 45;
 
     private final PopupFactory popupFactory = new PopupFactory();
 
@@ -86,7 +87,7 @@ public class PopupService {
             return component.getY() + POPUP_MARGIN_TOP;
         } else {
             PopupDescriptor last = popups.getLast();
-            return last.getY() + 2 * POPUP_MARGIN_TOP;
+            return last.getY() + 2 * POPUP_MARGIN_BOTTOM;
         }
     }
 

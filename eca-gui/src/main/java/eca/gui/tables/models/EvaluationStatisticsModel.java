@@ -31,6 +31,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_CLASSE
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_INSTANCES_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_TEST_INSTANCES;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.ROOT_MEAN_SQUARED_ERROR_TEXT;
+import static eca.gui.dictionary.EvaluationStatisticsDictionary.SEED_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TOTAL_TIME_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TRAINING_DATA_METHOD_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.VARIANCE_ERROR_TEXT;
@@ -94,16 +95,16 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
         results.add(new Entry<>(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(evaluation.getData().numClasses())));
         results.add(new Entry<>(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
 
-        String evaluationMethodStr;
         if (evaluation.isKCrossValidationMethod()) {
-            evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
-                    (evaluation.getValidationsNum() > 1 ? evaluation.getValidationsNum() + "*" : StringUtils.EMPTY),
+            String evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
+                    (evaluation.getNumTests() > 1 ? evaluation.getNumTests() + "*" : StringUtils.EMPTY),
                     evaluation.numFolds());
+            results.add(new Entry<>(EVALUATION_METHOD_TEXT, evaluationMethodStr));
+            results.add(new Entry<>(SEED_TEXT, String.valueOf(evaluation.getSeed())));
         } else {
-            evaluationMethodStr = TRAINING_DATA_METHOD_TEXT;
+            results.add(new Entry<>(EVALUATION_METHOD_TEXT, TRAINING_DATA_METHOD_TEXT));
         }
 
-        results.add(new Entry<>(EVALUATION_METHOD_TEXT, evaluationMethodStr));
         results.add(new Entry<>(NUMBER_OF_TEST_INSTANCES, decimalFormat.format(evaluation.numInstances())));
         results.add(new Entry<>(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(evaluation.correct())));
         results.add(

@@ -588,8 +588,7 @@ public class JMainFrame extends JFrame {
         @Override
         protected Evaluation performAndGetResult() throws Exception {
             return EvaluationService.evaluateModel(model, data, evaluationMethodOptionsDialog.getEvaluationMethod(),
-                    evaluationMethodOptionsDialog.numFolds(), evaluationMethodOptionsDialog.numTests(),
-                    new Random(seed));
+                    evaluationMethodOptionsDialog.numFolds(), evaluationMethodOptionsDialog.numTests(), seed);
         }
     } //End of class ModelBuilder
 
@@ -1439,7 +1438,7 @@ public class JMainFrame extends JFrame {
                 return model.getIterativeBuilder(data);
             case CROSS_VALIDATION:
                 return new CVIterativeBuilder(model, data, evaluationMethodOptionsDialog.numFolds(),
-                        evaluationMethodOptionsDialog.numTests(), new Random(seed));
+                        evaluationMethodOptionsDialog.numTests(), seed);
             default:
                 throw new IllegalArgumentException(String.format("Unexpected evaluation method: %s",
                         evaluationMethodOptionsDialog.getEvaluationMethod()));

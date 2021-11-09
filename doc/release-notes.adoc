@@ -13,5 +13,9 @@
 
 == Релиз 6.8.9
 
-1. Реализована возможность сохранения данных в output stream в библиотеке eca-core (https://team-1607756591970.atlassian.net/browse/ECA-32)
-2. Улучшена работа с классом JdbcQueryExecutor (https://team-1607756591970.atlassian.net/browse/ECA-31)
+1. Реализована возможность сохранения данных в output stream в библиотеке eca-core (https://team-1607756591970.atlassian.net/browse/ECA-32).
+2. Улучшена работа с классом JdbcQueryExecutor (https://team-1607756591970.atlassian.net/browse/ECA-31).
+
+== Релиз 6.9.0
+
+1. Реализовано отображение значения seed для k*V блочной кросс проверки в таблице "Статистика" (https://team-1607756591970.atlassian.net/browse/ECA-34).

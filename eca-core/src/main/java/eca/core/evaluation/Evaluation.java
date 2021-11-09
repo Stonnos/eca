@@ -26,7 +26,9 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
 
     private Long totalTimeMillis;
 
-    private int validationsNum;
+    private int numTests;
+
+    private int seed;
 
     private double varianceError;
 
@@ -35,10 +37,10 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     private final Instances initialData;
 
     /**
-     * Creates <tt>Evaluation</tt> object.
+     * Creates evaluation object.
      *
-     * @param initialData <tt>Instances</tt> object (training data)
-     * @throws Exception
+     * @param initialData - instances (training data)
+     * @throws Exception in case of error
      */
     public Evaluation(Instances initialData) throws Exception {
         super(initialData);
@@ -46,21 +48,21 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     }
 
     /**
-     * Returns the number of validations.
+     * Returns tests number for k*V cross validation method.
      *
-     * @return the number of validations
+     * @return tests number
      */
-    public int getValidationsNum() {
-        return validationsNum;
+    public int getNumTests() {
+        return numTests;
     }
 
     /**
-     * Returns the number of validations.
+     * Sets tests number.
      *
-     * @return the number of validations
+     * @param numTests - tests number
      */
-    public void setValidationsNum(int validationsNum) {
-        this.validationsNum = validationsNum;
+    public void setNumTests(int numTests) {
+        this.numTests = numTests;
     }
 
     /**
@@ -75,16 +77,16 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     /**
      * Sets the number of folds.
      *
-     * @param m_NumFolds the number of folds
+     * @param m_NumFolds - the number of folds
      */
     public void setFolds(int m_NumFolds) {
         this.m_NumFolds = m_NumFolds;
     }
 
     /**
-     * Returns <tt>Instances</tt> object (training data).
+     * Returns instances object (training data).
      *
-     * @return <tt>Instances</tt> object (training data)
+     * @return instances object (training data)
      */
     @Override
     public Instances getData() {
@@ -92,26 +94,44 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
     }
 
     /**
-     * Returns using of k * V - folds cross - validation method.
+     * Returns using for k * V - folds cross - validation method.
      *
-     * @return using of k * V - folds cross - validation method
+     * @return using for k * V - folds cross - validation method
      */
     public boolean isKCrossValidationMethod() {
         return this.m_NumFolds > 1;
     }
 
     /**
+     * Gets seed value for k * V - folds cross - validation method.
+     *
+     * @return seed value
+     */
+    public int getSeed() {
+        return seed;
+    }
+
+    /**
+     * Sets seed value for k * V - folds cross - validation method.
+     *
+     * @param seed - sees value
+     */
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    /**
      * Evaluates model using k * V - folds cross - validation method.
      *
-     * @param classifier classifier object.
-     * @param data       training data
-     * @param numFolds   the number of folds
-     * @param numTests   the number of tests
-     * @param random          <tt>Random</tt> object
-     * @throws Exception
+     * @param classifier - classifier object.
+     * @param data       - training data
+     * @param numFolds   - the number of folds
+     * @param numTests   - the number of tests
+     * @param seed       - seed value
+     * @throws Exception in case of error
      */
     public void kCrossValidateModel(Classifier classifier, Instances data, int numFolds,
-                                    int numTests, Random random) throws Exception {
+                                    int numTests, int seed) throws Exception {
         if (numFolds < MINIMUM_NUMBER_OF_FOLDS) {
             throw new IllegalArgumentException(
                     String.format("Number of folds must be greater or equals to %d!", numFolds));
@@ -120,6 +140,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
             throw new IllegalArgumentException(
                     String.format("Number of tests must be greater or equals to %d!", numTests));
         }
+        Random random = new Random(seed);
         error = new double[numTests * numFolds];
 
         for (int i = 0; i < numTests; i++) {
@@ -138,9 +159,9 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
                 error[i * numFolds + j] = error(c, test);
             }
         }
-
         this.setFolds(numFolds);
-        this.setValidationsNum(numTests);
+        this.setNumTests(numTests);
+        this.setSeed(seed);
         this.computeErrorVariance(error);
     }
 
@@ -153,8 +174,8 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
         this.error = error;
         double meanError = pctIncorrect() / 100.0;
         varianceError = 0.0;
-        for (int i = 0; i < error.length; i++) {
-            varianceError += (error[i] - meanError) * (error[i] - meanError);
+        for (double err : error) {
+            varianceError += (err - meanError) * (err - meanError);
         }
         varianceError /= error.length - 1;
     }
@@ -213,7 +234,7 @@ public class Evaluation extends weka.classifiers.evaluation.Evaluation implement
      * Calculates classifier error on given data.
      *
      * @param classifier classifier object
-     * @param data       <tt>Instances</tt> object
+     * @param data       instances object
      * @return the value of classifier error
      * @throws Exception
      */
