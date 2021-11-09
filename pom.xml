@@ -6,7 +6,7 @@
 
     <groupId>eca</groupId>
     <artifactId>eca</artifactId>
-    <version>6.8.9</version>
+    <version>6.9.0</version>
     <packaging>pom</packaging>
 
     <modules>
