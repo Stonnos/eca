@@ -44,6 +44,7 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
     private static final String TIMEZONE = "GMT";
 
     private static final String[] TITLE = {"Статистика", "Значение"};
+    public static final String SEED_TEXT = "Начальное значение (Seed) для k*V блочной кросс проверки";
 
     @Getter
     private final List<Entry<String, String>> results = new ArrayList<>();
@@ -94,16 +95,16 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
         results.add(new Entry<>(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(evaluation.getData().numClasses())));
         results.add(new Entry<>(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
 
-        String evaluationMethodStr;
         if (evaluation.isKCrossValidationMethod()) {
-            evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
+            String evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,
                     (evaluation.getNumTests() > 1 ? evaluation.getNumTests() + "*" : StringUtils.EMPTY),
                     evaluation.numFolds());
+            results.add(new Entry<>(EVALUATION_METHOD_TEXT, evaluationMethodStr));
+            results.add(new Entry<>(SEED_TEXT, String.valueOf(evaluation.getSeed())));
         } else {
-            evaluationMethodStr = TRAINING_DATA_METHOD_TEXT;
+            results.add(new Entry<>(EVALUATION_METHOD_TEXT, TRAINING_DATA_METHOD_TEXT));
         }
 
-        results.add(new Entry<>(EVALUATION_METHOD_TEXT, evaluationMethodStr));
         results.add(new Entry<>(NUMBER_OF_TEST_INSTANCES, decimalFormat.format(evaluation.numInstances())));
         results.add(new Entry<>(CORRECTLY_CLASSIFIED_INSTANCES_TEXT, decimalFormat.format(evaluation.correct())));
         results.add(
