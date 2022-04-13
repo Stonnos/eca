@@ -6,6 +6,8 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.util.Collections;
 
 /**
  * Implements saving data into arff file.
@@ -14,17 +16,26 @@ import java.io.File;
  */
 public class ArffFileSaver extends AbstractDataSaver {
 
+    /**
+     * Default constructor.
+     */
+    public ArffFileSaver() {
+        super(Collections.singleton(DataFileExtension.ARFF.getExtendedExtension()));
+    }
+
     @Override
-    public void write(Instances data) throws Exception {
+    protected void internalWrite(Instances data, File file) throws Exception {
         ArffSaver arffSaver = new ArffSaver();
-        arffSaver.setFile(getFile());
+        arffSaver.setFile(file);
         arffSaver.setInstances(data);
         arffSaver.writeBatch();
     }
 
     @Override
-    protected boolean isValidFile(File file) {
-        return file.getName().endsWith(DataFileExtension.ARFF.getExtendedExtension());
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        ArffSaver arffSaver = new ArffSaver();
+        arffSaver.setDestination(outputStream);
+        arffSaver.setInstances(data);
+        arffSaver.writeBatch();
     }
-
 }

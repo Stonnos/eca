@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.data.file.xls;
 
 import eca.data.AbstractDataSaver;
@@ -22,8 +17,8 @@ import weka.core.Instances;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Implements saving {@link Instances} into XLS file.
@@ -34,20 +29,29 @@ public class XLSSaver extends AbstractDataSaver {
 
     private static final short FONT_SIZE = 12;
 
+    public XLSSaver() {
+        super(FileUtils.XLS_EXTENSIONS);
+    }
+
     @Override
-    public void write(Instances data) throws IOException {
-        Objects.requireNonNull(data, "Data is not specified!");
-        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
-            Sheet sheet = book.createSheet(data.relationName());
-            fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
-            fillDataCells(data, book, sheet);
-            book.write(stream);
+    protected void internalWrite(Instances data, File file) throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
+            writeWorkbook(book, data, fileOutputStream);
         }
     }
 
     @Override
-    protected boolean isValidFile(File file) {
-        return FileUtils.isXlsExtension(file.getName());
+    public void write(Instances data, OutputStream outputStream) throws Exception {
+        try (Workbook book = new XSSFWorkbook()) {
+            writeWorkbook(book, data, outputStream);
+        }
+    }
+
+    private void writeWorkbook(Workbook book, Instances data, OutputStream outputStream) throws IOException {
+        Sheet sheet = book.createSheet(data.relationName());
+        fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
+        fillDataCells(data, book, sheet);
+        book.write(outputStream);
     }
 
     private CellStyle createCellStyle(Workbook book) {
@@ -94,5 +98,4 @@ public class XLSSaver extends AbstractDataSaver {
         return file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension()) ? new HSSFWorkbook() :
                 new XSSFWorkbook();
     }
-
 }

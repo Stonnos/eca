@@ -1,0 +1,9 @@
+.info-message {
+    width: 200px;
+    height: 25px;
+    margin-top: 5px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+}

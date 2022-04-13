@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ECA"
-#define MyAppVersion "6.8.3"
+#define MyAppVersion "6.9.0"
 #define MyAppPublisher "ECA, Inc."
 #define MyAppExeName "ECA.exe"
 
@@ -32,7 +32,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "target\ECA.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "target\eca-gui-6.8.3.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "target\eca-gui-{#MyAppVersion}.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "target\ECAManual.pdf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "target\eca-service-config.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "COPYING"; DestDir: "{app}"; Flags: ignoreversion

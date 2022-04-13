@@ -4,7 +4,7 @@
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
     "version": "${project.version}",
-    "releaseDate": "30.03.2021",
+    "releaseDate": "09.11.2021",
     "author": "Roman Batygin",
     "authorEmail": "roman.batygin@mail.ru"
   },
@@ -48,7 +48,8 @@
     "SCATTER_ICON": "images/icons/scatter-icon.jpg",
     "DB_SAVE_ICON": "images/icons/database-save-icon.jpg",
     "ECA_SERVICE_ICON": "images/icons/eca-service-icon.png",
-    "ECA_SERVICE_TRACKS_ICON": "images/icons/eca-service-tracks-icon.png"
+    "ECA_SERVICE_TRACKS_ICON": "images/icons/eca-service-tracks-icon.png",
+    "SEARCH_ICON": "images/icons/search-icon.png"
   },
   "logotypeUrl": "images/Logotype.jpg",
   "tooltipDismissTime": 60000,

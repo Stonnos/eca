@@ -123,7 +123,9 @@ public class QueryFrame extends JFrame {
     private void closeConnection() {
         SwingUtilities.invokeLater(() -> {
             try {
+                log.info("Starting to close connection [{}]", connection.getConnectionDescriptor().getUrl());
                 connection.close();
+                log.info("Connection [{}] has been closed", connection.getConnectionDescriptor().getUrl());
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
             }
@@ -193,7 +195,10 @@ public class QueryFrame extends JFrame {
         JButton okButton = ButtonUtils.createOkButton();
         JButton cancelButton = ButtonUtils.createCancelButton();
 
-        cancelButton.addActionListener(e -> setVisible(false));
+        cancelButton.addActionListener(e -> {
+            interruptWorker();
+            dispose();
+        });
         //-----------------------------------------------
         okButton.addActionListener(e -> {
             interruptWorker();

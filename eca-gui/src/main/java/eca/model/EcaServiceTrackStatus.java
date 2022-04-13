@@ -22,6 +22,11 @@ public enum EcaServiceTrackStatus implements DescriptiveEnum {
     REQUEST_SENT("Запрос отправлен"),
 
     /**
+     * Request in progress
+     */
+    IN_PROGRESS("В обработке"),
+
+    /**
      * Completed status
      */
     COMPLETED("Успешно завершен"),

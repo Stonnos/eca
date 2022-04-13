@@ -21,7 +21,7 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private static final String TITLE_TEXT = "Настройки сервиса ECA";
     private static final String EMPTY_PROPERTY_ERROR_FORMAT = "Укажите значение свойства '%s'";
-    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(625, 150);
+    private static final Dimension SCROLL_PANE_PREFERRED_SIZE = new Dimension(800, 168);
 
     private boolean dialogResult;
 

@@ -16,7 +16,9 @@ public class Eca {
     public static void main(String[] args) {
 
         EventQueue.invokeLater(() -> {
-            new JMainFrame().setVisible(true);
+            JMainFrame mainFrame = new JMainFrame();
+            mainFrame.setVisible(true);
+            mainFrame.initializeMessageListenerContainer();
             log.info("Eca application was started.");
         });
 

@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.actions;
 
-import eca.converters.ModelConverter;
-import eca.converters.model.ClassificationModel;
+import eca.core.ModelSerializationHelper;
+import eca.core.model.ClassificationModel;
+import eca.data.file.resource.FileResource;
 
 import java.io.File;
 
@@ -23,6 +19,6 @@ public class ModelLoader extends AbstractCallback<ClassificationModel> {
 
     @Override
     protected ClassificationModel performAndGetResult() throws Exception {
-        return ModelConverter.loadModel(file, ClassificationModel.class);
+        return ModelSerializationHelper.deserialize(new FileResource(file), ClassificationModel.class);
     }
 }

@@ -25,6 +25,7 @@ public class EvaluationStatisticsDictionary {
     public static final String VARIANCE_ERROR_TEXT = "Дисперсия ошибки классификатора";
     public static final String ERROR_CONFIDENCE_INTERVAL_ERROR_TEXT =
             "95% доверительный интервал ошибки классификатора";
+    public static final String SEED_TEXT = "Начальное значение (Seed) для k*V блочной кросс проверки";
     public static final String NUMBER_OF_NODES_TEXT = "Число узлов";
     public static final String NUMBER_OF_LEAVES_TEXT = "Число листьев";
     public static final String TREE_DEPTH_TEXT = "Глубина дерева";

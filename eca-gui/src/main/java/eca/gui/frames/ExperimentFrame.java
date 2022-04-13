@@ -1,21 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
 import eca.config.registry.SingletonRegistry;
-import eca.converters.ModelConverter;
-import eca.converters.model.EvaluationParams;
-import eca.converters.model.ExperimentHistory;
+import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationResults;
+import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.CallbackAction;
+import eca.gui.actions.AbstractCallback;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
@@ -24,8 +18,10 @@ import eca.gui.dictionary.CommonDictionary;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.service.ClassifierIndexerService;
 import eca.gui.service.ExecutorService;
+import eca.gui.service.ExperimentNamesFactory;
 import eca.gui.tables.ExperimentTable;
 import eca.report.ReportGenerator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -39,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
@@ -49,7 +46,7 @@ import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
  * @author Roman Batygin
  */
 @Slf4j
-public abstract class ExperimentFrame extends JFrame {
+public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -77,13 +74,19 @@ public abstract class ExperimentFrame extends JFrame {
     private static final String PROGRESS_TITLE_FORMAT =
             "<html><body><span style = 'font-weight: bold; font-family: \"Arial\"; font-size: %d'>%s</span></body></html>";
     private static final String TEXT_HTML = "text/html";
-    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE = "Недопустимая история эксперимента!";
+    private static final String INVALID_EXPERIMENT_TYPE_MESSAGE_FORMAT =
+            "Загружен недопустимый эксперимент '%s'. Допускается загрузка эксперимента типа '%s'!";
     private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
 
-    private final AbstractExperiment experiment;
+    @Getter
+    private final Class<T> experimentClass;
+    @Getter
+    private final int digits;
+    @Getter
+    private final T experiment;
 
     private JProgressBar experimentProgressBar;
     private JTextPane experimentResultsPane;
@@ -104,9 +107,11 @@ public abstract class ExperimentFrame extends JFrame {
     private ExperimentTable experimentTable;
     private SwingWorker<Void, Void> worker;
     private SwingWorker<Void, Void> timer;
-    private final int digits;
 
-    protected ExperimentFrame(AbstractExperiment experiment, JFrame parent, int digits) {
+    protected ExperimentFrame(Class<T> experimentClass, T experiment, JFrame parent, int digits) {
+        Objects.requireNonNull(experimentClass, "Expected not null experiment class");
+        Objects.requireNonNull(experiment, "Expected not null experiment");
+        this.experimentClass = experimentClass;
         this.experiment = experiment;
         this.digits = digits;
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -120,15 +125,8 @@ public abstract class ExperimentFrame extends JFrame {
             }
         });
         this.createGUI();
+        this.displayResults(experiment);
         this.setLocationRelativeTo(parent);
-    }
-
-    public AbstractExperiment getExperiment() {
-        return experiment;
-    }
-
-    public int getDigits() {
-        return digits;
     }
 
     private void setStateForButtons(boolean flag) {
@@ -149,13 +147,16 @@ public abstract class ExperimentFrame extends JFrame {
         }
     }
 
-    private void setResults(ExperimentHistory experimentHistory) {
-        experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
-                CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
-        experimentResultsPane.setCaretPosition(0);
+    private void displayResults(T experimentHistory) {
+        if (experimentHistory.getHistory() != null && !experimentHistory.getHistory().isEmpty()) {
+            experimentTable.setRenderer(Color.RED);
+            experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
+                    CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
+            experimentResultsPane.setCaretPosition(0);
+        }
     }
 
-    protected abstract void setOptions();
+    protected abstract void initializeExperimentOptions();
 
     protected void doBegin() {
         experimentProgressBar.setValue(0);
@@ -227,7 +228,7 @@ public abstract class ExperimentFrame extends JFrame {
     }
 
     private JScrollPane createExperimentHistoryScrollPane() {
-        experimentTable = new ExperimentTable(new ArrayList<>(), this, digits);
+        experimentTable = new ExperimentTable(new ArrayList<>(experiment.getHistory()), this, digits);
         JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
         experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         return experimentHistoryScrollPane;
@@ -261,82 +262,12 @@ public abstract class ExperimentFrame extends JFrame {
                 dataFrame.setVisible(true);
             }
         });
-        startButton.addActionListener(e -> {
-            experiment.setEvaluationMethod(useTestingSet.isSelected()
-                    ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
-            if (useTestingSet.isSelected()) {
-                experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
-                experiment.setNumTests(
-                        ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
-            }
-            experimentResultsPane.setText(
-                    String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
-            setStateForButtons(false);
-            setStateForOptions(false);
-            experimentTable.setRenderer(Color.BLACK);
-            experimentTable.clear();
-            doBegin();
-            worker.execute();
-            timer.execute();
-            log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
-                    experiment.getClassifier().getClass().getSimpleName());
-        });
 
+        startButton.addActionListener(e -> startExperiment());
         stopButton.addActionListener(e -> worker.cancel(true));
-        optionsButton.addActionListener(e -> setOptions());
-
-        saveButton.addActionListener(event -> {
-            try {
-                List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
-                if (experimentHistory == null || experimentHistory.isEmpty()) {
-                    JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
-                            JOptionPane.WARNING_MESSAGE);
-                } else {
-                    SaveModelChooser fileChooser = SingletonRegistry.getSingleton(SaveModelChooser.class);
-                    fileChooser.setSelectedFile(
-                            new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
-                    File file = fileChooser.getSelectedFile(ExperimentFrame.this);
-                    if (file != null) {
-                        ModelConverter.saveModel(file,
-                                new ExperimentHistory(experiment.getExperimentType(), experimentHistory,
-                                        experiment.getData(), experiment.getEvaluationMethod(),
-                                        createEvaluationParams()));
-                    }
-                }
-            } catch (Exception e) {
-                LoggerUtils.error(log, e);
-                JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
-                        null, JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        loadButton.addActionListener(event -> {
-            OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
-            File file = fileChooser.openFile(ExperimentFrame.this);
-            if (file != null) {
-                try {
-                    ExperimentLoader loader = new ExperimentLoader(file);
-                    LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
-                            loader, LOAD_EXPERIMENT_TITLE);
-
-                    ExecutorService.process(loadDialog, () -> {
-                        ExperimentHistory history = loader.getExperiment();
-                        if (!experiment.getExperimentType().equals(history.getType())) {
-                            JOptionPane.showMessageDialog(ExperimentFrame.this, INVALID_EXPERIMENT_TYPE_MESSAGE,
-                                    null, JOptionPane.WARNING_MESSAGE);
-                        } else {
-                            experimentTable.setRenderer(Color.RED);
-                            experimentTable.setExperiment(history.getExperiment());
-                            setResults(history);
-                        }
-                    }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
-
-                } catch (Exception e) {
-                    LoggerUtils.error(log, e);
-                    showFormattedErrorMessageDialog(ExperimentFrame.this, e.getMessage());
-                }
-            }
-        });
+        optionsButton.addActionListener(e -> initializeExperimentOptions());
+        saveButton.addActionListener(event -> saveExperimentHistory());
+        loadButton.addActionListener(event -> loadExperiment());
 
         createTimerField();
 
@@ -404,14 +335,87 @@ public abstract class ExperimentFrame extends JFrame {
         this.getRootPane().setDefaultButton(startButton);
     }
 
+    private void startExperiment() {
+        experiment.setEvaluationMethod(useTestingSet.isSelected()
+                ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
+        if (useTestingSet.isSelected()) {
+            experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
+            experiment.setNumTests(
+                    ((SpinnerNumberModel) validationsSpinner.getModel()).getNumber().intValue());
+        }
+        experimentResultsPane.setText(
+                String.format(PROGRESS_TITLE_FORMAT, EXPERIMENT_RESULTS_FONT_SIZE, BUILDING_PROGRESS_TITLE));
+        setStateForButtons(false);
+        setStateForOptions(false);
+        experimentTable.setRenderer(Color.BLACK);
+        experiment.clearHistory();
+        experimentTable.clear();
+        doBegin();
+        worker.execute();
+        timer.execute();
+        log.info("Starting experiment with id {} for classifier '{}'.", experimentId,
+                experiment.getClassifier().getClass().getSimpleName());
+    }
+
+    private void saveExperimentHistory() {
+        try {
+            List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
+            if (experimentHistory == null || experimentHistory.isEmpty()) {
+                JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                SaveModelChooser fileChooser = SingletonRegistry.getSingleton(SaveModelChooser.class);
+                fileChooser.setSelectedFile(
+                        new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
+                File file = fileChooser.getSelectedFile(ExperimentFrame.this);
+                if (file != null) {
+                    ModelSerializationHelper.serialize(file, experiment);
+                }
+            }
+        } catch (Exception e) {
+            LoggerUtils.error(log, e);
+            JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
+                    null, JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void loadExperiment() {
+        OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
+        File file = fileChooser.openFile(ExperimentFrame.this);
+        if (file != null) {
+            try {
+                ExperimentLoader loader = new ExperimentLoader(file);
+                LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
+                        loader, LOAD_EXPERIMENT_TITLE);
+
+                ExecutorService.process(loadDialog, () -> {
+                    AbstractExperiment<?> loaderExperiment = loader.getResult();
+                    String loadedExperimentAlg = loaderExperiment.getClassifier().getClass().getSimpleName();
+                    String currentExperimentAlg = experiment.getClassifier().getClass().getSimpleName();
+                    if (!experiment.getClass().equals(loaderExperiment.getClass())
+                            || !currentExperimentAlg.equals(loadedExperimentAlg)) {
+                        String loadedExperimentName = ExperimentNamesFactory.getExperimentName(loaderExperiment);
+                        String actualExperimentName = getTitle();
+                        String errorMessage =
+                                String.format(INVALID_EXPERIMENT_TYPE_MESSAGE_FORMAT, loadedExperimentName,
+                                        actualExperimentName);
+                        showFormattedErrorMessageDialog(ExperimentFrame.this, errorMessage);
+                    } else {
+                        experimentTable.initializeExperimentHistory(loaderExperiment.getHistory());
+                        displayResults(experimentClass.cast(loaderExperiment));
+                    }
+                }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
+
+            } catch (Exception e) {
+                LoggerUtils.error(log, e);
+                showFormattedErrorMessageDialog(ExperimentFrame.this, e.getMessage());
+            }
+        }
+    }
+
     private void createExperimentProgressBar() {
         experimentProgressBar = new JProgressBar();
         experimentProgressBar.setStringPainted(true);
-    }
-
-    private EvaluationParams createEvaluationParams() {
-        return EvaluationMethod.TRAINING_DATA.equals(experiment.getEvaluationMethod()) ? null :
-                new EvaluationParams(experiment.getNumFolds(), experiment.getNumTests());
     }
 
     private class TimeWorker extends SwingWorker<Void, Void> {
@@ -472,14 +476,11 @@ public abstract class ExperimentFrame extends JFrame {
         @Override
         protected void done() {
             setProgress(100);
-            experimentTable.setRenderer(Color.RED);
             setStateForButtons(true);
             setStateForOptions(true);
-            experimentTable.sort();
+            experimentTable.sortByBestResults();
             if (!error) {
-                setResults(new ExperimentHistory(experiment.getExperimentType(),
-                        experimentTable.experimentModel().getExperiment(), experiment.getData(),
-                        experiment.getEvaluationMethod(), createEvaluationParams()));
+                displayResults(experiment);
                 log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                         experiment.getClassifier().getClass().getSimpleName());
             }
@@ -487,9 +488,9 @@ public abstract class ExperimentFrame extends JFrame {
 
         private void performNextIteration() {
             try {
-                EvaluationResults classifier = object.next();
+                EvaluationResults evaluationResults = object.next();
                 if (!isCancelled()) {
-                    experimentTable.addExperiment(classifier);
+                    experimentTable.addEvaluationResults(evaluationResults);
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
@@ -511,22 +512,17 @@ public abstract class ExperimentFrame extends JFrame {
     /**
      * Implements experiment loading callback action.
      */
-    private static class ExperimentLoader implements CallbackAction {
+    private static class ExperimentLoader extends AbstractCallback<AbstractExperiment<?>> {
 
-        ExperimentHistory experiment;
         final File file;
 
         ExperimentLoader(File file) {
             this.file = file;
         }
 
-        ExperimentHistory getExperiment() {
-            return experiment;
-        }
-
         @Override
-        public void apply() throws Exception {
-            experiment = ModelConverter.loadModel(file, ExperimentHistory.class);
+        protected AbstractExperiment<?> performAndGetResult() throws Exception {
+            return ModelSerializationHelper.deserialize(new FileResource(file), AbstractExperiment.class);
         }
     }
 

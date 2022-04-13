@@ -20,11 +20,13 @@ import static eca.util.VelocityUtils.mergeContext;
 public class TemplateService {
 
     private static final String ERROR_MESSAGE_VM = "vm-templates/errorMessage.vm";
+    private static final String INFO_MESSAGE_VM = "vm-templates/infoMessage.vm";
     private static final String VALIDATION_ERRORS_MESSAGE_VM = "vm-templates/validationErrors.vm";
 
 
     private static final String ERROR_MESSAGE_PARAM = "errorMessage";
     private static final String VALIDATION_ERRORS_PARAM = "validationErrors";
+    private static final String MESSAGE_PARAM = "message";
 
     /**
      * Gets formatted error message string.
@@ -36,6 +38,19 @@ public class TemplateService {
         Template template = getTemplate(ERROR_MESSAGE_VM);
         VelocityContext context = new VelocityContext();
         context.put(ERROR_MESSAGE_PARAM, message);
+        return mergeContext(template, context);
+    }
+
+    /**
+     * Gets formatted info message string.
+     *
+     * @param message - info message
+     * @return formatted info message string
+     */
+    public static String getInfoMessageAsHtml(String message) {
+        Template template = getTemplate(INFO_MESSAGE_VM);
+        VelocityContext context = new VelocityContext();
+        context.put(MESSAGE_PARAM, message);
         return mergeContext(template, context);
     }
 

@@ -1,7 +1,7 @@
 package eca.client.listener.adapter;
 
 import eca.client.converter.MessageConverter;
-import eca.client.dto.EcaResponse;
+import eca.client.dto.ExperimentResponse;
 import eca.client.messaging.MessageHandler;
 
 /**
@@ -9,7 +9,7 @@ import eca.client.messaging.MessageHandler;
  *
  * @author Roman Batygin
  */
-public class ExperimentListenerAdapter extends AbstractRabbitListenerAdapter<EcaResponse> {
+public class ExperimentListenerAdapter extends AbstractRabbitListenerAdapter<ExperimentResponse> {
 
     /**
      * Creates ExperimentListenerAdapter object.
@@ -18,7 +18,7 @@ public class ExperimentListenerAdapter extends AbstractRabbitListenerAdapter<Eca
      * @param messageHandler   - message handler
      */
     public ExperimentListenerAdapter(MessageConverter messageConverter,
-                                     MessageHandler<EcaResponse> messageHandler) {
-        super(EcaResponse.class, messageConverter, messageHandler);
+                                     MessageHandler<ExperimentResponse> messageHandler) {
+        super(ExperimentResponse.class, messageConverter, messageHandler);
     }
 }

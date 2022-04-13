@@ -34,7 +34,7 @@ class RocCurveTest {
     @Test
     void testOptimalThresholdCalculation() throws Exception {
         CART cart = new CART();
-        Evaluation evaluation = evaluateModel(cart, instances, EvaluationMethod.TRAINING_DATA,0, 0, null);
+        Evaluation evaluation = evaluateModel(cart, instances, EvaluationMethod.TRAINING_DATA,0, 0, 0);
         RocCurve rocCurve = new RocCurve(evaluation);
         int classIndex = instances.classAttribute().indexOfValue(IRIS_VIRGINICA);
         Instances rocCurveData = rocCurve.getROCCurve(classIndex);

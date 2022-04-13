@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
-import eca.dataminer.ClassifierComparator;
 import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 
@@ -26,7 +20,6 @@ public class ExperimentTableModel extends AbstractTableModel {
     public static final int RESULTS_INDEX = 3;
     public static final String RESULT_TITLE = "Посмотреть";
 
-    private static final ClassifierComparator CLASSIFIER_COMPARATOR = new ClassifierComparator();
     private static final String[] TITLES = {"№", "Классификатор", "Точность, %", "Результаты"};
 
     private List<EvaluationResults> experiment;
@@ -64,8 +57,7 @@ public class ExperimentTableModel extends AbstractTableModel {
         return experiment.size();
     }
 
-    public void add(EvaluationResults val) {
-        experiment.add(val);
+    public void notifyLastInsertedResults() {
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
@@ -74,8 +66,8 @@ public class ExperimentTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public void sort() {
-        experiment.sort(CLASSIFIER_COMPARATOR);
+    public void setExperiment(List<EvaluationResults> experiment) {
+        this.experiment = experiment;
         fireTableDataChanged();
     }
 

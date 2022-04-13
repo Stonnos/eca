@@ -12,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
-import java.util.Random;
-
 import static eca.TestHelperUtils.DATA_IRIS_XLS;
 import static eca.TestHelperUtils.SEED;
 import static eca.TestHelperUtils.loadInstances;
@@ -42,11 +40,11 @@ class HeterogeneousClassifierTest {
     void testConcurrentBuildModel() throws Exception {
         HeterogeneousClassifier notConcurrentClassifier = initializeClassifier();
         Evaluation notConcurrentEvaluation = EvaluationService.evaluateModel(notConcurrentClassifier, instances,
-                EvaluationMethod.CROSS_VALIDATION, NUM_FOLDS, NUM_TESTS, new Random(SEED));
+                EvaluationMethod.CROSS_VALIDATION, NUM_FOLDS, NUM_TESTS, SEED);
         HeterogeneousClassifier concurrentClassifier = initializeClassifier();
         concurrentClassifier.setNumThreads(NUM_THREADS);
         Evaluation concurrentEvaluation = EvaluationService.evaluateModel(concurrentClassifier, instances,
-                EvaluationMethod.CROSS_VALIDATION, NUM_FOLDS, NUM_TESTS, new Random(SEED));
+                EvaluationMethod.CROSS_VALIDATION, NUM_FOLDS, NUM_TESTS, SEED);
         assertThat(notConcurrentEvaluation).isNotNull();
         assertThat(concurrentEvaluation).isNotNull();
         assertThat(notConcurrentEvaluation.pctCorrect()).isEqualTo(concurrentEvaluation.pctCorrect());
