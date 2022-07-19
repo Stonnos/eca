@@ -4,7 +4,8 @@ import eca.data.file.resource.DataResource;
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SerializationUtils;
+import org.nustaq.serialization.FSTObjectInput;
+import org.nustaq.serialization.FSTObjectOutput;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,7 +42,8 @@ public class ModelSerializationHelper {
         }
         log.info("Starting to save model to file [{}]", targetFile.getAbsolutePath());
         @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(targetFile.getAbsoluteFile());
-        SerializationUtils.serialize(model, fileOutputStream);
+        @Cleanup FSTObjectOutput out = new FSTObjectOutput(fileOutputStream);
+        out.writeObject(model);
         log.info("Model has been saved to file [{}]", targetFile.getAbsolutePath());
     }
 
@@ -55,10 +57,15 @@ public class ModelSerializationHelper {
     public static <T> T deserialize(DataResource<?> dataResource, Class<T> targetClazz) throws IOException {
         Objects.requireNonNull(dataResource, "Data resource is not specified!");
         log.info("Starting to load model from [{}]", dataResource.getFile());
-        @Cleanup InputStream inputStream = dataResource.openInputStream();
-        Object result = SerializationUtils.deserialize(inputStream);
-        T model = targetClazz.cast(result);
-        log.info("Model has been loaded from [{}]", dataResource.getFile());
-        return model;
+        try {
+            @Cleanup InputStream inputStream = dataResource.openInputStream();
+            @Cleanup FSTObjectInput in = new FSTObjectInput(inputStream);
+            Object result = in.readObject();
+            T model = targetClazz.cast(result);
+            log.info("Model has been loaded from [{}]", dataResource.getFile());
+            return model;
+        } catch (ClassNotFoundException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 }
