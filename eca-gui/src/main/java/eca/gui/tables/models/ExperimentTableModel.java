@@ -1,13 +1,13 @@
 package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
+import eca.dataminer.AbstractExperiment;
 import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
-import java.util.List;
 
 /**
  * @author Roman Batygin
@@ -22,25 +22,25 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     private static final String[] TITLES = {"№", "Классификатор", "Точность, %", "Результаты"};
 
-    private List<EvaluationResults> experiment;
+    private AbstractExperiment<?> experiment;
 
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
-    public ExperimentTableModel(List<EvaluationResults> experiment, int digits) {
+    public ExperimentTableModel(AbstractExperiment<?> experiment, int digits) {
         this.experiment = experiment;
         format.setMaximumFractionDigits(digits);
     }
 
     public Classifier getClassifier(int i) {
-        return experiment.get(i).getClassifier();
+        return experiment.getHistory().get(i).getClassifier();
     }
 
-    public List<EvaluationResults> getExperiment() {
+    public AbstractExperiment<?> getExperiment() {
         return experiment;
     }
 
     public EvaluationResults get(int i) {
-        return experiment.get(i);
+        return experiment.getHistory().get(i);
     }
 
     public int digits() {
@@ -54,7 +54,7 @@ public class ExperimentTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return experiment.size();
+        return experiment.getHistory().size();
     }
 
     public void notifyLastInsertedResults() {
@@ -62,11 +62,11 @@ public class ExperimentTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        experiment.clear();
+        experiment.clearHistory();
         fireTableDataChanged();
     }
 
-    public void setExperiment(List<EvaluationResults> experiment) {
+    public void setExperiment(AbstractExperiment<?> experiment) {
         this.experiment = experiment;
         fireTableDataChanged();
     }
@@ -77,9 +77,9 @@ public class ExperimentTableModel extends AbstractTableModel {
             case INDEX:
                 return row;
             case CLASSIFIER_INDEX:
-                return experiment.get(row).getClassifier().getClass().getSimpleName();
+                return experiment.getHistory().get(row).getClassifier().getClass().getSimpleName();
             case ACCURACY_INDEX:
-                return format.format(experiment.get(row).getEvaluation().pctCorrect());
+                return format.format(experiment.getHistory().get(row).getEvaluation().pctCorrect());
             case RESULTS_INDEX:
                 return RESULT_TITLE;
             default:

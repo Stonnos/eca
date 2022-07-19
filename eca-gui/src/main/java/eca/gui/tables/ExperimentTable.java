@@ -3,7 +3,7 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
-import eca.dataminer.ClassifierComparator;
+import eca.dataminer.AbstractExperiment;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
@@ -22,7 +22,6 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,7 +40,7 @@ public class ExperimentTable extends JDataTableBase {
     private final JFrame parentFrame;
     private final Map<Integer, ClassificationResultsFrameBase> classificationResultsFrameBases = newHashMap();
 
-    public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) {
+    public ExperimentTable(AbstractExperiment<?> experiment, JFrame parent, int digits) {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
         this.getColumnModel().getColumn(ExperimentTableModel.CLASSIFIER_INDEX).setCellRenderer(
@@ -67,13 +66,12 @@ public class ExperimentTable extends JDataTableBase {
         return (ExperimentTableModel) this.getModel();
     }
 
-    public void addEvaluationResults(EvaluationResults evaluationResults) {
-        experimentModel().getExperiment().add(evaluationResults);
+    public void notifyLastInsertedResults() {
         experimentModel().notifyLastInsertedResults();
     }
 
     public void sortByBestResults() {
-        experimentModel().getExperiment().sort(new ClassifierComparator());
+        experimentModel().getExperiment().sortByBestResults();
         notifyDataChanged();
     }
 
@@ -81,9 +79,9 @@ public class ExperimentTable extends JDataTableBase {
         experimentModel().fireTableDataChanged();
     }
 
-    public void initializeExperimentHistory(List<EvaluationResults> evaluationResults) {
+    public void initializeExperimentHistory(AbstractExperiment<?> experiment) {
         clear();
-        experimentModel().setExperiment(evaluationResults);
+        experimentModel().setExperiment(experiment);
     }
 
     public void clear() {
