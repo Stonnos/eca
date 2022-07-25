@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.core.FilterHandler;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
@@ -153,6 +154,9 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 Classifier classifier = getClassifiersSet().getClassifierCopy(i);
                 if (classifier instanceof Randomizable) {
                     ((Randomizable) classifier).setSeed(seeds[t]);
+                }
+                if (classifier instanceof FilterHandler) {
+                    ((FilterHandler) classifier).getFilter().setDisabled(true);
                 }
                 classifier.buildClassifier(sample);
                 double error = weightedError(classifier);

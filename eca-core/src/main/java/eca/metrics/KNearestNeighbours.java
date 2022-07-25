@@ -6,6 +6,7 @@
 package eca.metrics;
 
 import eca.core.DecimalFormatHandler;
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.core.MinMaxNormalizer;
 import eca.filter.MissingValuesFilter;
@@ -38,7 +39,7 @@ import java.util.Objects;
  * @author Roman Batygin
  */
 public class KNearestNeighbours extends AbstractClassifier
-        implements InstancesHandler, DecimalFormatHandler {
+        implements InstancesHandler, DecimalFormatHandler, FilterHandler {
 
     public static final double MIN_WEIGHT = 0.5;
 
@@ -100,6 +101,11 @@ public class KNearestNeighbours extends AbstractClassifier
     @Override
     public Instances getData() {
         return data;
+    }
+
+    @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
     }
 
     /**

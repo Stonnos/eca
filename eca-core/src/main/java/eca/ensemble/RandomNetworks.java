@@ -117,6 +117,7 @@ public class RandomNetworks extends ThresholdClassifier implements DecimalFormat
         double coefficientValue = NumberGenerator.random(networkRandom, MIN_COEFFICIENT_VALUE, MAX_COEFFICIENT_VALUE);
         randomActivationFunction.setCoefficient(coefficientValue);
         multilayerPerceptron.setActivationFunction(randomActivationFunction);
+        neuralNetwork.getFilter().setDisabled(true);
         neuralNetwork.buildClassifier(data);
         return neuralNetwork;
     }

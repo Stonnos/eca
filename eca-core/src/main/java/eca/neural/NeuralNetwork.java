@@ -6,6 +6,7 @@
 package eca.neural;
 
 import eca.core.DecimalFormatHandler;
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.core.ListOptionsHandler;
 import eca.core.MinMaxNormalizer;
@@ -32,7 +33,7 @@ import java.util.*;
  * @author Roman Batygin
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler,
-        ListOptionsHandler, DecimalFormatHandler, Randomizable {
+        ListOptionsHandler, DecimalFormatHandler, Randomizable, FilterHandler {
 
     private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
@@ -98,6 +99,11 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     public String[] getOptions() {
         List<String> options = getListOptions();
         return options.toArray(new String[options.size()]);
+    }
+
+    @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
     }
 
     @Override

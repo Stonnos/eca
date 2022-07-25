@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.filter.MissingValuesFilter;
 import weka.classifiers.AbstractClassifier;
@@ -35,7 +36,7 @@ import java.util.Random;
  * @author Roman Batygin
  */
 public class StackingClassifier extends AbstractClassifier
-        implements EnsembleClassifier, InstancesHandler, Randomizable {
+        implements EnsembleClassifier, InstancesHandler, Randomizable, FilterHandler {
 
     private static final String META_SET_NAME = "MetaSet";
     /**
@@ -180,6 +181,11 @@ public class StackingClassifier extends AbstractClassifier
     }
 
     @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
+    }
+
+    @Override
     public void buildClassifier(Instances dataSet) throws Exception {
         initialData = dataSet;
         filteredData = filter.filterInstances(initialData);
@@ -213,13 +219,16 @@ public class StackingClassifier extends AbstractClassifier
     }
 
     private void initializeClassifiers() {
-        classifiers.forEach(classifier -> {
-            if (classifier instanceof Randomizable) {
-                ((Randomizable) classifier).setSeed(seed);
-            }
-        });
-        if (metaClassifier instanceof Randomizable) {
-            ((Randomizable) metaClassifier).setSeed(seed);
+        classifiers.forEach(this::initializeClassifier);
+        initializeClassifier(metaClassifier);
+    }
+
+    private void initializeClassifier(Classifier classifier) {
+        if (classifier instanceof Randomizable) {
+            ((Randomizable) classifier).setSeed(seed);
+        }
+        if (classifier instanceof FilterHandler) {
+            ((FilterHandler) classifier).getFilter().setDisabled(true);
         }
     }
 

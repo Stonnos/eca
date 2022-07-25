@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.trees;
 
 import eca.core.Assert;
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.core.ListOptionsHandler;
 import eca.core.PermutationsSearcher;
@@ -56,7 +52,7 @@ import static com.google.common.collect.Lists.newArrayList;
  * @author Roman Batygin
  */
 public abstract class DecisionTreeClassifier extends AbstractClassifier
-        implements InstancesHandler, ListOptionsHandler, Randomizable {
+        implements InstancesHandler, ListOptionsHandler, Randomizable, FilterHandler {
 
     public static final int MIN_RANDOM_SPLITS = 1;
 
@@ -320,6 +316,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     @Override
     public Instances getData() {
         return data;
+    }
+
+    @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
     }
 
     @Override

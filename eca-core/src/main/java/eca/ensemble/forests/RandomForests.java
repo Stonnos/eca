@@ -193,6 +193,7 @@ public class RandomForests extends IterativeEnsembleClassifier implements ListOp
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
         DecisionTreeClassifier treeClassifier = createDecisionTree(iteration);
+        treeClassifier.getFilter().setDisabled(true);
         treeClassifier.setUseBinarySplits(true);
         treeClassifier.buildClassifier(data);
         return treeClassifier;
