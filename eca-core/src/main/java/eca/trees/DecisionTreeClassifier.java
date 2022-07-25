@@ -29,6 +29,10 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Abstract class for generating decision tree model. <p>
@@ -60,6 +64,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      * Initial training set
      **/
     private Instances data;
+
+    /**
+     * Filtered data
+     */
+    private Instances filteredData;
 
     /**
      * Tree root
@@ -381,7 +390,8 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
         probabilities = new double[data.numClasses()];
         random = new Random(seed);
-        root = new TreeNode(filter.filterInstances(data));
+        filteredData = filter.filterInstances(data);
+        root = new TreeNode(filteredData);
         root.setDepth(1);
         root.setClassValue(classValue(root));
         numNodes++;
@@ -393,7 +403,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
      */
     protected static class TreeNode implements Serializable {
 
-        Instances objects;
+        List<Integer> objects = newArrayList();
         TreeNode[] child;
         TreeNode parent;
         boolean leaf;
@@ -402,13 +412,12 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         int depth;
         int index;
 
-        TreeNode(TreeNode parent) {
-            this.parent = parent;
-            objects = new Instances(parent.objects, parent.objectsNum() / parent.childrenNum());
+        TreeNode(Instances data) {
+            IntStream.range(0, data.numInstances()).forEach(i -> objects.add(i));
         }
 
-        TreeNode(Instances data) {
-            objects = new Instances(data);
+        TreeNode(TreeNode parent) {
+            this.parent = parent;
         }
 
         TreeNode getChild(Instance obj) {
@@ -463,19 +472,15 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             return leaf;
         }
 
-        boolean addObject(Instance obj) {
-            return objects.add(obj);
+        void addObject(Integer objIndex) {
+            objects.add(objIndex);
         }
 
         int objectsNum() {
-            return objects.numInstances();
+            return objects.size();
         }
 
-        boolean isEmpty() {
-            return objects.isEmpty();
-        }
-
-        Instances objects() {
+        List<Integer> objects() {
             return objects;
         }
 
@@ -592,12 +597,12 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
     protected final void calculateProbabilities(TreeNode x, boolean normalize) {
         initializeProbabilityArrays(x.getRule().attribute());
-        for (int i = 0; i < x.objects().numInstances(); i++) {
-            Instance obj = x.objects().instance(i);
+        x.objects().forEach(objIndex -> {
+            Instance obj = filteredData.instance(objIndex);
             int k = x.getRule().getChild(obj);
             probabilitiesMatrix[k][(int) obj.classValue()]++;
             childrenSizes[k]++;
-        }
+        });
         if (normalize) {
             for (double[] probabilitiesArray : probabilitiesMatrix) {
                 eca.util.Utils.normalize(probabilitiesArray);
@@ -605,15 +610,22 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
+    private List<Double> getSortedNumericAttributeVector(TreeNode x, Attribute a) {
+        return x.objects()
+                .stream()
+                .map(i -> filteredData.instance(i).value(a))
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
     private void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
-        x.objects().sort(a);
+        List<Double> values = getSortedNumericAttributeVector(x, a);
         NumericRule rule = new NumericRule(a);
         double optThreshold = 0.0;
         x.rule = rule;
-        for (int i = 0; i < x.objectsNum() - 1; i++) {
-            rule.setMeanValue((x.objects().instance(i).value(a)
-                    + x.objects().instance(i + 1).value(a)) / 2);
+        for (int i = 0; i < values.size() - 1; i++) {
+            rule.setMeanValue((values.get(i) + values.get(i + 1)) / 2);
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
                 split.setParams(measure, x.getRule());
@@ -658,10 +670,26 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
+    private double getMinValue(TreeNode x, Attribute a) {
+        return x.objects()
+                .stream()
+                .mapToDouble(i -> filteredData.instance(i).value(a))
+                .min()
+                .getAsDouble();
+    }
+
+    private double getMaxValue(TreeNode x, Attribute a) {
+        return x.objects()
+                .stream()
+                .mapToDouble(i -> filteredData.instance(i).value(a))
+                .max()
+                .getAsDouble();
+    }
+
     private void processNumericRandomSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split, int k) {
         TreeNode x = split.getNode();
-        double minAttrValue = x.objects().kthSmallestValue(a, 1);
-        double maxAttrValue = x.objects().kthSmallestValue(a, x.objects().size());
+        double minAttrValue = getMinValue(x, a);
+        double maxAttrValue = getMaxValue(x, a);
         NumericRule rule = new NumericRule(a);
         double optThreshold = 0.0;
         x.rule = rule;
@@ -776,9 +804,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     protected final void calculateProbabilities(TreeNode x) {
         Arrays.fill(probabilities, 0);
         if (!x.objects().isEmpty()) {
-            for (int i = 0; i < x.objects().numInstances(); i++) {
-                probabilities[(int) x.objects().instance(i).classValue()]++;
-            }
+            x.objects().forEach(objIndex -> probabilities[(int) filteredData.instance(objIndex).classValue()]++);
             if (!Utils.eq(Utils.sum(probabilities), 0)) {
                 Utils.normalize(probabilities);
             }
@@ -804,18 +830,18 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     protected final double calculateNodeError(TreeNode x) {
-        int count = 0;
-        for (int i = 0; i < x.objects().numInstances(); i++) {
-            if (x.objects().instance(i).classValue() != x.classValue()) {
-                count++;
-            }
-        }
+        long count = x.objects()
+                .stream()
+                .filter(objIndex -> filteredData.instance(objIndex).classValue() != x.classValue())
+                .count();
         return (double) count / x.objectsNum();
     }
 
     private boolean isClean(TreeNode x) {
         for (int i = 0; i < x.objectsNum() - 1; i++) {
-            if (x.objects().instance(i).classValue() != x.objects().instance(i + 1).classValue()) {
+            Instance first = filteredData.instance(x.objects().get(i));
+            Instance second = filteredData.instance(x.objects().get(i + 1));
+            if (first.classValue() != second.classValue()) {
                 return false;
             }
         }
@@ -836,11 +862,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     private void addObjects(TreeNode x) {
-        for (int i = 0; i < x.objects().numInstances(); i++) {
-            Instance obj = x.objects().instance(i);
+        x.objects().forEach(objIndex -> {
+            Instance obj = filteredData.instance(objIndex);
             int k = x.getRule().getChild(obj);
-            x.getChild(k).addObject(obj);
-        }
+            x.getChild(k).addObject(objIndex);
+        });
     }
 
     protected final void createChildren(TreeNode x, int childrenNum) {
