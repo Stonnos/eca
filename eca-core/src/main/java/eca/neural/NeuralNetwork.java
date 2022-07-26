@@ -27,6 +27,8 @@ import weka.core.Randomizable;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static eca.neural.NeuralNetworkDictionary.BACK_PROPAGATION_METHOD_TEXT;
+
 /**
  * Class for generating neural network for classification task.
  *
@@ -142,7 +144,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         }
 
         options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
-        options.add(getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName());
+        options.add(BACK_PROPAGATION_METHOD_TEXT);
 
         if (multilayerPerceptron.getLearningAlgorithm() instanceof BackPropagation) {
             String[] algorithmOptions = getMultilayerPerceptron().getLearningAlgorithm().getOptions();
