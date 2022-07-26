@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.9.0</version>
+        <version>6.9.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-core</artifactId>
-    <version>6.9.0</version>
+    <version>6.9.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,6 +26,7 @@
         <unaccess.version>4.0.4</unaccess.version>
         <sqllite.version>3.27.2.1</sqllite.version>
         <mssql.version>7.2.1.jre8</mssql.version>
+        <fst.version>2.57</fst.version>
         <sonar.coverage.exclusions>
             **/model/**/*,
             **/dto/**/*,
@@ -84,6 +85,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-databind.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
+            <version>${fst.version}</version>
         </dependency>
 
         <!-- Dependencies to tests -->

@@ -24,6 +24,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.ACTIVATION_FUNCTION_HIDDEN_LAYER_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.ACTIVATION_FUNCTION_OUT_LAYER_TEXT;
+import static eca.gui.dictionary.EvaluationStatisticsDictionary.BACK_PROPAGATION_METHOD_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.CLASSIFIERS_IN_ENSEMBLE_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.DISTANCE_FUNCTION_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.HIDDEN_LAYERS_NUM_TEXT;
@@ -36,6 +37,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_LEAVES
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_NODES_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.OUT_LAYER_NEURONS_NUM_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TREE_DEPTH_TEXT;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements building classifiers evaluation results represented in table.
@@ -137,8 +139,7 @@ public class EvaluationStatisticsTableFactory {
                     classifier.getMultilayerPerceptron().getActivationFunction().getActivationFunctionType().getDescription()));
             evaluationStatisticsModel.addRow(new Entry<>(ACTIVATION_FUNCTION_OUT_LAYER_TEXT,
                     classifier.getMultilayerPerceptron().getOutActivationFunction().getActivationFunctionType().getDescription()));
-            evaluationStatisticsModel.addRow(new Entry<>(LEARNING_ALGORITHM_TEXT,
-                    classifier.getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName()));
+            evaluationStatisticsModel.addRow(new Entry<>(LEARNING_ALGORITHM_TEXT, BACK_PROPAGATION_METHOD_TEXT));
             return evaluationStatisticsModel;
         }
     }
@@ -202,8 +203,7 @@ public class EvaluationStatisticsTableFactory {
             evaluationStatisticsModel.addRow(
                     new Entry<>(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(stackingClassifier.numClassifiers())));
             evaluationStatisticsModel.addRow(
-                    new Entry<>(META_CLASSIFIER_NAME_TEXT,
-                            stackingClassifier.getMetaClassifier().getClass().getSimpleName()));
+                    new Entry<>(META_CLASSIFIER_NAME_TEXT, getClassifierName(stackingClassifier.getMetaClassifier())));
             return evaluationStatisticsModel;
         }
     }

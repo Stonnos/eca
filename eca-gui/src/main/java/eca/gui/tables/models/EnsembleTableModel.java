@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * @author Roman Batygin
  */
@@ -49,7 +51,7 @@ public class EnsembleTableModel extends AbstractTableModel {
             case INDEX:
                 return row;
             case CLASSIFIER_INDEX:
-                return classifierArrayList.get(row).getClass().getSimpleName();
+                return getClassifierName(classifierArrayList.get(row));
             case RESULTS_INDEX:
                 return RESULT_TITLE;
             default:

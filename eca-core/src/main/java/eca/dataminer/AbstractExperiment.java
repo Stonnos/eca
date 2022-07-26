@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.dataminer;
 
 import eca.core.Assert;
@@ -15,9 +10,9 @@ import weka.core.Instances;
 import weka.core.Randomizable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -43,7 +38,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     /**
      * Experiment history
      **/
-    private final ArrayList<EvaluationResults> experiment;
+    private final CopyOnWriteArrayList<EvaluationResults> experiment;
 
     /**
      * Number of folds
@@ -83,13 +78,9 @@ public abstract class AbstractExperiment<T extends Classifier>
     protected Random random = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
-        this(data, classifier, 100);
-    }
-
-    protected AbstractExperiment(Instances data, T classifier, int size) {
         this.data = data;
         this.classifier = classifier;
-        this.experiment = new ArrayList<>(size);
+        this.experiment = new CopyOnWriteArrayList<>();
     }
 
     @Override
@@ -204,7 +195,6 @@ public abstract class AbstractExperiment<T extends Classifier>
                 .limit(size)
                 .collect(Collectors.toList());
         clearHistory();
-        experiment.ensureCapacity(size);
         experiment.addAll(evaluationResults);
     }
 

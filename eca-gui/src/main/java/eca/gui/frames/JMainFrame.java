@@ -134,7 +134,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -150,7 +149,7 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_ADA_BOOST;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_DECISION_TREE;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_HETEROGENEOUS_ENSEMBLE;

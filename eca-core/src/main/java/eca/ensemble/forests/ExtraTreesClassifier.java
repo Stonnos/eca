@@ -115,6 +115,7 @@ public class ExtraTreesClassifier extends RandomForests {
     @Override
     protected Classifier buildNextClassifier(int iteration, Instances data) throws Exception {
         DecisionTreeClassifier treeClassifier = createDecisionTree(iteration);
+        treeClassifier.getFilter().setDisabled(true);
         treeClassifier.setUseRandomSplits(true);
         treeClassifier.setNumRandomSplits(getNumRandomSplits());
         treeClassifier.buildClassifier(data);

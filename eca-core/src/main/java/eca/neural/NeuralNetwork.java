@@ -6,6 +6,7 @@
 package eca.neural;
 
 import eca.core.DecimalFormatHandler;
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.core.ListOptionsHandler;
 import eca.core.MinMaxNormalizer;
@@ -26,13 +27,15 @@ import weka.core.Randomizable;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static eca.neural.NeuralNetworkDictionary.BACK_PROPAGATION_METHOD_TEXT;
+
 /**
  * Class for generating neural network for classification task.
  *
  * @author Roman Batygin
  */
 public class NeuralNetwork extends AbstractClassifier implements Iterable, InstancesHandler,
-        ListOptionsHandler, DecimalFormatHandler, Randomizable {
+        ListOptionsHandler, DecimalFormatHandler, Randomizable, FilterHandler {
 
     private static final DecimalFormat COMMON_DECIMAL_FORMAT = NumericFormatFactory.getInstance(Integer.MAX_VALUE);
 
@@ -101,6 +104,11 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
     }
 
     @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
+    }
+
+    @Override
     public List<String> getListOptions() {
         List<String> options = new ArrayList<>();
 
@@ -136,7 +144,7 @@ public class NeuralNetwork extends AbstractClassifier implements Iterable, Insta
         }
 
         options.add(NeuralNetworkDictionary.LEARNING_ALGORITHM);
-        options.add(getMultilayerPerceptron().getLearningAlgorithm().getClass().getSimpleName());
+        options.add(BACK_PROPAGATION_METHOD_TEXT);
 
         if (multilayerPerceptron.getLearningAlgorithm() instanceof BackPropagation) {
             String[] algorithmOptions = getMultilayerPerceptron().getLearningAlgorithm().getOptions();

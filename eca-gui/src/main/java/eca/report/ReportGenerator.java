@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 import static eca.util.VelocityUtils.mergeContext;
 
 /**
@@ -196,7 +197,7 @@ public class ReportGenerator {
     private static void fillStackingExtendedOptions(StackingClassifier stackingClassifier, VelocityContext context) {
         Map<String, Map<String, String>> inputOptionsMap = getClassifiersOptions(stackingClassifier.getClassifiers());
         inputOptionsMap.put(String.format(META_CLASSIFIER_FORMAT,
-                stackingClassifier.getMetaClassifier().getClass().getSimpleName()),
+                getClassifierName(stackingClassifier.getMetaClassifier())),
                 Utils.getClassifierInputOptionsMap((AbstractClassifier) stackingClassifier.getMetaClassifier()));
         context.put(CLASSIFIERS_OPTIONS, inputOptionsMap);
     }
@@ -205,7 +206,7 @@ public class ReportGenerator {
         LinkedHashMap<String, Map<String, String>> allOptionsMap = new LinkedHashMap<>();
         for (int i = 0; i < classifiers.size(); i++) {
             Classifier currentClassifier = classifiers.getClassifier(i);
-            allOptionsMap.put(String.format(CLASSIFIER_KEY_FORMAT, currentClassifier.getClass().getSimpleName(), i),
+            allOptionsMap.put(String.format(CLASSIFIER_KEY_FORMAT, getClassifierName(currentClassifier), i),
                     Utils.getClassifierInputOptionsMap((AbstractClassifier) currentClassifier));
         }
         return allOptionsMap;
@@ -217,7 +218,7 @@ public class ReportGenerator {
         for (int i = 0; i < Integer.min(experimentHistory.getHistory().size(), resultsSize); i++) {
             EvaluationResults evaluationResults = experimentHistory.getHistory().get(i);
             Classifier classifier = evaluationResults.getClassifier();
-            allOptionsMap.put(String.format(CLASSIFIER_KEY_FORMAT, classifier.getClass().getSimpleName(), i),
+            allOptionsMap.put(String.format(CLASSIFIER_KEY_FORMAT, getClassifierName(classifier), i),
                     Utils.getClassifierInputOptionsMap((AbstractClassifier) classifier));
         }
         velocityContext.put(CLASSIFIERS_OPTIONS, allOptionsMap);

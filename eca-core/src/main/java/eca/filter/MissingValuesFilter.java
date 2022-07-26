@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.filter;
 
+import lombok.Getter;
+import lombok.Setter;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.ReplaceMissingValues;
@@ -18,10 +15,20 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
 
     private static final int MIN_NUM_CLASS_VALUES = 2;
 
+    /**
+     * Is filter disabled?
+     */
+    @Setter
+    @Getter
+    private boolean disabled;
+
     private ReplaceMissingValues missFilter = new ReplaceMissingValues();
 
     @Override
     public Instance filterInstance(Instance obj) {
+        if (isDisabled()) {
+            return obj;
+        }
         missFilter.input(obj);
         return missFilter.output();
     }
@@ -40,6 +47,9 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         }
         if (data.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
             throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+        }
+        if (isDisabled()) {
+            return data;
         }
         Instances train = new Instances(data);
         train.deleteWithMissingClass();

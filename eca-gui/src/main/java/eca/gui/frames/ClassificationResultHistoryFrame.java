@@ -26,7 +26,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
     private static final String TITLE_TEXT = "История классификаторов";
     private static final String DELETE_ATTR_MENU_TEXT = "Удалить";
     private static final String CLEAR_DATA_MENU_TEXT = "Очистка";
-    private static final Dimension LIST_DIMENSION = new Dimension(430, 300);
+    private static final Dimension LIST_DIMENSION = new Dimension(600, 300);
     private static final Dimension POPUP_DIMENSION = new Dimension(150, 50);
 
     private EvaluationResultsHistoryModel evaluationResultsHistory;

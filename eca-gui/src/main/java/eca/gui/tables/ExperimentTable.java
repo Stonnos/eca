@@ -3,7 +3,7 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.EvaluationResults;
-import eca.dataminer.ClassifierComparator;
+import eca.dataminer.AbstractExperiment;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
@@ -22,11 +22,11 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * @author Roman Batygin
@@ -37,11 +37,12 @@ public class ExperimentTable extends JDataTableBase {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
     private static final int INDEX_COLUMN_MAX_WIDTH = 50;
+    private static final int CLASSIFIER_INDEX_COLUMN_MIN_WIDTH = 350;
 
     private final JFrame parentFrame;
     private final Map<Integer, ClassificationResultsFrameBase> classificationResultsFrameBases = newHashMap();
 
-    public ExperimentTable(List<EvaluationResults> experiment, JFrame parent, int digits) {
+    public ExperimentTable(AbstractExperiment<?> experiment, JFrame parent, int digits) {
         super(new ExperimentTableModel(experiment, digits));
         this.parentFrame = parent;
         this.getColumnModel().getColumn(ExperimentTableModel.CLASSIFIER_INDEX).setCellRenderer(
@@ -60,6 +61,8 @@ public class ExperimentTable extends JDataTableBase {
             }
         });
         this.getColumnModel().getColumn(ExperimentTableModel.INDEX).setMaxWidth(INDEX_COLUMN_MAX_WIDTH);
+        this.getColumnModel().getColumn(ExperimentTableModel.CLASSIFIER_INDEX)
+                .setMinWidth(CLASSIFIER_INDEX_COLUMN_MIN_WIDTH);
         this.setAutoResizeOff(false);
     }
 
@@ -67,13 +70,12 @@ public class ExperimentTable extends JDataTableBase {
         return (ExperimentTableModel) this.getModel();
     }
 
-    public void addEvaluationResults(EvaluationResults evaluationResults) {
-        experimentModel().getExperiment().add(evaluationResults);
+    public void notifyLastInsertedResults() {
         experimentModel().notifyLastInsertedResults();
     }
 
     public void sortByBestResults() {
-        experimentModel().getExperiment().sort(new ClassifierComparator());
+        experimentModel().getExperiment().sortByBestResults();
         notifyDataChanged();
     }
 
@@ -81,9 +83,9 @@ public class ExperimentTable extends JDataTableBase {
         experimentModel().fireTableDataChanged();
     }
 
-    public void initializeExperimentHistory(List<EvaluationResults> evaluationResults) {
+    public void initializeExperimentHistory(AbstractExperiment<?> experiment) {
         clear();
-        experimentModel().setExperiment(evaluationResults);
+        experimentModel().setExperiment(experiment);
     }
 
     public void clear() {
@@ -152,9 +154,9 @@ public class ExperimentTable extends JDataTableBase {
                 if (!classificationResultsFrameBases.containsKey(index)) {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
+                    String title = getClassifierName(classifierDescriptor.getClassifier());
                     ClassificationResultsFrameBase result =
-                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame,
-                                    classifierDescriptor.getClassifier().getClass().getSimpleName(),
+                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame, title,
                                     classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
                                     model.digits());
                     classificationResultsFrameBases.put(index, result);
