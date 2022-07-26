@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
 
 /**
  * @author Roman Batygin
@@ -150,9 +151,9 @@ public class ExperimentTable extends JDataTableBase {
                 if (!classificationResultsFrameBases.containsKey(index)) {
                     ExperimentTableModel model = experimentModel();
                     Instances dataSet = ((InstancesHandler) classifierDescriptor.getClassifier()).getData();
+                    String title = getClassifierName(classifierDescriptor.getClassifier());
                     ClassificationResultsFrameBase result =
-                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame,
-                                    classifierDescriptor.getClassifier().getClass().getSimpleName(),
+                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame, title,
                                     classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
                                     model.digits());
                     classificationResultsFrameBases.put(index, result);
