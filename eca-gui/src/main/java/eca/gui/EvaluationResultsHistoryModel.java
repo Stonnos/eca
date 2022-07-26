@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Evaluation results history model.
  *
@@ -27,8 +29,9 @@ public class EvaluationResultsHistoryModel extends DefaultListModel<String> {
     public void add(ClassificationResultsFrameBase resultsFrameBase) {
         synchronized (lifecycleMonitor) {
             resultsFrameBases.add(resultsFrameBase);
+            String classifierTitle = getClassifierName(resultsFrameBase.classifier());
             addElement(String.format(HISTORY_FORMAT, simpleDateFormat.format(resultsFrameBase.getCreationDate()),
-                    resultsFrameBase.classifier().getClass().getSimpleName()));
+                    classifierTitle));
         }
     }
 

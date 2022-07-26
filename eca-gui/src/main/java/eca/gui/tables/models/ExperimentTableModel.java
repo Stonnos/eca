@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+
 /**
  * @author Roman Batygin
  */
@@ -77,7 +79,7 @@ public class ExperimentTableModel extends AbstractTableModel {
             case INDEX:
                 return row;
             case CLASSIFIER_INDEX:
-                return experiment.getHistory().get(row).getClassifier().getClass().getSimpleName();
+                return getClassifierName(experiment.getHistory().get(row).getClassifier());
             case ACCURACY_INDEX:
                 return format.format(experiment.getHistory().get(row).getEvaluation().pctCorrect());
             case RESULTS_INDEX:

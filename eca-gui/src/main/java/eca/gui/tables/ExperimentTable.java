@@ -37,6 +37,7 @@ public class ExperimentTable extends JDataTableBase {
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
     private static final int INDEX_COLUMN_MAX_WIDTH = 50;
+    private static final int CLASSIFIER_INDEX_COLUMN_MIN_WIDTH = 350;
 
     private final JFrame parentFrame;
     private final Map<Integer, ClassificationResultsFrameBase> classificationResultsFrameBases = newHashMap();
@@ -60,6 +61,8 @@ public class ExperimentTable extends JDataTableBase {
             }
         });
         this.getColumnModel().getColumn(ExperimentTableModel.INDEX).setMaxWidth(INDEX_COLUMN_MAX_WIDTH);
+        this.getColumnModel().getColumn(ExperimentTableModel.CLASSIFIER_INDEX)
+                .setMinWidth(CLASSIFIER_INDEX_COLUMN_MIN_WIDTH);
         this.setAutoResizeOff(false);
     }
 

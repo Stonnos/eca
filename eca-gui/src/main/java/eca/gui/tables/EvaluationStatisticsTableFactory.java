@@ -36,6 +36,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_LEAVES
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_NODES_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.OUT_LAYER_NEURONS_NUM_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TREE_DEPTH_TEXT;
+import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements building classifiers evaluation results represented in table.
@@ -202,8 +203,7 @@ public class EvaluationStatisticsTableFactory {
             evaluationStatisticsModel.addRow(
                     new Entry<>(CLASSIFIERS_IN_ENSEMBLE_TEXT, String.valueOf(stackingClassifier.numClassifiers())));
             evaluationStatisticsModel.addRow(
-                    new Entry<>(META_CLASSIFIER_NAME_TEXT,
-                            stackingClassifier.getMetaClassifier().getClass().getSimpleName()));
+                    new Entry<>(META_CLASSIFIER_NAME_TEXT, getClassifierName(stackingClassifier.getMetaClassifier())));
             return evaluationStatisticsModel;
         }
     }
