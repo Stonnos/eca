@@ -27,7 +27,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import java.util.Optional;
 
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements ensemble table.

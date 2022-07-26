@@ -1,4 +1,4 @@
-package eca.gui.service;
+package eca.util;
 
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.dictionary.EnsemblesNamesDictionary;

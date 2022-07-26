@@ -36,7 +36,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_LEAVES
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.NUMBER_OF_NODES_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.OUT_LAYER_NEURONS_NUM_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TREE_DEPTH_TEXT;
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements building classifiers evaluation results represented in table.

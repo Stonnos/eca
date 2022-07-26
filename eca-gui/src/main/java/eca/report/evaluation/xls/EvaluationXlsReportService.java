@@ -41,7 +41,7 @@ import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.List;
 
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements classification results saving into xls, xlsx file.

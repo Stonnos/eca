@@ -35,7 +35,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.SEED_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TOTAL_TIME_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TRAINING_DATA_METHOD_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.VARIANCE_ERROR_TEXT;
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * @author Roman Batygin

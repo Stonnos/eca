@@ -1,14 +1,13 @@
 package eca.gui;
 
 import eca.config.ConfigurationService;
-import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import static eca.gui.service.ClassifierNamesFactory.getClassifierName;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Evaluation results history model.

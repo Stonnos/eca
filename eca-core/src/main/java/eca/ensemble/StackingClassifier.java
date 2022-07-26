@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Implements stacking algorithm.
  * <p>
@@ -282,7 +284,7 @@ public class StackingClassifier extends AbstractClassifier
         options[k++] = String.valueOf(seed);
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[k + 1] = classifiers.getClassifier(j).getClass().getSimpleName();
+            options[k + 1] = getClassifierName(classifiers.getClassifier(j));
         }
         return options;
     }

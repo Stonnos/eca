@@ -17,6 +17,8 @@ import weka.core.Utils;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Implements AdaBoost algorithm. For more information see <p>
  * Yoav Freund, Robert E. Schapire. A decision-theoretic generalization of online learning
@@ -88,7 +90,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         options[k++] = String.valueOf(getSeed());
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
+            options[k + 1] = getClassifierName(getClassifiersSet().getClassifier(j));
         }
         return options;
     }

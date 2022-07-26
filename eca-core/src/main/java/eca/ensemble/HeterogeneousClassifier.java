@@ -17,6 +17,8 @@ import weka.core.Instances;
 import java.util.Objects;
 import java.util.Random;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Implements heterogeneous ensemble algorithm. <p>
  * <p>
@@ -142,7 +144,7 @@ public class HeterogeneousClassifier extends AbstractHeterogeneousClassifier
         options[k++] = String.valueOf(getSeed());
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
+            options[k + 1] = getClassifierName(getClassifiersSet().getClassifier(j));
         }
         return options;
     }
