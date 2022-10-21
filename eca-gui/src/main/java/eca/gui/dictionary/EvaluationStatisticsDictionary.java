@@ -43,4 +43,5 @@ public class EvaluationStatisticsDictionary {
     public static final String CROSS_VALIDATION_METHOD_FORMAT = "Кросс - проверка, %s%d - блочная";
     public static final String TOTAL_TIME_TEXT = "Затраченное время";
     public static final String INTERVAL_FORMAT = "[%s; %s]";
+    public static final String BACK_PROPAGATION_METHOD_TEXT = "Алгоритм обратного распространения ошибки";
 }

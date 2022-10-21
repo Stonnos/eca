@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.core.FilterHandler;
 import eca.ensemble.sampling.Sampler;
 import eca.ensemble.voting.WeightedVoting;
 import weka.classifiers.Classifier;
@@ -16,6 +17,8 @@ import weka.core.Utils;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
+
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * Implements AdaBoost algorithm. For more information see <p>
@@ -88,7 +91,7 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
         options[k++] = String.valueOf(getSeed());
         for (int j = 0; k < options.length; k += 2, j++) {
             options[k] = String.format(EnsembleDictionary.INDIVIDUAL_CLASSIFIER_FORMAT, j);
-            options[k + 1] = getClassifiersSet().getClassifier(j).getClass().getSimpleName();
+            options[k + 1] = getClassifierName(getClassifiersSet().getClassifier(j));
         }
         return options;
     }
@@ -152,6 +155,9 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
                 Classifier classifier = getClassifiersSet().getClassifierCopy(i);
                 if (classifier instanceof Randomizable) {
                     ((Randomizable) classifier).setSeed(seeds[t]);
+                }
+                if (classifier instanceof FilterHandler) {
+                    ((FilterHandler) classifier).getFilter().setDisabled(true);
                 }
                 classifier.buildClassifier(sample);
                 double error = weightedError(classifier);

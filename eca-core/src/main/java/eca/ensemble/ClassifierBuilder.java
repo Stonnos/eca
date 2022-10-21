@@ -1,5 +1,6 @@
 package eca.ensemble;
 
+import eca.core.FilterHandler;
 import eca.core.evaluation.Evaluation;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -24,7 +25,7 @@ public class ClassifierBuilder {
      * @param seed        - seed value for single classifier
      * @return classifier model at the specified position in this collection
      * built on given training set
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static Classifier buildClassifier(ClassifiersSet classifiers, int i, Instances data, int seed)
             throws Exception {
@@ -42,7 +43,7 @@ public class ClassifierBuilder {
      * @param random      - {@link Random} object
      * @param seed        - seed value for single classifier
      * @return classifier model at random position in this collection built on given training set
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static Classifier buildRandomClassifier(ClassifiersSet classifiers, Instances data, Random random, int seed)
             throws Exception {
@@ -60,7 +61,7 @@ public class ClassifierBuilder {
      * @param seed        - seed value for single classifier
      * @return classifier model in this collection minimizing
      * classification error on given training set
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public static Classifier builtOptimalClassifier(ClassifiersSet classifiers, Instances data, int seed)
             throws Exception {
@@ -81,6 +82,9 @@ public class ClassifierBuilder {
     private static void initializeAndBuildClassifier(Classifier classifier, Instances data, int seed) throws Exception {
         if (classifier instanceof Randomizable) {
             ((Randomizable) classifier).setSeed(seed);
+        }
+        if (classifier instanceof FilterHandler) {
+            ((FilterHandler) classifier).getFilter().setDisabled(true);
         }
         classifier.buildClassifier(data);
     }

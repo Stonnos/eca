@@ -41,6 +41,8 @@ import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.List;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Implements classification results saving into xls, xlsx file.
  *
@@ -139,7 +141,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         Sheet sheet = book.createSheet(INPUT_OPTIONS_TEXT);
         AbstractClassifier classifier = (AbstractClassifier) getEvaluationReport().getClassifier();
         createTitle(sheet, style, INDIVIDUAL_CLASSIFIER_INPUT_OPTIONS);
-        createPair(sheet, style, INDIVIDUAL_CLASSIFIER, classifier.getClass().getSimpleName());
+        createPair(sheet, style, INDIVIDUAL_CLASSIFIER, getClassifierName(classifier));
         String[] inputOptions = classifier.getOptions();
         setXlsClassifierOptions(sheet, inputOptions);
         if (classifier instanceof AbstractHeterogeneousClassifier) {
@@ -153,8 +155,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
             setXlsEnsembleOptions(sheet, style, stackingClassifier.getClassifiers().toList());
             createTitle(sheet, style, META_CLASSIFIER_INPUT_OPTIONS);
             String[] metaClassifierOptions = ((AbstractClassifier) stackingClassifier.getMetaClassifier()).getOptions();
-            createPair(sheet, style, META_CLASSIFIER_TEXT,
-                    stackingClassifier.getMetaClassifier().getClass().getSimpleName());
+            createPair(sheet, style, META_CLASSIFIER_TEXT, getClassifierName(stackingClassifier));
             setXlsClassifierOptions(sheet, metaClassifierOptions);
         }
     }
@@ -174,7 +175,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
     private void setXlsEnsembleOptions(Sheet sheet, CellStyle style, List<Classifier> classifiers) {
         classifiers.forEach(classifier -> {
             AbstractClassifier single = (AbstractClassifier) classifier;
-            createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, single.getClass().getSimpleName());
+            createPair(sheet, style, INDIVIDUAL_CLASSIFIER_TEXT, getClassifierName(single));
             createTitle(sheet, style, INPUT_OPTIONS_TEXT);
             String[] singleOptions = single.getOptions();
             setXlsClassifierOptions(sheet, singleOptions);

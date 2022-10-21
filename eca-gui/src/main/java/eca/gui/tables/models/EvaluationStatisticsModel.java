@@ -35,6 +35,7 @@ import static eca.gui.dictionary.EvaluationStatisticsDictionary.SEED_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TOTAL_TIME_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.TRAINING_DATA_METHOD_TEXT;
 import static eca.gui.dictionary.EvaluationStatisticsDictionary.VARIANCE_ERROR_TEXT;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 
 /**
  * @author Roman Batygin
@@ -93,7 +94,7 @@ public class EvaluationStatisticsModel extends AbstractTableModel {
         results.add(
                 new Entry<>(NUMBER_OF_ATTRIBUTES_TEXT, decimalFormat.format(evaluation.getData().numAttributes())));
         results.add(new Entry<>(NUMBER_OF_CLASSES_TEXT, decimalFormat.format(evaluation.getData().numClasses())));
-        results.add(new Entry<>(CLASSIFIER_NAME_TEXT, classifier.getClass().getSimpleName()));
+        results.add(new Entry<>(CLASSIFIER_NAME_TEXT, getClassifierName(classifier)));
 
         if (evaluation.isKCrossValidationMethod()) {
             String evaluationMethodStr = String.format(CROSS_VALIDATION_METHOD_FORMAT,

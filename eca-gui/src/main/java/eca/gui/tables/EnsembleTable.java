@@ -27,6 +27,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 import java.util.Optional;
 
+import static eca.util.ClassifierNamesFactory.getClassifierName;
+
 /**
  * Implements ensemble table.
  *
@@ -111,9 +113,10 @@ public class EnsembleTable extends JDataTableBase {
                     Instances data = ((InstancesHandler) classifier).getData();
                     Evaluation evaluation = new Evaluation(data);
                     evaluation.evaluateModel(classifier, data);
+                    String title = getClassifierName(classifier);
                     ClassificationResultsFrameBase result =
-                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame,
-                                    classifier.getClass().getSimpleName(), classifier, data, evaluation, digits);
+                            ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame, title,
+                                    classifier, data, evaluation, digits);
                     classificationResultsFrameBases[index] = result;
                 }
                 classificationResultsFrameBases[index].setVisible(true);

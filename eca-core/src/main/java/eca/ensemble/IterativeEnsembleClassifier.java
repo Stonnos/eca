@@ -5,6 +5,7 @@
  */
 package eca.ensemble;
 
+import eca.core.FilterHandler;
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
 import eca.ensemble.voting.VotingMethod;
@@ -38,7 +39,7 @@ import java.util.concurrent.Executors;
  * @author Roman Batygin
  */
 public abstract class IterativeEnsembleClassifier extends AbstractClassifier
-        implements Iterable, EnsembleClassifier, InstancesHandler, ConcurrentClassifier, Randomizable {
+        implements Iterable, EnsembleClassifier, InstancesHandler, ConcurrentClassifier, Randomizable, FilterHandler {
 
     private static final int MINIMUM_ITERATIONS_NUMBER = 1;
     private static final int MINIMUM_THREADS_NUMBER = 1;
@@ -165,6 +166,11 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
     @Override
     public Instances getData() {
         return initialData;
+    }
+
+    @Override
+    public MissingValuesFilter getFilter() {
+        return filter;
     }
 
     @Override

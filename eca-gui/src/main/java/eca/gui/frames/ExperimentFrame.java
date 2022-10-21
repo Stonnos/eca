@@ -4,7 +4,6 @@ import eca.config.ConfigurationService;
 import eca.config.registry.SingletonRegistry;
 import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.EvaluationMethod;
-import eca.core.evaluation.EvaluationResults;
 import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
 import eca.dataminer.IterativeExperiment;
@@ -32,9 +31,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 
@@ -86,7 +83,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     @Getter
     private final int digits;
     @Getter
-    private final T experiment;
+    private T experiment;
 
     private JProgressBar experimentProgressBar;
     private JTextPane experimentResultsPane;
@@ -228,7 +225,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private JScrollPane createExperimentHistoryScrollPane() {
-        experimentTable = new ExperimentTable(new ArrayList<>(experiment.getHistory()), this, digits);
+        experimentTable = new ExperimentTable(experiment, this, digits);
         JScrollPane experimentHistoryScrollPane = new JScrollPane(experimentTable);
         experimentHistoryScrollPane.setBorder(PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_TITLE));
         return experimentHistoryScrollPane;
@@ -348,7 +345,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         setStateForButtons(false);
         setStateForOptions(false);
         experimentTable.setRenderer(Color.BLACK);
-        experiment.clearHistory();
         experimentTable.clear();
         doBegin();
         worker.execute();
@@ -359,8 +355,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private void saveExperimentHistory() {
         try {
-            List<EvaluationResults> experimentHistory = experimentTable.experimentModel().getExperiment();
-            if (experimentHistory == null || experimentHistory.isEmpty()) {
+            AbstractExperiment<?> experimentHistory = experimentTable.experimentModel().getExperiment();
+            if (experimentHistory == null || experimentHistory.getHistory().isEmpty()) {
                 JOptionPane.showMessageDialog(ExperimentFrame.this, EMPTY_HISTORY_ERROR_MESSAGE, null,
                         JOptionPane.WARNING_MESSAGE);
             } else {
@@ -401,8 +397,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                                         actualExperimentName);
                         showFormattedErrorMessageDialog(ExperimentFrame.this, errorMessage);
                     } else {
-                        experimentTable.initializeExperimentHistory(loaderExperiment.getHistory());
-                        displayResults(experimentClass.cast(loaderExperiment));
+                        experiment = experimentClass.cast(loaderExperiment);
+                        experimentTable.initializeExperimentHistory(experiment);
+                        displayResults(experimentClass.cast(experiment));
                     }
                 }, () -> showFormattedErrorMessageDialog(ExperimentFrame.this, loadDialog.getErrorMessageText()));
 
@@ -488,9 +485,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
         private void performNextIteration() {
             try {
-                EvaluationResults evaluationResults = object.next();
+                object.next();
                 if (!isCancelled()) {
-                    experimentTable.addEvaluationResults(evaluationResults);
+                    experimentTable.notifyLastInsertedResults();
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
