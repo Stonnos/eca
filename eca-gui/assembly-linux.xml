@@ -21,6 +21,7 @@
                 <include>eca.sh</include>
                 <include>docs/data/*</include>
                 <include>readme.txt</include>
+                <include>COPYING</include>
             </includes>
         </fileSet>
     </fileSets>
