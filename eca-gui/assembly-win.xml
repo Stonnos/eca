@@ -1,0 +1,19 @@
+<assembly>
+    <id>bundle</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>target/*.jar</include>
+                <include>target/ECA.exe</include>
+                <include>docs/data/*</include>
+                <include>target/ECAManual.pdf</include>
+                <include>target/eca-service-config.json</include>
+                <include>target/lib/*</include>
+                <include>target/images/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

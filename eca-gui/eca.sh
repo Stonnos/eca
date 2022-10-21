@@ -1,0 +1,1 @@
+java -jar target/eca-gui-6.9.1.jar
