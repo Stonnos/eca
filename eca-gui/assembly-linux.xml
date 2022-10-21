@@ -5,14 +5,21 @@
     </formats>
     <fileSets>
         <fileSet>
+            <directory>${project.basedir}/target</directory>
+            <outputDirectory>app</outputDirectory>
             <includes>
-                <include>target/*.jar</include>
+                <include>*.jar</include>
+                <include>ECAManual.pdf</include>
+                <include>eca-service-config.json</include>
+                <include>lib/*</include>
+                <include>images/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>app</outputDirectory>
+            <includes>
                 <include>eca.sh</include>
                 <include>docs/data/*</include>
-                <include>target/ECAManual.pdf</include>
-                <include>target/eca-service-config.json</include>
-                <include>target/lib/*</include>
-                <include>target/images/*</include>
             </includes>
         </fileSet>
     </fileSets>
