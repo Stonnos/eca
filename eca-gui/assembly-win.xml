@@ -20,6 +20,7 @@
             <outputDirectory>app</outputDirectory>
             <includes>
                 <include>docs/data/*</include>
+                <include>readme.txt</include>
             </includes>
         </fileSet>
     </fileSets>
