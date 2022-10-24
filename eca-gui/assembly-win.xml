@@ -1,0 +1,28 @@
+<assembly>
+    <id>bundle</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/target</directory>
+            <outputDirectory>app</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+                <include>ECA.exe</include>
+                <include>ECAManual.pdf</include>
+                <include>eca-service-config.json</include>
+                <include>lib/*</include>
+                <include>images/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>app</outputDirectory>
+            <includes>
+                <include>docs/data/*</include>
+                <include>readme.txt</include>
+                <include>COPYING</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
