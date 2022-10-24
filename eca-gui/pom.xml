@@ -26,6 +26,7 @@
         <unaccess.version>4.0.4</unaccess.version>
         <sqllite.version>3.27.2.1</sqllite.version>
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
@@ -251,7 +252,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>make-assembly-linux</id>
@@ -283,7 +284,6 @@
                     </execution>
                 </executions>
             </plugin>
-
 
         </plugins>
     </build>
