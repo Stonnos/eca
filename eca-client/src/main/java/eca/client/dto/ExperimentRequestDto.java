@@ -17,11 +17,6 @@ import weka.core.Instances;
 public class ExperimentRequestDto {
 
     /**
-     * First name
-     */
-    private String firstName;
-
-    /**
      * Email
      */
     private String email;
