@@ -22,7 +22,6 @@ import java.io.File;
 public class TestHelperUtils {
 
     private static final String DATA_PATH = "iris.xls";
-    private static final String FIRST_NAME = "Роман";
     private static final String EMAIL = "bat1238@yandex.ru";
 
     /**
@@ -45,7 +44,6 @@ public class TestHelperUtils {
      */
     public static ExperimentRequestDto createExperimentRequestDto() {
         ExperimentRequestDto experimentRequestDto = new ExperimentRequestDto();
-        experimentRequestDto.setFirstName(FIRST_NAME);
         experimentRequestDto.setEmail(EMAIL);
         experimentRequestDto.setEvaluationMethod(EvaluationMethod.CROSS_VALIDATION);
         experimentRequestDto.setExperimentType(ExperimentType.KNN);
