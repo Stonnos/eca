@@ -35,7 +35,6 @@ class JsonMessageConverterTest {
         ExperimentRequestDto actual = jsonMessageConverter.fromMessage(bytes, ExperimentRequestDto.class);
         assertNotNull(actual);
         assertEquals(expected.getExperimentType(), actual.getExperimentType());
-        assertEquals(expected.getFirstName(), actual.getFirstName());
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getEvaluationMethod(), actual.getEvaluationMethod());
         assertEquals(expected.getData().relationName(), actual.getData().relationName());
