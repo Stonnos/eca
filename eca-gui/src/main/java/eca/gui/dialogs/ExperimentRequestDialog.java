@@ -8,13 +8,13 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.text.LengthDocument;
 import eca.gui.validators.EmailValidator;
-import eca.gui.validators.FirstNameValidator;
-import eca.gui.validators.TextFieldInputVerifier;
 import eca.gui.validators.Validator;
 import eca.util.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 /**
  * Experiment request dialog.
@@ -24,28 +24,21 @@ import java.awt.*;
 public class ExperimentRequestDialog extends JDialog {
 
     private static final int TEXT_LENGTH = 15;
-    private static final int FIRST_NAME_MAX_LENGTH = 30;
     private static final int EMAIL_MAX_LENGTH = 50;
 
     private static final String TITLE_TEXT = "Создание заявки на эксперимент";
-    private static final String FIRST_NAME_TEXT = "Ваше имя:";
     private static final String EMAIL_TEXT = "Ваш e-mail:";
     private static final String CLASSIFIER_TEXT = "Классификатор:";
     private static final String EVALUATION_METHOD_TITLE = "Метод оценки точности";
     private static final String MAIN_OPTIONS_TITLE = "Основные параметры";
     private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
-    private static final String NOT_SAME_ALPHABETIC_ERROR =
-            "Имя должно начинаться с большой буквы\nи состоять из символов одного алфавита!";
     private static final String INVALID_EMAIL_FORMAT_ERROR = "Введен некорректный e-mail!";
-    private static final String FIRST_NAME_TOOLTIP_TEXT = "Укажите ваше имя";
     private static final String EMAIL_FIELD_TOOLTIP_TEXT = "Укажите Email для получения результатов эксперимента";
 
-    private JTextField firstNameTextField;
     private JTextField emailTextField;
     private JComboBox<String> experimentTypeBox;
     private ButtonGroup evaluationMethodsGroup;
 
-    private Validator firstNameValidator = new FirstNameValidator();
     private Validator emailValidator = new EmailValidator();
 
     private boolean dialogResult;
@@ -57,7 +50,7 @@ public class ExperimentRequestDialog extends JDialog {
         this.createGUI();
         this.pack();
         this.setLocationRelativeTo(parent);
-        firstNameTextField.requestFocusInWindow();
+        emailTextField.requestFocusInWindow();
     }
 
     public boolean isDialogResult() {
@@ -66,7 +59,6 @@ public class ExperimentRequestDialog extends JDialog {
 
     public void showDialog(ExperimentRequestDto experimentRequestDto) {
         if (experimentRequestDto != null) {
-            firstNameTextField.setText(experimentRequestDto.getFirstName());
             emailTextField.setText(experimentRequestDto.getEmail());
         }
         setVisible(true);
@@ -76,14 +68,8 @@ public class ExperimentRequestDialog extends JDialog {
         JPanel mainOptionPanel = new JPanel(new GridBagLayout());
         mainOptionPanel.setBorder(PanelBorderUtils.createTitledBorder(MAIN_OPTIONS_TITLE));
 
-        firstNameTextField = new JTextField(TEXT_LENGTH);
-        firstNameTextField.setDocument(new LengthDocument(FIRST_NAME_MAX_LENGTH));
-        firstNameTextField.setInputVerifier(new TextFieldInputVerifier());
-        firstNameTextField.setToolTipText(FIRST_NAME_TOOLTIP_TEXT);
-
         emailTextField = new JTextField(TEXT_LENGTH);
         emailTextField.setDocument(new LengthDocument(EMAIL_MAX_LENGTH));
-        emailTextField.setInputVerifier(new TextFieldInputVerifier());
         emailTextField.setToolTipText(EMAIL_FIELD_TOOLTIP_TEXT);
 
         experimentTypeBox = new JComboBox<>(EnumUtils.getDescriptions(ExperimentType.class));
@@ -105,31 +91,12 @@ public class ExperimentRequestDialog extends JDialog {
             dialogResult = false;
             setVisible(false);
         });
-        //-----------------------------------------------
-        okButton.addActionListener(e -> {
-            JTextField field =
-                    GuiUtils.searchFirstEmptyField(firstNameTextField, emailTextField);
-            if (field != null) {
-                GuiUtils.showErrorMessageAndRequestFocusOn(ExperimentRequestDialog.this, field);
-            } else {
-                try {
-                    validateFields();
-                    dialogResult = true;
-                    setVisible(false);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(ExperimentRequestDialog.this,
-                            ex.getMessage(), INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
 
-        mainOptionPanel.add(new JLabel(FIRST_NAME_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        okButton.addActionListener(okButtonListener());
+
+        mainOptionPanel.add(new JLabel(EMAIL_TEXT), new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        mainOptionPanel.add(firstNameTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
-                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
-        mainOptionPanel.add(new JLabel(EMAIL_TEXT), new GridBagConstraints(0, 1, 1, 1, 1, 1,
-                GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-        mainOptionPanel.add(emailTextField, new GridBagConstraints(1, 1, 1, 1, 1, 1,
+        mainOptionPanel.add(emailTextField, new GridBagConstraints(1, 0, 1, 1, 1, 1,
                 GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 0, 10, 10), 0, 0));
 
         mainOptionPanel.add(new JLabel(CLASSIFIER_TEXT),
@@ -155,25 +122,30 @@ public class ExperimentRequestDialog extends JDialog {
         this.getRootPane().setDefaultButton(okButton);
     }
 
+    private ActionListener okButtonListener() {
+        return event -> {
+            if (!emailValidator.validate(emailTextField.getText().trim())) {
+                JOptionPane.showMessageDialog(ExperimentRequestDialog.this,
+                        INVALID_EMAIL_FORMAT_ERROR, INPUT_ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
+            } else {
+                dialogResult = true;
+                setVisible(false);
+            }
+        };
+    }
+
     public ExperimentRequestDto createExperimentRequestDto() {
         ExperimentRequestDto experimentRequestDto = new ExperimentRequestDto();
-        experimentRequestDto.setFirstName(firstNameTextField.getText().trim());
-        experimentRequestDto.setEmail(emailTextField.getText().trim());
+        String email = emailTextField.getText().trim();
+        if (StringUtils.isNotEmpty(email)) {
+            experimentRequestDto.setEmail(email);
+        }
         String selectedText = GuiUtils.searchSelectedButtonText(evaluationMethodsGroup);
         EvaluationMethod evaluationMethod = EnumUtils.fromDescription(selectedText, EvaluationMethod.class);
         experimentRequestDto.setEvaluationMethod(evaluationMethod);
-        ExperimentType experimentType = EnumUtils.fromDescription(experimentTypeBox.getSelectedItem().toString(), ExperimentType.class);
+        ExperimentType experimentType =
+                EnumUtils.fromDescription(experimentTypeBox.getSelectedItem().toString(), ExperimentType.class);
         experimentRequestDto.setExperimentType(experimentType);
-
         return experimentRequestDto;
-    }
-
-    private void validateFields() {
-        if (!firstNameValidator.validate(firstNameTextField.getText().trim())) {
-            throw new IllegalArgumentException(NOT_SAME_ALPHABETIC_ERROR);
-        }
-        if (!emailValidator.validate(emailTextField.getText().trim())) {
-            throw new IllegalArgumentException(INVALID_EMAIL_FORMAT_ERROR);
-        }
     }
 }
