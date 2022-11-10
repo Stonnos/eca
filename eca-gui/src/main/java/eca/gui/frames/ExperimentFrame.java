@@ -6,6 +6,7 @@ import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.EvaluationMethod;
 import eca.data.file.resource.FileResource;
 import eca.dataminer.AbstractExperiment;
+import eca.dataminer.ExperimentHistoryMode;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
@@ -74,6 +75,11 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private static final String INVALID_EXPERIMENT_TYPE_MESSAGE_FORMAT =
             "Загружен недопустимый эксперимент '%s'. Допускается загрузка эксперимента типа '%s'!";
     private static final String EMPTY_HISTORY_ERROR_MESSAGE = "Невозможно сохранить пустую историю эксперимета!";
+    private static final String EXPERIMENT_HISTORY_OPTIONS_TITLE = "Настройки истории эксперимента";
+    private static final String FULL_HISTORY_TITLE = "Полная история";
+    private static final String BEST_MODELS_TITLE = "Только оптимальные модели";
+    private static final String ONLY_BEST_MODELS_TOOLTIP_TEXT = "Отбор только оптимальных моделей";
+    private static final String FULL_HISTORY_TOOLTIP_TEXT = "Построение полной истории эксперимента";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
     private final long experimentId = System.currentTimeMillis();
@@ -89,6 +95,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private JTextPane experimentResultsPane;
     private JRadioButton useTrainingSet;
     private JRadioButton useTestingSet;
+    private JRadioButton fullHistoryRadioButton;
+    private JRadioButton onlyBestModelsRadioButton;
     private JSpinner foldsSpinner = new JSpinner();
     private JSpinner validationsSpinner = new JSpinner();
 
@@ -98,6 +106,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private JButton loadButton;
     private JButton stopButton;
     private JPanel evaluationMethodPanel;
+    private JPanel experimentHistoryModePanel;
 
     private JTextField timerField;
 
@@ -136,6 +145,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private void setStateForOptions(boolean flag) {
         for (Component c : evaluationMethodPanel.getComponents()) {
+            c.setEnabled(flag);
+        }
+        for (Component c : experimentHistoryModePanel.getComponents()) {
             c.setEnabled(flag);
         }
         if (flag && useTrainingSet.isSelected()) {
@@ -210,6 +222,25 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                         GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 10, 10, 10), 0, 0));
         evaluationMethodPanel.add(validationsSpinner, new GridBagConstraints(1, 3, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 10, 10), 0, 0));
+
+    }
+
+    private void createExperimentHistoryModePanel() {
+        experimentHistoryModePanel = new JPanel(new GridBagLayout());
+        experimentHistoryModePanel.setBorder(
+                PanelBorderUtils.createTitledBorder(EXPERIMENT_HISTORY_OPTIONS_TITLE));
+        ButtonGroup group = new ButtonGroup();
+        fullHistoryRadioButton = new JRadioButton(FULL_HISTORY_TITLE);
+        fullHistoryRadioButton.setToolTipText(FULL_HISTORY_TOOLTIP_TEXT);
+        onlyBestModelsRadioButton = new JRadioButton(BEST_MODELS_TITLE);
+        onlyBestModelsRadioButton.setToolTipText(ONLY_BEST_MODELS_TOOLTIP_TEXT);
+        group.add(fullHistoryRadioButton);
+        group.add(onlyBestModelsRadioButton);
+        onlyBestModelsRadioButton.setSelected(true);
+        experimentHistoryModePanel.add(fullHistoryRadioButton, new GridBagConstraints(0, 0, 2, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
+        experimentHistoryModePanel.add(onlyBestModelsRadioButton, new GridBagConstraints(0, 1, 2, 1, 1, 1,
+                GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 10, 5, 0), 0, 0));
 
     }
 
@@ -307,17 +338,21 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setLayout(new GridBagLayout());
         createEvaluationMethodPanel();
+        createExperimentHistoryModePanel();
         createExperimentProgressBar();
         JPanel mainTopPanel = new JPanel(new GridBagLayout());
 
         mainTopPanel.add(evaluationMethodPanel,
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+        mainTopPanel.add(experimentHistoryModePanel,
+                new GridBagConstraints(0, 1, 1, 1, 0, 0,
+                        GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 0), 0, 0));
         mainTopPanel.add(createExperimentMenuPanel(),
-                new GridBagConstraints(0, 1, 1, 1, 0, 1,
+                new GridBagConstraints(0, 2, 1, 1, 0, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
         mainTopPanel.add(createExperimentHistoryScrollPane(),
-                new GridBagConstraints(1, 0, 1, 2, 1, 1,
+                new GridBagConstraints(1, 0, 1, 3, 1, 1,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
         this.add(mainTopPanel,
@@ -335,6 +370,9 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private void startExperiment() {
         experiment.setEvaluationMethod(useTestingSet.isSelected()
                 ? EvaluationMethod.CROSS_VALIDATION : EvaluationMethod.TRAINING_DATA);
+        experiment.setExperimentHistoryMode(onlyBestModelsRadioButton.isSelected()
+                ? ExperimentHistoryMode.ONLY_BEST_MODELS : ExperimentHistoryMode.FULL);
+        experiment.setNumBestResults(CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults());
         if (useTestingSet.isSelected()) {
             experiment.setNumFolds(((SpinnerNumberModel) foldsSpinner.getModel()).getNumber().intValue());
             experiment.setNumTests(
