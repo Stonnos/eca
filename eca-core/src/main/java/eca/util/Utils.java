@@ -45,6 +45,19 @@ public class Utils {
     }
 
     /**
+     * Shifts list elements to right from specified position.
+     *
+     * @param pos  - position
+     * @param list - list
+     * @param <T>  - list element generic type
+     */
+    public static <T> void shiftRight(int pos, List<T> list) {
+        for (int i = list.size() - 1; i > pos; i--) {
+            list.set(i, list.get(i - 1));
+        }
+    }
+
+    /**
      * Normalizes arrays values.
      *
      * @param doubles - array of double values
