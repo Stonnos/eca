@@ -10,10 +10,11 @@ import weka.core.Instances;
 import weka.core.Randomizable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
+
+import static eca.util.Utils.shiftRight;
 
 /**
  * Abstract class for automatic selection of optimal options
@@ -38,7 +39,7 @@ public abstract class AbstractExperiment<T extends Classifier>
     /**
      * Experiment history
      **/
-    private final CopyOnWriteArrayList<EvaluationResults> experiment;
+    private final List<EvaluationResults> experiment;
 
     /**
      * Number of folds
@@ -66,6 +67,16 @@ public abstract class AbstractExperiment<T extends Classifier>
     private EvaluationMethod evaluationMethod = EvaluationMethod.TRAINING_DATA;
 
     /**
+     * Experiment history mode
+     */
+    private ExperimentHistoryMode experimentHistoryMode = ExperimentHistoryMode.FULL;
+
+    /**
+     * Best results number (used for {@link ExperimentHistoryMode#ONLY_BEST_MODELS} mode)
+     */
+    private int numBestResults = 5;
+
+    /**
      * Training set
      **/
     private final Instances data;
@@ -75,12 +86,16 @@ public abstract class AbstractExperiment<T extends Classifier>
      **/
     private final T classifier;
 
+    private ExperimentHistoryModeVisitor experimentHistoryModeVisitor= new ExperimentHistoryModeVisitorImpl();
+
+    private ClassifierComparator classifierComparator = new ClassifierComparator();
+
     protected Random random = new Random();
 
     protected AbstractExperiment(Instances data, T classifier) {
         this.data = data;
         this.classifier = classifier;
-        this.experiment = new CopyOnWriteArrayList<>();
+        this.experiment = new ArrayList<>();
     }
 
     @Override
@@ -115,9 +130,9 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     /**
-     * Returns the number of folds.
+     * Returns folds number.
      *
-     * @return the number of folds
+     * @return folds number
      */
     public int getNumFolds() {
         return numFolds;
@@ -133,39 +148,75 @@ public abstract class AbstractExperiment<T extends Classifier>
     }
 
     /**
-     * Sets the number of folds.
+     * Sets folds number.
      *
-     * @param numFolds the number of folds
+     * @param numFolds - folds number
      */
     public void setNumFolds(int numFolds) {
         this.numFolds = numFolds;
     }
 
     /**
-     * Returns the number of tests.
+     * Returns tests number.
      *
-     * @return the number of tests
+     * @return tests number
      */
     public int getNumTests() {
         return numTests;
     }
 
     /**
-     * Sets the number of tests.
+     * Sets tests number.
      *
-     * @param numTests the number of tests
+     * @param numTests - tests number
      */
     public void setNumTests(int numTests) {
         this.numTests = numTests;
     }
 
     /**
-     * Sets the evaluation method type
+     * Sets evaluation method type
      *
-     * @param evaluationMethod evaluation method type
+     * @param evaluationMethod - evaluation method type
      */
     public void setEvaluationMethod(EvaluationMethod evaluationMethod) {
         this.evaluationMethod = evaluationMethod;
+    }
+
+    /**
+     * Sets experiment history mode
+     *
+     * @param experimentHistoryMode - experiment history mode
+     */
+    public void setExperimentHistoryMode(ExperimentHistoryMode experimentHistoryMode) {
+        this.experimentHistoryMode = experimentHistoryMode;
+    }
+
+    /**
+     * Return experiment history mode.
+     *
+     * @return experiment history mode
+     */
+    public ExperimentHistoryMode getExperimentHistoryMode() {
+        return experimentHistoryMode;
+    }
+
+    /**
+     * Sets best results number.
+     *
+     * @param numBestResults - best results number
+     */
+    public void setNumBestResults(int numBestResults) {
+        this.numBestResults = numBestResults;
+    }
+
+    /**
+     * Returns best results number.
+     *
+     * @return best results number
+     */
+    public int getNumBestResults() {
+        return numBestResults;
     }
 
     @Override
@@ -181,29 +232,8 @@ public abstract class AbstractExperiment<T extends Classifier>
     /**
      * Sorts experiment history by best results.
      */
-    public void sortByBestResults() {
+    public synchronized void sortByBestResults() {
         experiment.sort(new ClassifierComparator());
-    }
-
-    /**
-     * Reduces experiment history to specified size.
-     *
-     * @param size - results size
-     */
-    public void reduce(int size) {
-        List<EvaluationResults> evaluationResults = experiment.stream()
-                .limit(size)
-                .collect(Collectors.toList());
-        clearHistory();
-        experiment.addAll(evaluationResults);
-    }
-
-    protected final EvaluationResults evaluateModel(Classifier model) throws Exception {
-        Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
-                getEvaluationMethod(), getNumFolds(), getNumTests(), seed);
-        EvaluationResults object = new EvaluationResults(model, evaluation);
-        getHistory().add(object);
-        return object;
     }
 
     @Override
@@ -211,6 +241,55 @@ public abstract class AbstractExperiment<T extends Classifier>
         IterativeExperiment iterativeExperiment = getIterativeExperiment();
         while (iterativeExperiment.hasNext()) {
             iterativeExperiment.next();
+        }
+    }
+
+    protected final EvaluationResults evaluateModel(Classifier model) throws Exception {
+        Evaluation evaluation = EvaluationService.evaluateModel(model, getData(),
+                getEvaluationMethod(), getNumFolds(), getNumTests(), seed);
+        EvaluationResults evaluationResults = new EvaluationResults(model, evaluation);
+        addEvaluationResults(evaluationResults);
+        return evaluationResults;
+    }
+
+    private void addEvaluationResults(EvaluationResults evaluationResults) {
+        getExperimentHistoryMode().visit(experimentHistoryModeVisitor, evaluationResults);
+    }
+
+    /**
+     * Experiment history mode visitor.
+     */
+    private class ExperimentHistoryModeVisitorImpl implements ExperimentHistoryModeVisitor, Serializable {
+
+        @Override
+        public void visitFull(EvaluationResults evaluationResults) {
+            getHistory().add(evaluationResults);
+        }
+
+        @Override
+        public void visitOnlyBestModels(EvaluationResults evaluationResults) {
+            addIfBest(evaluationResults);
+        }
+
+        synchronized void addIfBest(EvaluationResults evaluationResults) {
+            int pos = getPositionInHistory(evaluationResults);
+            if (getHistory().size() == numBestResults) {
+                if (pos < getHistory().size()) {
+                    shiftRight(pos, getHistory());
+                    getHistory().set(pos, evaluationResults);
+                }
+            } else {
+                getHistory().add(pos, evaluationResults);
+            }
+        }
+
+        int getPositionInHistory(EvaluationResults evaluationResults) {
+            for (int i = 0; i < getHistory().size(); i++) {
+                if (classifierComparator.compare(getHistory().get(i), evaluationResults) > 0) {
+                    return i;
+                }
+            }
+            return getHistory().size();
         }
     }
 

@@ -2,6 +2,7 @@ package eca.dataminer;
 
 import eca.core.evaluation.EvaluationResults;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Comparator;
  *
  * @author Roman Batygin
  */
-public class ClassifierComparator implements Comparator<EvaluationResults> {
+public class ClassifierComparator implements Comparator<EvaluationResults>, Serializable {
 
     @Override
     public int compare(EvaluationResults c1, EvaluationResults c2) {
