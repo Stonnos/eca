@@ -82,6 +82,52 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>build-artifacts</id>
+            <properties>
+                <production>true</production>
+            </properties>
+
+           <build>
+               <plugins>
+                   <plugin>
+                       <artifactId>maven-assembly-plugin</artifactId>
+                       <version>${maven-assembly-plugin.version}</version>
+                       <executions>
+                           <execution>
+                               <id>make-assembly-linux</id>
+                               <phase>package</phase>
+                               <goals>
+                                   <goal>single</goal>
+                               </goals>
+                               <configuration>
+                                   <descriptors>
+                                       <descriptor>assembly-linux.xml</descriptor>
+                                   </descriptors>
+                                   <finalName>eca-${project.version}</finalName>
+                                   <appendAssemblyId>false</appendAssemblyId>
+                               </configuration>
+                           </execution>
+                           <execution>
+                               <id>make-assembly-win</id>
+                               <phase>package</phase>
+                               <goals>
+                                   <goal>single</goal>
+                               </goals>
+                               <configuration>
+                                   <descriptors>
+                                       <descriptor>assembly-win.xml</descriptor>
+                                   </descriptors>
+                                   <finalName>eca-${project.version}</finalName>
+                                   <appendAssemblyId>false</appendAssemblyId>
+                               </configuration>
+                           </execution>
+                       </executions>
+                   </plugin>
+               </plugins>
+           </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -249,42 +295,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>make-assembly-linux</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly-linux.xml</descriptor>
-                            </descriptors>
-                            <finalName>eca-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>make-assembly-win</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>assembly-win.xml</descriptor>
-                            </descriptors>
-                            <finalName>eca-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
     </build>
 
