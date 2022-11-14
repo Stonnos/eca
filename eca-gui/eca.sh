@@ -1,1 +1,1 @@
-java -jar eca-gui-6.9.1.jar
+java -jar eca-gui-6.9.2.jar

@@ -2,6 +2,7 @@ package eca.gui.tables.models;
 
 import eca.core.evaluation.EvaluationResults;
 import eca.dataminer.AbstractExperiment;
+import eca.dataminer.ExperimentHistoryMode;
 import eca.text.NumericFormatFactory;
 import weka.classifiers.Classifier;
 
@@ -60,7 +61,11 @@ public class ExperimentTableModel extends AbstractTableModel {
     }
 
     public void notifyLastInsertedResults() {
-        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+        if (ExperimentHistoryMode.FULL.equals(experiment.getExperimentHistoryMode())) {
+            fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+        } else {
+            fireTableDataChanged();
+        }
     }
 
     public void clear() {
