@@ -104,7 +104,7 @@ ECA v6.9.2
 
 4. Для создания инсталлятора необходимо собрать проект с помощью команды:
 
-    mvn clean install -Pprod,installer
+    mvn clean install -Pinstaller
 
 Профиль installer отвечает за этап создания инсталлятора
 
@@ -113,7 +113,7 @@ ECA v6.9.2
 
 1. Для создания дистрибутивов необходимо собрать проект с помощью команды:
 
-    mvn clean install -Pprod
+    mvn clean install -Pbuild-artifacts
     
 2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.2.zip (для windows), eca-6.9.2.tar.gz (для linux)
 
