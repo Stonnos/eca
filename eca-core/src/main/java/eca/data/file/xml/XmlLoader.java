@@ -30,10 +30,8 @@ public class XmlLoader extends AbstractDataLoader<DataResource> {
              BufferedReader reader = new BufferedReader(inputStreamReader)) {
             JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            InstancesModel instancesModel = (InstancesModel) unmarshaller.unmarshal(inputStreamReader);
-            Instances instances = INSTANCES_CONVERTER.convert(instancesModel);
-            instances.setClassIndex(instances.numAttributes() - 1);
-            return instances;
+            InstancesModel instancesModel = (InstancesModel) unmarshaller.unmarshal(reader);
+            return INSTANCES_CONVERTER.convert(instancesModel);
         }
     }
 

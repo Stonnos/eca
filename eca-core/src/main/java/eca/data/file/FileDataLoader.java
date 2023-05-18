@@ -73,7 +73,6 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile())));
         data = loadData(loaderConfig.getDataLoaderSupplier().get());
-        data.setClassIndex(data.numAttributes() - 1);
         log.info("Instances has been loaded from [{}]", getSource().getFile());
         return data;
     }

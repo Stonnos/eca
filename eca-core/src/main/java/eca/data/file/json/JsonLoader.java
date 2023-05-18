@@ -30,9 +30,7 @@ public class JsonLoader extends AbstractDataLoader<DataResource> {
              InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              BufferedReader reader = new BufferedReader(inputStreamReader)) {
             InstancesModel instancesModel =  OBJECT_MAPPER.readValue(reader, InstancesModel.class);
-            Instances instances = INSTANCES_CONVERTER.convert(instancesModel);
-            instances.setClassIndex(instances.numAttributes() - 1);
-            return instances;
+            return INSTANCES_CONVERTER.convert(instancesModel);
         }
     }
 

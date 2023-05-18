@@ -48,13 +48,26 @@ public class InstancesConverter {
      * @return instances
      */
     public Instances convert(InstancesModel instancesModel) {
-        ArrayList<Attribute> attributes = instancesModel.getAttributes().stream().map(this::convertAttribute).collect(
-                Collectors.toCollection(ArrayList::new));
+        ArrayList<Attribute> attributes = instancesModel.getAttributes()
+                .stream()
+                .map(this::convertAttribute)
+                .collect(Collectors.toCollection(ArrayList::new));
         Instances instances =
                 new Instances(instancesModel.getRelationName(), attributes, instancesModel.getInstances().size());
-        instancesModel.getInstances().forEach(instanceModel -> instances.add(convertInstance(instanceModel, instances)));
+        instancesModel.getInstances().forEach(
+                instanceModel -> instances.add(convertInstance(instanceModel, instances)));
         if (!StringUtils.isEmpty(instancesModel.getClassName())) {
-            instances.setClass(instances.attribute(instancesModel.getClassName()));
+            if (attributes.stream().noneMatch(attribute -> attribute.name().equals(instancesModel.getClassName()))) {
+                throw new IllegalStateException(
+                        String.format("Class attribute [%s] not found in instances [%s] attributes set",
+                                instancesModel.getClassName(), instances.relationName()));
+            }
+            Attribute classAttribute = instances.attribute(instancesModel.getClassName());
+            if (classAttribute.isNumeric()) {
+                throw new IllegalStateException(String.format("Class attribute [%s] must be nominal for instances [%s]",
+                        instancesModel.getClassName(), instances.relationName()));
+            }
+            instances.setClass(classAttribute);
         }
         return instances;
     }
