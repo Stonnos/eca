@@ -8,7 +8,6 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.filter.ConstantAttributesFilter;
-import eca.filter.FilterDictionary;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
@@ -241,6 +240,10 @@ public class InstancesTable extends JDataTableBase {
     public Instances createAndFilterData(String relationName) throws Exception {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(relationName);
+            if (!attributesTable.isSelected(getClassIndex())) {
+                throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
+            }
+            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
@@ -251,14 +254,18 @@ public class InstancesTable extends JDataTableBase {
     }
 
     /**
-     * Creates instances taking into selected attributes with assigned class attribute.
+     * Creates instances taking into selected attributes and class attribute if specified.
      *
      * @param relationName - relation name
      * @return created instances
      * @throws Exception in case of error
      */
     public Instances createSimpleData(String relationName) throws Exception {
-        return createInstances(relationName);
+        Instances instances = createInstances(relationName);
+        if (attributesTable.isSelected(getClassIndex())) {
+            instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
+        }
+        return instances;
     }
 
     /**
@@ -369,12 +376,6 @@ public class InstancesTable extends JDataTableBase {
                 }
             }
             newDataSet.add(obj);
-        }
-        if (attributesTable.isSelected(getClassIndex())) {
-            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
-                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
-            }
         }
         return newDataSet;
     }
