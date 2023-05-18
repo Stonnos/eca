@@ -6,7 +6,10 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.IntStream;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * SQL helper class.
@@ -25,6 +28,8 @@ public class SqlQueryHelper {
     private static final String INSERT_QUERY_FORMAT = "INSERT INTO %s VALUES(%s)";
     private static final String VALUE_DELIMITER_FORMAT = "%s, ";
     private static final String PREPARED_QUERY_PARAMETER = "?";
+    private static final String PRIMARY_KEY_COLUMN_FORMAT = "%s %s primary key, ";
+    private static final String PRIMARY_KEY_TYPE = "int";
 
     /**
      * Date column type
@@ -44,7 +49,22 @@ public class SqlQueryHelper {
     /**
      * Using date as string?
      */
-    private boolean useDateInStringFormat = false;
+    private boolean useDateInStringFormat;
+
+    /**
+     * Use primary key column?
+     */
+    private boolean usePrimaryKeyColumn;
+
+    /**
+     * Primary key column name
+     */
+    private String primaryKeyColumnName;
+
+    /**
+     * Next ID value for primary key column
+     */
+    private int nextId;
 
     /**
      * Formats attribute name to database column format for create table query.
@@ -99,6 +119,13 @@ public class SqlQueryHelper {
      */
     public String buildCreateTableQuery(String tableName, Instances instances) {
         StringBuilder queryString = new StringBuilder();
+        if (usePrimaryKeyColumn) {
+            if (instances.attribute(primaryKeyColumnName) != null) {
+                throw new IllegalStateException(
+                        String.format("Primary key column [%s] matches with one of attribute", primaryKeyColumnName));
+            }
+            queryString.append(String.format(PRIMARY_KEY_COLUMN_FORMAT, primaryKeyColumnName, PRIMARY_KEY_TYPE));
+        }
         for (int i = 0; i < instances.numAttributes() - 1; i++) {
             queryString.append(formatAttribute(instances.attribute(i), COLUMN_FORMAT));
         }
@@ -115,6 +142,9 @@ public class SqlQueryHelper {
      */
     public String buildPreparedInsertQuery(String tableName, Instances instances) {
         StringBuilder queryString = new StringBuilder();
+        if (usePrimaryKeyColumn) {
+            queryString.append(String.format(VALUE_DELIMITER_FORMAT, PREPARED_QUERY_PARAMETER));
+        }
         for (int i = 0; i < instances.numAttributes() - 1; i++) {
             queryString.append(String.format(VALUE_DELIMITER_FORMAT, PREPARED_QUERY_PARAMETER));
         }
@@ -129,9 +159,16 @@ public class SqlQueryHelper {
      * @return insert query parameters
      */
     public Object[] prepareQueryParameters(Instance instance) {
-        return IntStream.range(0, instance.numAttributes())
-                .mapToObj(i -> getValue(instance, instance.attribute(i)))
-                .toArray();
+        List<Object> parameters = newArrayList();
+        if (usePrimaryKeyColumn) {
+            parameters.add(nextId);
+        }
+        IntStream.range(0, instance.numAttributes())
+                .forEach(i -> {
+                    Object value = getValue(instance, instance.attribute(i));
+                    parameters.add(value);
+                });
+        return parameters.toArray();
     }
 
     /**
