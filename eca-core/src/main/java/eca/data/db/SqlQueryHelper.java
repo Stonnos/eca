@@ -54,7 +54,7 @@ public class SqlQueryHelper {
      * @return column string
      */
     public String formatAttribute(Attribute attribute, String columnFormat) {
-        String attributeName = normalizeName(attribute.name());
+        String attributeName = formatName(attribute.name());
         if (attribute.isNominal()) {
             return String.format(columnFormat, attributeName, varcharColumnType);
         } else if (attribute.isDate()) {
@@ -78,8 +78,7 @@ public class SqlQueryHelper {
         if (instance.isMissing(attribute)) {
             return null;
         } else if (attribute.isNominal()) {
-            String val = eca.util.Utils.removeQuotes(instance.stringValue(attribute));
-            return truncateStringValue(val);
+            return formatNominalValue(instance.stringValue(attribute));
         } else if (attribute.isDate()) {
             return useDateInStringFormat ? instance.stringValue(attribute) :
                     Timestamp.valueOf(instance.stringValue(attribute));
@@ -136,14 +135,14 @@ public class SqlQueryHelper {
     }
 
     /**
-     * Normalizes name for data base. Normalization includes:
+     * Performs name formatting. Formatting includes:
      * 1. Replaces all non words and non numeric symbols to '_' symbol.
      * 2. Casts result string to lower case.
      *
      * @param name - name string
-     * @return normalized name
+     * @return formatted name
      */
-    public static String normalizeName(String name) {
+    public static String formatName(String name) {
         StringBuilder resultString = new StringBuilder();
         for (int i = 0; i < name.length(); i++) {
             resultString.append(Character.isLetterOrDigit(name.charAt(i)) ? name.charAt(i) : DELIMITER);
@@ -159,5 +158,19 @@ public class SqlQueryHelper {
      */
     public static String truncateStringValue(String value) {
         return value.length() > VARCHAR_LENGTH ? value.substring(0, VARCHAR_LENGTH) : value;
+    }
+
+    /**
+     * Formats nominal value.
+     * Formatting includes:
+     * 1. Quotes removal
+     * 2. Value truncation to 255 length, if its length greater than 255 symbols
+     *
+     * @param value - value
+     * @return formatted value
+     */
+    public static String formatNominalValue(String value) {
+        String val = eca.util.Utils.removeQuotes(value);
+        return truncateStringValue(val);
     }
 }
