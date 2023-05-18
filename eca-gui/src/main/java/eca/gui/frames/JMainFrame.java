@@ -149,7 +149,6 @@ import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_DB_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.URL_MENU_KEY_STROKE;
-import static eca.util.ClassifierNamesFactory.getClassifierName;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_ADA_BOOST;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_DECISION_TREE;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_HETEROGENEOUS_ENSEMBLE;
@@ -158,6 +157,7 @@ import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_MODIFIED_HETEROG
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_NETWORKS;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_RANDOM_FORESTS;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
+import static eca.util.ClassifierNamesFactory.getClassifierName;
 import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
 import static eca.util.UrlUtils.isValidUrl;
@@ -262,6 +262,7 @@ public class JMainFrame extends JFrame {
             "Не удалось установить соединение с %s:%d";
     private static final String RABBIT_CONNECTION_MESSAGE_FORMAT = "Подключение к %s:%d...";
     private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
+    private static final String SAVE_DATA_TITLE = "Пожалуйста подождите, идет сохранение данных...";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -1880,7 +1881,10 @@ public class JMainFrame extends JFrame {
                             File file = fileChooser.getSelectedFile(JMainFrame.this);
                             if (file != null) {
                                 dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                dataSaver.saveData(file, dataBuilder.getResult());
+                                CallbackAction action = () ->   dataSaver.saveData(file, dataBuilder.getResult());
+                                LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                                        action, SAVE_DATA_TITLE, false);
+                                processAsyncTask(loadDialog, () -> {});
                             }
                         });
                     }
@@ -1935,7 +1939,7 @@ public class JMainFrame extends JFrame {
                             databaseSaver.setTableName(databaseSaverDialog.getTableName());
                             LoadDialog progress = new LoadDialog(JMainFrame.this,
                                     new DatabaseSaverAction(databaseSaver, dataBuilder.getResult()),
-                                    DB_SAVE_PROGRESS_MESSAGE_TEXT);
+                                    DB_SAVE_PROGRESS_MESSAGE_TEXT, false);
                             processAsyncTask(progress, () ->
                                     JOptionPane.showMessageDialog(JMainFrame.this,
                                             String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,

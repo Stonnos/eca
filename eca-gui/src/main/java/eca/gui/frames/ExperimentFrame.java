@@ -10,6 +10,7 @@ import eca.dataminer.ExperimentHistoryMode;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
+import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
@@ -51,6 +52,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private static final String BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение моделей...";
     private static final String LOAD_EXPERIMENT_TITLE = "Пожалуйста подождите, идет загрузка истории эксперимента...";
+    private static final String SAVE_EXPERIMENT_TITLE = "Пожалуйста подождите, идет сохранение истории эксперимента...";
     private static final String EXPERIMENT_HISTORY_TITLE = "История эксперимента";
     private static final String INFO_TITLE = "Информация";
     private static final String START_BUTTON_TEXT = "Начать эксперимент";
@@ -403,7 +405,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                         new File(ClassifierIndexerService.getExperimentIndex(experiment.getClassifier())));
                 File file = fileChooser.getSelectedFile(ExperimentFrame.this);
                 if (file != null) {
-                    ModelSerializationHelper.serialize(file, experiment);
+                    internalSaveExperimentHistory(file);
                 }
             }
         } catch (Exception e) {
@@ -411,6 +413,13 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             JOptionPane.showMessageDialog(ExperimentFrame.this, e.getMessage(),
                     null, JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void internalSaveExperimentHistory(File file) throws Exception {
+        CallbackAction action = () -> ModelSerializationHelper.serialize(file, experiment);
+        LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
+                action, SAVE_EXPERIMENT_TITLE, false);
+        ExecutorService.process(loadDialog, ExperimentFrame.this);
     }
 
     private void loadExperiment() {
