@@ -151,7 +151,7 @@ public class InstancesConverter {
     private Instance convertInstance(InstanceModel instanceModel, Instances instances) {
         Instance instance = new DenseInstance(instances.numAttributes());
         instance.setDataset(instances);
-        for (int j = 0; j < instances.numAttributes(); j++) {
+        for (int j = 0; j < instanceModel.getValues().size(); j++) {
             Attribute attribute = instances.attribute(j);
             String val = instanceModel.getValues().get(j);
             if (StringUtils.isEmpty(val)) {
