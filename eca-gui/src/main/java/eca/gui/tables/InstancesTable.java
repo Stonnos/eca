@@ -261,11 +261,20 @@ public class InstancesTable extends JDataTableBase {
         return createInstances(relationName);
     }
 
-    public void validateData(boolean validateClass) {
+    /**
+     * Validates data table.
+     * Attributes validation includes following checks:
+     * 1. Checks that selected attributes number is greater than or equal to 2
+     * 2. Checks that class attribute is selected
+     * 3. Checks that class attribute is nominal
+     *
+     * @param validateAttributes - validates attributes?
+     */
+    public void validateData(boolean validateAttributes) {
         if (getRowCount() == 0) {
             throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
-        if (validateClass) {
+        if (validateAttributes) {
             if (validateSelectedAttributesCount()) {
                 throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
             }
@@ -361,9 +370,11 @@ public class InstancesTable extends JDataTableBase {
             }
             newDataSet.add(obj);
         }
-        newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-        if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
-            throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+        if (attributesTable.isSelected(getClassIndex())) {
+            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
+            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
+                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+            }
         }
         return newDataSet;
     }
