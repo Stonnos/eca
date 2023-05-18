@@ -5,6 +5,7 @@ import eca.data.file.resource.DataResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,8 +34,9 @@ public class DATALoader extends AbstractTextLoader {
         String line;
         int columnSize = 0;
         int rowIdx = 1;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getSource().openInputStream(), StandardCharsets.UTF_8))) {
+        try (InputStream inputStream = getSource().openInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(inputStreamReader)) {
             while ((line = reader.readLine()) != null) {
                 List<String> row = parseLine(line, columnSize, rowIdx);
                 data.add(row);

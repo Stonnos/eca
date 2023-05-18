@@ -10,6 +10,7 @@ import weka.core.Instances;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
@@ -24,11 +25,12 @@ public class XmlLoader extends AbstractDataLoader<DataResource> {
 
     @Override
     public Instances loadInstances() throws Exception {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getSource().openInputStream(), StandardCharsets.UTF_8))) {
+        try (InputStream inputStream = getSource().openInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(inputStreamReader)) {
             JAXBContext jaxbContext = JAXBContext.newInstance(InstancesModel.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            InstancesModel instancesModel = (InstancesModel) unmarshaller.unmarshal(reader);
+            InstancesModel instancesModel = (InstancesModel) unmarshaller.unmarshal(inputStreamReader);
             Instances instances = INSTANCES_CONVERTER.convert(instancesModel);
             instances.setClassIndex(instances.numAttributes() - 1);
             return instances;
