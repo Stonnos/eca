@@ -236,15 +236,11 @@ public class InstancesTable extends JDataTableBase {
      *
      * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public Instances createAndFilterData(String relationName) throws Exception {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(relationName);
-            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
-                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
-            }
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
@@ -255,11 +251,11 @@ public class InstancesTable extends JDataTableBase {
     }
 
     /**
-     * Creates instances taking into selected attributes with no assigned class attribute.
+     * Creates instances taking into selected attributes with assigned class attribute.
      *
      * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public Instances createSimpleData(String relationName) throws Exception {
         return createInstances(relationName);
@@ -364,6 +360,10 @@ public class InstancesTable extends JDataTableBase {
                 }
             }
             newDataSet.add(obj);
+        }
+        newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
+        if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
+            throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
         }
         return newDataSet;
     }
