@@ -63,11 +63,9 @@ public class InstancesConverter {
                                 instancesModel.getClassName(), instances.relationName()));
             }
             Attribute classAttribute = instances.attribute(instancesModel.getClassName());
-            if (classAttribute.isNumeric()) {
-                throw new IllegalStateException(String.format("Class attribute [%s] must be nominal for instances [%s]",
-                        instancesModel.getClassName(), instances.relationName()));
-            }
             instances.setClass(classAttribute);
+        } else {
+            instances.setClassIndex(instances.numAttributes() - 1);
         }
         return instances;
     }

@@ -559,10 +559,6 @@ public class JMainFrame extends JFrame {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
             }
-            // Force set last attribute as class in case if its not specified
-            if (data.classIndex() < 0) {
-                data.setClassIndex(data.numAttributes() - 1);
-            }
             classBox.setSelectedIndex(data.classIndex());
             instanceTable = new InstancesTable(data, numInstancesTextField, classBox, digits);
             dataScrollPane.setViewportView(instanceTable);
