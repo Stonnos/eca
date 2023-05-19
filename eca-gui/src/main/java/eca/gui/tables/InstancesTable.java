@@ -69,7 +69,6 @@ public class InstancesTable extends JDataTableBase {
     private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
-    private static final int MIN_NUM_CLASS_VALUES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
 
