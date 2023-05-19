@@ -15,6 +15,8 @@ public class FilterDictionary {
     public static final String BAD_CLASS_TYPE_ERROR_TEXT = "Атрибут класса должен иметь категориальный тип!";
     public static final String BAD_NUMBER_OF_CLASSES_ERROR_TEXT =
             "Атрибут класса должен иметь не менее двух значений!";
+    public static final String BAD_NUMBER_OF_ATTRIBUTES_ERROR_TEXT =
+            "Обучающая выборка должна содержать не менее двух атрибутов!";
     public static final String EMPTY_INSTANCES_ERROR_TEXT =
             "Обучающее множество не содержит объектов с заданными классами!";
 }

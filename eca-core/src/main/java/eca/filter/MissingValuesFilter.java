@@ -15,6 +15,8 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
 
     private static final int MIN_NUM_CLASS_VALUES = 2;
 
+    private static final int MIN_NUM_ATTRIBUTES = 2;
+
     /**
      * Is filter disabled?
      */
@@ -38,6 +40,9 @@ public class MissingValuesFilter implements Filter, java.io.Serializable {
         Objects.requireNonNull(data, "Input data is not specified!");
         if (data.checkForStringAttributes()) {
             throw new IllegalArgumentException(FilterDictionary.STRING_ATTR_ERROR_TEXT);
+        }
+        if (data.numAttributes() < MIN_NUM_ATTRIBUTES) {
+            throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_ATTRIBUTES_ERROR_TEXT);
         }
         if (data.classIndex() == -1) {
             throw new IllegalArgumentException(FilterDictionary.CLASS_NOT_SELECTED_ERROR_TEXT);
