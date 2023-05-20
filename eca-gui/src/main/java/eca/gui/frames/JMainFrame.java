@@ -263,6 +263,7 @@ public class JMainFrame extends JFrame {
     private static final String RABBIT_CONNECTION_MESSAGE_FORMAT = "Подключение к %s:%d...";
     private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
     private static final String SAVE_DATA_TITLE = "Пожалуйста подождите, идет сохранение данных...";
+    private static final String RESET_BUTTON_TOOLTIP_TEXT = "Установка настроек атрибутов и их типов по умолчанию";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -375,7 +376,7 @@ public class JMainFrame extends JFrame {
         static final String NUMBER_OF_INSTANCES_TEXT = "Число объектов: ";
         static final String NUMBER_OF_ATTRIBUTES_TEXT = "Число атрибутов: ";
         static final String CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT = "Выбрать все";
-        static final String RESET_ALL_ATTRIBUTES_BUTTON_TEXT = "Сброс";
+        static final String RESET_ALL_ATTRIBUTES_BUTTON_TEXT = "По умолчанию";
         static final int RELATION_NAME_FIELD_LENGTH = 30;
         static final int NUM_INSTANCES_FIELD_LENGTH = 6;
         static final int NUM_ATTRIBUTES_FIELD_LENGTH = 4;
@@ -528,6 +529,7 @@ public class JMainFrame extends JFrame {
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
             selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
             resetButton = new JButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
+            resetButton.setToolTipText(RESET_BUTTON_TOOLTIP_TEXT);
 
             selectButton.addActionListener(e -> attributesTable.selectAllAttributes());
             resetButton.addActionListener(e -> attributesTable.resetValues());
