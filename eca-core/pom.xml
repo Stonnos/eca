@@ -24,7 +24,7 @@
         <postresql.version>42.2.23</postresql.version>
         <mysql.version>8.0.26</mysql.version>
         <unaccess.version>4.0.4</unaccess.version>
-        <sqllite.version>3.27.2.1</sqllite.version>
+        <sqllite.version>3.41.2.2</sqllite.version>
         <mssql.version>7.2.1.jre8</mssql.version>
         <fst.version>2.57</fst.version>
         <sonar.coverage.exclusions>
