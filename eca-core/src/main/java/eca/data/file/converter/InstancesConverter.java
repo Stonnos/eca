@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 /**
  * Xml instances converter.
  *
@@ -49,14 +51,17 @@ public class InstancesConverter {
      * @return instances
      */
     public Instances convert(InstancesModel instancesModel) {
+        if (instancesModel.getAttributes() == null || instancesModel.getAttributes().isEmpty()) {
+            throw new IllegalStateException("Empty attributes list!");
+        }
         ArrayList<Attribute> attributes = instancesModel.getAttributes()
                 .stream()
                 .map(this::convertAttribute)
                 .collect(Collectors.toCollection(ArrayList::new));
+        List<InstanceModel> instanceModels = Optional.ofNullable(instancesModel.getInstances()).orElse(newArrayList());
         Instances instances =
-                new Instances(instancesModel.getRelationName(), attributes, instancesModel.getInstances().size());
-        instancesModel.getInstances().forEach(
-                instanceModel -> instances.add(convertInstance(instanceModel, instances)));
+                new Instances(instancesModel.getRelationName(), attributes, instanceModels.size());
+        instanceModels.forEach(instanceModel -> instances.add(convertInstance(instanceModel, instances)));
         if (!StringUtils.isEmpty(instancesModel.getClassName())) {
             if (attributes.stream().noneMatch(attribute -> attribute.name().equals(instancesModel.getClassName()))) {
                 throw new IllegalStateException(
@@ -73,7 +78,7 @@ public class InstancesConverter {
 
     private InstanceModel convertInstance(Instance instance) {
         InstanceModel instanceModel = new InstanceModel();
-        instanceModel.setValues(new ArrayList<>());
+        instanceModel.setValues(newArrayList());
         for (int i = 0; i < instance.numAttributes(); i++) {
             String value = StringUtils.EMPTY;
             if (!instance.isMissing(i)) {
@@ -118,7 +123,7 @@ public class InstancesConverter {
                 break;
             case Attribute.NOMINAL:
                 attributeModel.setType(AttributeType.NOMINAL);
-                attributeModel.setValues(new ArrayList<>());
+                attributeModel.setValues(newArrayList());
                 for (int i = 0; i < attribute.numValues(); i++) {
                     attributeModel.getValues().add(attribute.value(i));
                 }
@@ -131,6 +136,12 @@ public class InstancesConverter {
     }
 
     private Attribute convertAttribute(AttributeModel attributeModel) {
+        if (StringUtils.isBlank(attributeModel.getName())) {
+            throw new IllegalStateException("Attribute name must be not blank!");
+        }
+        if (attributeModel.getType() == null) {
+            throw new IllegalStateException("Attribute type must be not null!");
+        }
         return attributeModel.getType().handle(new AttributeTypeVisitor<Attribute>() {
             @Override
             public Attribute caseNumeric() {
