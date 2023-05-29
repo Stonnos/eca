@@ -15,6 +15,7 @@ import weka.core.Utils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -149,9 +150,15 @@ public class InstancesConverter {
     }
 
     private Instance convertInstance(InstanceModel instanceModel, Instances instances) {
+        if (instanceModel.getValues() == null || instanceModel.getValues().size() != instances.numAttributes()) {
+            String errorMessage =
+                    String.format("Values list must contains [%d] values! Actual is [%d]", instances.numAttributes(),
+                            Optional.ofNullable(instanceModel.getValues()).map(List::size).orElse(0));
+            throw new IllegalStateException(errorMessage);
+        }
         Instance instance = new DenseInstance(instances.numAttributes());
         instance.setDataset(instances);
-        for (int j = 0; j < instanceModel.getValues().size(); j++) {
+        for (int j = 0; j < instances.numAttributes(); j++) {
             Attribute attribute = instances.attribute(j);
             String val = instanceModel.getValues().get(j);
             if (StringUtils.isEmpty(val)) {
