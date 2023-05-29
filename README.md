@@ -1,4 +1,4 @@
-ECA v6.9.2
+ECA v6.9.3
 ========================================
 
 Описание
@@ -115,7 +115,7 @@ ECA v6.9.2
 
     mvn clean install -Pbuild-artifacts
     
-2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.2.zip (для windows), eca-6.9.2.tar.gz (для linux)
+2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.3.zip (для windows), eca-6.9.3.tar.gz (для linux)
 
 Примечание: Для сборки артефактов используется плагин maven assembly plugin. Файлы assembly-linux.xml, assembly-win.xml содержат
 конфигурации для создания дистрибутивов.
