@@ -12,6 +12,8 @@ import eca.trees.rules.AbstractRule;
 import eca.trees.rules.BinaryRule;
 import eca.trees.rules.NominalRule;
 import eca.trees.rules.NumericRule;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -22,6 +24,7 @@ import weka.core.Utils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
@@ -330,7 +333,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         while (!x.isLeaf()) {
             x = x.getChild(o);
         }
-        calculateProbabilities(x);
+        calculateNodeProbabilities(x);
         return Arrays.copyOf(probabilities, probabilities.length);
     }
 
@@ -516,6 +519,22 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
 
     /**
+     * Numeric value model.
+     */
+    @Data
+    @AllArgsConstructor
+    private static class NumValModel {
+        /**
+         * Object index in train data set
+         */
+        int index;
+        /**
+         * Double value for numeric attribute
+         */
+        double value;
+    }
+
+    /**
      * Class for storage node split results.
      */
     protected static class SplitDescriptor {
@@ -572,13 +591,15 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         boolean isBetterSplit(double currentMeasure, double measure);
 
+        default void preProcess(TreeNode x) {
+        }
     }
 
     private int getNumChildren(Attribute attribute) {
         return attribute.isNumeric() || getUseBinarySplits() ? 2 : attribute.numValues();
     }
 
-    private void initializeProbabilityArrays(Attribute attribute) {
+    private void initializeSplitProbabilityArrays(Attribute attribute) {
         int numChildren = getNumChildren(attribute);
         if (getUseBinarySplits()) {
             if (probabilitiesMatrix == null) {
@@ -596,37 +617,58 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         }
     }
 
-    protected final void calculateProbabilities(TreeNode x, boolean normalize) {
-        initializeProbabilityArrays(x.getRule().attribute());
+
+
+    protected final void calculateSplitProbabilities(TreeNode x) {
+        initializeSplitProbabilityArrays(x.getRule().attribute());
         x.objects().forEach(objIndex -> {
             Instance obj = filteredData.instance(objIndex);
             int k = x.getRule().getChild(obj);
             probabilitiesMatrix[k][(int) obj.classValue()]++;
             childrenSizes[k]++;
         });
-        if (normalize) {
-            for (double[] probabilitiesArray : probabilitiesMatrix) {
-                eca.util.Utils.normalize(probabilitiesArray);
-            }
-        }
     }
 
-    private List<Double> getSortedNumericAttributeVector(TreeNode x, Attribute a) {
+    private List<NumValModel> getSortedNumericAttributeVector(TreeNode x, Attribute a) {
         return x.objects()
                 .stream()
-                .map(i -> filteredData.instance(i).value(a))
-                .sorted()
+                .map(i -> new NumValModel(i, filteredData.instance(i).value(a)))
+                .sorted(Comparator.comparing(NumValModel::getValue))
                 .collect(Collectors.toList());
+    }
+
+    private void initSplitProbabilitiesForNumericAttribute(TreeNode x) {
+        initializeSplitProbabilityArrays(x.getRule().attribute());
+        x.objects().forEach(objIndex -> {
+            Instance obj = filteredData.instance(objIndex);
+            probabilitiesMatrix[1][(int) obj.classValue()]++;
+            childrenSizes[1]++;
+        });
     }
 
     private void processNumericSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
-        List<Double> values = getSortedNumericAttributeVector(x, a);
+        List<NumValModel> values = getSortedNumericAttributeVector(x, a);
         NumericRule rule = new NumericRule(a);
         double optThreshold = 0.0;
         x.rule = rule;
+        initSplitProbabilitiesForNumericAttribute(x);
+        int last = 0;
         for (int i = 0; i < values.size() - 1; i++) {
-            rule.setMeanValue((values.get(i) + values.get(i + 1)) / 2);
+            rule.setMeanValue((values.get(i).getValue() + values.get(i + 1).getValue()) / 2);
+            for (int j = last; j < values.size(); j++) {
+                Instance instance = filteredData.instance(values.get(j).getIndex());
+                if (rule.getChild(instance) > 0) {
+                    break;
+                } else {
+                    //Move instance from left node to right node
+                    probabilitiesMatrix[0][(int) instance.classValue()]++;
+                    childrenSizes[0]++;
+                    probabilitiesMatrix[1][(int) instance.classValue()]--;
+                    childrenSizes[1]--;
+                    last++;
+                }
+            }
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
                 split.setParams(measure, x.getRule());
@@ -639,6 +681,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private void processNominalSplit(Attribute a, SplitAlgorithm splitAlgorithm, SplitDescriptor split) {
         TreeNode x = split.getNode();
         x.rule = new NominalRule(a);
+        calculateSplitProbabilities(x);
         double measure = splitAlgorithm.getMeasure(x);
         if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
             split.setParams(measure, x.getRule());
@@ -696,6 +739,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         x.rule = rule;
         for (int i = 0; i < k; i++) {
             rule.setMeanValue(NumberGenerator.random(random, minAttrValue, maxAttrValue));
+            calculateSplitProbabilities(x);
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(split.getCurrentMeasure(), measure)) {
                 split.setParams(measure, x.getRule());
@@ -739,6 +783,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         PermutationsSearcher permutationsSearch = new PermutationsSearcher();
         permutationsSearch.setValues(values);
         while (permutationsSearch.nextPermutation()) {
+            calculateSplitProbabilities(x);
             double measure = splitAlgorithm.getMeasure(x);
             if (splitAlgorithm.isBetterSplit(splitDescriptor.getCurrentMeasure(), measure)) {
                 splitDescriptor.setParams(measure, x.getRule());
@@ -767,6 +812,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
             x.setLeaf();
             numLeaves++;
         } else {
+            splitAlgorithm.preProcess(x);
             SplitDescriptor split = createOptSplit(x);
             x.rule = split.rule;
             createChildren(x, getNumChildren(x.getRule().attribute()));
@@ -802,7 +848,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return split;
     }
 
-    protected final void calculateProbabilities(TreeNode x) {
+    protected final void calculateNodeProbabilities(TreeNode x) {
         Arrays.fill(probabilities, 0);
         if (!x.objects().isEmpty()) {
             x.objects().forEach(objIndex -> probabilities[(int) filteredData.instance(objIndex).classValue()]++);
@@ -815,7 +861,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private double classValue(TreeNode x) {
         double classValue = 0.0;
         double max = -Double.MAX_VALUE;
-        calculateProbabilities(x);
+        calculateNodeProbabilities(x);
         for (int k = 0; k < probabilities.length; k++) {
             if (probabilities[k] > max) {
                 max = probabilities[k];

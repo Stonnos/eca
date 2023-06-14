@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.trees;
 
 import eca.statistics.Statistics;
@@ -95,7 +90,6 @@ public class CHAID extends DecisionTreeClassifier {
 
         @Override
         public double getMeasure(TreeNode x) {
-            calculateProbabilities(x, false);
             computeContingencyTable(x);
             return hiSquaredTest();
         }
