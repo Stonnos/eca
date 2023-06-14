@@ -276,7 +276,7 @@
 %    From: 1                       To: good                
 %    From: 2                       To: bad                 
 %
-@relation german_credit
+@relation credit
 @attribute checking_status { '<0', '0<=X<200', '>=200', 'no checking'}
 @attribute duration numeric
 @attribute credit_history { 'no credits/all paid', 'all paid', 'existing paid', 'delayed previously', 'critical/other existing credit'}
