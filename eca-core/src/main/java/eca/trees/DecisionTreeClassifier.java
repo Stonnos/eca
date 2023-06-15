@@ -333,8 +333,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         while (!x.isLeaf()) {
             x = x.getChild(o);
         }
-        calculateNodeProbabilities(x);
-        return Arrays.copyOf(probabilities, probabilities.length);
+        return Arrays.copyOf(x.getClassProbabilities(), x.getClassProbabilities().length);
     }
 
     @Override
@@ -395,11 +394,27 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         probabilities = new double[data.numClasses()];
         random = new Random(seed);
         filteredData = filter.filterInstances(data);
+        createRoot();
+        createDecisionTree(root);
+        clearTempData();
+    }
+
+    private void createRoot() {
         root = new TreeNode(filteredData);
         root.setDepth(1);
         root.setClassValue(classValue(root));
+        double nodeError = calculateNodeError(root);
+        root.setNodeError(nodeError);
+        root.setNodeSize(root.objectsNum());
         numNodes++;
-        createDecisionTree(root);
+    }
+
+    private void clearTempData() {
+        //Clear if filter is not disabled. If filter is disabled then filteredData = data,
+        //and we do not to clear initial data set
+        if (!filter.isDisabled()) {
+            filteredData.clear();
+        }
     }
 
     /**
@@ -415,6 +430,9 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         AbstractRule rule;
         int depth;
         int index;
+        double nodeError;
+        int nodeSize;
+        double[] classProbabilities;
 
         TreeNode(Instances data) {
             IntStream.range(0, data.numInstances()).forEach(i -> objects.add(i));
@@ -446,6 +464,30 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         void setClassValue(double classValue) {
             this.classValue = classValue;
+        }
+
+        double getNodeError() {
+            return nodeError;
+        }
+
+        void setNodeError(double nodeError) {
+            this.nodeError = nodeError;
+        }
+
+        int getNodeSize() {
+            return nodeSize;
+        }
+
+        void setNodeSize(int nodeSize) {
+            this.nodeSize = nodeSize;
+        }
+
+        public double[] getClassProbabilities() {
+            return classProbabilities;
+        }
+
+        public void setClassProbabilities(double[] classProbabilities) {
+            this.classProbabilities = classProbabilities;
         }
 
         int getDepth() {
@@ -552,14 +594,6 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
 
         TreeNode getNode() {
             return node;
-        }
-
-        void setNode(TreeNode node) {
-            this.node = node;
-        }
-
-        AbstractRule getRule() {
-            return rule;
         }
 
         void setRule(AbstractRule rule) {
@@ -796,6 +830,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     private void createDecisionTree(TreeNode x) {
         doSplit(x);
         if (!x.isLeaf()) {
+            x.objects().clear();
             for (TreeNode c : x.children()) {
                 createDecisionTree(c);
             }
@@ -807,10 +842,18 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return splitDescriptor.getNode().isSplit(minObj);
     }
 
+    private void setAsLeaf(TreeNode x) {
+        x.setLeaf();
+        calculateNodeProbabilities(x);
+        double[] classProbabilities = Arrays.copyOf(probabilities, probabilities.length);
+        x.setClassProbabilities(classProbabilities);
+        x.objects().clear();
+        numLeaves++;
+    }
+
     private void doSplit(TreeNode x) {
         if (x.isMaxDepth(maxDepth) || x.isMinObj(minObj) || isClean(x)) {
-            x.setLeaf();
-            numLeaves++;
+            setAsLeaf(x);
         } else {
             splitAlgorithm.preProcess(x);
             SplitDescriptor split = createOptSplit(x);
@@ -820,8 +863,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
                 numNodes += x.childrenNum();
                 setClasses(x);
             } else {
-                x.setLeaf();
-                numLeaves++;
+                setAsLeaf(x);
             }
         }
     }
@@ -876,7 +918,7 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
         return x.parent != null ? x.parent.classValue() : classValue;
     }
 
-    protected final double calculateNodeError(TreeNode x) {
+    private double calculateNodeError(TreeNode x) {
         long count = x.objects()
                 .stream()
                 .filter(objIndex -> filteredData.instance(objIndex).classValue() != x.classValue())
@@ -903,8 +945,11 @@ public abstract class DecisionTreeClassifier extends AbstractClassifier
     }
 
     private void setClasses(TreeNode x) {
-        for (TreeNode c : x.children()) {
-            c.setClassValue(classValue(c));
+        for (TreeNode child : x.children()) {
+            child.setClassValue(classValue(child));
+            double nodeError = calculateNodeError(child);
+            child.setNodeError(nodeError);
+            child.setNodeSize(child.objectsNum());
         }
     }
 
