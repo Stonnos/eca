@@ -109,6 +109,7 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 import eca.trees.J48;
+import eca.util.ClassifierNamesFactory;
 import eca.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -158,7 +159,6 @@ import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_NETWORKS;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_RANDOM_FORESTS;
 import static eca.gui.service.ExperimentNamesFactory.DATA_MINER_STACKING;
 import static eca.util.ClassifierNamesFactory.getClassifierName;
-import static eca.util.EcaServiceUtils.getEcaServiceTrackDetailsOrDefault;
 import static eca.util.EcaServiceUtils.getFirstErrorAsString;
 import static eca.util.UrlUtils.isValidUrl;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
@@ -1606,15 +1606,13 @@ public class JMainFrame extends JFrame {
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
         return (evaluationResponse, basicProperties) -> {
             try {
-                EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), evaluationResponse);
                 popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
                         EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
-                        String title = getEcaServiceTrackDetailsOrDefault(ecaServiceTrack,
-                                evaluationResults.getClassifier().getClass().getSimpleName());
+                        String title = ClassifierNamesFactory.getClassifierName(evaluationResults.getClassifier());
                         try {
                             ClassificationResultsFrameBase classificationResultsFrameBase =
                                     createEvaluationResults(title, evaluationResults.getClassifier(),
