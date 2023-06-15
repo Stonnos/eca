@@ -161,7 +161,6 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         } else {
             concurrentBuildClassifier(data);
         }
-        clearTempData();
     }
 
     @Override
@@ -268,6 +267,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         }
         finishedLatch.await();
         executorService.shutdownNow();
+        clearTempData();
         checkModelForEmpty();
         //Sorts classifiers in order of its iteration number
         classifiers.sort(Comparator.comparing(ClassifierOrderModel::getOrder));
