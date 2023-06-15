@@ -161,6 +161,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         } else {
             concurrentBuildClassifier(data);
         }
+        clearTempData();
     }
 
     @Override
@@ -221,6 +222,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         if (classifiers.isEmpty()) {
             throw new Exception(EnsembleDictionary.EMPTY_ENSEMBLE_ERROR_TEXT);
         }
+    }
+
+    protected void clearTempData() {
+        filteredData.clear();
     }
 
     private void initializeData(Instances data) throws Exception {
@@ -303,6 +308,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             Classifier classifier = buildNextClassifier(index, sample);
             addClassifier(index, classifier, sample);
             if (index == getNumIterations() - 1) {
+                clearTempData();
                 checkModelForEmpty();
             }
             return ++index;
