@@ -223,6 +223,10 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         }
     }
 
+    protected void clearTempData() {
+        filteredData.clear();
+    }
+
     private void initializeData(Instances data) throws Exception {
         initialData = data;
         filteredData = filter.filterInstances(initialData);
@@ -263,6 +267,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
         }
         finishedLatch.await();
         executorService.shutdownNow();
+        clearTempData();
         checkModelForEmpty();
         //Sorts classifiers in order of its iteration number
         classifiers.sort(Comparator.comparing(ClassifierOrderModel::getOrder));
@@ -303,6 +308,7 @@ public abstract class IterativeEnsembleClassifier extends AbstractClassifier
             Classifier classifier = buildNextClassifier(index, sample);
             addClassifier(index, classifier, sample);
             if (index == getNumIterations() - 1) {
+                clearTempData();
                 checkModelForEmpty();
             }
             return ++index;

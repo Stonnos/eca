@@ -22,6 +22,7 @@ import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.Utils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
@@ -45,7 +46,8 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
     @Override
     public Instances loadInstances() throws Exception {
         Instances data;
-        try (Workbook book = WorkbookFactory.create(getSource().openInputStream())) {
+        try (InputStream inputStream = getSource().openInputStream();
+             Workbook book = WorkbookFactory.create(inputStream)) {
             Sheet sheet = book.getSheetAt(0);
             validateData(sheet);
             data = new Instances(sheet.getSheetName(), createAttributes(sheet),

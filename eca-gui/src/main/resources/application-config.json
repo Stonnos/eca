@@ -4,7 +4,7 @@
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
     "version": "${project.version}",
-    "releaseDate": "14.11.2022",
+    "releaseDate": "15.06.2023",
     "author": "Roman Batygin",
     "authorEmail": "roman.batygin@mail.ru"
   },
@@ -53,7 +53,7 @@
   },
   "logotypeUrl": "images/Logotype.jpg",
   "tooltipDismissTime": 60000,
-  "maxThreads": 10,
+  "maxThreads": 24,
   "aucThresholdValue": 0.6,
   "dateFormat": "yyyy-MM-dd HH:mm:ss",
   "crossValidationConfig": {

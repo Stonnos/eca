@@ -8,7 +8,6 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.filter.ConstantAttributesFilter;
-import eca.filter.FilterDictionary;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
@@ -70,7 +69,6 @@ public class InstancesTable extends JDataTableBase {
     private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
-    private static final int MIN_NUM_CLASS_VALUES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
 
@@ -236,15 +234,15 @@ public class InstancesTable extends JDataTableBase {
      *
      * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public Instances createAndFilterData(String relationName) throws Exception {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(relationName);
-            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
-                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+            if (!attributesTable.isSelected(getClassIndex())) {
+                throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
+            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
@@ -255,21 +253,34 @@ public class InstancesTable extends JDataTableBase {
     }
 
     /**
-     * Creates instances taking into selected attributes with no assigned class attribute.
+     * Creates instances taking into selected attributes and class attribute if specified.
      *
      * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
     public Instances createSimpleData(String relationName) throws Exception {
-        return createInstances(relationName);
+        Instances instances = createInstances(relationName);
+        if (attributesTable.isSelected(getClassIndex())) {
+            instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
+        }
+        return instances;
     }
 
-    public void validateData(boolean validateClass) {
+    /**
+     * Validates data table.
+     * Attributes validation includes following checks:
+     * 1. Checks that selected attributes number is greater than or equal to 2
+     * 2. Checks that class attribute is selected
+     * 3. Checks that class attribute is nominal
+     *
+     * @param validateAttributes - validates attributes?
+     */
+    public void validateData(boolean validateAttributes) {
         if (getRowCount() == 0) {
             throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
-        if (validateClass) {
+        if (validateAttributes) {
             if (validateSelectedAttributesCount()) {
                 throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
             }

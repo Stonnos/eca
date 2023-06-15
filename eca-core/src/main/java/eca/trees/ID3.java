@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.trees;
 
 import weka.core.Utils;
+
+import java.util.Arrays;
 
 /**
  * Class for generating Id3 decision tree model.
@@ -19,6 +16,8 @@ public class ID3 extends DecisionTreeClassifier {
     }
 
     protected class Id3SplitAlgorithm implements SplitAlgorithm {
+
+        private double currentInfoValue;
 
         @Override
         public boolean isBetterSplit(double currentMeasure, double measure) {
@@ -35,14 +34,22 @@ public class ID3 extends DecisionTreeClassifier {
             return gain(x);
         }
 
+        @Override
+        public void preProcess(TreeNode x) {
+            calculateNodeProbabilities(x);
+            currentInfoValue = info(probabilities);
+        }
+
         double log(double p) {
             return p == 0 ? p : p * Utils.log2(p);
         }
 
         double info(double[] p) {
             double info = 0.0;
-            for (double probability : p) {
-                info += log(probability);
+            double[] pCopy = Arrays.copyOf(p, p.length);
+            eca.util.Utils.normalize(pCopy);
+            for (double val : pCopy) {
+                info += log(val);
             }
             return -info;
         }
@@ -56,9 +63,7 @@ public class ID3 extends DecisionTreeClassifier {
         }
 
         double gain(TreeNode x) {
-            calculateProbabilities(x);
-            calculateProbabilities(x, true);
-            return info(probabilities) - infoS(x);
+            return currentInfoValue - infoS(x);
         }
     }
 

@@ -9,6 +9,7 @@ import eca.data.file.resource.DataResource;
 import weka.core.Instances;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
@@ -25,12 +26,11 @@ public class JsonLoader extends AbstractDataLoader<DataResource> {
 
     @Override
     public Instances loadInstances() throws Exception {
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(getSource().openInputStream(), StandardCharsets.UTF_8))) {
+        try (InputStream inputStream = getSource().openInputStream();
+             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(inputStreamReader)) {
             InstancesModel instancesModel =  OBJECT_MAPPER.readValue(reader, InstancesModel.class);
-            Instances instances = INSTANCES_CONVERTER.convert(instancesModel);
-            instances.setClassIndex(instances.numAttributes() - 1);
-            return instances;
+            return INSTANCES_CONVERTER.convert(instancesModel);
         }
     }
 

@@ -20,7 +20,9 @@ public class CsvLoader extends AbstractDataLoader<DataResource> {
         try (InputStream inputStream = getSource().openInputStream()) {
             CSVLoader csvLoader = new CSVLoader();
             csvLoader.setSource(inputStream);
-            return csvLoader.getDataSet();
+            Instances instances = csvLoader.getDataSet();
+            instances.setClassIndex(instances.numAttributes() - 1);
+            return instances;
         }
     }
 

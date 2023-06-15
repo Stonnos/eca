@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ECA"
-#define MyAppVersion "6.9.2"
+#define MyAppVersion "6.9.3"
 #define MyAppPublisher "ECA, Inc."
 #define MyAppExeName "ECA.exe"
 

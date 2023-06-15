@@ -15,7 +15,10 @@ import weka.core.Utils;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Xml instances converter.
@@ -48,20 +51,34 @@ public class InstancesConverter {
      * @return instances
      */
     public Instances convert(InstancesModel instancesModel) {
-        ArrayList<Attribute> attributes = instancesModel.getAttributes().stream().map(this::convertAttribute).collect(
-                Collectors.toCollection(ArrayList::new));
+        if (instancesModel.getAttributes() == null || instancesModel.getAttributes().isEmpty()) {
+            throw new IllegalStateException("Empty attributes list!");
+        }
+        ArrayList<Attribute> attributes = instancesModel.getAttributes()
+                .stream()
+                .map(this::convertAttribute)
+                .collect(Collectors.toCollection(ArrayList::new));
+        List<InstanceModel> instanceModels = Optional.ofNullable(instancesModel.getInstances()).orElse(newArrayList());
         Instances instances =
-                new Instances(instancesModel.getRelationName(), attributes, instancesModel.getInstances().size());
-        instancesModel.getInstances().forEach(instanceModel -> instances.add(convertInstance(instanceModel, instances)));
+                new Instances(instancesModel.getRelationName(), attributes, instanceModels.size());
+        instanceModels.forEach(instanceModel -> instances.add(convertInstance(instanceModel, instances)));
         if (!StringUtils.isEmpty(instancesModel.getClassName())) {
-            instances.setClass(instances.attribute(instancesModel.getClassName()));
+            if (attributes.stream().noneMatch(attribute -> attribute.name().equals(instancesModel.getClassName()))) {
+                throw new IllegalStateException(
+                        String.format("Class attribute [%s] not found in instances [%s] attributes set",
+                                instancesModel.getClassName(), instances.relationName()));
+            }
+            Attribute classAttribute = instances.attribute(instancesModel.getClassName());
+            instances.setClass(classAttribute);
+        } else {
+            instances.setClassIndex(instances.numAttributes() - 1);
         }
         return instances;
     }
 
     private InstanceModel convertInstance(Instance instance) {
         InstanceModel instanceModel = new InstanceModel();
-        instanceModel.setValues(new ArrayList<>());
+        instanceModel.setValues(newArrayList());
         for (int i = 0; i < instance.numAttributes(); i++) {
             String value = StringUtils.EMPTY;
             if (!instance.isMissing(i)) {
@@ -106,7 +123,7 @@ public class InstancesConverter {
                 break;
             case Attribute.NOMINAL:
                 attributeModel.setType(AttributeType.NOMINAL);
-                attributeModel.setValues(new ArrayList<>());
+                attributeModel.setValues(newArrayList());
                 for (int i = 0; i < attribute.numValues(); i++) {
                     attributeModel.getValues().add(attribute.value(i));
                 }
@@ -119,6 +136,12 @@ public class InstancesConverter {
     }
 
     private Attribute convertAttribute(AttributeModel attributeModel) {
+        if (StringUtils.isBlank(attributeModel.getName())) {
+            throw new IllegalStateException("Attribute name must be not blank!");
+        }
+        if (attributeModel.getType() == null) {
+            throw new IllegalStateException("Attribute type must be not null!");
+        }
         return attributeModel.getType().handle(new AttributeTypeVisitor<Attribute>() {
             @Override
             public Attribute caseNumeric() {
@@ -138,6 +161,12 @@ public class InstancesConverter {
     }
 
     private Instance convertInstance(InstanceModel instanceModel, Instances instances) {
+        if (instanceModel.getValues() == null || instanceModel.getValues().size() != instances.numAttributes()) {
+            String errorMessage =
+                    String.format("Values list must contains [%d] values! Actual is [%d]", instances.numAttributes(),
+                            Optional.ofNullable(instanceModel.getValues()).map(List::size).orElse(0));
+            throw new IllegalStateException(errorMessage);
+        }
         Instance instance = new DenseInstance(instances.numAttributes());
         instance.setDataset(instances);
         for (int j = 0; j < instances.numAttributes(); j++) {
