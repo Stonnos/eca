@@ -12,6 +12,10 @@ import eca.client.dto.TechnicalStatus;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
 import eca.client.listener.adapter.ExperimentListenerAdapter;
+import eca.core.ModelSerializationHelper;
+import eca.core.model.ClassificationModel;
+import eca.data.file.resource.UrlResource;
+import eca.dataminer.AbstractExperiment;
 import eca.trees.CART;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -82,7 +87,7 @@ class EcaClientIT {
     }
 
     @Test
-    void testSendEvaluationRequest() {
+    void testSendEvaluationRequest() throws IOException {
         CART cart = new CART();
         rabbitClient.sendEvaluationRequest(cart, instances, evaluationReplyTo, expectedCorrelationId);
         await().timeout(Duration.ofSeconds(EVALUATION_REQUEST_TIMEOUT_SECONDS))
@@ -91,10 +96,14 @@ class EcaClientIT {
         assertNotNull(evaluationResponse);
         assertNotNull(evaluationResponse.getModelUrl());
         assertEquals(TechnicalStatus.SUCCESS, evaluationResponse.getStatus());
+        ClassificationModel classificationModel =
+                downloadModel(evaluationResponse.getModelUrl(), ClassificationModel.class);
+        assertNotNull(classificationModel);
+        assertEquals(cart.getClass().getSimpleName(), classificationModel.getClassifier().getClass().getSimpleName());
     }
 
     @Test
-    void testSendExperimentRequest() {
+    void testSendExperimentRequest() throws IOException {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
         experimentRequestDto.setData(instances);
         rabbitClient.sendExperimentRequest(experimentRequestDto, experimentReplyTo, expectedCorrelationId);
@@ -104,12 +113,21 @@ class EcaClientIT {
         assertNotNull(experimentResponse);
         assertNotNull(experimentResponse.getDownloadUrl());
         assertEquals(TechnicalStatus.SUCCESS, experimentResponse.getStatus());
+        AbstractExperiment<?> abstractExperiment =
+                downloadModel(evaluationResponse.getModelUrl(), AbstractExperiment.class);
+        assertNotNull(abstractExperiment);
     }
 
     @AfterEach
     void stop() throws IOException, TimeoutException {
         messageListenerContainer.stop();
         rabbitClient.getRabbitSender().getConnectionManager().close();
+    }
+
+    private <T> T downloadModel(String url, Class<T> modelClazz) throws IOException {
+        URL modelUrl = new URL(url);
+        UrlResource urlResource = new UrlResource(modelUrl);
+        return ModelSerializationHelper.deserialize(urlResource, modelClazz);
     }
 
     private void startContainer(ConnectionFactory connectionFactory) {
