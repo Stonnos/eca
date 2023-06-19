@@ -1605,6 +1605,9 @@ public class JMainFrame extends JFrame {
     private MessageHandler<EvaluationResponse> createEvaluationResultsMessageHandler() {
         return (evaluationResponse, basicProperties) -> {
             try {
+                log.info("Received evaluation response with correlation id [{}], status [{}], request id [{}]",
+                        basicProperties.getCorrelationId(), evaluationResponse.getStatus(),
+                        evaluationResponse.getRequestId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), evaluationResponse);
                 popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
@@ -1656,6 +1659,9 @@ public class JMainFrame extends JFrame {
     private MessageHandler<ExperimentResponse> createExperimentMessageHandler() {
         return (experimentResponse, basicProperties) -> {
             try {
+                log.info("Received experiment response with correlation id [{}], status [{}], request id [{}]",
+                        basicProperties.getCorrelationId(), experimentResponse.getStatus(),
+                        experimentResponse.getRequestId());
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), experimentResponse);
                 popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);

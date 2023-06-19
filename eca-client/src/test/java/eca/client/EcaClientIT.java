@@ -114,7 +114,7 @@ class EcaClientIT {
         assertNotNull(experimentResponse.getDownloadUrl());
         assertEquals(TechnicalStatus.SUCCESS, experimentResponse.getStatus());
         AbstractExperiment<?> abstractExperiment =
-                downloadModel(evaluationResponse.getModelUrl(), AbstractExperiment.class);
+                downloadModel(experimentResponse.getDownloadUrl(), AbstractExperiment.class);
         assertNotNull(abstractExperiment);
     }
 
