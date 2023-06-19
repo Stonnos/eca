@@ -1374,11 +1374,9 @@ public class JMainFrame extends JFrame {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        processAsyncTask(progress, () -> {
-            iterativeBuilder.evaluation().setTotalTimeMillis(progress.getTotalTimeMillis());
-            createEvaluationResultsAsync(frame.getTitle(), frame.classifier(),
-                    frame.data(), iterativeBuilder.evaluation(), maximumFractionDigits);
-        });
+        processAsyncTask(progress,
+                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifier(), frame.data(),
+                        iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
     private boolean isDataAndAttributesValid() {

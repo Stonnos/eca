@@ -36,6 +36,9 @@ public class ClassifierBuilderDialog extends AbstractProgressDialog {
                 builder.next();
                 setProgress(builder.getPercent());
             }
+            if (!super.isCancelled()) {
+                builder.evaluation().setTotalTimeMillis(getTotalTimeMillis());
+            }
         }
     }
 }
