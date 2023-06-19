@@ -71,7 +71,8 @@ class ModelSerializationHelperTest {
         ClassificationModel actual = ModelSerializationHelper.deserialize(fileResource, ClassificationModel.class);
         assertNotNull(actual);
         assertEquals(expected.getMaximumFractionDigits(), actual.getMaximumFractionDigits());
-        assertEquals(expected.getData().relationName(), actual.getData().relationName());
+        assertEquals(expected.getEvaluation().getData().relationName(),
+                actual.getEvaluation().getData().relationName());
         assertEquals(expected.getEvaluation().pctCorrect(), actual.getEvaluation().pctCorrect());
         assertEquals(expected.getEvaluation().meanAbsoluteError(), actual.getEvaluation().meanAbsoluteError());
     }
