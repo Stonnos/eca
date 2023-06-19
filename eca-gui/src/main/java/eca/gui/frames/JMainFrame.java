@@ -15,9 +15,9 @@ import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
 import eca.config.registry.SingletonRegistry;
+import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
-import eca.core.evaluation.EvaluationResults;
 import eca.core.evaluation.EvaluationService;
 import eca.core.model.ClassificationModel;
 import eca.data.db.DatabaseSaver;
@@ -128,6 +128,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -1611,13 +1612,14 @@ public class JMainFrame extends JFrame {
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
-                        EvaluationResults evaluationResults = evaluationResponse.getEvaluationResults();
-                        String title = ClassifierNamesFactory.getClassifierName(evaluationResults.getClassifier());
                         try {
+                            ClassificationModel classificationModel = downloadModel(evaluationResponse);
+                            String title =
+                                    ClassifierNamesFactory.getClassifierName(classificationModel.getClassifier());
                             ClassificationResultsFrameBase classificationResultsFrameBase =
-                                    createEvaluationResults(title, evaluationResults.getClassifier(),
-                                            evaluationResults.getEvaluation().getData(),
-                                            evaluationResults.getEvaluation(), maximumFractionDigits);
+                                    createEvaluationResults(title, classificationModel.getClassifier(),
+                                            classificationModel.getData(), classificationModel.getEvaluation(),
+                                            maximumFractionDigits);
                             classificationResultsFrameBase.setVisible(true);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
@@ -1881,10 +1883,11 @@ public class JMainFrame extends JFrame {
                             File file = fileChooser.getSelectedFile(JMainFrame.this);
                             if (file != null) {
                                 dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                CallbackAction action = () ->   dataSaver.saveData(file, dataBuilder.getResult());
+                                CallbackAction action = () -> dataSaver.saveData(file, dataBuilder.getResult());
                                 LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
                                         action, SAVE_DATA_TITLE, false);
-                                processAsyncTask(loadDialog, () -> {});
+                                processAsyncTask(loadDialog, () -> {
+                                });
                             }
                         });
                     }
@@ -1999,7 +2002,8 @@ public class JMainFrame extends JFrame {
                                 .orElse(maximumFractionDigits);
                         String title = getClassifierName(classificationModel.getClassifier());
                         createEvaluationResultsAsync(title, classificationModel.getClassifier(),
-                                classificationModel.getData(), classificationModel.getEvaluation(), digits);
+                                classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
+                                digits);
                     });
 
                 }
@@ -2076,6 +2080,12 @@ public class JMainFrame extends JFrame {
                             this.maximumFractionDigits);
             experimentFrame.setVisible(true);
         });
+    }
+
+    private ClassificationModel downloadModel(EvaluationResponse evaluationResponse) throws IOException {
+        URL modelUrl = new URL(evaluationResponse.getModelUrl());
+        UrlResource urlResource = new UrlResource(modelUrl);
+        return ModelSerializationHelper.deserialize(urlResource, ClassificationModel.class);
     }
 
     private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {

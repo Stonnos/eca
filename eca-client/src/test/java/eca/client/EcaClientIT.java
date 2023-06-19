@@ -89,7 +89,7 @@ class EcaClientIT {
                 .until(() -> responseReceived);
         assertEquals(expectedCorrelationId, actualCorrelationId);
         assertNotNull(evaluationResponse);
-        assertNotNull(evaluationResponse.getEvaluationResults());
+        assertNotNull(evaluationResponse.getModelUrl());
         assertEquals(TechnicalStatus.SUCCESS, evaluationResponse.getStatus());
     }
 
