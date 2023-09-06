@@ -15,6 +15,7 @@
 
     <properties>
         <amqp-client.version>5.7.3</amqp-client.version>
+        <http-client.version>4.5.14</http-client.version>
         <awaitility.version>4.0.3</awaitility.version>
         <mockito.version>3.2.4</mockito.version>
         <sonar.coverage.exclusions>
@@ -37,6 +38,19 @@
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>${amqp-client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${http-client.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${http-client.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.awaitility/awaitility -->
