@@ -7,6 +7,7 @@ package eca.gui.tables;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.core.InstancesDataModel;
 import eca.filter.ConstantAttributesFilter;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
@@ -35,6 +36,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
@@ -78,8 +80,11 @@ public class InstancesTable extends JDataTableBase {
     private int lastDataModificationCount;
     private int lastAttributesModificationCount;
     private int lastClassModificationCount;
+    private int lastSummaryModificationCount;
     private int classModificationCount;
     private Instances lastCreatedInstances;
+
+    private String uuid;
 
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
@@ -89,6 +94,7 @@ public class InstancesTable extends JDataTableBase {
                           int digits) {
         super(new InstancesTableModel(data, digits));
         this.classBox = classBox;
+        this.uuid = UUID.randomUUID().toString();
         MissingCellRenderer renderer = new MissingCellRenderer();
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -236,7 +242,7 @@ public class InstancesTable extends JDataTableBase {
      * @return created instances
      * @throws Exception in case of error
      */
-    public Instances createAndFilterData(String relationName) throws Exception {
+    public InstancesDataModel createAndFilterData(String relationName) throws Exception {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(relationName);
             if (!attributesTable.isSelected(getClassIndex())) {
@@ -249,7 +255,11 @@ public class InstancesTable extends JDataTableBase {
             }
             updateLastCreatedInstances(filterInstances);
         }
-        return lastCreatedInstances;
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(lastCreatedInstances)
+                .lastModificationCount(lastSummaryModificationCount)
+                .build();
     }
 
     /**
@@ -259,12 +269,15 @@ public class InstancesTable extends JDataTableBase {
      * @return created instances
      * @throws Exception in case of error
      */
-    public Instances createSimpleData(String relationName) throws Exception {
+    public InstancesDataModel createSimpleData(String relationName) throws Exception {
         Instances instances = createInstances(relationName);
         if (attributesTable.isSelected(getClassIndex())) {
             instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
         }
-        return instances;
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(lastCreatedInstances)
+                .build();
     }
 
     /**
@@ -383,6 +396,8 @@ public class InstancesTable extends JDataTableBase {
         lastDataModificationCount = getInstancesTableModel().getModificationCount();
         lastAttributesModificationCount = attributesTable.getAttributesTableModel().getModificationCount();
         lastClassModificationCount = classModificationCount;
+        lastSummaryModificationCount =
+                lastAttributesModificationCount + lastClassModificationCount + lastDataModificationCount;
         lastCreatedInstances = newInstances;
     }
 
