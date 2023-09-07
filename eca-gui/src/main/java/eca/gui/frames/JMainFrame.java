@@ -677,7 +677,8 @@ public class JMainFrame extends JFrame {
                 .build();
         addEcaServiceTrack(ecaServiceTrack);
         try {
-            rabbitClient.sendEvaluationRequest(classifier, frame.data(), evaluationQueue, correlationId);
+            String dataUuid = uploadInstancesCacheService.uploadInstances(instancesDataModel);
+            rabbitClient.sendEvaluationRequest(classifier, dataUuid, evaluationQueue, correlationId);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
             popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
         } catch (Exception ex) {
@@ -1785,7 +1786,8 @@ public class JMainFrame extends JFrame {
                             experimentRequestDialog.showDialog(experimentRequestDto);
                             if (experimentRequestDialog.isDialogResult()) {
                                 experimentRequestDto = experimentRequestDialog.createExperimentRequestDto();
-                                experimentRequestDto.setData(dataBuilder.getResult().getData());
+                                String dataUuid = uploadInstancesCacheService.uploadInstances(dataBuilder.getResult());
+                                experimentRequestDto.setDataUuid(dataUuid);
                                 String correlationId = UUID.randomUUID().toString();
                                 EcaServiceTrack ecaServiceTrack = EcaServiceTrack.builder()
                                         .correlationId(correlationId)
@@ -1831,8 +1833,8 @@ public class JMainFrame extends JFrame {
                                 .build();
                         addEcaServiceTrack(ecaServiceTrack);
                         try {
-                            rabbitClient.sendEvaluationRequest(dataBuilder.getResult().getData(), evaluationQueue,
-                                    correlationId);
+                            String dataUuid = uploadInstancesCacheService.uploadInstances(dataBuilder.getResult());
+                            rabbitClient.sendEvaluationRequest(dataUuid, evaluationQueue, correlationId);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
                             popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
                         } catch (Exception ex) {

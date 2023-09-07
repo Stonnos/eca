@@ -10,13 +10,11 @@ import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import weka.core.Instances;
 
 import java.util.UUID;
 
 import static eca.client.TestHelperUtils.createEvaluationRequestDto;
 import static eca.client.TestHelperUtils.createExperimentRequestDto;
-import static eca.client.TestHelperUtils.loadInstances;
 import static eca.client.util.RabbitUtils.buildMessageProperties;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.atLeastOnce;
@@ -43,11 +41,8 @@ class RabbitClientTest {
 
     private RabbitClient rabbitClient;
 
-    private Instances instances;
-
     @BeforeEach
     void init() {
-        instances = loadInstances();
         rabbitSender = mock(RabbitSender.class);
         rabbitClient = new RabbitClient(rabbitSender);
         rabbitClient.setEvaluationRequestQueue(EVALUATION_REQUEST_QUEUE);
@@ -65,7 +60,7 @@ class RabbitClientTest {
     void testSendExperimentRequest() {
         String correlationId = UUID.randomUUID().toString();
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
-        experimentRequestDto.setData(instances);
+        experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         rabbitClient.sendExperimentRequest(experimentRequestDto, REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
@@ -82,9 +77,9 @@ class RabbitClientTest {
     void testSendOptimalClassifierRequest() {
         String correlationId = UUID.randomUUID().toString();
         InstancesRequest expectedRequest = new InstancesRequest();
-        expectedRequest.setData(instances);
+        expectedRequest.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
-        rabbitClient.sendEvaluationRequest(instances, REPLY_TO, correlationId);
+        rabbitClient.sendEvaluationRequest(expectedRequest.getDataUuid(), REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
@@ -92,7 +87,8 @@ class RabbitClientTest {
     @Test
     void testEvaluationRequestWithNullClassifier() {
         assertThrows(NullPointerException.class,
-                () -> rabbitClient.sendEvaluationRequest(null, instances, REPLY_TO, UUID.randomUUID().toString()));
+                () -> rabbitClient.sendEvaluationRequest(null, UUID.randomUUID().toString(), REPLY_TO,
+                        UUID.randomUUID().toString()));
     }
 
     @Test
@@ -104,11 +100,12 @@ class RabbitClientTest {
     @Test
     void testSendEvaluationRequestWithTrainingDataEvaluationMethod() {
         String correlationId = UUID.randomUUID().toString();
+        String dataUuid = UUID.randomUUID().toString();
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         CART cart = new CART();
         EvaluationRequestDto expectedRequest =
-                createEvaluationRequestDto(cart, instances, EvaluationMethod.TRAINING_DATA);
-        rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
+                createEvaluationRequestDto(cart, dataUuid, EvaluationMethod.TRAINING_DATA);
+        rabbitClient.sendEvaluationRequest(cart, dataUuid, REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }
@@ -116,10 +113,11 @@ class RabbitClientTest {
     @Test
     void testSendEvaluationRequestWithCrossValidationMethod() {
         String correlationId = UUID.randomUUID().toString();
+        String dataUuid = UUID.randomUUID().toString();
         AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         CART cart = new CART();
         EvaluationRequestDto expectedRequest =
-                createEvaluationRequestDto(cart, instances, EvaluationMethod.CROSS_VALIDATION);
+                createEvaluationRequestDto(cart, dataUuid, EvaluationMethod.CROSS_VALIDATION);
         expectedRequest.setNumFolds(NUM_FOLDS);
         expectedRequest.setNumTests(NUM_TESTS);
         expectedRequest.setSeed(SEED);
@@ -127,7 +125,7 @@ class RabbitClientTest {
         rabbitClient.setNumFolds(NUM_FOLDS);
         rabbitClient.setNumTests(NUM_TESTS);
         rabbitClient.setSeed(SEED);
-        rabbitClient.sendEvaluationRequest(cart, instances, REPLY_TO, correlationId);
+        rabbitClient.sendEvaluationRequest(cart, dataUuid, REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
     }

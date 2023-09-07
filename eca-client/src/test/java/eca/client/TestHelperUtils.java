@@ -54,15 +54,16 @@ public class TestHelperUtils {
      * Creates evaluation request.
      *
      * @param classifier       - classifier
-     * @param instances        - training data
+     * @param dataUuid        - training data uuid
      * @param evaluationMethod - evaluation method
      * @return evaluation request dto
      */
-    public static EvaluationRequestDto createEvaluationRequestDto(AbstractClassifier classifier, Instances instances,
+    public static EvaluationRequestDto createEvaluationRequestDto(AbstractClassifier classifier,
+                                                                  String dataUuid,
                                                                   EvaluationMethod evaluationMethod) {
         EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
         evaluationRequestDto.setClassifier(classifier);
-        evaluationRequestDto.setData(instances);
+        evaluationRequestDto.setDataUuid(dataUuid);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         return evaluationRequestDto;
     }

@@ -11,14 +11,12 @@ import eca.client.util.RabbitUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import weka.core.Instances;
 
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import static eca.client.TestHelperUtils.createExperimentRequestDto;
-import static eca.client.TestHelperUtils.loadInstances;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,17 +35,14 @@ class RabbitSenderTest {
 
     private static final String QUEUE = "queue";
 
-    private JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
+    private final JsonMessageConverter jsonMessageConverter = new JsonMessageConverter();
 
-    private RabbitSender rabbitSender = new RabbitSender();
-
-    private Instances instances;
+    private final RabbitSender rabbitSender = new RabbitSender();
 
     private Channel channel;
 
     @BeforeEach
     void init() throws IOException, TimeoutException {
-        instances = loadInstances();
         rabbitSender.setMessageConverter(jsonMessageConverter);
         ConnectionManager connectionManager = mock(ConnectionManager.class);
         rabbitSender.setConnectionManager(connectionManager);
@@ -58,7 +53,7 @@ class RabbitSenderTest {
     @Test
     void testSendMessage() throws IOException {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
-        experimentRequestDto.setData(instances);
+        experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
         rabbitSender.sendMessage(QUEUE, experimentRequestDto, properties);
         verify(channel, atLeastOnce()).basicPublish(StringUtils.EMPTY, QUEUE, properties,
@@ -68,7 +63,7 @@ class RabbitSenderTest {
     @Test
     void testSendMessageWithException() throws IOException {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
-        experimentRequestDto.setData(instances);
+        experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
         doThrow(new EcaServiceException(StringUtils.EMPTY)).when(channel).basicPublish(anyString(), anyString(), any(),
                 any());
