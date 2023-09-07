@@ -242,7 +242,7 @@ public class InstancesTable extends JDataTableBase {
      * @return created instances
      * @throws Exception in case of error
      */
-    public InstancesDataModel createAndFilterData(String relationName) throws Exception {
+    public InstancesDataModel createAndFilterValidData(String relationName) throws Exception {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(relationName);
             if (!attributesTable.isSelected(getClassIndex())) {
