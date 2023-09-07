@@ -1,4 +1,4 @@
-package eca.client.core;
+package eca.client.rabbit;
 
 import com.rabbitmq.client.AMQP;
 import eca.client.dto.EvaluationRequestDto;
@@ -130,7 +130,7 @@ public class RabbitClient {
         log.info("Starting to send evaluation request with correlation id [{}] to eca - service for data '{}'.",
                 correlationId, data.relationName());
         AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
-        rabbitSender.sendMessage(evaluationOptimizerRequestQueue, new InstancesRequest(data), basicProperties);
+        rabbitSender.sendMessage(evaluationOptimizerRequestQueue, new InstancesRequest("", data), basicProperties);
         log.info("Evaluation request with correlation id [{}] has been sent to eca - service for data '{}'.",
                 correlationId, data.relationName());
     }

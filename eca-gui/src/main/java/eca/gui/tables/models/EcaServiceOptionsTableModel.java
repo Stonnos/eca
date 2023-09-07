@@ -23,7 +23,7 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
 
     private static final Map<String, String> OPTION_DESCRIPTION_MAP = newHashMap();
 
-    private ArrayList<Entry<String, String>> options = new ArrayList<>();
+    private final ArrayList<Entry<String, String>> options = new ArrayList<>();
 
     static {
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.ECA_SERVICE_ENABLED, "Вкл./выкл. использование сервиса");
@@ -35,6 +35,10 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.EVALUATION_OPTIMIZER_REQUEST_QUEUE,
                 "Очередь для построения оптимальных классификаторов");
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.EXPERIMENT_REQUEST_QUEUE, "Очередь для построения экспериментов");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.DATA_LOADER_URL, "Url сервиса загрузки обучающих выборок");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.TOKEN_URL, "Url сервиса авторизации");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.CLIENT_ID, "Идентифифактор клиента (client id)");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.CLIENT_SECRET, "Секрет клиента (client secret)");
     }
 
     public EcaServiceOptionsTableModel() {
@@ -81,16 +85,27 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
     private void init() {
         options.add(new Entry<>(CommonDictionary.ECA_SERVICE_ENABLED,
                 CONFIG_SERVICE.getEcaServiceConfig().getEnabled().toString()));
-        options.add(new Entry<>(CommonDictionary.RABBIT_HOST, CONFIG_SERVICE.getEcaServiceConfig().getHost()));
+        options.add(new Entry<>(CommonDictionary.RABBIT_HOST,
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().getHost()));
         options.add(new Entry<>(CommonDictionary.RABBIT_PORT,
-                String.valueOf(CONFIG_SERVICE.getEcaServiceConfig().getPort())));
-        options.add(new Entry<>(CommonDictionary.RABBIT_USERNAME, CONFIG_SERVICE.getEcaServiceConfig().getUsername()));
-        options.add(new Entry<>(CommonDictionary.RABBIT_PASSWORD, CONFIG_SERVICE.getEcaServiceConfig().getPassword()));
+                String.valueOf(CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().getPort())));
+        options.add(new Entry<>(CommonDictionary.RABBIT_USERNAME,
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().getUsername()));
+        options.add(new Entry<>(CommonDictionary.RABBIT_PASSWORD,
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().getPassword()));
         options.add(new Entry<>(CommonDictionary.EVALUATION_REQUEST_QUEUE,
                 CONFIG_SERVICE.getEcaServiceConfig().getEvaluationRequestQueue()));
         options.add(new Entry<>(CommonDictionary.EVALUATION_OPTIMIZER_REQUEST_QUEUE,
                 CONFIG_SERVICE.getEcaServiceConfig().getEvaluationOptimizerRequestQueue()));
         options.add(new Entry<>(CommonDictionary.EXPERIMENT_REQUEST_QUEUE,
                 CONFIG_SERVICE.getEcaServiceConfig().getExperimentRequestQueue()));
+        options.add(new Entry<>(CommonDictionary.DATA_LOADER_URL,
+                CONFIG_SERVICE.getEcaServiceConfig().getDataLoaderUrl()));
+        options.add(new Entry<>(CommonDictionary.TOKEN_URL,
+                CONFIG_SERVICE.getEcaServiceConfig().getTokenUrl()));
+        options.add(new Entry<>(CommonDictionary.CLIENT_ID,
+                CONFIG_SERVICE.getEcaServiceConfig().getClientId()));
+        options.add(new Entry<>(CommonDictionary.CLIENT_SECRET,
+                CONFIG_SERVICE.getEcaServiceConfig().getClientSecret()));
     }
 }

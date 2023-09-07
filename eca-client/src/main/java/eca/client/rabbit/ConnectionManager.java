@@ -1,4 +1,4 @@
-package eca.client.core;
+package eca.client.rabbit;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

@@ -17,6 +17,11 @@ import weka.core.Instances;
 public class ExperimentRequestDto {
 
     /**
+     * Train data uuid
+     */
+    private String dataUuid;
+
+    /**
      * Email
      */
     private String email;

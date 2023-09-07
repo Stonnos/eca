@@ -1,19 +1,21 @@
 package eca.gui.frames;
 
-import eca.client.core.RabbitClient;
 import eca.client.dto.EcaResponse;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.ExperimentResponse;
 import eca.client.dto.TechnicalStatusVisitor;
+import eca.client.instances.UploadInstancesCacheService;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
 import eca.client.listener.adapter.ExperimentListenerAdapter;
 import eca.client.messaging.MessageHandler;
+import eca.client.rabbit.RabbitClient;
 import eca.config.ConfigurationService;
 import eca.config.EcaServiceConfig;
 import eca.config.IconType;
 import eca.config.RabbitConfiguration;
+import eca.config.RabbitConnectionOptions;
 import eca.config.registry.SingletonRegistry;
 import eca.core.InstancesDataModel;
 import eca.core.ModelSerializationHelper;
@@ -288,6 +290,7 @@ public class JMainFrame extends JFrame {
     private List<AbstractButton> disabledMenuElementList = newArrayList();
 
     private RabbitClient rabbitClient;
+    private final UploadInstancesCacheService uploadInstancesCacheService = new UploadInstancesCacheService();
 
     private MessageListenerContainer messageListenerContainer;
 
@@ -310,6 +313,15 @@ public class JMainFrame extends JFrame {
         try {
             generateQueueNames();
             updateMessageListenerContainerConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+        }
+    }
+
+    public void initializeUploadInstancesClient() {
+        try {
+            updateUploadInstancesClientConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
             showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -1258,16 +1270,26 @@ public class JMainFrame extends JFrame {
         JMenuItem ecaServiceOptionsMenu = new JMenuItem(ECA_SERVICE_OPTIONS_MENU_TEXT);
         ecaServiceOptionsMenu.addActionListener(e -> {
             EcaServiceConfig ecaServiceConfig = CONFIG_SERVICE.getEcaServiceConfig();
-            EcaServiceConfig oldConfig = new EcaServiceConfig(ecaServiceConfig.getEnabled(), ecaServiceConfig.getHost(),
-                    ecaServiceConfig.getPort(), ecaServiceConfig.getUsername(), ecaServiceConfig.getPassword(),
-                    ecaServiceConfig.getEvaluationRequestQueue(), ecaServiceConfig.getEvaluationOptimizerRequestQueue(),
-                    ecaServiceConfig.getExperimentRequestQueue());
+            RabbitConnectionOptions rabbitConnectionOptions = ecaServiceConfig.getRabbitConnectionOptions();
+            RabbitConnectionOptions prevRabbitConnectionOptions =
+                    new RabbitConnectionOptions(rabbitConnectionOptions.getHost(), rabbitConnectionOptions.getPort(),
+                            rabbitConnectionOptions.getUsername(), rabbitConnectionOptions.getPassword());
+            EcaServiceConfig prevConfig =
+                    new EcaServiceConfig(ecaServiceConfig.getEnabled(),
+                            prevRabbitConnectionOptions,
+                            ecaServiceConfig.getEvaluationRequestQueue(),
+                            ecaServiceConfig.getEvaluationOptimizerRequestQueue(),
+                            ecaServiceConfig.getExperimentRequestQueue(), ecaServiceConfig.getDataLoaderUrl(),
+                            ecaServiceConfig.getTokenUrl(), ecaServiceConfig.getClientId(),
+                            ecaServiceConfig.getClientSecret()
+                    );
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
             if (ecaServiceOptionsDialog.isDialogResult()) {
                 try {
                     CONFIG_SERVICE.saveEcaServiceConfig();
-                    updateMessageListenerContainerConfiguration(oldConfig);
+                    updateUploadInstancesClientConfiguration(CONFIG_SERVICE.getEcaServiceConfig());
+                    updateMessageListenerContainerConfiguration(prevConfig);
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     JOptionPane.showMessageDialog(JMainFrame.this, ex.getMessage(),
@@ -1525,10 +1547,11 @@ public class JMainFrame extends JFrame {
         EcaServiceConfig currentConfig = CONFIG_SERVICE.getEcaServiceConfig();
         //Restart message listener container if needs
         if (Boolean.TRUE.equals(currentConfig.getEnabled())) {
-            if (!rabbitStarted || !prevConfig.equals(currentConfig)) {
-                popupService.showInfoPopup(
-                        String.format(RABBIT_CONNECTION_MESSAGE_FORMAT, currentConfig.getHost(),
-                                currentConfig.getPort()), this);
+            if (!rabbitStarted ||
+                    !prevConfig.getRabbitConnectionOptions().equals(currentConfig.getRabbitConnectionOptions())) {
+                popupService.showInfoPopup(String.format(RABBIT_CONNECTION_MESSAGE_FORMAT,
+                        currentConfig.getRabbitConnectionOptions().getHost(),
+                        currentConfig.getRabbitConnectionOptions().getPort()), this);
                 resetRabbitConfiguration();
                 configureAndStartMessageListenerContainer();
                 configureRabbitClient();
@@ -1538,6 +1561,16 @@ public class JMainFrame extends JFrame {
             resetRabbitConfiguration();
         }
         updateQueues(currentConfig);
+    }
+
+    private void updateUploadInstancesClientConfiguration(EcaServiceConfig ecaServiceConfig) {
+        uploadInstancesCacheService.getUploadInstancesClient().setDataLoaderUrl(ecaServiceConfig.getDataLoaderUrl());
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setTokenUrl(
+                ecaServiceConfig.getTokenUrl());
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setClientId(
+                ecaServiceConfig.getClientId());
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setClientSecret(
+                ecaServiceConfig.getClientSecret());
     }
 
     private void updateQueues(EcaServiceConfig ecaServiceConfig) {
@@ -1557,8 +1590,8 @@ public class JMainFrame extends JFrame {
     }
 
     private void generateQueueNames() {
-        evaluationQueue = String.format(EVALUATION_RESULTS_QUEUE_FORMAT, UUID.randomUUID().toString());
-        experimentQueue = String.format(EXPERIMENT_QUEUE_FORMAT, UUID.randomUUID().toString());
+        evaluationQueue = String.format(EVALUATION_RESULTS_QUEUE_FORMAT, UUID.randomUUID());
+        experimentQueue = String.format(EXPERIMENT_QUEUE_FORMAT, UUID.randomUUID());
     }
 
     private void addEvaluationListenerAdapterIfAbsent() {

@@ -2,9 +2,9 @@ package eca.client;
 
 import com.rabbitmq.client.ConnectionFactory;
 import eca.client.converter.JsonMessageConverter;
-import eca.client.core.ConnectionManager;
-import eca.client.core.RabbitClient;
-import eca.client.core.RabbitSender;
+import eca.client.rabbit.ConnectionManager;
+import eca.client.rabbit.RabbitClient;
+import eca.client.rabbit.RabbitSender;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.ExperimentResponse;

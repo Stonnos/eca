@@ -4,6 +4,8 @@ import com.rabbitmq.client.AMQP;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
+import eca.client.rabbit.RabbitClient;
+import eca.client.rabbit.RabbitSender;
 import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;

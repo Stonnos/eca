@@ -20,6 +20,11 @@ import weka.core.Instances;
 public class EvaluationRequestDto {
 
     /**
+     * Train data uuid
+     */
+    private String dataUuid;
+
+    /**
      * Classifier model
      */
     @JsonSerialize(using = ClassifierSerializer.class)

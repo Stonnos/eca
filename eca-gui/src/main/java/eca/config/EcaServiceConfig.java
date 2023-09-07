@@ -2,7 +2,6 @@ package eca.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
  * @author Roman Batygin
  */
 @Data
-@EqualsAndHashCode(exclude = {"evaluationRequestQueue", "evaluationOptimizerRequestQueue", "experimentRequestQueue"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class EcaServiceConfig {
@@ -22,24 +20,9 @@ public class EcaServiceConfig {
     private Boolean enabled = false;
 
     /**
-     * Rabbit host
+     * Rabbit connection options
      */
-    private String host = "localhost";
-
-    /**
-     * Rabbit port
-     */
-    private int port = 5672;
-
-    /**
-     * Rabbit username
-     */
-    private String username = "guest";
-
-    /**
-     * Rabbit password
-     */
-    private String password = "guest";
+    private RabbitConnectionOptions rabbitConnectionOptions = new RabbitConnectionOptions();
 
     /**
      * Evaluation request queue.
@@ -55,4 +38,24 @@ public class EcaServiceConfig {
      * Experiment request queue.
      */
     private String experimentRequestQueue = "experiment-request-queue";
+
+    /**
+     * Data loader url
+     */
+    private String dataLoaderUrl = "http://localhost:8080/eca-data-loader/api/external/upload-train-data";
+
+    /**
+     * Token url
+     */
+    private String tokenUrl = "http://localhost:8080/eca-oauth/oauth/token";
+
+    /**
+     * Client id
+     */
+    private String clientId = "external-api";
+
+    /**
+     * Client secret
+     */
+    private String clientSecret = "external_api_secret";
 }

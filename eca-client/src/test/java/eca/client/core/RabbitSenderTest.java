@@ -5,6 +5,8 @@ import com.rabbitmq.client.Channel;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.exception.EcaServiceException;
+import eca.client.rabbit.ConnectionManager;
+import eca.client.rabbit.RabbitSender;
 import eca.client.util.RabbitUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;

@@ -20,6 +20,11 @@ import weka.core.Instances;
 public class InstancesRequest {
 
     /**
+     * Train data uuid
+     */
+    private String dataUuid;
+
+    /**
      * Training data
      */
     @JsonSerialize(using = InstancesSerializer.class)
