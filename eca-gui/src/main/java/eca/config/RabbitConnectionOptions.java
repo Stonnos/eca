@@ -17,20 +17,20 @@ public class RabbitConnectionOptions {
     /**
      * Rabbit host
      */
-    private String host = "localhost";
+    private String host;
 
     /**
      * Rabbit port
      */
-    private int port = 5672;
+    private int port;
 
     /**
      * Rabbit username
      */
-    private String username = "guest";
+    private String username;
 
     /**
      * Rabbit password
      */
-    private String password = "guest";
+    private String password;
 }

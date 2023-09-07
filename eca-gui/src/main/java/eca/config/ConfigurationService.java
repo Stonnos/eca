@@ -95,7 +95,7 @@ public class ConfigurationService {
     /**
      * Gets database config for specified database type.
      *
-     * @param dataBaseType - data base type
+     * @param dataBaseType - database type
      * @return database config
      */
     public DatabaseConfig getDatabaseConfig(DataBaseType dataBaseType) {

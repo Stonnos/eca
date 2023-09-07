@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 
+import static eca.gui.dictionary.EcaServiceOptionsDictionary.getValue;
+
 /**
  * @author Roman Batygin
  */
@@ -76,9 +78,9 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private boolean isValidOptions() {
         for (Entry<String, String> entry : ecaServiceOptionsTableModel.getOptions()) {
-            if (StringUtils.isEmpty(entry.getValue())) {
+            if (StringUtils.isBlank(entry.getValue())) {
                 JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
-                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()), null, JOptionPane.WARNING_MESSAGE);
+                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, getValue(entry.getKey())), null, JOptionPane.WARNING_MESSAGE);
                 return false;
             }
         }

@@ -27,35 +27,35 @@ public class EcaServiceConfig {
     /**
      * Evaluation request queue.
      */
-    private String evaluationRequestQueue = "evaluation-request-queue";
+    private String evaluationRequestQueue;
 
     /**
      * Evaluation optimizer request queue.
      */
-    private String evaluationOptimizerRequestQueue = "evaluation-optimizer-request-queue";
+    private String evaluationOptimizerRequestQueue;
 
     /**
      * Experiment request queue.
      */
-    private String experimentRequestQueue = "experiment-request-queue";
+    private String experimentRequestQueue;
 
     /**
      * Data loader url
      */
-    private String dataLoaderUrl = "http://localhost:8080/eca-data-loader/api/external/upload-train-data";
+    private String dataLoaderUrl;
 
     /**
      * Token url
      */
-    private String tokenUrl = "http://localhost:8080/eca-oauth/oauth/token";
+    private String tokenUrl;
 
     /**
      * Client id
      */
-    private String clientId = "external-api";
+    private String clientId;
 
     /**
      * Client secret
      */
-    private String clientSecret = "external_api_secret";
+    private String clientSecret;
 }
