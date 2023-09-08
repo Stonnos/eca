@@ -376,8 +376,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
         int i = 0;
         algorithm.initializeWeights();
         while (true) {
-            i++;
             int j = i % input.length;
+            i++;
             double[] y = computeOutputVector(input[j]);
             if (NeuralNetworkUtil.error(y, output[j]) < minError || i > numIterations) {
                 break;
