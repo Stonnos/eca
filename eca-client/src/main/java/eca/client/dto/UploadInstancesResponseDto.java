@@ -20,4 +20,9 @@ public class UploadInstancesResponseDto {
      * Instances file MD5 hash sum
      */
     private String md5Hash;
+
+    /**
+     * Expire at date
+     */
+    private String expireAt;
 }
