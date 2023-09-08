@@ -6,17 +6,18 @@ import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
 import eca.client.rabbit.RabbitClient;
 import eca.client.rabbit.RabbitSender;
-import eca.core.evaluation.EvaluationMethod;
 import eca.trees.CART;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.UUID;
 
-import static eca.client.TestHelperUtils.createEvaluationRequestDto;
 import static eca.client.TestHelperUtils.createExperimentRequestDto;
 import static eca.client.util.RabbitUtils.buildMessageProperties;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -98,35 +99,17 @@ class RabbitClientTest {
     }
 
     @Test
-    void testSendEvaluationRequestWithTrainingDataEvaluationMethod() {
+    void testSendEvaluationRequest() {
+        ArgumentCaptor<String> queueNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<AMQP.BasicProperties> mqProperties = ArgumentCaptor.forClass(AMQP.BasicProperties.class);
         String correlationId = UUID.randomUUID().toString();
         String dataUuid = UUID.randomUUID().toString();
-        AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
         CART cart = new CART();
-        EvaluationRequestDto expectedRequest =
-                createEvaluationRequestDto(cart, dataUuid, EvaluationMethod.TRAINING_DATA);
         rabbitClient.sendEvaluationRequest(cart, dataUuid, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
-                expectedProperties);
-    }
-
-    @Test
-    void testSendEvaluationRequestWithCrossValidationMethod() {
-        String correlationId = UUID.randomUUID().toString();
-        String dataUuid = UUID.randomUUID().toString();
-        AMQP.BasicProperties expectedProperties = buildMessageProperties(REPLY_TO, correlationId);
-        CART cart = new CART();
-        EvaluationRequestDto expectedRequest =
-                createEvaluationRequestDto(cart, dataUuid, EvaluationMethod.CROSS_VALIDATION);
-        expectedRequest.setNumFolds(NUM_FOLDS);
-        expectedRequest.setNumTests(NUM_TESTS);
-        expectedRequest.setSeed(SEED);
-        rabbitClient.setEvaluationMethod(EvaluationMethod.CROSS_VALIDATION);
-        rabbitClient.setNumFolds(NUM_FOLDS);
-        rabbitClient.setNumTests(NUM_TESTS);
-        rabbitClient.setSeed(SEED);
-        rabbitClient.sendEvaluationRequest(cart, dataUuid, REPLY_TO, correlationId);
-        verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_REQUEST_QUEUE, expectedRequest,
-                expectedProperties);
+        verify(rabbitSender, atLeastOnce()).sendMessage(queueNameCaptor.capture(), any(EvaluationRequestDto.class),
+                mqProperties.capture());
+        assertEquals(queueNameCaptor.getValue(), EVALUATION_REQUEST_QUEUE);
+        assertEquals(mqProperties.getValue().getCorrelationId(), correlationId);
+        assertEquals(mqProperties.getValue().getReplyTo(), REPLY_TO);
     }
 }

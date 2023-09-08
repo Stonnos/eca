@@ -1,6 +1,5 @@
 package eca.client;
 
-import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.ExperimentType;
 import eca.core.evaluation.EvaluationMethod;
@@ -8,7 +7,6 @@ import eca.data.file.resource.FileResource;
 import eca.data.file.xls.XLSLoader;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 
 import java.io.File;
@@ -49,23 +47,4 @@ public class TestHelperUtils {
         experimentRequestDto.setExperimentType(ExperimentType.KNN);
         return experimentRequestDto;
     }
-
-    /**
-     * Creates evaluation request.
-     *
-     * @param classifier       - classifier
-     * @param dataUuid        - training data uuid
-     * @param evaluationMethod - evaluation method
-     * @return evaluation request dto
-     */
-    public static EvaluationRequestDto createEvaluationRequestDto(AbstractClassifier classifier,
-                                                                  String dataUuid,
-                                                                  EvaluationMethod evaluationMethod) {
-        EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
-        evaluationRequestDto.setClassifier(classifier);
-        evaluationRequestDto.setDataUuid(dataUuid);
-        evaluationRequestDto.setEvaluationMethod(evaluationMethod);
-        return evaluationRequestDto;
-    }
-
 }

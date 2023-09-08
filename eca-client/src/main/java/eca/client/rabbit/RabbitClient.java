@@ -1,16 +1,17 @@
 package eca.client.rabbit;
 
 import com.rabbitmq.client.AMQP;
+import eca.client.adapter.ClassifierOptionsAdapter;
 import eca.client.dto.EvaluationRequestDto;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.InstancesRequest;
+import eca.client.dto.options.ClassifierOptions;
 import eca.core.evaluation.EvaluationMethod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
-import weka.core.Instances;
 
 import java.util.Objects;
 
@@ -80,6 +81,8 @@ public class RabbitClient {
     @Setter
     private String experimentRequestQueue;
 
+    private final ClassifierOptionsAdapter classifierOptionsAdapter = new ClassifierOptionsAdapter();
+
     /**
      * Sends evaluation request.
      *
@@ -138,7 +141,8 @@ public class RabbitClient {
 
     private EvaluationRequestDto createEvaluationRequest(AbstractClassifier classifier, String dataUuid) {
         EvaluationRequestDto evaluationRequestDto = new EvaluationRequestDto();
-        evaluationRequestDto.setClassifier(classifier);
+        ClassifierOptions classifierOptions = classifierOptionsAdapter.convert(classifier);
+        evaluationRequestDto.setClassifierOptions(classifierOptions);
         evaluationRequestDto.setDataUuid(dataUuid);
         evaluationRequestDto.setEvaluationMethod(evaluationMethod);
         if (EvaluationMethod.CROSS_VALIDATION.equals(evaluationMethod)) {

@@ -1,12 +1,8 @@
 package eca.client.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import eca.client.dto.databind.ClassifierDeserializer;
-import eca.client.dto.databind.ClassifierSerializer;
+import eca.client.dto.options.ClassifierOptions;
 import eca.core.evaluation.EvaluationMethod;
 import lombok.Data;
-import weka.classifiers.AbstractClassifier;
 
 /**
  * Evaluation request model.
@@ -22,11 +18,9 @@ public class EvaluationRequestDto {
     private String dataUuid;
 
     /**
-     * Classifier model
+     * Classifier options
      */
-    @JsonSerialize(using = ClassifierSerializer.class)
-    @JsonDeserialize(using = ClassifierDeserializer.class)
-    private AbstractClassifier classifier;
+    private ClassifierOptions classifierOptions;
 
     /**
      * Evaluation method
