@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.neural;
 
 import eca.neural.functions.ActivationFunction;
@@ -372,17 +367,9 @@ public class MultilayerPerceptron implements java.io.Serializable {
      * @param output output values
      */
     public void train(double[][] input, double[][] output) {
-        checkInputVectors(input, output);
-        int i = 0;
-        algorithm.initializeWeights();
-        while (true) {
-            int j = i % input.length;
-            i++;
-            double[] y = computeOutputVector(input[j]);
-            if (NeuralNetworkUtil.error(y, output[j]) < minError || i > numIterations) {
-                break;
-            }
-            algorithm.train(y, output[j]);
+        IterativeBuilder iterativeBuilder = getIterativeBuilder(input, output);
+        while (iterativeBuilder.isNext()) {
+            iterativeBuilder.next();
         }
     }
 
@@ -391,9 +378,11 @@ public class MultilayerPerceptron implements java.io.Serializable {
      *
      * @param input  input values
      * @param output output values
-     * @return
+     * @return iterative builder
      */
     public IterativeBuilder getIterativeBuilder(double[][] input, double[][] output) {
+        checkInputVectors(input, output);
+        algorithm.initializeWeights();
         return new IterativeBuilder(input, output);
     }
 
@@ -413,10 +402,8 @@ public class MultilayerPerceptron implements java.io.Serializable {
          * @param output output vector
          */
         public IterativeBuilder(double[][] input, double[][] output) {
-            checkInputVectors(input, output);
             this.input = input;
             this.output = output;
-            algorithm.initializeWeights();
         }
 
         /**
