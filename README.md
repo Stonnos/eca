@@ -49,13 +49,17 @@ ECA v6.9.5
 
 1) enabled - вкл./выкл. использования сервиса. Если флаг равен true, то построение всех моделей классификаторов
     будет осуществляться с помощью Eca - service.
-2) host - хост Rabbit MQ
-3) port - порт Rabbit MQ
-4) username - имя пользователя Rabbit MQ
-5) password - пароль для Rabbit MQ
+2) rabbitConnectionOptions.host - хост Rabbit MQ
+3) rabbitConnectionOptions.port - порт Rabbit MQ
+4) rabbitConnectionOptions.username - имя пользователя Rabbit MQ
+5) rabbitConnectionOptions.password - пароль для Rabbit MQ
 6) evaluationRequestQueue - исходящая очередь для отправки запроса на построение модели классификатора
 7) evaluationOptimizerRequestQueue - исходящая очередь для отправки запроса на построение оптимального классификатора
 8) experimentRequestQueue - исходящая очередь для отправки запроса на построение эксперимента
+9) dataLoaderUrl - url сервиса для загрузки обучающих выборок
+10) tokenUrl - url сервиса для получения авторизационных токенов
+11) clientId - идентификатор клиента
+12) clientSecret - секрет клиента
     
 Настройки параметров подключения к БД находятся в файле db-config.json. Ниже приведены основные параметры:
 
