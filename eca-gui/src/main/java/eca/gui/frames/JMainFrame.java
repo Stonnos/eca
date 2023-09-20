@@ -440,11 +440,11 @@ public class JMainFrame extends JFrame {
         }
 
         InstancesDataModel getFilteredValidData() throws Exception {
-            return instanceTable.createAndFilterValidData(relationNameTextField.getText());
+            return instanceTable.createAndFilterValidData();
         }
 
         InstancesDataModel getSimpleData() throws Exception {
-            return instanceTable.createSimpleData(relationNameTextField.getText());
+            return instanceTable.createSimpleData();
         }
 
         void validateData(boolean validateAttributes) {
@@ -475,6 +475,7 @@ public class JMainFrame extends JFrame {
                     if (!StringUtils.isEmpty(trimName)) {
                         relationNameTextField.setText(trimName);
                         menu.setText(trimName);
+                        instanceTable.setRelationName(trimName);
                     }
                 }
             });
