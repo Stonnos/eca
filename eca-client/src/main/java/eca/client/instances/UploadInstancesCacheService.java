@@ -1,6 +1,5 @@
 package eca.client.instances;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eca.core.InstancesDataModel;
 import eca.data.file.converter.InstancesConverter;
 import eca.data.file.model.InstancesModel;
@@ -8,7 +7,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import weka.core.Instances;
 
 import java.util.Map;
 
@@ -61,6 +59,9 @@ public class UploadInstancesCacheService {
             String dataUuid = uploadInstancesClient.uploadInstances(instancesModel);
             instancesCacheValue = new InstancesCacheValue(instancesDataModel.getLastModificationCount(), dataUuid);
             uploadedDataMap.put(instancesDataModel.getUuid(), instancesCacheValue);
+        } else {
+            log.info("Instances external uuid [{}] has been taken from cache for data [{}]",
+                    instancesCacheValue.getExternalDataUuid(), instancesDataModel.getData().relationName());
         }
         return instancesCacheValue.getExternalDataUuid();
     }
