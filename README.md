@@ -1,4 +1,4 @@
-ECA v6.9.4
+ECA v6.9.5
 ========================================
 
 Описание
@@ -42,19 +42,24 @@ ECA v6.9.4
     * numTests - число тестов
 15) experimentConfig - настройки эксперимента
     * numBestResults - число наилучших конфигураций классификаторов
+16) maxIndividualClassifiers - максимальное число настраиваемых индивидуальных классификаторов для ансамблевых алгоритмов 
     
 Настройки для интеграции с сервисом Eca - service находятся в файле eca-service-config.json. Ниже приведены
 основные параметры:
 
 1) enabled - вкл./выкл. использования сервиса. Если флаг равен true, то построение всех моделей классификаторов
     будет осуществляться с помощью Eca - service.
-2) host - хост Rabbit MQ
-3) port - порт Rabbit MQ
-4) username - имя пользователя Rabbit MQ
-5) password - пароль для Rabbit MQ
+2) rabbitConnectionOptions.host - хост Rabbit MQ
+3) rabbitConnectionOptions.port - порт Rabbit MQ
+4) rabbitConnectionOptions.username - имя пользователя Rabbit MQ
+5) rabbitConnectionOptions.password - пароль для Rabbit MQ
 6) evaluationRequestQueue - исходящая очередь для отправки запроса на построение модели классификатора
 7) evaluationOptimizerRequestQueue - исходящая очередь для отправки запроса на построение оптимального классификатора
 8) experimentRequestQueue - исходящая очередь для отправки запроса на построение эксперимента
+9) dataLoaderUrl - url сервиса для загрузки обучающих выборок
+10) tokenUrl - url сервиса для получения авторизационных токенов
+11) clientId - идентификатор клиента
+12) clientSecret - секрет клиента
     
 Настройки параметров подключения к БД находятся в файле db-config.json. Ниже приведены основные параметры:
 
@@ -115,7 +120,7 @@ ECA v6.9.4
 
     mvn clean install -Pbuild-artifacts
     
-2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.4.zip (для windows), eca-6.9.4.tar.gz (для linux)
+2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.5.zip (для windows), eca-6.9.5.tar.gz (для linux)
 
 Примечание: Для сборки артефактов используется плагин maven assembly plugin. Файлы assembly-linux.xml, assembly-win.xml содержат
 конфигурации для создания дистрибутивов.

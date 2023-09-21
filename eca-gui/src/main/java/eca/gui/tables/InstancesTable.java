@@ -7,6 +7,7 @@ package eca.gui.tables;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.core.InstancesDataModel;
 import eca.filter.ConstantAttributesFilter;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
@@ -35,6 +36,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
@@ -75,11 +78,17 @@ public class InstancesTable extends JDataTableBase {
     private AttributesTable attributesTable;
     private JComboBox<String> classBox;
 
+    private int lastRelationNameModificationCount;
     private int lastDataModificationCount;
     private int lastAttributesModificationCount;
     private int lastClassModificationCount;
+    private int lastSummaryModificationCount;
+    private int relationNameModificationCount;
     private int classModificationCount;
     private Instances lastCreatedInstances;
+
+    private String relationName;
+    private final String uuid;
 
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
@@ -89,6 +98,8 @@ public class InstancesTable extends JDataTableBase {
                           int digits) {
         super(new InstancesTableModel(data, digits));
         this.classBox = classBox;
+        this.uuid = UUID.randomUUID().toString();
+        this.relationName = data.relationName();
         MissingCellRenderer renderer = new MissingCellRenderer();
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -96,6 +107,17 @@ public class InstancesTable extends JDataTableBase {
         this.createPopupMenuList(numInstances);
         this.addClassAttributeListener();
         this.addSortListenerToHeader();
+    }
+
+    public String getRelationName() {
+        return relationName;
+    }
+
+    public void setRelationName(String newRelationName) {
+        if (!Objects.equals(relationName, newRelationName)) {
+            relationNameModificationCount++;
+        }
+        this.relationName = newRelationName;
     }
 
     /**
@@ -232,13 +254,12 @@ public class InstancesTable extends JDataTableBase {
      * Creates filtered instances taking into selected attributes with assigned class attribute.
      * {@link ConstantAttributesFilter} is used for filtering instances.
      *
-     * @param relationName - relation name
      * @return created instances
      * @throws Exception in case of error
      */
-    public Instances createAndFilterData(String relationName) throws Exception {
+    public InstancesDataModel createAndFilterValidData() throws Exception {
         if (isInstancesModified()) {
-            Instances newDataSet = createInstances(relationName);
+            Instances newDataSet = createInstances(getRelationName());
             if (!attributesTable.isSelected(getClassIndex())) {
                 throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
@@ -249,22 +270,28 @@ public class InstancesTable extends JDataTableBase {
             }
             updateLastCreatedInstances(filterInstances);
         }
-        return lastCreatedInstances;
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(lastCreatedInstances)
+                .lastModificationCount(lastSummaryModificationCount)
+                .build();
     }
 
     /**
      * Creates instances taking into selected attributes and class attribute if specified.
      *
-     * @param relationName - relation name
      * @return created instances
      * @throws Exception in case of error
      */
-    public Instances createSimpleData(String relationName) throws Exception {
-        Instances instances = createInstances(relationName);
+    public InstancesDataModel createSimpleData() throws Exception {
+        Instances instances = createInstances(getRelationName());
         if (attributesTable.isSelected(getClassIndex())) {
             instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
         }
-        return instances;
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(lastCreatedInstances)
+                .build();
     }
 
     /**
@@ -383,6 +410,10 @@ public class InstancesTable extends JDataTableBase {
         lastDataModificationCount = getInstancesTableModel().getModificationCount();
         lastAttributesModificationCount = attributesTable.getAttributesTableModel().getModificationCount();
         lastClassModificationCount = classModificationCount;
+        lastRelationNameModificationCount = relationNameModificationCount;
+        lastSummaryModificationCount =
+                lastAttributesModificationCount + lastClassModificationCount + lastDataModificationCount +
+                        lastRelationNameModificationCount;
         lastCreatedInstances = newInstances;
     }
 
@@ -398,8 +429,13 @@ public class InstancesTable extends JDataTableBase {
         return classModificationCount != lastClassModificationCount;
     }
 
+    private boolean isRelationNameModified() {
+        return relationNameModificationCount != lastRelationNameModificationCount;
+    }
+
     private boolean isInstancesModified() {
-        return lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified();
+        return lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified() ||
+                isRelationNameModified();
     }
 
     private boolean validateSelectedAttributesCount() {

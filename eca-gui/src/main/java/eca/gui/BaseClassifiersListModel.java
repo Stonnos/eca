@@ -1,8 +1,11 @@
 package eca.gui;
 
+import eca.config.ApplicationConfig;
+import eca.config.ConfigurationService;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
+import eca.gui.dialogs.EnsembleOptionsDialog;
 import eca.gui.dialogs.J48OptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;
@@ -31,6 +34,13 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 
 public class BaseClassifiersListModel extends DefaultListModel<String> {
+
+    private static final String INVALID_INDIVIDUAL_CLASSIFIER_NUMBER_ERROR_MESSAGE_FORMAT =
+            "Число индивидуальных классификаторов должно быть не более %d!";
+    public static final String ERROR_MESSAGE = "Ошибка";
+
+    private static final ConfigurationService CONFIG_SERVICE =
+            ConfigurationService.getApplicationConfigService();
 
     private static List<ClassifierConditionRule> classifierConditionRules;
 
@@ -93,51 +103,60 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
 
     @Override
     public void addElement(String classifier) {
-        switch (classifier) {
-            case ClassifiersNamesDictionary.ID3:
-                frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNamesDictionary.ID3, new ID3(), data));
-                break;
+        try {
+            ApplicationConfig applicationConfig = CONFIG_SERVICE.getApplicationConfig();
+            if (getSize() >= applicationConfig.getMaxIndividualClassifiers()) {
+                throw new IllegalStateException(String.format(INVALID_INDIVIDUAL_CLASSIFIER_NUMBER_ERROR_MESSAGE_FORMAT,
+                        applicationConfig.getMaxIndividualClassifiers()));
+            }
+            switch (classifier) {
+                case ClassifiersNamesDictionary.ID3:
+                    frames.add(new DecisionTreeOptionsDialog(parent,
+                            ClassifiersNamesDictionary.ID3, new ID3(), data));
+                    break;
 
-            case ClassifiersNamesDictionary.C45:
-                frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNamesDictionary.C45, new C45(), data));
-                break;
+                case ClassifiersNamesDictionary.C45:
+                    frames.add(new DecisionTreeOptionsDialog(parent,
+                            ClassifiersNamesDictionary.C45, new C45(), data));
+                    break;
 
-            case ClassifiersNamesDictionary.CART:
-                frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNamesDictionary.CART, new CART(), data));
-                break;
+                case ClassifiersNamesDictionary.CART:
+                    frames.add(new DecisionTreeOptionsDialog(parent,
+                            ClassifiersNamesDictionary.CART, new CART(), data));
+                    break;
 
-            case ClassifiersNamesDictionary.CHAID:
-                frames.add(new DecisionTreeOptionsDialog(parent,
-                        ClassifiersNamesDictionary.CHAID, new CHAID(), data));
-                break;
+                case ClassifiersNamesDictionary.CHAID:
+                    frames.add(new DecisionTreeOptionsDialog(parent,
+                            ClassifiersNamesDictionary.CHAID, new CHAID(), data));
+                    break;
 
-            case ClassifiersNamesDictionary.NEURAL_NETWORK:
-                NeuralNetwork neuralNetwork = new NeuralNetwork(data);
-                neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
-                frames.add(new NetworkOptionsDialog(parent,
-                        ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data));
-                break;
+                case ClassifiersNamesDictionary.NEURAL_NETWORK:
+                    NeuralNetwork neuralNetwork = new NeuralNetwork(data);
+                    neuralNetwork.getDecimalFormat().setMaximumFractionDigits(digits);
+                    frames.add(new NetworkOptionsDialog(parent,
+                            ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork, data));
+                    break;
 
-            case ClassifiersNamesDictionary.LOGISTIC:
-                frames.add(new LogisticOptionsDialogBase(parent,
-                        ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data));
-                break;
+                case ClassifiersNamesDictionary.LOGISTIC:
+                    frames.add(new LogisticOptionsDialogBase(parent,
+                            ClassifiersNamesDictionary.LOGISTIC, new Logistic(), data));
+                    break;
 
-            case ClassifiersNamesDictionary.KNN:
-                KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
-                kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
-                frames.add(new KNNOptionDialog(parent,
-                        ClassifiersNamesDictionary.KNN, kNearestNeighbours, data));
-                break;
-            case ClassifiersNamesDictionary.J48:
-                frames.add(new J48OptionsDialog(parent,
-                        ClassifiersNamesDictionary.J48, new J48(), data));
-                break;
-            default:
-                throw new IllegalStateException(String.format("Can't handle %s classifier", classifier));
+                case ClassifiersNamesDictionary.KNN:
+                    KNearestNeighbours kNearestNeighbours = new KNearestNeighbours();
+                    kNearestNeighbours.getDecimalFormat().setMaximumFractionDigits(digits);
+                    frames.add(new KNNOptionDialog(parent,
+                            ClassifiersNamesDictionary.KNN, kNearestNeighbours, data));
+                    break;
+                case ClassifiersNamesDictionary.J48:
+                    frames.add(new J48OptionsDialog(parent,
+                            ClassifiersNamesDictionary.J48, new J48(), data));
+                    break;
+                default:
+                    throw new IllegalStateException(String.format("Can't handle %s classifier", classifier));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(parent, e.getMessage(), ERROR_MESSAGE, JOptionPane.WARNING_MESSAGE);
         }
         super.addElement(classifier);
     }

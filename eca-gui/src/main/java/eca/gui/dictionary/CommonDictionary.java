@@ -48,4 +48,8 @@ public class CommonDictionary {
     public static final String EVALUATION_REQUEST_QUEUE = "eca.service.evaluation.request.queue";
     public static final String EVALUATION_OPTIMIZER_REQUEST_QUEUE = "eca.service.evaluation.optimizer.request.queue";
     public static final String EXPERIMENT_REQUEST_QUEUE = "eca.service.experiment.request.queue";
+    public static final String DATA_LOADER_URL = "data.loader.url";
+    public static final String TOKEN_URL = "token.url";
+    public static final String CLIENT_ID = "client-id";
+    public static final String CLIENT_SECRET = "client-secret";
 }

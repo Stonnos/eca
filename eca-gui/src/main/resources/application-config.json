@@ -62,5 +62,6 @@
   },
   "experimentConfig": {
     "numBestResults": 10
-  }
+  },
+  "maxIndividualClassifiers": 25
 }

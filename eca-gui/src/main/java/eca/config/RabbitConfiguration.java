@@ -3,9 +3,9 @@ package eca.config;
 import com.rabbitmq.client.ConnectionFactory;
 import eca.client.converter.JsonMessageConverter;
 import eca.client.converter.MessageConverter;
-import eca.client.core.ConnectionManager;
-import eca.client.core.RabbitClient;
-import eca.client.core.RabbitSender;
+import eca.client.rabbit.ConnectionManager;
+import eca.client.rabbit.RabbitClient;
+import eca.client.rabbit.RabbitSender;
 import eca.client.listener.MessageListenerContainer;
 import lombok.Getter;
 
@@ -73,10 +73,10 @@ public class RabbitConfiguration {
 
     private ConnectionFactory connectionFactory(EcaServiceConfig ecaServiceConfig) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(ecaServiceConfig.getHost());
-        connectionFactory.setPort(ecaServiceConfig.getPort());
-        connectionFactory.setUsername(ecaServiceConfig.getUsername());
-        connectionFactory.setPassword(ecaServiceConfig.getPassword());
+        connectionFactory.setHost(ecaServiceConfig.getRabbitConnectionOptions().getHost());
+        connectionFactory.setPort(ecaServiceConfig.getRabbitConnectionOptions().getPort());
+        connectionFactory.setUsername(ecaServiceConfig.getRabbitConnectionOptions().getUsername());
+        connectionFactory.setPassword(ecaServiceConfig.getRabbitConnectionOptions().getPassword());
         return connectionFactory;
     }
 
