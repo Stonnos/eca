@@ -27,7 +27,7 @@
         <sqllite.version>3.27.2.1</sqllite.version>
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
+        <launch4j-maven-plugin.version>2.4.1</launch4j-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
         <installer-script>compile-installer.bat</installer-script>
@@ -283,7 +283,11 @@
                                 <preCp>anything</preCp>
                             </classPath>
                             <jre>
+                                <path>%JAVA_HOME%;%PATH%</path>
                                 <minVersion>${jre.version}</minVersion>
+                                <opts>
+                                    <opt>${jdk17.options}</opt>
+                                </opts>
                             </jre>
                             <splash>
                                 <file>src/main/resources/images/Logotype.bmp</file>

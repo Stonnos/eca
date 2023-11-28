@@ -24,9 +24,9 @@
     </distributionManagement>
 
     <properties>
-        <java.version>11</java.version>
-        <lombok.version>1.18.12</lombok.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <java.version>17</java.version>
+        <lombok.version>1.18.26</lombok.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
         <logback.version>1.2.3</logback.version>
         <logstash.logback.version>6.4</logstash.logback.version>
@@ -36,9 +36,10 @@
         <github.maven-plugin>0.12</github.maven-plugin>
         <junit-jupiter-engine>5.7.0</junit-jupiter-engine>
         <assertj.core.version>3.17.2</assertj.core.version>
-        <maven-surefire-plugin>2.22.2</maven-surefire-plugin>
-        <jacoco-plugin.version>0.8.5</jacoco-plugin.version>
+        <maven-surefire-plugin>3.2.2</maven-surefire-plugin>
+        <jacoco-plugin.version>0.8.10</jacoco-plugin.version>
         <jacoco.minCoverage>0</jacoco.minCoverage>
+        <jdk17.options>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.math=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.sql/java.sql=ALL-UNNAMED</jdk17.options>
     </properties>
 
     <profiles>
@@ -133,6 +134,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin}</version>
+                <configuration>
+                    <argLine>${jdk17.options}</argLine>
+                </configuration>
             </plugin>
 
             <plugin>

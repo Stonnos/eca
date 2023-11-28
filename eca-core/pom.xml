@@ -28,7 +28,7 @@
         <mssql.version>7.2.1.jre8</mssql.version>
         <jaxb-api.version>2.3.0</jaxb-api.version>
         <javax-activation.version>1.1.1</javax-activation.version>
-        <fst.version>2.57</fst.version>
+        <fst.version>3.0.4-jdk17</fst.version>
         <sonar.coverage.exclusions>
             **/model/**/*,
             **/dto/**/*,
