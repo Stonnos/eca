@@ -29,6 +29,7 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+        <l4j.maxHeapSize>4096</l4j.maxHeapSize>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
     </properties>
 
@@ -283,6 +284,7 @@
                             </classPath>
                             <jre>
                                 <minVersion>${jre.version}</minVersion>
+                                <maxHeapSize>${l4j.maxHeapSize}</maxHeapSize>
                             </jre>
                             <splash>
                                 <file>src/main/resources/images/Logotype.bmp</file>
