@@ -1,1 +1,1 @@
-java -Xmx4096m -jar eca-gui-6.9.5.jar
+java -Xmx4096m -jar eca-gui-6.9.6.jar
