@@ -150,14 +150,14 @@ public class ConfigurationService {
     private File getEcaServiceConfigFile() {
         File file = new File(FileUtils.getCurrentDir(), ECA_SERVICE_CONFIG_PATH);
         if (!file.isFile()) {
-            log.warn("File [{}] not exists. Create new one", ECA_SERVICE_CONFIG_PATH);
+            log.warn("File [{}] not exists. Create new one", file.getAbsolutePath());
             boolean created = file.createNewFile();
             if (created) {
-                log.info("New [{}] file has been created", ECA_SERVICE_CONFIG_PATH);
+                log.info("New [{}] file has been created", file.getAbsolutePath());
                 ecaServiceConfig = new EcaServiceConfig();
                 saveEcaServiceConfig();
             } else {
-                log.warn("Can't create file [{}]", ECA_SERVICE_CONFIG_PATH);
+                log.warn("Can't create file [{}]", file.getAbsolutePath());
             }
         }
         return file;

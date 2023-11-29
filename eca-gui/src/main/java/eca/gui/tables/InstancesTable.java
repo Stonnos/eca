@@ -290,7 +290,8 @@ public class InstancesTable extends JDataTableBase {
         }
         return InstancesDataModel.builder()
                 .uuid(uuid)
-                .data(lastCreatedInstances)
+                .data(instances)
+                .lastModificationCount(0)
                 .build();
     }
 
