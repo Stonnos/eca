@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Implements saving and loading serialized object from file.
@@ -24,6 +26,7 @@ import java.util.Objects;
 @UtilityClass
 public class ModelSerializationHelper {
 
+    private static final String ZIP_EXTENSION = "zip";
     private static final String MODEL_EXTENSION = ".model";
 
     /**
@@ -58,14 +61,35 @@ public class ModelSerializationHelper {
         Objects.requireNonNull(dataResource, "Data resource is not specified!");
         log.info("Starting to load model from [{}]", dataResource.getFile());
         try {
-            @Cleanup InputStream inputStream = dataResource.openInputStream();
-            @Cleanup FSTObjectInput in = new FSTObjectInput(inputStream);
-            Object result = in.readObject();
-            T model = targetClazz.cast(result);
+            T model;
+            String modelFileExtension = dataResource.getExtension();
+            if (ZIP_EXTENSION.equals(modelFileExtension)) {
+                model = deserializeFromZip(dataResource, targetClazz);
+            } else {
+                @Cleanup InputStream inputStream = dataResource.openInputStream();
+                model = deserialize(inputStream, targetClazz);
+            }
             log.info("Model has been loaded from [{}]", dataResource.getFile());
             return model;
         } catch (ClassNotFoundException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+
+    private static <T> T deserialize(InputStream inputStream, Class<T> targetClazz)
+            throws IOException, ClassNotFoundException {
+        @Cleanup FSTObjectInput in = new FSTObjectInput(inputStream);
+        Object result = in.readObject();
+        return targetClazz.cast(result);
+    }
+
+    private static <T> T deserializeFromZip(DataResource<?> dataResource, Class<T> targetClazz)
+            throws IOException, ClassNotFoundException {
+        @Cleanup InputStream inputStream = dataResource.openInputStream();
+        @Cleanup ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        ZipEntry zipEntry = zipInputStream.getNextEntry();
+        Objects.requireNonNull(zipEntry, "Expected model file in zip archive");
+        return deserialize(zipInputStream, targetClazz);
     }
 }

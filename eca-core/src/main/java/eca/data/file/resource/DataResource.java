@@ -30,4 +30,11 @@ public interface DataResource<S> {
      * @return resource file name
      */
     String getFile();
+
+    /**
+     * Returns file extension.
+     *
+     * @return file extension
+     */
+    String getExtension();
 }

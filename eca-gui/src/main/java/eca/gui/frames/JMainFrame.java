@@ -62,7 +62,7 @@ import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
 import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
-import eca.gui.actions.ModelLoader;
+import eca.gui.actions.ClassifierModelLoader;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
@@ -211,6 +211,7 @@ public class JMainFrame extends JFrame {
     private static final String LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT = "Загрузить эксперимент";
     private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
     private static final String URL_FILE_TEXT = "URL файла:";
+    private static final String EXPERIMENT_URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
     private static final String DATA_GENERATION_MENU_TEXT = "Генерация выборки";
     private static final String DATA_GENERATION_LOADING_MESSAGE = "Пожалуйста подождите, идет генерация данных...";
@@ -2042,7 +2043,7 @@ public class JMainFrame extends JFrame {
                 OpenModelChooser fileChooser = SingletonRegistry.getSingleton(OpenModelChooser.class);
                 File file = fileChooser.openFile(JMainFrame.this);
                 if (file != null) {
-                    ModelLoader loader = new ModelLoader(file);
+                    ClassifierModelLoader loader = new ClassifierModelLoader(new FileResource(file));
                     LoadDialog progress = new LoadDialog(JMainFrame.this,
                             loader, MODEL_LOADING_MESSAGE);
 
@@ -2083,7 +2084,7 @@ public class JMainFrame extends JFrame {
     private ActionListener loadExperimentFromUrlActionListener() {
         return event -> {
             String url = (String) JOptionPane.showInputDialog(JMainFrame.this,
-                    URL_FILE_TEXT, DOWNLOAD_EXPERIMENT_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    EXPERIMENT_URL_FILE_TEXT, DOWNLOAD_EXPERIMENT_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
                     null, null);
             if (url != null) {
                 if (!isValidUrl(url)) {
