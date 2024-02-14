@@ -49,7 +49,6 @@ class EcaClientIT {
     private static final long EXPERIMENT_REQUEST_TIMEOUT_SECONDS = 60L;
     private static final long CONNECTION_TIMEOUT_MINUTES = 1L;
     private static final long POLL_INTERVAL_SECONDS = 1L;
-    private static final String ZIP = "zip";
 
     private final EcaClientTestConfiguration ecaClientConfiguration = EcaClientTestConfiguration.getInstance();
 
