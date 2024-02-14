@@ -1,6 +1,7 @@
 package eca.data.file.resource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,5 +31,10 @@ public class FileResource extends AbstractResource<File> {
     @Override
     public String getFile() {
         return getResource().getName();
+    }
+
+    @Override
+    public String getExtension() {
+        return FilenameUtils.getExtension(getFile());
     }
 }

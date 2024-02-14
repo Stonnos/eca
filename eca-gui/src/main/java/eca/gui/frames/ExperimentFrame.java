@@ -9,8 +9,8 @@ import eca.dataminer.AbstractExperiment;
 import eca.dataminer.ExperimentHistoryMode;
 import eca.dataminer.IterativeExperiment;
 import eca.gui.PanelBorderUtils;
-import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
+import eca.gui.actions.ExperimentLoader;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.dialogs.EvaluationMethodOptionsDialog;
@@ -427,7 +427,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         File file = fileChooser.openFile(ExperimentFrame.this);
         if (file != null) {
             try {
-                ExperimentLoader loader = new ExperimentLoader(file);
+                ExperimentLoader loader = new ExperimentLoader(new FileResource(file));
                 LoadDialog loadDialog = new LoadDialog(ExperimentFrame.this,
                         loader, LOAD_EXPERIMENT_TITLE);
 
@@ -552,22 +552,4 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         }
 
     }
-
-    /**
-     * Implements experiment loading callback action.
-     */
-    private static class ExperimentLoader extends AbstractCallback<AbstractExperiment<?>> {
-
-        final File file;
-
-        ExperimentLoader(File file) {
-            this.file = file;
-        }
-
-        @Override
-        protected AbstractExperiment<?> performAndGetResult() throws Exception {
-            return ModelSerializationHelper.deserialize(new FileResource(file), AbstractExperiment.class);
-        }
-    }
-
 }

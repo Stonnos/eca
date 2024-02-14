@@ -15,6 +15,8 @@ public class OpenModelChooser extends OpenFileChooser {
     public OpenModelChooser() {
         getChooser().addChoosableFileFilter(
                 new FileNameExtensionFilter("Model files (*.model)", "model"));
+        getChooser().addChoosableFileFilter(
+                new FileNameExtensionFilter("Zip files (*.zip)", "zip"));
     }
 
 }
