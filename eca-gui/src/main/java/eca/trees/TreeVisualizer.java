@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.trees;
 
 import eca.buffer.ImageCopier;
@@ -337,7 +332,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
         }
 
         int objectsNum() {
-            return node.objectsNum();
+            return node.getNodeSize();
         }
 
         int childrenNum() {
@@ -411,7 +406,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
                 map.put(SPLIT_ATTR_TEXT, getRule().attribute().name());
             }
             int classValue = (int) node.classValue();
-            map.put(NODE_ERROR_TEXT, decimalFormat.format(tree.calculateNodeError(node)));
+            map.put(NODE_ERROR_TEXT, decimalFormat.format(node.getNodeError()));
             map.put(CLASS_VALUE_TEXT,
                     String.format(CLASS_FORMAT, classValue, tree.getData().classAttribute().value(classValue)));
             return map;

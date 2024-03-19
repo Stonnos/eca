@@ -82,7 +82,7 @@ public class AttributesTable extends JDataTableBase {
                         ATTR_NAME_TEXT,
                         String.format(NEW_ATTR_NAME_FORMAT, instancesTable.data().attribute(i).name()),
                         JOptionPane.INFORMATION_MESSAGE, null,
-                        null, null);
+                        null, instancesTable.data().attribute(i).name());
                 if (attrNewName != null) {
                     String trimName = attrNewName.trim();
                     if (!StringUtils.isEmpty(trimName)) {

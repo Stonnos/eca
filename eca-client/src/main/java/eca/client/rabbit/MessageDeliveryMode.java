@@ -1,4 +1,4 @@
-package eca.client.core;
+package eca.client.rabbit;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

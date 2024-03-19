@@ -75,5 +75,9 @@ public class ApplicationConfig {
      * Experiment config
      */
     private ExperimentConfig experimentConfig;
+    /**
+     * Max. individual classifiers (used for ensemble algorithms)
+     */
+    private Integer maxIndividualClassifiers;
 
 }

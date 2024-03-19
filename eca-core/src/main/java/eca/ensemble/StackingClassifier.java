@@ -218,6 +218,11 @@ public class StackingClassifier extends AbstractClassifier
             addInstances(filteredData);
         }
         createMetaClassifier();
+        clearTempData();
+    }
+
+    private void clearTempData() {
+        filteredData.clear();
     }
 
     private void initializeClassifiers() {

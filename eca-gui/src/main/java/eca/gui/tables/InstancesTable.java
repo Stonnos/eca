@@ -7,8 +7,8 @@ package eca.gui.tables;
 
 import eca.config.ConfigurationService;
 import eca.config.IconType;
+import eca.core.InstancesDataModel;
 import eca.filter.ConstantAttributesFilter;
-import eca.filter.FilterDictionary;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
@@ -36,6 +36,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
@@ -70,18 +72,23 @@ public class InstancesTable extends JDataTableBase {
     private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
-    private static final int MIN_NUM_CLASS_VALUES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
 
     private AttributesTable attributesTable;
     private JComboBox<String> classBox;
 
+    private int lastRelationNameModificationCount;
     private int lastDataModificationCount;
     private int lastAttributesModificationCount;
     private int lastClassModificationCount;
+    private int lastSummaryModificationCount;
+    private int relationNameModificationCount;
     private int classModificationCount;
     private Instances lastCreatedInstances;
+
+    private String relationName;
+    private final String uuid;
 
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
@@ -91,6 +98,8 @@ public class InstancesTable extends JDataTableBase {
                           int digits) {
         super(new InstancesTableModel(data, digits));
         this.classBox = classBox;
+        this.uuid = UUID.randomUUID().toString();
+        this.relationName = data.relationName();
         MissingCellRenderer renderer = new MissingCellRenderer();
         for (int i = 1; i < this.getColumnCount(); i++) {
             this.getColumnModel().getColumn(i).setCellRenderer(renderer);
@@ -98,6 +107,17 @@ public class InstancesTable extends JDataTableBase {
         this.createPopupMenuList(numInstances);
         this.addClassAttributeListener();
         this.addSortListenerToHeader();
+    }
+
+    public String getRelationName() {
+        return relationName;
+    }
+
+    public void setRelationName(String newRelationName) {
+        if (!Objects.equals(relationName, newRelationName)) {
+            relationNameModificationCount++;
+        }
+        this.relationName = newRelationName;
     }
 
     /**
@@ -234,42 +254,61 @@ public class InstancesTable extends JDataTableBase {
      * Creates filtered instances taking into selected attributes with assigned class attribute.
      * {@link ConstantAttributesFilter} is used for filtering instances.
      *
-     * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
-    public Instances createAndFilterData(String relationName) throws Exception {
+    public InstancesDataModel createAndFilterValidData() throws Exception {
         if (isInstancesModified()) {
-            Instances newDataSet = createInstances(relationName);
-            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            if (newDataSet.classAttribute().numValues() < MIN_NUM_CLASS_VALUES) {
-                throw new IllegalArgumentException(FilterDictionary.BAD_NUMBER_OF_CLASSES_ERROR_TEXT);
+            Instances newDataSet = createInstances(getRelationName());
+            if (!attributesTable.isSelected(getClassIndex())) {
+                throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
+            newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
             Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
             if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
             }
             updateLastCreatedInstances(filterInstances);
         }
-        return lastCreatedInstances;
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(lastCreatedInstances)
+                .lastModificationCount(lastSummaryModificationCount)
+                .build();
     }
 
     /**
-     * Creates instances taking into selected attributes with no assigned class attribute.
+     * Creates instances taking into selected attributes and class attribute if specified.
      *
-     * @param relationName - relation name
      * @return created instances
-     * @throws Exception
+     * @throws Exception in case of error
      */
-    public Instances createSimpleData(String relationName) throws Exception {
-        return createInstances(relationName);
+    public InstancesDataModel createSimpleData() throws Exception {
+        Instances instances = createInstances(getRelationName());
+        if (attributesTable.isSelected(getClassIndex())) {
+            instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
+        }
+        return InstancesDataModel.builder()
+                .uuid(uuid)
+                .data(instances)
+                .lastModificationCount(0)
+                .build();
     }
 
-    public void validateData(boolean validateClass) {
+    /**
+     * Validates data table.
+     * Attributes validation includes following checks:
+     * 1. Checks that selected attributes number is greater than or equal to 2
+     * 2. Checks that class attribute is selected
+     * 3. Checks that class attribute is nominal
+     *
+     * @param validateAttributes - validates attributes?
+     */
+    public void validateData(boolean validateAttributes) {
         if (getRowCount() == 0) {
             throw new IllegalArgumentException(EMPTY_DATA_ERROR_MESSAGE);
         }
-        if (validateClass) {
+        if (validateAttributes) {
             if (validateSelectedAttributesCount()) {
                 throw new IllegalArgumentException(NOT_ENOUGH_ATTRS_ERROR_MESSAGE);
             }
@@ -372,6 +411,10 @@ public class InstancesTable extends JDataTableBase {
         lastDataModificationCount = getInstancesTableModel().getModificationCount();
         lastAttributesModificationCount = attributesTable.getAttributesTableModel().getModificationCount();
         lastClassModificationCount = classModificationCount;
+        lastRelationNameModificationCount = relationNameModificationCount;
+        lastSummaryModificationCount =
+                lastAttributesModificationCount + lastClassModificationCount + lastDataModificationCount +
+                        lastRelationNameModificationCount;
         lastCreatedInstances = newInstances;
     }
 
@@ -387,8 +430,13 @@ public class InstancesTable extends JDataTableBase {
         return classModificationCount != lastClassModificationCount;
     }
 
+    private boolean isRelationNameModified() {
+        return relationNameModificationCount != lastRelationNameModificationCount;
+    }
+
     private boolean isInstancesModified() {
-        return lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified();
+        return lastCreatedInstances == null || isDataModified() || isAttributesModified() || isClassModified() ||
+                isRelationNameModified();
     }
 
     private boolean validateSelectedAttributesCount() {

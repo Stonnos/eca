@@ -13,8 +13,10 @@ import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.Evaluation;
 import eca.core.model.ClassificationModel;
 import eca.gui.PanelBorderUtils;
+import eca.gui.actions.CallbackAction;
 import eca.gui.choosers.SaveModelChooser;
 import eca.gui.choosers.SaveResultsChooser;
+import eca.gui.dialogs.LoadDialog;
 import eca.gui.frames.AttributesStatisticsFrame;
 import eca.gui.frames.HtmlFrame;
 import eca.gui.frames.InstancesFrame;
@@ -24,6 +26,7 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.panels.ClassifyInstancePanel;
 import eca.gui.panels.ROCCurvePanel;
 import eca.gui.service.ClassifierIndexerService;
+import eca.gui.service.ExecutorService;
 import eca.gui.tables.ClassificationCostsMatrix;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.gui.tables.JDataTableBase;
@@ -97,6 +100,9 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String SHOW_REFERENCE_MENU_TEXT = "Показать справку";
     private static final String INITIAL_DATA_MENU_TEXT = "Исходные данные";
     private static final String ATTR_STATISTICS_MENU_TEXT = "Статистика по атрибутам";
+    private static final String SAVE_REPORT_TITLE =
+            "Пожалуйста подождите, идет сохранение результатов классификации...";
+    private static final String SAVE_MODEL_TITLE = "Пожалуйста подождите, идет сохранение модели...";
     private static final int ATTACHMENT_TAB_INDEX = 3;
 
     private final Date creationDate = new Date();
@@ -299,7 +305,10 @@ public class ClassificationResultsFrameBase extends JFrame {
                 if (file != null) {
                     ClassificationModel classificationModel =
                             new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits);
-                    ModelSerializationHelper.serialize(file, classificationModel);
+                    CallbackAction action = () ->  ModelSerializationHelper.serialize(file, classificationModel);
+                    LoadDialog loadDialog = new LoadDialog(ClassificationResultsFrameBase.this,
+                            action, SAVE_MODEL_TITLE, false);
+                    ExecutorService.process(loadDialog, ClassificationResultsFrameBase.this);
                 }
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
@@ -345,7 +354,11 @@ public class ClassificationResultsFrameBase extends JFrame {
                     .findFirst()
                     .map(EvaluationReportDataProvider::populateEvaluationReportData)
                     .orElse(defaultEvaluationReportDataProvider.populateEvaluationReportData());
-            EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
+
+            CallbackAction action = () -> EvaluationReportHelper.saveReport(evaluationReport, file, decimalFormat);
+            LoadDialog loadDialog = new LoadDialog(ClassificationResultsFrameBase.this,
+                    action, SAVE_REPORT_TITLE, false);
+            ExecutorService.process(loadDialog, ClassificationResultsFrameBase.this);
         }
     }
 

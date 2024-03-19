@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 
+import static eca.gui.dictionary.EcaServiceOptionsDictionary.getValue;
+
 /**
  * @author Roman Batygin
  */
@@ -76,9 +78,9 @@ public class EcaServiceOptionsDialog extends JDialog {
 
     private boolean isValidOptions() {
         for (Entry<String, String> entry : ecaServiceOptionsTableModel.getOptions()) {
-            if (StringUtils.isEmpty(entry.getValue())) {
+            if (StringUtils.isBlank(entry.getValue())) {
                 JOptionPane.showMessageDialog(EcaServiceOptionsDialog.this,
-                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, entry.getKey()), null, JOptionPane.WARNING_MESSAGE);
+                        String.format(EMPTY_PROPERTY_ERROR_FORMAT, getValue(entry.getKey())), null, JOptionPane.WARNING_MESSAGE);
                 return false;
             }
         }
@@ -95,16 +97,16 @@ public class EcaServiceOptionsDialog extends JDialog {
                 CONFIG_SERVICE.getEcaServiceConfig().setEnabled(Boolean.valueOf(entry.getValue()));
                 break;
             case CommonDictionary.RABBIT_HOST:
-                CONFIG_SERVICE.getEcaServiceConfig().setHost(entry.getValue());
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().setHost(entry.getValue());
                 break;
             case CommonDictionary.RABBIT_PORT:
-                CONFIG_SERVICE.getEcaServiceConfig().setPort(Integer.parseInt(entry.getValue()));
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().setPort(Integer.parseInt(entry.getValue()));
                 break;
             case CommonDictionary.RABBIT_USERNAME:
-                CONFIG_SERVICE.getEcaServiceConfig().setUsername(entry.getValue());
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().setUsername(entry.getValue());
                 break;
             case CommonDictionary.RABBIT_PASSWORD:
-                CONFIG_SERVICE.getEcaServiceConfig().setPassword(entry.getValue());
+                CONFIG_SERVICE.getEcaServiceConfig().getRabbitConnectionOptions().setPassword(entry.getValue());
                 break;
             case CommonDictionary.EVALUATION_REQUEST_QUEUE:
                 CONFIG_SERVICE.getEcaServiceConfig().setEvaluationRequestQueue(entry.getValue());
@@ -114,6 +116,18 @@ public class EcaServiceOptionsDialog extends JDialog {
                 break;
             case CommonDictionary.EXPERIMENT_REQUEST_QUEUE:
                 CONFIG_SERVICE.getEcaServiceConfig().setExperimentRequestQueue(entry.getValue());
+                break;
+            case CommonDictionary.DATA_LOADER_URL:
+                CONFIG_SERVICE.getEcaServiceConfig().setDataLoaderUrl(entry.getValue());
+                break;
+            case CommonDictionary.TOKEN_URL:
+                CONFIG_SERVICE.getEcaServiceConfig().setTokenUrl(entry.getValue());
+                break;
+            case CommonDictionary.CLIENT_ID:
+                CONFIG_SERVICE.getEcaServiceConfig().setClientId(entry.getValue());
+                break;
+            case CommonDictionary.CLIENT_SECRET:
+                CONFIG_SERVICE.getEcaServiceConfig().setClientSecret(entry.getValue());
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected eca-service option %s!", entry.getKey()));

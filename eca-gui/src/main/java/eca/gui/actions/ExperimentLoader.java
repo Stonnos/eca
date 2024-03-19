@@ -1,24 +1,16 @@
 package eca.gui.actions;
 
-import eca.core.ModelSerializationHelper;
 import eca.data.file.resource.DataResource;
 import eca.dataminer.AbstractExperiment;
 
 /**
- * Experiment loader.
+ * Experiment model loader.
  *
  * @author Roman Batygin
  */
-public class ExperimentLoader extends AbstractCallback<AbstractExperiment<?>> {
-
-    private final DataResource<?> dataResource;
+public class ExperimentLoader extends AbstractModelLoader<AbstractExperiment> {
 
     public ExperimentLoader(DataResource<?> dataResource) {
-        this.dataResource = dataResource;
-    }
-
-    @Override
-    protected AbstractExperiment<?> performAndGetResult() throws Exception {
-        return ModelSerializationHelper.deserialize(dataResource, AbstractExperiment.class);
+        super(dataResource, AbstractExperiment.class);
     }
 }

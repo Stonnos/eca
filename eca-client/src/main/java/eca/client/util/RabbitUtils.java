@@ -3,7 +3,7 @@ package eca.client.util;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import eca.client.core.MessageDeliveryMode;
+import eca.client.rabbit.MessageDeliveryMode;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;

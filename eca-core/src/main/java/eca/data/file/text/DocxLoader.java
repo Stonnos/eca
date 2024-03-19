@@ -7,6 +7,7 @@ import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,8 @@ public class DocxLoader extends AbstractTextLoader {
         List<List<String>> data;
         int columnSize = 0;
         int rowIdx = 1;
-        try (XWPFDocument document = new XWPFDocument(getSource().openInputStream());
+        try (InputStream inputStream = getSource().openInputStream();
+             XWPFDocument document = new XWPFDocument(inputStream);
              XWPFWordExtractor extractor = new XWPFWordExtractor(document)) {
             String fileData = extractor.getText();
             if (StringUtils.isEmpty(fileData)) {

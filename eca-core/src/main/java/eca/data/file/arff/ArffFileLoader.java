@@ -21,7 +21,9 @@ public class ArffFileLoader extends AbstractDataLoader<DataResource> {
         try (InputStream inputStream = getSource().openInputStream()) {
             ArffLoader arffLoader = new ArffLoader();
             arffLoader.setSource(inputStream);
-            return arffLoader.getDataSet();
+            Instances instances = arffLoader.getDataSet();
+            instances.setClassIndex(instances.numAttributes() - 1);
+            return instances;
         }
     }
 

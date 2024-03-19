@@ -1,6 +1,8 @@
 package eca.client;
 
 import com.rabbitmq.client.ConnectionFactory;
+import eca.client.instances.UploadInstancesCacheService;
+import eca.client.instances.UploadInstancesClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -21,6 +23,10 @@ public class EcaClientTestConfiguration {
     private static final String RABBIT_HOST = "rabbit.host";
     private static final String EVALUATION_REQUEST_QUEUE = "queue.evaluation.request";
     private static final String EXPERIMENT_REQUEST_QUEUE = "queue.experiment.request";
+    private static final String DATA_LOADER_URL = "data.loader.url";
+    private static final String TOKEN_URL = "token.url";
+    private static final String CLIENT_ID = "client-id";
+    private static final String CLIENT_SECRET = "client-secret";
 
     private ConnectionFactory connectionFactory;
 
@@ -83,5 +89,23 @@ public class EcaClientTestConfiguration {
             connectionFactory.setPassword(properties.getProperty(RABBIT_PASSWORD));
         }
         return connectionFactory;
+    }
+
+    /**
+     * Creates upload instances cache service.
+     *
+     * @return upload instances cache service
+     */
+    public UploadInstancesCacheService createUploadInstancesCacheService() {
+        UploadInstancesCacheService uploadInstancesCacheService = new UploadInstancesCacheService();
+        uploadInstancesCacheService.getUploadInstancesClient().setDataLoaderUrl(
+                properties.getProperty(DATA_LOADER_URL));
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setTokenUrl(
+                properties.getProperty(TOKEN_URL));
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setClientId(
+                properties.getProperty(CLIENT_ID));
+        uploadInstancesCacheService.getUploadInstancesClient().getOauth2TokenProvider().setClientSecret(
+                properties.getProperty(CLIENT_SECRET));
+        return uploadInstancesCacheService;
     }
 }

@@ -19,6 +19,7 @@ public class Eca {
             JMainFrame mainFrame = new JMainFrame();
             mainFrame.setVisible(true);
             mainFrame.initializeMessageListenerContainer();
+            mainFrame.initializeUploadInstancesClient();
             log.info("Eca application was started.");
         });
 

@@ -32,10 +32,11 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     private final StopWatch stopWatch = new StopWatch();
 
     protected AbstractProgressDialog(Window parent, String loadingMessage, boolean intermediate,
-                                  boolean progressValuePainted) {
+                                  boolean progressValuePainted, boolean closable) {
         super(parent, StringUtils.EMPTY);
         this.setModal(true);
         this.setResizable(false);
+        this.setUndecorated(!closable);
         this.createGUI(loadingMessage, intermediate, progressValuePainted);
         this.addCancelListener();
         this.pack();

@@ -1,9 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.trees;
+
+import java.util.Arrays;
 
 /**
  * Class for generating CART decision tree model.
@@ -40,15 +37,16 @@ public class CART extends DecisionTreeClassifier {
 
         double giniIndex(double[] p) {
             double giniIndex = 0.0;
-            for (double probability : p) {
-                giniIndex += probability * probability;
+            double[] pCopy = Arrays.copyOf(p, p.length);
+            eca.util.Utils.normalize(pCopy);
+            for (double val : pCopy) {
+                giniIndex += val * val;
             }
             return 1.0 - giniIndex;
         }
 
         double giniSplit(TreeNode x) {
             double infoS = 0.0;
-            calculateProbabilities(x, true);
             for (int i = 0; i < childrenSizes.length; i++) {
                 infoS += childrenSizes[i] * giniIndex(probabilitiesMatrix[i]) / x.objectsNum();
             }

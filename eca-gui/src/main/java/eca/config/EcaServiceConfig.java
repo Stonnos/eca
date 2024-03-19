@@ -2,7 +2,6 @@ package eca.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
  * @author Roman Batygin
  */
 @Data
-@EqualsAndHashCode(exclude = {"evaluationRequestQueue", "evaluationOptimizerRequestQueue", "experimentRequestQueue"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class EcaServiceConfig {
@@ -22,37 +20,42 @@ public class EcaServiceConfig {
     private Boolean enabled = false;
 
     /**
-     * Rabbit host
+     * Rabbit connection options
      */
-    private String host = "localhost";
-
-    /**
-     * Rabbit port
-     */
-    private int port = 5672;
-
-    /**
-     * Rabbit username
-     */
-    private String username = "guest";
-
-    /**
-     * Rabbit password
-     */
-    private String password = "guest";
+    private RabbitConnectionOptions rabbitConnectionOptions = new RabbitConnectionOptions();
 
     /**
      * Evaluation request queue.
      */
-    private String evaluationRequestQueue = "evaluation-request-queue";
+    private String evaluationRequestQueue;
 
     /**
      * Evaluation optimizer request queue.
      */
-    private String evaluationOptimizerRequestQueue = "evaluation-optimizer-request-queue";
+    private String evaluationOptimizerRequestQueue;
 
     /**
      * Experiment request queue.
      */
-    private String experimentRequestQueue = "experiment-request-queue";
+    private String experimentRequestQueue;
+
+    /**
+     * Data loader url
+     */
+    private String dataLoaderUrl;
+
+    /**
+     * Token url
+     */
+    private String tokenUrl;
+
+    /**
+     * Client id
+     */
+    private String clientId;
+
+    /**
+     * Client secret
+     */
+    private String clientSecret;
 }

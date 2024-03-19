@@ -2,16 +2,22 @@ package eca.client;
 
 import com.rabbitmq.client.ConnectionFactory;
 import eca.client.converter.JsonMessageConverter;
-import eca.client.core.ConnectionManager;
-import eca.client.core.RabbitClient;
-import eca.client.core.RabbitSender;
 import eca.client.dto.EvaluationResponse;
 import eca.client.dto.ExperimentRequestDto;
 import eca.client.dto.ExperimentResponse;
 import eca.client.dto.TechnicalStatus;
+import eca.client.instances.UploadInstancesCacheService;
 import eca.client.listener.MessageListenerContainer;
 import eca.client.listener.adapter.EvaluationListenerAdapter;
 import eca.client.listener.adapter.ExperimentListenerAdapter;
+import eca.client.rabbit.ConnectionManager;
+import eca.client.rabbit.RabbitClient;
+import eca.client.rabbit.RabbitSender;
+import eca.core.InstancesDataModel;
+import eca.core.ModelSerializationHelper;
+import eca.core.model.ClassificationModel;
+import eca.data.file.resource.UrlResource;
+import eca.dataminer.AbstractExperiment;
 import eca.trees.CART;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import weka.core.Instances;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -50,6 +57,7 @@ class EcaClientIT {
     private final JsonMessageConverter messageConverter = new JsonMessageConverter();
 
     private RabbitClient rabbitClient;
+    private UploadInstancesCacheService uploadInstancesCacheService;
 
     private String evaluationReplyTo;
     private String experimentReplyTo;
@@ -78,25 +86,32 @@ class EcaClientIT {
         rabbitClient = new RabbitClient(rabbitSender);
         rabbitClient.setEvaluationRequestQueue(EcaClientTestConfiguration.getEvaluationRequestQueue());
         rabbitClient.setExperimentRequestQueue(EcaClientTestConfiguration.getExperimentRequestQueue());
+        uploadInstancesCacheService = ecaClientConfiguration.createUploadInstancesCacheService();
         startContainer(connectionFactory);
     }
 
     @Test
-    void testSendEvaluationRequest() {
+    void testSendEvaluationRequest() throws IOException {
+        String dataUuid = uploadInstances();
         CART cart = new CART();
-        rabbitClient.sendEvaluationRequest(cart, instances, evaluationReplyTo, expectedCorrelationId);
+        rabbitClient.sendEvaluationRequest(cart, dataUuid, evaluationReplyTo, expectedCorrelationId);
         await().timeout(Duration.ofSeconds(EVALUATION_REQUEST_TIMEOUT_SECONDS))
                 .until(() -> responseReceived);
         assertEquals(expectedCorrelationId, actualCorrelationId);
         assertNotNull(evaluationResponse);
-        assertNotNull(evaluationResponse.getEvaluationResults());
+        assertNotNull(evaluationResponse.getModelUrl());
         assertEquals(TechnicalStatus.SUCCESS, evaluationResponse.getStatus());
+        ClassificationModel classificationModel =
+                downloadModel(evaluationResponse.getModelUrl(), ClassificationModel.class);
+        assertNotNull(classificationModel);
+        assertEquals(cart.getClass().getSimpleName(), classificationModel.getClassifier().getClass().getSimpleName());
     }
 
     @Test
-    void testSendExperimentRequest() {
+    void testSendExperimentRequest() throws IOException {
+        String dataUuid = uploadInstances();
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
-        experimentRequestDto.setData(instances);
+        experimentRequestDto.setDataUuid(dataUuid);
         rabbitClient.sendExperimentRequest(experimentRequestDto, experimentReplyTo, expectedCorrelationId);
         await().timeout(Duration.ofSeconds(EXPERIMENT_REQUEST_TIMEOUT_SECONDS))
                 .until(() -> responseReceived);
@@ -104,12 +119,21 @@ class EcaClientIT {
         assertNotNull(experimentResponse);
         assertNotNull(experimentResponse.getDownloadUrl());
         assertEquals(TechnicalStatus.SUCCESS, experimentResponse.getStatus());
+        AbstractExperiment<?> abstractExperiment =
+                downloadModel(experimentResponse.getDownloadUrl(), AbstractExperiment.class);
+        assertNotNull(abstractExperiment);
     }
 
     @AfterEach
     void stop() throws IOException, TimeoutException {
         messageListenerContainer.stop();
         rabbitClient.getRabbitSender().getConnectionManager().close();
+    }
+
+    private <T> T downloadModel(String url, Class<T> modelClazz) throws IOException {
+        URL modelUrl = new URL(url);
+        UrlResource urlResource = new UrlResource(modelUrl);
+        return ModelSerializationHelper.deserialize(urlResource, modelClazz);
     }
 
     private void startContainer(ConnectionFactory connectionFactory) {
@@ -142,5 +166,13 @@ class EcaClientIT {
         await().timeout(Duration.ofMinutes(CONNECTION_TIMEOUT_MINUTES))
                 .pollInterval(Duration.ofSeconds(POLL_INTERVAL_SECONDS))
                 .until(messageListenerContainer::isStarted);
+    }
+
+    private String uploadInstances() {
+        InstancesDataModel instancesDataModel = InstancesDataModel.builder()
+                .uuid(UUID.randomUUID().toString())
+                .data(instances)
+                .build();
+        return uploadInstancesCacheService.uploadInstances(instancesDataModel);
     }
 }
