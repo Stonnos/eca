@@ -351,8 +351,7 @@ public class QueryFrame extends JFrame {
                         next = content.indexOf(word, next);
                         int end = next + word.length();
                         document.setCharacterAttributes(next, end,
-                                queryArea.getStyle(
-                                        sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                                queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
                                 true);
                         next = end;
                     }

@@ -14,7 +14,6 @@ import weka.core.Instances;
 import weka.core.Randomizable;
 import weka.core.Utils;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
@@ -98,7 +97,9 @@ public class AdaBoostClassifier extends AbstractHeterogeneousClassifier {
 
     private void initializeWeights() {
         double w0 = 1.0 / filteredData.numInstances();
-        Arrays.fill(weights, w0);
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = w0;
+        }
     }
 
     @Override
