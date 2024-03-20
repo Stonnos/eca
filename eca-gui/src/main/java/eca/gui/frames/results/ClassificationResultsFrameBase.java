@@ -348,7 +348,7 @@ public class ClassificationResultsFrameBase extends JFrame {
 
         @SuppressWarnings("unchecked")
         void saveReportToFile(File file) throws Exception {
-            EvaluationReport evaluationReport = (EvaluationReport) evaluationReportDataProviders
+            EvaluationReport evaluationReport = evaluationReportDataProviders
                     .stream()
                     .filter(p -> p.canHandle(classifier))
                     .findFirst()
