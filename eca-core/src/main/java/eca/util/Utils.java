@@ -1,17 +1,20 @@
 package eca.util;
 
+import eca.core.evaluation.Evaluation;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Attribute;
 import weka.core.Instances;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 /**
  * Utility class.
@@ -204,5 +207,22 @@ public class Utils {
      */
     public static String[] commaSeparatorSplit(String str) {
         return StringUtils.split(str, COMMA_SEPARATOR);
+    }
+
+    /**
+     * Gets formatted evaluation value or missing value if it is NaN.
+     *
+     * @param evaluation   - evaluation object
+     * @param function     - evaluation function
+     * @param format       - decimal format
+     * @param missingValue - missing value
+     * @return formatted evaluation value
+     */
+    public static String getFormattedEvaluationValueOrMissing(Evaluation evaluation,
+                                                              Function<Evaluation, Double> function,
+                                                              DecimalFormat format,
+                                                              String missingValue) {
+        double value = function.apply(evaluation);
+        return weka.core.Utils.isMissingValue(value) ? missingValue : format.format(value);
     }
 }

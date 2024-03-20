@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class AttributeStatistics {
 
-    private static final String NAN = "NaN";
+    private static final String NAN = "-";
     private Instances data;
     private DecimalFormat decimalFormat;
 
