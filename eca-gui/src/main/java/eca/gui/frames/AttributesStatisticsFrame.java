@@ -386,7 +386,7 @@ public class AttributesStatisticsFrame extends JFrame {
                 FREQUENCY_Y_LABEL, xySeriesCollection, PlotOrientation.VERTICAL, true, false, false
         );
         XYPlot xyPlot = (XYPlot) chart.getPlot();
-        xyPlot.getRenderer().setBaseSeriesVisibleInLegend(false);
+        xyPlot.getRenderer().setSeriesVisibleInLegend(0, true);
         chart.setBorderVisible(true);
         chart.setBorderPaint(FREQUENCY_DIAGRAM_BORDER_COLOR);
         chart.setBorderStroke(FREQUENCY_DIAGRAM_STROKE);
