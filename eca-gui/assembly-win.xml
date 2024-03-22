@@ -19,7 +19,6 @@
         <fileSet>
             <outputDirectory>app</outputDirectory>
             <includes>
-                <include>eca.bat</include>
                 <include>docs/data/*</include>
                 <include>readme.txt</include>
                 <include>COPYING</include>
