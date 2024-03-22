@@ -14,8 +14,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jcommon.version>1.0.23</jcommon.version>
-        <jfreechart.version>1.0.14</jfreechart.version>
+        <jcommon.version>1.0.24</jcommon.version>
+        <jfreechart.version>1.5.4</jfreechart.version>
         <velocity.version>1.7</velocity.version>
         <exe.file.name>ECA</exe.file.name>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -154,11 +154,11 @@
         </dependency>
 
         <!-- JFreeChart library -->
-        <dependency>
+       <!-- <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jcommon</artifactId>
             <version>${jcommon.version}</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.jfree</groupId>

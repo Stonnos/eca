@@ -206,7 +206,7 @@ public class ROCCurvePanel extends JPanel {
         plots[plots.length - 1] = ChartFactory.createXYLineChart(TITLE, X_AXIS_TITLE, Y_AXIS_TITLE,
                 allPlots, PlotOrientation.VERTICAL, true, true, false);
         XYPlot xyPlot = (XYPlot) plots[plots.length - 1].getPlot();
-        xyPlot.getRenderer().setBaseToolTipGenerator(tooltipGenerator);
+        xyPlot.getRenderer().setSeriesToolTipGenerator(0, tooltipGenerator);
         chartPanel = new ChartPanel(plots[plots.length - 1]);
     }
 
