@@ -30,4 +30,4 @@ jobs:
       - name: Deploy artifacts
         env:
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-        run: mvn -c settings.xml clean deploy -Pprod
+        run: mvn -s settings.xml clean deploy -Pprod
