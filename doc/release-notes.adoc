@@ -56,3 +56,7 @@
 == Релиз 6.9.7
 
 1. Реализована загрузка моделей из zip архива (https://tracker.yandex.ru/ECS-22)
+
+== Релиз 6.9.8
+
+1. Обновлена библиотека weka-stable до версии 3.8.6 (https://tracker.yandex.ru/ECS-33)

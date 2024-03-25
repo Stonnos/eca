@@ -5,17 +5,16 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.9.7</version>
+        <version>6.9.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.9.7</version>
+    <version>6.9.8</version>
     <packaging>jar</packaging>
 
     <properties>
-        <jcommon.version>1.0.23</jcommon.version>
-        <jfreechart.version>1.0.14</jfreechart.version>
+        <jfreechart.version>1.5.4</jfreechart.version>
         <velocity.version>1.7</velocity.version>
         <exe.file.name>ECA</exe.file.name>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
@@ -150,13 +149,6 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity</artifactId>
             <version>${velocity.version}</version>
-        </dependency>
-
-        <!-- JFreeChart library -->
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jcommon</artifactId>
-            <version>${jcommon.version}</version>
         </dependency>
 
         <dependency>

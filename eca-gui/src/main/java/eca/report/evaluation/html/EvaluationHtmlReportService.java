@@ -29,6 +29,7 @@ import java.util.stream.IntStream;
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.report.ReportGenerator.populateClassifierInputOptions;
 import static eca.report.ReportHelper.toAttachmentRecord;
+import static eca.util.Utils.getFormattedEvaluationValueOrMissing;
 
 /**
  * Implements classification results saving into html file.
@@ -41,7 +42,7 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
     private static final String VM_TEMPLATE_DECISION_TREE_REPORT = "vm-templates/decisionTreeResultsReport.vm";
     private static final String VM_TEMPLATE_NEURAL_NETWORK_REPORT = "vm-templates/neuralNetworkResultsReport.vm";
     private static final String VM_TEMPLATE_LOGISTIC_REPORT = "vm-templates/logisticResultsReport.vm";
-    private static final String NAN = "NaN";
+    private static final String MISSING_VALUE = "-";
 
     private static final String STATISTICS_PARAM = "statistics";
     private static final String CONFUSION_MATRIX_PARAM = "confusionMatrix";
@@ -123,10 +124,18 @@ public class EvaluationHtmlReportService extends AbstractEvaluationReportService
                         record.setTnRate(getDecimalFormat().format(evaluation.trueNegativeRate(i)));
                         record.setFnRate(getDecimalFormat().format(evaluation.falseNegativeRate(i)));
                         record.setRecall(getDecimalFormat().format(evaluation.recall(i)));
-                        record.setPrecision(getDecimalFormat().format(evaluation.precision(i)));
-                        record.setFMeasure(getDecimalFormat().format(evaluation.fMeasure(i)));
-                        double aucValue = evaluation.areaUnderROC(i);
-                        record.setAucValue(Double.isNaN(aucValue) ? NAN : getDecimalFormat().format(aucValue));
+                        String precision =
+                                getFormattedEvaluationValueOrMissing(evaluation, ev -> ev.precision(i), getDecimalFormat(),
+                                        MISSING_VALUE);
+                        String fMeasure =
+                                getFormattedEvaluationValueOrMissing(evaluation, ev -> ev.fMeasure(i), getDecimalFormat(),
+                                        MISSING_VALUE);
+                        String auc =
+                                getFormattedEvaluationValueOrMissing(evaluation, ev -> ev.areaUnderROC(i), getDecimalFormat(),
+                                        MISSING_VALUE);
+                        record.setPrecision(precision);
+                        record.setFMeasure(fMeasure);
+                        record.setAucValue(auc);
                         return record;
                     }).collect(Collectors.toList());
             context.put(CLASSIFICATION_COST_PARAM, classificationCostRecordList);
