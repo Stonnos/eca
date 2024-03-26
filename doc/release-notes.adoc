@@ -60,3 +60,7 @@
 == Релиз 6.9.8
 
 1. Обновлена библиотека weka-stable до версии 3.8.6 (https://tracker.yandex.ru/ECS-33)
+
+== Релиз 6.9.8-jdk17
+
+1. Обновлена версия java до 17 (https://tracker.yandex.ru/ECS-32)
