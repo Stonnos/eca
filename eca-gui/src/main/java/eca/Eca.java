@@ -1,5 +1,6 @@
 package eca;
 
+import eca.config.ConfigurationService;
 import eca.gui.frames.JMainFrame;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,8 @@ import java.awt.*;
 @Slf4j
 public class Eca {
 
+    private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
+
     public static void main(String[] args) {
 
         EventQueue.invokeLater(() -> {
@@ -20,7 +23,8 @@ public class Eca {
             mainFrame.setVisible(true);
             mainFrame.initializeMessageListenerContainer();
             mainFrame.initializeUploadInstancesClient();
-            log.info("Eca application was started.");
+            log.info("Eca application was started. App version: {}",
+                    CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getVersion());
         });
 
     }
