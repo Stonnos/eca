@@ -23,7 +23,7 @@ public class Eca {
             mainFrame.setVisible(true);
             mainFrame.initializeMessageListenerContainer();
             mainFrame.initializeUploadInstancesClient();
-            log.info("Eca application was started. App version: {}",
+            log.info("Eca application was started. Application version: {}",
                     CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getVersion());
         });
 
