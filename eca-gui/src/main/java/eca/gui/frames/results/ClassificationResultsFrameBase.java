@@ -346,6 +346,7 @@ public class ClassificationResultsFrameBase extends JFrame {
             }
         }
 
+        @SuppressWarnings("unchecked")
         void saveReportToFile(File file) throws Exception {
             EvaluationReport evaluationReport = evaluationReportDataProviders
                     .stream()

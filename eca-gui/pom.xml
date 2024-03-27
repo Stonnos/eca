@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.9.8</version>
+        <version>6.9.8-jdk17</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>6.9.8</version>
+    <version>6.9.8-jdk17</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -26,10 +26,11 @@
         <sqllite.version>3.27.2.1</sqllite.version>
         <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <launch4j-maven-plugin.version>1.7.23</launch4j-maven-plugin.version>
+        <launch4j-maven-plugin.version>2.4.1</launch4j-maven-plugin.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <l4j.maxHeapSize>4096</l4j.maxHeapSize>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
+        <installer-script>compile-installer.bat</installer-script>
     </properties>
 
     <profiles>
@@ -69,7 +70,7 @@
                                     <target>
                                         <exec executable="cmd.exe" failonerror="true">
                                             <arg value="/c"/>
-                                            <arg value="compile-installer.bat"/>
+                                            <arg value="${installer-script}"/>
                                         </exec>
                                     </target>
                                 </configuration>
@@ -275,8 +276,12 @@
                                 <preCp>anything</preCp>
                             </classPath>
                             <jre>
+                                <path>%JAVA_HOME%;%PATH%</path>
                                 <minVersion>${jre.version}</minVersion>
                                 <maxHeapSize>${l4j.maxHeapSize}</maxHeapSize>
+                                <opts>
+                                    <opt>${jdk17.options}</opt>
+                                </opts>
                             </jre>
                             <splash>
                                 <file>src/main/resources/images/Logotype.bmp</file>

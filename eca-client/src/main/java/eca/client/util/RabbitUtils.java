@@ -4,10 +4,12 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import eca.client.rabbit.MessageDeliveryMode;
+import eca.core.EcaVersion;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 public class RabbitUtils {
 
     private static final String APPLICATION_JSON = "application/json";
+    private static final String ECA_API_VERSION_HEADER = "ecaApiVersion";
 
     /**
      * Builds message properties.
@@ -31,6 +34,8 @@ public class RabbitUtils {
         return new AMQP.BasicProperties.Builder()
                 .replyTo(replyTo)
                 .correlationId(correlationId)
+                .headers(Collections.singletonMap(ECA_API_VERSION_HEADER,
+                        EcaVersion.class.getPackage().getImplementationVersion()))
                 .deliveryMode(MessageDeliveryMode.PERSISTENT.getCode())
                 .contentEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON).build();
