@@ -1,4 +1,4 @@
-ECA v6.9.8-jdk17
+ECA v6.9.9
 ========================================
 
 Описание
@@ -120,7 +120,7 @@ ECA v6.9.8-jdk17
 
     mvn clean install -Pbuild-artifacts
     
-2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.8-jdk17.zip (для windows), eca-6.9.8-jdk17.tar.gz (для linux)
+2. После сборки проекта в директории eca-gui/target будут лежать два дистрибутива eca-6.9.9.zip (для windows), eca-6.9.9.tar.gz (для linux)
 
 Примечание: Для сборки артефактов используется плагин maven assembly plugin. Файлы assembly-linux.xml, assembly-win.xml содержат
 конфигурации для создания дистрибутивов.
