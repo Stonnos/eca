@@ -7,7 +7,6 @@ import eca.data.file.csv.CsvLoader;
 import eca.data.file.json.JsonLoader;
 import eca.data.file.resource.DataResource;
 import eca.data.file.text.DATALoader;
-import eca.data.file.text.DocxLoader;
 import eca.data.file.xls.XLSLoader;
 import eca.data.file.xml.XmlLoader;
 import lombok.AllArgsConstructor;
@@ -22,7 +21,6 @@ import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.data.FileUtils.ALL_EXTENSIONS;
-import static eca.data.FileUtils.DOCX_EXTENSIONS;
 import static eca.data.FileUtils.TXT_EXTENSIONS;
 import static eca.data.FileUtils.XLS_EXTENSIONS;
 import static eca.data.FileUtils.containsExtension;
@@ -46,7 +44,6 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 ArffFileLoader::new));
         LOADER_CONFIGS.add(new LoaderConfig(TXT_EXTENSIONS, DATALoader::new));
         LOADER_CONFIGS.add(new LoaderConfig(XLS_EXTENSIONS, XLSLoader::new));
-        LOADER_CONFIGS.add(new LoaderConfig(DOCX_EXTENSIONS, DocxLoader::new));
         LOADER_CONFIGS.add(
                 new LoaderConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), XmlLoader::new));
         LOADER_CONFIGS.add(new LoaderConfig(Collections.singleton(DataFileExtension.JSON.getExtendedExtension()),

@@ -6,7 +6,6 @@ import eca.data.file.arff.ArffFileSaver;
 import eca.data.file.csv.CsvSaver;
 import eca.data.file.json.JsonSaver;
 import eca.data.file.text.DATASaver;
-import eca.data.file.text.DocxSaver;
 import eca.data.file.xls.XLSSaver;
 import eca.data.file.xml.XmlSaver;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static eca.data.FileUtils.DOCX_EXTENSIONS;
 import static eca.data.FileUtils.TXT_EXTENSIONS;
 import static eca.data.FileUtils.XLS_EXTENSIONS;
 import static eca.data.FileUtils.containsExtension;
@@ -49,7 +47,6 @@ public class FileDataSaver {
                 ArffFileSaver::new));
         SAVE_CONFIGS.add(new SaverConfig(TXT_EXTENSIONS, DATASaver::new));
         SAVE_CONFIGS.add(new SaverConfig(XLS_EXTENSIONS, XLSSaver::new));
-        SAVE_CONFIGS.add(new SaverConfig(DOCX_EXTENSIONS, DocxSaver::new));
         SAVE_CONFIGS.add(
                 new SaverConfig(Collections.singleton(DataFileExtension.XML.getExtendedExtension()), XmlSaver::new));
         SAVE_CONFIGS.add(

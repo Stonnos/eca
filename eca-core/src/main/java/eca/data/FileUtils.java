@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,12 +32,6 @@ public class FileUtils {
                     DataFileExtension.XLSX.getExtendedExtension());
 
     /**
-     * Docx extensions
-     */
-    public static final Set<String> DOCX_EXTENSIONS =
-            Collections.singleton(DataFileExtension.DOCX.getExtendedExtension());
-
-    /**
      * All extensions
      */
     public static final Set<String> ALL_EXTENSIONS = Stream.of(DataFileExtension.values())
@@ -63,16 +56,6 @@ public class FileUtils {
      */
     public static boolean isTxtExtension(String fileName) {
         return containsExtension(fileName, TXT_EXTENSIONS);
-    }
-
-    /**
-     * Returns true if specified file extension belongs to docx format.
-     *
-     * @param fileName - file name
-     * @return true if specified file extension belongs to docx format
-     */
-    public static boolean isDocxExtension(String fileName) {
-        return containsExtension(fileName, DOCX_EXTENSIONS);
     }
 
     /**

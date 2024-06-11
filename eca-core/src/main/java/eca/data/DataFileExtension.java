@@ -47,11 +47,6 @@ public enum DataFileExtension implements DescriptiveEnum {
     DATA("data", "DATA data files (*.data)"),
 
     /**
-     * Docx file extension
-     */
-    DOCX("docx", "Docx data files (*.docx)"),
-
-    /**
      * Xml extension
      */
     XML("xml", "Xml data files (*.xml)");
