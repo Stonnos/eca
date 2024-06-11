@@ -10,7 +10,7 @@
   "evaluationOptimizerRequestQueue": "evaluation-optimizer-request-queue",
   "experimentRequestQueue": "experiment-request-queue",
   "dataLoaderUrl": "http://localhost:8080/eca-data-loader/api/external/upload-train-data",
-  "tokenUrl": "http://localhost:8080/eca-oauth/oauth/token",
+  "tokenUrl": "http://localhost:8080/eca-oauth/oauth2/token",
   "clientId": "external-api",
   "clientSecret": "external_api_secret"
 }

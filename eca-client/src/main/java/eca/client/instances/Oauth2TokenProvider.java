@@ -33,6 +33,8 @@ public class Oauth2TokenProvider {
     private static final String BASIC_HEADER_FORMAT = "Basic %s";
     private static final String GRANT_TYPE_PARAM = "grant_type";
     private static final String CLIENT_CREDENTIALS = "client_credentials";
+    private static final String SCOPE = "scope";
+    private static final String DATA_LOADER_API_SCOPE = "data-loader-api";
 
     /**
      * Token url
@@ -100,6 +102,7 @@ public class Oauth2TokenProvider {
     private HttpEntity createHttpEntity() {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         nameValuePairs.add(new BasicNameValuePair(GRANT_TYPE_PARAM, CLIENT_CREDENTIALS));
+        nameValuePairs.add(new BasicNameValuePair(SCOPE, DATA_LOADER_API_SCOPE));
         return new UrlEncodedFormEntity(nameValuePairs, StandardCharsets.UTF_8);
     }
 
