@@ -12,11 +12,13 @@ import eca.data.file.xml.XmlLoader;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import weka.core.Instances;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -63,6 +65,8 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
     @Override
     public Instances loadInstances() throws Exception {
         log.info("Starting to load instances from [{}]", getSource().getFile());
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         Instances data;
         LoaderConfig loaderConfig = LOADER_CONFIGS.stream()
                 .filter(config -> containsExtension(getSource().getFile(), config.getExtensions()))
@@ -70,7 +74,9 @@ public class FileDataLoader extends AbstractDataLoader<DataResource> {
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't load data from file '%s'", getSource().getFile())));
         data = loadData(loaderConfig.getDataLoaderSupplier().get());
-        log.info("Instances has been loaded from [{}]", getSource().getFile());
+        stopWatch.stop();
+        log.info("Instances has been loaded from [{}] in {} ms.", getSource().getFile(),
+                stopWatch.getTime(TimeUnit.MILLISECONDS));
         return data;
     }
 

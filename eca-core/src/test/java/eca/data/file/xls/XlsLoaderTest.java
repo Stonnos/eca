@@ -9,16 +9,9 @@ import org.junit.jupiter.api.Test;
  * @author Roman Batygin
  */
 class XlsLoaderTest extends BaseFileLoaderTest {
-
-    private static final String DATA_CREDIT_XLS = "data/credit.xls";
     private static final String DATA_CREDIT_XLSX = "data/credit.xlsx";
 
     private final XLSLoader xlsLoader = new XLSLoader();
-
-    @Test
-    void testLoadDataFromXlsFile() {
-        executeTest(xlsLoader, DATA_CREDIT_XLS);
-    }
 
     @Test
     void testLoadDataFromXlsxFile() {

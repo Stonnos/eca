@@ -28,8 +28,7 @@ public class FileUtils {
      * Xls extensions
      */
     public static final Set<String> XLS_EXTENSIONS =
-            ImmutableSet.of(DataFileExtension.XLS.getExtendedExtension(),
-                    DataFileExtension.XLSX.getExtendedExtension());
+            ImmutableSet.of(DataFileExtension.XLSX.getExtendedExtension());
 
     /**
      * All extensions

@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 public class FileDataDictionary {
 
     public static final String EMPTY_COLUMNS_ERROR = "Данные должны быть без пустых столбцов!";
+    public static final String EMPTY_DATASET_ERROR = "Данные должны содержать хотя бы одну строку!";
     public static final String BAD_DATA_FORMAT = "Данные не должны содержать пустые строки!";
     public static final String BAD_CELL_VALUES = "Значения должны быть числовыми или текстовыми!";
     public static final String DIFFERENT_DATA_TYPES_IN_COLUMN_ERROR_FORMAT =
