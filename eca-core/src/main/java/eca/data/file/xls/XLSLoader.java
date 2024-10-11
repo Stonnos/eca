@@ -29,6 +29,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import static eca.data.file.FileDataDictionary.EMPTY_COLUMNS_ERROR;
+
 /**
  * Class for loading xls/xlsx files. <p>
  * Input data must satisfy to following requirements: <p>
@@ -174,7 +176,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
         Row headerRow = rows.getFirst();
         int headerSize = headerRow.getCellCount();
         if (headerSize > headerRow.getPhysicalCellCount()) {
-            throw new IllegalArgumentException(FileDataDictionary.EMPTY_COLUMNS_ERROR);
+            throw new IllegalArgumentException(String.format(EMPTY_COLUMNS_ERROR, 0));
         }
         for (int i = 0; i < headerRow.getPhysicalCellCount(); i++) {
             if (StringUtils.isEmpty(headerRow.getCell(i).asString())) {
@@ -186,8 +188,8 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                 if (row == null || row.getCellCount() == 0 || row.getPhysicalCellCount() == 0) {
                     throw new IllegalArgumentException(FileDataDictionary.BAD_DATA_FORMAT);
                 }
-                if (row.getPhysicalCellCount() > headerSize) {
-                    throw new IllegalArgumentException(FileDataDictionary.HEADER_ERROR);
+                if (row.getPhysicalCellCount() != headerSize) {
+                    throw new IllegalArgumentException(String.format(EMPTY_COLUMNS_ERROR, j + 1));
                 }
                 Cell cell = row.getCell(i);
                 if (cell != null) {
