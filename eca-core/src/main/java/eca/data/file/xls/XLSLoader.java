@@ -27,6 +27,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static eca.data.file.FileDataDictionary.EMPTY_COLUMNS_ERROR;
@@ -124,7 +125,7 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
             ArrayList<String> values = new ArrayList<>();
             int attributeType = Attribute.NUMERIC;
             for (int j = 1; j < rows.size(); j++) {
-                Cell cell = rows.get(j).getCell(i);
+                Cell cell = getCell(rows.get(j), i);
                 if (cell != null && !cell.getType().equals(CellType.EMPTY)) {
                     CellType cellType = cell.getType();
                     if (cellType.equals(CellType.STRING)) {
@@ -182,16 +183,13 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
             if (StringUtils.isEmpty(headerRow.getCell(i).asString())) {
                 throw new IllegalArgumentException(FileDataDictionary.HEADER_ERROR);
             }
-            CellType expectedCellType = rows.get(1).getCell(i).getType();
+            CellType expectedCellType = Optional.ofNullable(getCell(rows.get(1), i)).map(Cell::getType).orElse(null);
             for (int j = 1; j < rows.size(); j++) {
                 Row row = rows.get(j);
                 if (row == null || row.getCellCount() == 0 || row.getPhysicalCellCount() == 0) {
                     throw new IllegalArgumentException(FileDataDictionary.BAD_DATA_FORMAT);
                 }
-                if (row.getPhysicalCellCount() != headerSize) {
-                    throw new IllegalArgumentException(String.format(EMPTY_COLUMNS_ERROR, j + 1));
-                }
-                Cell cell = row.getCell(i);
+                Cell cell = getCell(row, i);
                 if (cell != null) {
                     CellType actualCellType = cell.getType();
                     if (!AVAILABLE_CELL_TYPES.contains(actualCellType)) {
@@ -204,6 +202,10 @@ public class XLSLoader extends AbstractDataLoader<DataResource> {
                 }
             }
         }
+    }
+
+    private Cell getCell(Row row, int cellIndex) {
+        return cellIndex <= row.getPhysicalCellCount() ? row.getCell(cellIndex) : null;
     }
 
     private boolean isCellTypeNotEquals(CellType first, CellType second) {

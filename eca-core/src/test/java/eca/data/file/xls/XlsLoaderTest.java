@@ -15,7 +15,6 @@ class XlsLoaderTest extends BaseFileLoaderTest {
     private static final String INVALID_DATA_DIFFERENT_CELL_TYPES_XLSX = "data/invalid_data_different_cell_types.xlsx";
 
     private static final String INVALID_DATA_EMPTY_HEADER_XLSX = "data/invalid_data_empty_header.xlsx";
-    private static final String INVALID_DATA_CELLS_SIZE_XLSX = "data/invalid_data_cells_size.xlsx";
 
     private final XLSLoader xlsLoader = new XLSLoader();
 
@@ -34,11 +33,5 @@ class XlsLoaderTest extends BaseFileLoaderTest {
     void testLoadDataFromXlsxFileWithEmptyHeaderShouldThrowError() {
         assertThrows(IllegalArgumentException.class,
                 () -> executeTest(xlsLoader, INVALID_DATA_EMPTY_HEADER_XLSX));
-    }
-
-    @Test
-    void testLoadDataFromXlsxFileWithInvalidCellsSizeShouldThrowError() {
-        assertThrows(IllegalArgumentException.class,
-                () -> executeTest(xlsLoader, INVALID_DATA_CELLS_SIZE_XLSX));
     }
 }
