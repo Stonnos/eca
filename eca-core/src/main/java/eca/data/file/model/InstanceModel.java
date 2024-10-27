@@ -24,5 +24,5 @@ public class InstanceModel {
      */
     @XmlElement(name = "value")
     @XmlElementWrapper
-    private List<String> values;
+    private List<Double> values;
 }
