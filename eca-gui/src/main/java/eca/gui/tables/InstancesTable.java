@@ -109,6 +109,14 @@ public class InstancesTable extends JDataTableBase {
         this.addSortListenerToHeader();
     }
 
+    /**
+     * Clear table data.
+     */
+    public void clear() {
+        getInstancesTableModel().clear();
+        data().clear();
+    }
+
     public String getRelationName() {
         return relationName;
     }

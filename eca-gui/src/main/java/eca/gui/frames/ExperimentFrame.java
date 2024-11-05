@@ -130,6 +130,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
                 if (worker != null && !worker.isCancelled()) {
                     worker.cancel(true);
                 }
+                experiment.clearHistory();
             }
         });
         this.createGUI();

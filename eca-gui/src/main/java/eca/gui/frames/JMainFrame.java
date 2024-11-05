@@ -587,6 +587,9 @@ public class JMainFrame extends JFrame {
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());
         }
 
+        void clear() {
+            instanceTable.clear();
+        }
     } //End of class DataInternalFrame
 
     /**
@@ -763,6 +766,7 @@ public class JMainFrame extends JFrame {
 
             @Override
             public void internalFrameClosed(InternalFrameEvent e) {
+                dataInternalFrame.clear();
                 windowsMenu.remove(dataInternalFrame.getMenu());
                 if (dataPanels.getComponentCount() == 0) {
                     setEnabledMenuComponents(false);
