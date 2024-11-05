@@ -115,6 +115,9 @@ public class InstancesTable extends JDataTableBase {
     public void clear() {
         getInstancesTableModel().clear();
         data().clear();
+        if (lastCreatedInstances != null) {
+            lastCreatedInstances.clear();
+        }
     }
 
     public String getRelationName() {
