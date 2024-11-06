@@ -44,6 +44,7 @@ public class EvaluationResultsHistoryModel extends DefaultListModel<String> {
         synchronized (lifecycleMonitor) {
             ClassificationResultsFrameBase classifierOptionsDialogBase = resultsFrameBases.remove(i);
             classifierOptionsDialogBase.dispose();
+            remove(i);
         }
     }
 
