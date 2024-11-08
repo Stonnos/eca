@@ -29,6 +29,26 @@ public class GuiUtils {
     private static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
     private static final int MAX_ERROR_MESSAGE_LENGTH = 1024;
 
+    /**
+     * Recursively removes all components from specified container.
+     *
+     * @param container - container object
+     */
+    public static void removeComponents(Container container) {
+        Component[] components = container.getComponents();
+        for (Component comp : components) {
+            if (comp != null) {
+                if (comp instanceof Container) {
+                    removeComponents((Container) comp);
+                }
+                if (comp instanceof Cleanable cleanable) {
+                    cleanable.clear();
+                }
+                container.remove(comp);
+            }
+        }
+    }
+
     public static JTextField searchFirstEmptyField(JTextField... fields) {
         if (fields != null) {
             for (JTextField field : fields) {

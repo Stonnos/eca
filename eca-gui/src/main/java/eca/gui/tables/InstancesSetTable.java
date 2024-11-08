@@ -1,5 +1,6 @@
 package eca.gui.tables;
 
+import eca.gui.Cleanable;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.renderers.JButtonRenderer;
 import eca.gui.frames.InstancesFrame;
@@ -15,12 +16,12 @@ import java.util.ArrayList;
  * @author Roman Batygin
  */
 @Slf4j
-public class InstancesSetTable extends JDataTableBase {
+public class InstancesSetTable extends JDataTableBase implements Cleanable {
 
     private static final int BUTTON_WIDTH = 125;
 
-    private JFrame parentFrame;
-    private ArrayList<InstancesFrame> instancesFrameArrayList = new ArrayList<>();
+    private final JFrame parentFrame;
+    private final ArrayList<InstancesFrame> instancesFrameArrayList = new ArrayList<>();
 
     public InstancesSetTable(JFrame parentFrame) {
         super(new InstancesSetTableModel());
@@ -40,6 +41,12 @@ public class InstancesSetTable extends JDataTableBase {
     public void addInstances(Instances data) {
         getInstancesSetTableModel().add(data);
         instancesFrameArrayList.add(null);
+    }
+
+    @Override
+    public void clear() {
+        instancesFrameArrayList.clear();
+        getInstancesSetTableModel().clear();
     }
 
     /**
@@ -68,6 +75,7 @@ public class InstancesSetTable extends JDataTableBase {
                     instancesFrameArrayList.set(index, new InstancesFrame(data, parentFrame));
                 }
                 instancesFrameArrayList.get(index).setVisible(true);
+                data = null;
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(parentFrame, e.getMessage(),

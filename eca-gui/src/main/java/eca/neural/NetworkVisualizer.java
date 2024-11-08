@@ -11,6 +11,7 @@ import eca.config.IconType;
 import eca.config.VelocityConfigService;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
+import eca.gui.Cleanable;
 import eca.gui.PanelBorderUtils;
 import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -52,7 +53,7 @@ import java.util.Optional;
  *
  * @author Roman Batygin
  */
-public class NetworkVisualizer extends JPanel implements ResizeableImage {
+public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleanable {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -87,7 +88,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
     private Template nodeTemplate;
     private VelocityContext nodeContext;
 
-    private final NeuralNetwork neuralNetwork;
+    private NeuralNetwork neuralNetwork;
     private ArrayList<NeuronNode> nodes;
     private final JFrame frame;
 
@@ -129,6 +130,12 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage {
         this.createPopupMenu();
         this.setLayout(null);
         this.registerMouseWheelListener();
+    }
+
+    @Override
+    public void clear() {
+        nodes.clear();
+        neuralNetwork = null;
     }
 
     public void hideNeuronInfo() {

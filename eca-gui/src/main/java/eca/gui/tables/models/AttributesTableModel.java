@@ -40,6 +40,11 @@ public class AttributesTableModel extends AbstractTableModel {
         }
     }
 
+    public void clear() {
+        selectedAttr.clear();
+        attrType.clear();
+    }
+
     public Instances data() {
         return data;
     }

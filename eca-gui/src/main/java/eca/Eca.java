@@ -25,6 +25,7 @@ public class Eca {
             mainFrame.initializeUploadInstancesClient();
             log.info("Eca application was started. Application version: {}",
                     CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getVersion());
+            MemoryMonitor.INSTANCE.start();
         });
 
     }

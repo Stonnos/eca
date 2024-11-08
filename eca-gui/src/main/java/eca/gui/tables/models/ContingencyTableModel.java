@@ -24,6 +24,11 @@ public class ContingencyTableModel extends AbstractTableModel {
         this.initTitles();
     }
 
+    public void clear() {
+        matrix = null;
+        titles = null;
+    }
+
     @Override
     public int getColumnCount() {
         return titles.length;

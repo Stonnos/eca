@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * @author Roman Batygin
  */
@@ -59,7 +61,17 @@ public class ScatterDiagramsFrame extends JFrame {
         this.setMinimumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
         this.setIconImage(parent.getIconImage());
         this.init();
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        scatterChartsMap.forEach((key, val) -> val.clear());
+        scatterChartsMap.clear();
+        scatterChartPanel = null;
+        removeComponents(this);
+        super.dispose();
     }
 
     private void init() {

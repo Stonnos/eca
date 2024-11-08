@@ -31,6 +31,10 @@ public class EnsembleTableModel extends AbstractTableModel {
         this.classifierArrayList = classifierArrayList;
     }
 
+    public void clear() {
+        classifierArrayList.clear();
+    }
+
     public Classifier get(int i) {
         return classifierArrayList.get(i);
     }

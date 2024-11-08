@@ -29,7 +29,8 @@ public class ClassificationResultHistoryFrame extends JFrame {
     private static final Dimension LIST_DIMENSION = new Dimension(600, 300);
     private static final Dimension POPUP_DIMENSION = new Dimension(150, 50);
 
-    private EvaluationResultsHistoryModel evaluationResultsHistory;
+    private final EvaluationResultsHistoryModel evaluationResultsHistory;
+    private JMenuItem clearMenu;
 
     public ClassificationResultHistoryFrame(JFrame parent, EvaluationResultsHistoryModel evaluationResultsHistory) {
         this.setIconImage(parent.getIconImage());
@@ -40,6 +41,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
 
     public void addItem(ClassificationResultsFrameBase classificationResultsFrameBase) {
         this.evaluationResultsHistory.add(classificationResultsFrameBase);
+        clearMenu.setEnabled(true);
     }
 
     private void createGUI() {
@@ -85,7 +87,7 @@ public class ClassificationResultHistoryFrame extends JFrame {
         popupMenu.setPopupSize(POPUP_DIMENSION);
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
         deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
-        JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
+        clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
         clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
@@ -107,8 +109,15 @@ public class ClassificationResultHistoryFrame extends JFrame {
         deleteMenu.addActionListener(e -> {
             int i = historyList.getSelectedIndex();
             evaluationResultsHistory.removeItem(i);
+            if (evaluationResultsHistory.isEmpty()) {
+                clearMenu.setEnabled(false);
+            }
         });
-        clearMenu.addActionListener(e -> evaluationResultsHistory.removeAllItems());
+        clearMenu.addActionListener(e -> {
+            evaluationResultsHistory.removeAllItems();
+            clearMenu.setEnabled(false);
+            SwingUtilities.invokeLater(System::gc);
+        });
         popupMenu.add(deleteMenu);
         popupMenu.add(clearMenu);
         historyList.setComponentPopupMenu(popupMenu);

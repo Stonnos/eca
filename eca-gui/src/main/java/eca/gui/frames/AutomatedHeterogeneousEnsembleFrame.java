@@ -32,6 +32,7 @@ public class AutomatedHeterogeneousEnsembleFrame extends ExperimentFrame<Automat
             options.addClassifiers(
                     new ClassifiersSet(automatedHeterogeneousEnsemble.getClassifier().getClassifiersSet()));
             options.showDialog();
+            options.dispose();
         } catch (Exception ex) {
             showFormattedErrorMessageDialog(AutomatedHeterogeneousEnsembleFrame.this, ex.getMessage());
         }

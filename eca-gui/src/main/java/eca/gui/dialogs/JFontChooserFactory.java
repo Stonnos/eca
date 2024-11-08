@@ -22,6 +22,8 @@ public class JFontChooserFactory {
     public static Font getSelectedFontOrDefault(Window parent, Font defaultFont) {
         JFontChooser fontChooser = new JFontChooser(parent, defaultFont);
         fontChooser.setVisible(true);
-        return fontChooser.dialogResult() ? fontChooser.getSelectedFont() : defaultFont;
+        Font resultFont = fontChooser.dialogResult() ? fontChooser.getSelectedFont() : defaultFont;
+        fontChooser.dispose();
+        return resultFont;
     }
 }

@@ -31,6 +31,7 @@ public class AutomatedKNearestNeighboursFrame extends ExperimentFrame<AutomatedK
         if (dialog.dialogResult()) {
             getExperiment().setNumIterations(dialog.getValue());
         }
+        dialog.dispose();
     }
 
 }

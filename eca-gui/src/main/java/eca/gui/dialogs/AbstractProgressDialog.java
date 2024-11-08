@@ -11,6 +11,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Optional;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * Abstract progress dialog.
  *
@@ -63,6 +65,12 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     @Override
     public String getErrorMessageText() {
         return errorMessage;
+    }
+
+    @Override
+    public void clear() {
+        backgroundTask = null;
+        removeComponents(this);
     }
 
     public long getTotalTimeMillis() {

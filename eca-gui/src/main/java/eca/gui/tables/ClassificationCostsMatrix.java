@@ -2,8 +2,8 @@ package eca.gui.tables;
 
 import eca.core.evaluation.Evaluation;
 import eca.gui.tables.models.ClassificationCostsTableModel;
+import eca.model.ReferenceWrapper;
 
-import javax.swing.*;
 import java.text.DecimalFormat;
 
 /**
@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
  */
 public class ClassificationCostsMatrix extends JDataTableBase {
 
-    public ClassificationCostsMatrix(Evaluation ev, int digits) {
+    public ClassificationCostsMatrix(ReferenceWrapper<Evaluation> ev, int digits) {
         super(new ClassificationCostsTableModel(ev, digits));
         this.setAutoResizeOff(false);
     }

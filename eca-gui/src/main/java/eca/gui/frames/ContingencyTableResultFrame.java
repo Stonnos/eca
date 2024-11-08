@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * Implements contingency table results frame.
  *
@@ -60,7 +62,15 @@ public class ContingencyTableResultFrame extends JFrame {
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.setIconImage(parent.getIconImage());
         this.init();
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        contingencyTableReportModel = null;
+        removeComponents(this);
+        super.dispose();
     }
 
     private void init() {

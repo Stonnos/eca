@@ -31,6 +31,7 @@ public class AutomatedNeuralNetworkFrame extends ExperimentFrame<AutomatedNeural
         if (dialog.dialogResult()) {
             getExperiment().setNumIterations(dialog.getValue());
         }
+        dialog.dispose();
     }
 
 }

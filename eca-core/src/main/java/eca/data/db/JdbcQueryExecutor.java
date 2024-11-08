@@ -58,6 +58,7 @@ public class JdbcQueryExecutor extends AbstractDataLoader<String> implements Aut
     public void close() throws SQLException {
         if (connection != null && !connection.isClosed()) {
             connection.close();
+            connection = null;
         }
     }
 

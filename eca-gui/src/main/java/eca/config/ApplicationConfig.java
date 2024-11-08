@@ -80,4 +80,13 @@ public class ApplicationConfig {
      */
     private Integer maxIndividualClassifiers;
 
+    /**
+     * Memory threshold in bytes for using GC
+     */
+    private Long memoryThresholdForGC;
+
+    /**
+     * Memory monitoring period in minutes.
+     */
+    private Integer memoryMonitoringPeriodMinutes;
 }

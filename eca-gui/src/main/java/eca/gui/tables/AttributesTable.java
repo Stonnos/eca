@@ -8,6 +8,7 @@ package eca.gui.tables;
 import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.dictionary.AttributesTypesDictionary;
+import eca.gui.Cleanable;
 import eca.gui.GuiUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
@@ -26,7 +27,7 @@ import java.awt.*;
  * @author Roman Batygin
  */
 @Slf4j
-public class AttributesTable extends JDataTableBase {
+public class AttributesTable extends JDataTableBase implements Cleanable {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -139,6 +140,11 @@ public class AttributesTable extends JDataTableBase {
         } else {
             return Attribute.NOMINAL;
         }
+    }
+
+    @Override
+    public void clear() {
+        getAttributesTableModel().clear();
     }
 
     /**

@@ -6,6 +6,7 @@ import eca.config.IconType;
 import eca.config.VelocityConfigService;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
+import eca.gui.Cleanable;
 import eca.gui.PanelBorderUtils;
 import eca.gui.ResizeableImage;
 import eca.gui.choosers.SaveImageFileChooser;
@@ -42,7 +43,7 @@ import java.util.Objects;
  *
  * @author Roman Batygin
  */
-public class TreeVisualizer extends JPanel implements ResizeableImage {
+public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -142,6 +143,12 @@ public class TreeVisualizer extends JPanel implements ResizeableImage {
         super.paint(g);
         drawTree((Graphics2D) g);
 
+    }
+
+    @Override
+    public void clear() {
+        treeNodes.clear();
+        tree = null;
     }
 
     public Image getImage() {

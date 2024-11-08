@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.frames;
 
 import eca.config.sql.AnsiSqlKeywords;
@@ -25,13 +20,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 
 /**
@@ -63,7 +57,7 @@ public class QueryFrame extends JFrame {
     private static final Color HIGHLIGHT_COLOR = Color.BLUE;
     private static final String SELECT_QUERY_EXAMPLE = "select * from table_name";
 
-    private final JdbcQueryExecutor connection;
+    private JdbcQueryExecutor connection;
 
     private Set<String> sql2003KeyWords;
 
@@ -76,7 +70,7 @@ public class QueryFrame extends JFrame {
 
     private QueryWorker worker;
 
-    private JMainFrame parentFrame;
+    private final JMainFrame parentFrame;
 
     public QueryFrame(JMainFrame parentFrame, JdbcQueryExecutor connection) {
         this.parentFrame = parentFrame;
@@ -86,23 +80,18 @@ public class QueryFrame extends JFrame {
         this.setIconImage(parentFrame.getIconImage());
         this.setResizable(false);
         this.createGUI();
-        this.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent evt) {
-                interruptWorker();
-                closeConnection();
-            }
-
-            @Override
-            public void windowClosed(WindowEvent evt) {
-                closeConnection();
-            }
-
-        });
-
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(parentFrame);
+    }
+
+    @Override
+    public void dispose() {
+        interruptWorker();
+        closeConnection();
+        sql2003KeyWords.clear();
+        removeComponents(this);
+        super.dispose();
     }
 
     public List<Instances> getSelectedInstances() {
@@ -121,15 +110,14 @@ public class QueryFrame extends JFrame {
     }
 
     private void closeConnection() {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                log.info("Starting to close connection [{}]", connection.getConnectionDescriptor().getUrl());
-                connection.close();
-                log.info("Connection [{}] has been closed", connection.getConnectionDescriptor().getUrl());
-            } catch (Exception ex) {
-                LoggerUtils.error(log, ex);
-            }
-        });
+        try {
+            log.info("Starting to close connection [{}]", connection.getConnectionDescriptor().getUrl());
+            connection.close();
+            log.info("Connection [{}] has been closed", connection.getConnectionDescriptor().getUrl());
+            connection = null;
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+        }
     }
 
     private void createGUI() {

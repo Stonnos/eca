@@ -31,6 +31,7 @@ public class AutomatedStackingFrame extends ExperimentFrame<AutomatedStacking> {
         try {
             options.addClassifiers(new ClassifiersSet(automatedStacking.getClassifier().getClassifiers()));
             options.showDialog();
+            options.dispose();
         } catch (Exception e) {
             showFormattedErrorMessageDialog(this, e.getMessage());
         }

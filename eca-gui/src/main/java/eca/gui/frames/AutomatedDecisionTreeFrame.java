@@ -31,6 +31,7 @@ public class AutomatedDecisionTreeFrame extends ExperimentFrame<AutomatedDecisio
         if (dialog.dialogResult()) {
             getExperiment().setNumIterations(dialog.getValue());
         }
+        dialog.dispose();
     }
 
 }

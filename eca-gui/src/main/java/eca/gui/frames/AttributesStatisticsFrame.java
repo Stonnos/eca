@@ -45,6 +45,8 @@ import java.text.DecimalFormat;
 import java.util.EnumMap;
 import java.util.List;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * @author Roman Batygin
  */
@@ -121,6 +123,23 @@ public class AttributesStatisticsFrame extends JFrame {
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
         this.createGUI();
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        clear();
+        removeComponents(this);
+        super.dispose();
+    }
+
+    private void clear() {
+        for (var frequencyDiagramModel : frequencyDiagramModels) {
+            if (frequencyDiagramModel != null) {
+                frequencyDiagramModel.getFrequencyDataList().clear();
+                frequencyDiagramModel.getDiagramMap().clear();
+                frequencyDiagramModel.setCurrentChart(null);
+            }
+        }
     }
 
     private void createGUI() {

@@ -80,6 +80,7 @@ public class BaseClassifiersListModel extends DefaultListModel<String> {
 
     @Override
     public void clear() {
+        frames.forEach(ClassifierOptionsDialogBase::dispose);
         frames.clear();
         super.clear();
     }

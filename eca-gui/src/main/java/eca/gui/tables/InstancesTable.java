@@ -9,6 +9,7 @@ import eca.config.ConfigurationService;
 import eca.config.IconType;
 import eca.core.InstancesDataModel;
 import eca.filter.ConstantAttributesFilter;
+import eca.gui.Cleanable;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
@@ -47,7 +48,7 @@ import static eca.gui.service.ValidationService.parseDate;
  * @author Roman Batygin
  */
 @Slf4j
-public class InstancesTable extends JDataTableBase {
+public class InstancesTable extends JDataTableBase implements Cleanable {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
@@ -112,12 +113,10 @@ public class InstancesTable extends JDataTableBase {
     /**
      * Clear table data.
      */
+    @Override
     public void clear() {
         getInstancesTableModel().clear();
         data().clear();
-        if (lastCreatedInstances != null) {
-            lastCreatedInstances.clear();
-        }
     }
 
     public String getRelationName() {
@@ -220,6 +219,7 @@ public class InstancesTable extends JDataTableBase {
                 getInstancesTableModel().addRow(createNewInstanceDialog.getValues());
                 numInstances.setText(String.valueOf(getInstancesTableModel().getRowCount()));
             }
+            createNewInstanceDialog.dispose();
         });
 
         clearMenu.addActionListener(e -> {
@@ -244,12 +244,14 @@ public class InstancesTable extends JDataTableBase {
                 String value = getValueAt(j, i) != null ? getValueAt(j, i).toString() : StringUtils.EMPTY;
                 String[] labels = {OLD_VALUE_TEXT, NEW_VALUE_TEXT};
                 String[] values = {value, StringUtils.EMPTY};
-                JTextFieldMatrixDialog frame = new JTextFieldMatrixDialog(null, REPLACE_VALUE_TEXT,
-                        labels, values, ROWS, TEXT_FIELD_LENGTH);
-                frame.setVisible(true);
-                if (frame.dialogResult()) {
-                    getInstancesTableModel().replace(i - 1, frame.valueAt(0), frame.valueAt(1));
+                JTextFieldMatrixDialog textFieldMatrixDialog =
+                        new JTextFieldMatrixDialog(null, REPLACE_VALUE_TEXT, labels, values, ROWS, TEXT_FIELD_LENGTH);
+                textFieldMatrixDialog.setVisible(true);
+                if (textFieldMatrixDialog.dialogResult()) {
+                    getInstancesTableModel().replace(i - 1, textFieldMatrixDialog.valueAt(0),
+                            textFieldMatrixDialog.valueAt(1));
                 }
+                textFieldMatrixDialog.dispose();
             }
         });
         popMenu.add(deleteMenu);

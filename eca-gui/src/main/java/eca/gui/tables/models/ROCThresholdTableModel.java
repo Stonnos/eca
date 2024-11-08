@@ -59,6 +59,10 @@ public class ROCThresholdTableModel extends AbstractTableModel {
         }
     }
 
+    public void clear() {
+        data.clear();
+    }
+
     @Override
     public String getColumnName(int column) {
         return titles[column];

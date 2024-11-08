@@ -27,16 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
 
+import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 
 /**
@@ -116,6 +113,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     private SwingWorker<Void, Void> worker;
     private SwingWorker<Void, Void> timer;
 
+    private InstancesFrame dataFrame;
+
     protected ExperimentFrame(Class<T> experimentClass, T experiment, JFrame parent, int digits) {
         Objects.requireNonNull(experimentClass, "Expected not null experiment class");
         Objects.requireNonNull(experiment, "Expected not null experiment");
@@ -124,18 +123,26 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         this.digits = digits;
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         this.setIconImage(parent.getIconImage());
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent evt) {
-                if (worker != null && !worker.isCancelled()) {
-                    worker.cancel(true);
-                }
-                experiment.clearHistory();
-            }
-        });
         this.createGUI();
         this.displayResults(experiment);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        if (worker != null && !worker.isCancelled()) {
+            worker.cancel(true);
+        }
+        worker = null;
+        experimentTable.clear();
+        experimentTable = null;
+        experimentResultsPane = null;
+        if (dataFrame != null) {
+            dataFrame.dispose();
+        }
+        removeComponents(this);
+        super.dispose();
     }
 
     private void setStateForButtons(boolean flag) {
@@ -275,23 +282,11 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         saveButton = new JButton(SAVE_BUTTON_TEXT);
         loadButton = new JButton(LOAD_BUTTON_TEXT);
 
-        initialDataButton.addActionListener(new ActionListener() {
-
-            InstancesFrame dataFrame;
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (dataFrame == null) {
-                    dataFrame = new InstancesFrame(experiment.getData(), ExperimentFrame.this);
-                    ExperimentFrame.this.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent evt) {
-                            dataFrame.dispose();
-                        }
-                    });
-                }
-                dataFrame.setVisible(true);
+        initialDataButton.addActionListener(e -> {
+            if (dataFrame == null) {
+                dataFrame = new InstancesFrame(experiment.getData(), ExperimentFrame.this);
             }
+            dataFrame.setVisible(true);
         });
 
         startButton.addActionListener(e -> startExperiment());
