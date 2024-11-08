@@ -136,7 +136,6 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         }
         worker = null;
         experimentTable.clear();
-        experimentTable = null;
         experimentResultsPane = null;
         if (dataFrame != null) {
             dataFrame.dispose();

@@ -109,7 +109,7 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private final Date creationDate = new Date();
     private final ReferenceWrapper<Classifier> classifier;
-    private final Instances data;
+    private Instances data;
     private final ReferenceWrapper<Evaluation> evaluation;
     private final int digits;
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
@@ -284,6 +284,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     public void dispose() {
         this.classifier.clear();
         this.evaluation.clear();
+        this.data = null;
         rocCurvePanel = null;
         closeAdditionalFrames();
         removeComponents(this);
