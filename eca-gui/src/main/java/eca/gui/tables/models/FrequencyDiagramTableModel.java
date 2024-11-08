@@ -24,6 +24,10 @@ public class FrequencyDiagramTableModel extends AbstractTableModel {
         decimalFormat.setMaximumFractionDigits(digits);
     }
 
+    public void clear() {
+        frequencyDataList.clear();
+    }
+
     @Override
     public int getColumnCount() {
         return TITLES.length;

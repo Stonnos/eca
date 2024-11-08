@@ -117,6 +117,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     public void clear() {
         getInstancesTableModel().clear();
         data().clear();
+        lastCreatedInstances = null;
     }
 
     public String getRelationName() {

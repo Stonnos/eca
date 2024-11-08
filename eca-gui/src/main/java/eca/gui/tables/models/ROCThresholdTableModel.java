@@ -25,7 +25,7 @@ public class ROCThresholdTableModel extends AbstractTableModel {
     private static final int SENSITIVITY_COLUMN_INDEX = 2;
     private String[] titles;
     private final DecimalFormat format = NumericFormatFactory.getInstance();
-    private final Instances data;
+    private Instances data;
     private final String className;
 
     public ROCThresholdTableModel(Instances data, int digits, String className) {
@@ -61,6 +61,7 @@ public class ROCThresholdTableModel extends AbstractTableModel {
 
     public void clear() {
         data.clear();
+        data = null;
     }
 
     @Override

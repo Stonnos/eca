@@ -70,6 +70,7 @@ public class ScatterDiagramsFrame extends JFrame {
         scatterChartsMap.forEach((key, val) -> val.clear());
         scatterChartsMap.clear();
         scatterChartPanel = null;
+        data = null;
         removeComponents(this);
         super.dispose();
     }

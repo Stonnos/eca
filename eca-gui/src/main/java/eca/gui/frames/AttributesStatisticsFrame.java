@@ -83,8 +83,6 @@ public class AttributesStatisticsFrame extends JFrame {
 
     private static PieSectionLabelGenerator pieSectionLabelGenerator;
 
-    private Instances data;
-
     private JFrame parentFrame;
 
     private JDataTableBase statisticsTable;
@@ -111,7 +109,6 @@ public class AttributesStatisticsFrame extends JFrame {
     }
 
     public AttributesStatisticsFrame(Instances data, JFrame parent, int digits) {
-        this.data = data;
         this.parentFrame = parent;
         this.attributesStatisticsTableModels = new AttributeTableModel[data.numAttributes()];
         this.frequencyDiagramModels = new FrequencyDiagramModel[data.numAttributes()];
@@ -121,7 +118,7 @@ public class AttributesStatisticsFrame extends JFrame {
         DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
         decimalFormat.setMaximumFractionDigits(digits);
         this.frequencyDiagramBuilder = new FrequencyDiagramBuilder(new AttributeStatistics(data, decimalFormat));
-        this.createGUI();
+        this.createGUI(data);
         this.setLocationRelativeTo(parent);
     }
 
@@ -140,9 +137,15 @@ public class AttributesStatisticsFrame extends JFrame {
                 frequencyDiagramModel.setCurrentChart(null);
             }
         }
+        for (JFrame frame : dataFrames) {
+            if (frame != null) {
+                frame.dispose();
+            }
+        }
+        attributeChartPanel = null;
     }
 
-    private void createGUI() {
+    private void createGUI(Instances data) {
         this.setTitle(TITLE_TEXT);
         this.setLayout(new GridBagLayout());
         this.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -189,7 +192,7 @@ public class AttributesStatisticsFrame extends JFrame {
             public void windowClosing(WindowEvent evt) {
                 for (JFrame frame : dataFrames) {
                     if (frame != null) {
-                        frame.dispose();
+                        frame.setVisible(false);
                     }
                 }
             }
@@ -455,6 +458,12 @@ public class AttributesStatisticsFrame extends JFrame {
             this.pack();
             this.setLocationRelativeTo(parentFrame);
             this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        }
+
+        @Override
+        public void dispose() {
+            removeComponents(this);
+            super.dispose();
         }
     }
 

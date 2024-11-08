@@ -21,6 +21,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,6 +91,7 @@ public class QueryFrame extends JFrame {
         interruptWorker();
         closeConnection();
         sql2003KeyWords.clear();
+        clearNotSelectedInstances();
         removeComponents(this);
         super.dispose();
     }
@@ -101,6 +103,16 @@ public class QueryFrame extends JFrame {
             result.add(instancesSetTable.getInstancesSetTableModel().getInstances(i));
         }
         return result;
+    }
+
+    private void clearNotSelectedInstances() {
+        int[] selectedRows = instancesSetTable.getSelectedRows();
+        for (int i = 0; i < instancesSetTable.getInstancesSetTableModel().getRowCount(); i++) {
+            int index = i;
+            if (Arrays.stream(selectedRows).noneMatch(selectedRow -> selectedRow == index)) {
+                instancesSetTable.getInstancesSetTableModel().getInstances(i).clear();
+            }
+        }
     }
 
     private void interruptWorker() {

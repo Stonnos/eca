@@ -45,6 +45,11 @@ public class InstancesSetTable extends JDataTableBase implements Cleanable {
 
     @Override
     public void clear() {
+        instancesFrameArrayList.forEach(instancesFrame -> {
+            if (instancesFrame != null) {
+                instancesFrame.dispose();
+            }
+        });
         instancesFrameArrayList.clear();
         getInstancesSetTableModel().clear();
     }
