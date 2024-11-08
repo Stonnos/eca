@@ -1161,6 +1161,7 @@ public class JMainFrame extends JFrame {
                         AttributesStatisticsFrame frame =
                                 new AttributesStatisticsFrame(dataBuilder.getResult().getData(), JMainFrame.this,
                                         maximumFractionDigits);
+                        frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
                         frame.setVisible(true);
                     });
                 })
