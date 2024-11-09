@@ -43,7 +43,6 @@ public class InstancesSetTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        instances.forEach(Instances::clear);
         instances.clear();
     }
 

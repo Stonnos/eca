@@ -166,7 +166,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private void displayResults(T experimentHistory) {
-        if (experimentHistory.getHistory() != null && !experimentHistory.getHistory().isEmpty()) {
+        if (experimentResultsPane != null && experimentHistory.getHistory() != null &&
+                !experimentHistory.getHistory().isEmpty()) {
             experimentTable.setRenderer(Color.RED);
             experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
                     CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
