@@ -115,6 +115,8 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private InstancesFrame dataFrame;
 
+    private volatile boolean windowsClosed;
+
     protected ExperimentFrame(Class<T> experimentClass, T experiment, JFrame parent, int digits) {
         Objects.requireNonNull(experimentClass, "Expected not null experiment class");
         Objects.requireNonNull(experiment, "Expected not null experiment");
@@ -131,6 +133,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     @Override
     public void dispose() {
+        windowsClosed = true;
         if (worker != null && !worker.isCancelled()) {
             worker.cancel(true);
         }
@@ -166,8 +169,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
     }
 
     private void displayResults(T experimentHistory) {
-        if (experimentResultsPane != null && experimentHistory.getHistory() != null &&
-                !experimentHistory.getHistory().isEmpty()) {
+        if (experimentHistory.getHistory() != null && !experimentHistory.getHistory().isEmpty()) {
             experimentTable.setRenderer(Color.RED);
             experimentResultsPane.setText(ReportGenerator.getExperimentResultsAsHtml(experimentHistory,
                     CONFIG_SERVICE.getApplicationConfig().getExperimentConfig().getNumBestResults()));
@@ -518,11 +520,15 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             setProgress(100);
             setStateForButtons(true);
             setStateForOptions(true);
-            experimentTable.sortByBestResults();
-            if (!error) {
-                displayResults(experiment);
-                log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
-                        experiment.getClassifier().getClass().getSimpleName());
+            if (!windowsClosed) {
+                experimentTable.sortByBestResults();
+                if (!error) {
+                    displayResults(experiment);
+                    log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
+                            experiment.getClassifier().getClass().getSimpleName());
+                }
+            } else {
+                experimentTable.clear();
             }
         }
 
