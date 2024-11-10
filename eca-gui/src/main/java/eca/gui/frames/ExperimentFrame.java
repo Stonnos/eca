@@ -115,7 +115,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private InstancesFrame dataFrame;
 
-    private volatile boolean windowsClosed;
+    private volatile boolean disposed;
 
     protected ExperimentFrame(Class<T> experimentClass, T experiment, JFrame parent, int digits) {
         Objects.requireNonNull(experimentClass, "Expected not null experiment class");
@@ -133,7 +133,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     @Override
     public void dispose() {
-        windowsClosed = true;
+        disposed = true;
         if (worker != null && !worker.isCancelled()) {
             worker.cancel(true);
         }
@@ -520,13 +520,14 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
             setProgress(100);
             setStateForButtons(true);
             setStateForOptions(true);
-            if (!windowsClosed) {
-                experimentTable.sortByBestResults();
+            if (!disposed) {
                 if (!error) {
+                    experimentTable.sortByBestResults();
                     displayResults(experiment);
                     log.info("Experiment {} has been successfully finished for classifier '{}'.", experimentId,
                             experiment.getClassifier().getClass().getSimpleName());
                 }
+                System.gc();
             } else {
                 experimentTable.clear();
             }
