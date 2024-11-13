@@ -257,8 +257,21 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
-    private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
-    private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
+
+    private static final String ECA_SERVICE_EVALUATION_REQUEST_SENT_MESSAGE
+            = "Запрос на построение классификатора \"%s\" отправлен";
+
+    private static final String ECA_SERVICE_OPTIMAL_CLASSIFIER_REQUEST_SENT_MESSAGE
+            = "Запрос на построение оптимального классификатора отправлен";
+
+    private static final String ECA_SERVICE_EXPERIMENT_REQUEST_SENT_MESSAGE
+            = "Запрос на построение эксперимента \"%s\" отправлен";
+
+    private static final String RECEIVED_EVALUATION_RESPONSE_FROM_ECA_SERVICE_MESSAGE
+            = "Построение модели классификатора \"%s\" завершено";
+
+    private static final String RECEIVED_OPTIMAL_CLASSIFIER_RESPONSE_FROM_ECA_SERVICE_MESSAGE
+            = "Построение оптимального классификатора завершено";
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
     private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
@@ -694,7 +707,9 @@ public class JMainFrame extends JFrame {
             String dataUuid = uploadInstancesCacheService.uploadInstances(instancesDataModel);
             rabbitClient.sendEvaluationRequest(classifier, dataUuid, evaluationQueue, correlationId);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-            popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
+            String infoMessage =
+                    String.format(ECA_SERVICE_EVALUATION_REQUEST_SENT_MESSAGE, ecaServiceTrack.getDetails());
+            popupService.showInfoPopup(infoMessage, this);
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -1667,8 +1682,16 @@ public class JMainFrame extends JFrame {
                 log.info("Received evaluation response with correlation id [{}], status [{}], request id [{}]",
                         basicProperties.getCorrelationId(), evaluationResponse.getStatus(),
                         evaluationResponse.getRequestId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), evaluationResponse);
-                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
+                EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
+                updateEcaServiceTrackStatus(ecaServiceTrack.getCorrelationId(), evaluationResponse);
+                String infoMessage;
+                if (ecaServiceTrack.getRequestType().equals(EcaServiceRequestType.OPTIMAL_CLASSIFIER)) {
+                    infoMessage = RECEIVED_OPTIMAL_CLASSIFIER_RESPONSE_FROM_ECA_SERVICE_MESSAGE;
+                } else {
+                    infoMessage = String.format(RECEIVED_EVALUATION_RESPONSE_FROM_ECA_SERVICE_MESSAGE,
+                            ecaServiceTrack.getDetails());
+                }
+                popupService.showInfoPopup(infoMessage, this);
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
@@ -1725,7 +1748,6 @@ public class JMainFrame extends JFrame {
                         experimentResponse.getRequestId());
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), experimentResponse);
-                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 handleExperimentResponse(experimentResponse, ecaServiceTrack);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
@@ -1819,7 +1841,9 @@ public class JMainFrame extends JFrame {
                                     rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
                                             correlationId);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-                                    popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, JMainFrame.this);
+                                    String infoMessage = String.format(ECA_SERVICE_EXPERIMENT_REQUEST_SENT_MESSAGE,
+                                            ecaServiceTrack.getDetails());
+                                    popupService.showInfoPopup(infoMessage, JMainFrame.this);
                                 } catch (Exception ex) {
                                     LoggerUtils.error(log, ex);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -1855,7 +1879,7 @@ public class JMainFrame extends JFrame {
                             String dataUuid = uploadInstancesCacheService.uploadInstances(dataBuilder.getResult());
                             rabbitClient.sendEvaluationRequest(dataUuid, evaluationQueue, correlationId);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-                            popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
+                            popupService.showInfoPopup(ECA_SERVICE_OPTIMAL_CLASSIFIER_REQUEST_SENT_MESSAGE, this);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
