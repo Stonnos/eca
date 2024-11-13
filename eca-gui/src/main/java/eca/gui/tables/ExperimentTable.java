@@ -99,6 +99,11 @@ public class ExperimentTable extends JDataTableBase {
         }
     }
 
+    public void clearAndResetExperimentModel() {
+        clear();
+        experimentModel().resetExperimentModel();
+    }
+
     public void setRenderer(final Color color) {
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override

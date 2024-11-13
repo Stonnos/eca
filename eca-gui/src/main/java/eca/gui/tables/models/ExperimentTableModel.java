@@ -73,6 +73,10 @@ public class ExperimentTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public void resetExperimentModel() {
+        experiment = null;
+    }
+
     public void setExperiment(AbstractExperiment<?> experiment) {
         this.experiment = experiment;
         fireTableDataChanged();
