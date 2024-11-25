@@ -4,6 +4,7 @@ import eca.data.file.resource.DataResource;
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.nustaq.serialization.FSTConfiguration;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 
@@ -26,6 +27,8 @@ import java.util.zip.ZipInputStream;
 @UtilityClass
 public class ModelSerializationHelper {
 
+    private static final FSTConfiguration fstConfiguration = FSTConfiguration.getDefaultConfiguration();
+
     private static final String ZIP_EXTENSION = "zip";
     private static final String MODEL_EXTENSION = ".model";
 
@@ -44,10 +47,14 @@ public class ModelSerializationHelper {
                     model, targetFile.getAbsoluteFile()));
         }
         log.info("Starting to save model to file [{}]", targetFile.getAbsolutePath());
-        @Cleanup FileOutputStream fileOutputStream = new FileOutputStream(targetFile.getAbsoluteFile());
-        @Cleanup FSTObjectOutput out = new FSTObjectOutput(fileOutputStream);
-        out.writeObject(model);
-        log.info("Model has been saved to file [{}]", targetFile.getAbsolutePath());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(targetFile.getAbsoluteFile());
+             FSTObjectOutput out = new FSTObjectOutput(fileOutputStream, fstConfiguration)) {
+            out.writeObject(model);
+            log.info("Model has been saved to file [{}]", targetFile.getAbsolutePath());
+        } finally {
+            //Clear heavy objects caches to prevent memory leaks
+            fstConfiguration.clearCaches();
+        }
     }
 
     /**
@@ -79,9 +86,13 @@ public class ModelSerializationHelper {
 
     private static <T> T deserialize(InputStream inputStream, Class<T> targetClazz)
             throws IOException, ClassNotFoundException {
-        @Cleanup FSTObjectInput in = new FSTObjectInput(inputStream);
-        Object result = in.readObject();
-        return targetClazz.cast(result);
+        try (FSTObjectInput in = new FSTObjectInput(inputStream, fstConfiguration)) {
+            Object result = in.readObject();
+            return targetClazz.cast(result);
+        } finally {
+            //Clear heavy objects caches to prevent memory leaks
+            fstConfiguration.clearCaches();
+        }
     }
 
     private static <T> T deserializeFromZip(DataResource<?> dataResource, Class<T> targetClazz)

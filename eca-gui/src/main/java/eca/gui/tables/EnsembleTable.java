@@ -7,6 +7,7 @@ package eca.gui.tables;
 
 import eca.core.InstancesHandler;
 import eca.core.evaluation.Evaluation;
+import eca.gui.Cleanable;
 import eca.gui.GuiUtils;
 import eca.gui.editors.JButtonEditor;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
@@ -14,7 +15,9 @@ import eca.gui.frames.results.ClassificationResultsFrameFactory;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
+import eca.model.ReferenceWrapper;
 import eca.report.ReportGenerator;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -24,8 +27,11 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import static eca.util.ClassifierNamesFactory.getClassifierName;
 
@@ -35,7 +41,7 @@ import static eca.util.ClassifierNamesFactory.getClassifierName;
  * @author Roman Batygin
  */
 @Slf4j
-public class EnsembleTable extends JDataTableBase {
+public class EnsembleTable extends JDataTableBase implements Cleanable {
 
     private static final int INDEX_COLUMN_MAX_WIDTH = 50;
     private final JFrame parentFrame;
@@ -60,12 +66,44 @@ public class EnsembleTable extends JDataTableBase {
                 EnsembleTable.this.changeSelection(i, j, false, false);
             }
         });
+        this.addHideClassificationResultsFramesListener();
         this.getColumnModel().getColumn(EnsembleTableModel.INDEX).setMaxWidth(INDEX_COLUMN_MAX_WIDTH);
         this.setAutoResizeOff(false);
     }
 
     public EnsembleTableModel ensembleModel() {
         return (EnsembleTableModel) this.getModel();
+    }
+
+    private void addHideClassificationResultsFramesListener() {
+        this.parentFrame.addWindowListener(new HideClassificationResultsFramesListener(classificationResultsFrameBases));
+    }
+
+    @Override
+    public void clear() {
+        ensembleModel().clear();
+        IntStream.range(0, classificationResultsFrameBases.length).forEach(i -> {
+            if (classificationResultsFrameBases[i] != null) {
+                classificationResultsFrameBases[i].setVisible(false);
+                classificationResultsFrameBases[i].dispose();
+                classificationResultsFrameBases[i] = null;
+            }
+        });
+    }
+
+    @RequiredArgsConstructor
+    private static class HideClassificationResultsFramesListener extends WindowAdapter {
+
+        private final ClassificationResultsFrameBase[] resultsFrameBases;
+
+        @Override
+        public void windowClosing(WindowEvent e) {
+            IntStream.range(0, resultsFrameBases.length).forEach(i -> {
+                if (resultsFrameBases[i] != null) {
+                    resultsFrameBases[i].setVisible(false);
+                }
+            });
+        }
     }
 
     /**
@@ -116,7 +154,7 @@ public class EnsembleTable extends JDataTableBase {
                     String title = getClassifierName(classifier);
                     ClassificationResultsFrameBase result =
                             ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame, title,
-                                    classifier, data, evaluation, digits);
+                                    new ReferenceWrapper<>(classifier), data, evaluation, digits);
                     classificationResultsFrameBases[index] = result;
                 }
                 classificationResultsFrameBases[index].setVisible(true);

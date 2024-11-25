@@ -5,11 +5,14 @@
  */
 package eca.gui.dialogs;
 
+import eca.model.ReferenceWrapper;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static eca.gui.GuiUtils.removeComponents;
 
 /**
  * Implements classifier input options dialog.
@@ -23,13 +26,13 @@ public abstract class ClassifierOptionsDialogBase<T extends Classifier> extends 
     public static final int TEXT_FIELD_LENGTH = 8;
     public static final String INPUT_ERROR_MESSAGE = "Ошибка ввода";
 
-    private T classifier;
+    private ReferenceWrapper<T> classifier;
     private Instances data;
     protected boolean dialogResult;
 
     public ClassifierOptionsDialogBase(Window parent, String title, T classifier, Instances data) {
         super(parent, title);
-        this.classifier = classifier;
+        this.classifier = new ReferenceWrapper<>(classifier);
         this.data = data;
         this.setModal(true);
     }
@@ -43,10 +46,22 @@ public abstract class ClassifierOptionsDialogBase<T extends Classifier> extends 
     }
 
     public T classifier() {
+        return classifier.getItem();
+    }
+
+    public ReferenceWrapper<T> classifierReference() {
         return classifier;
     }
 
     public Instances data() {
         return data;
+    }
+
+    @Override
+    public void dispose() {
+        classifier = null;
+        data = null;
+        removeComponents(this);
+        super.dispose();
     }
 }

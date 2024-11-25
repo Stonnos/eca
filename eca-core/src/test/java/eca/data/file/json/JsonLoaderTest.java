@@ -15,6 +15,9 @@ class JsonLoaderTest extends BaseFileLoaderTest {
     private static final String DATA_CREDIT_JSON = "data/credit.json";
     private static final String DATA_IRIS_WITH_INVALID_CLASS_JSON = "data/iris-with-invalid-class.json";
 
+    private static final String DATA_IRIS_WITH_INVALID_AS_NOT_INTEGER_CODE_JSON =
+            "data/iris-with-invalid-class-as-not-integer-code.json";
+
     private final JsonLoader jsonLoader = new JsonLoader();
 
     @Test
@@ -23,7 +26,13 @@ class JsonLoaderTest extends BaseFileLoaderTest {
     }
 
     @Test
-    void testLoadDataWithInvalidClassName() {
+    void testLoadDataWithInvalidClassCode() {
         assertThrows(IllegalStateException.class, () -> executeTest(jsonLoader, DATA_IRIS_WITH_INVALID_CLASS_JSON));
+    }
+
+    @Test
+    void testLoadDataWithClassAsNotIntegerCode() {
+        assertThrows(IllegalStateException.class,
+                () -> executeTest(jsonLoader, DATA_IRIS_WITH_INVALID_AS_NOT_INTEGER_CODE_JSON));
     }
 }

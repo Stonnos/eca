@@ -23,6 +23,6 @@ class XlsSaverTest extends BaseFileSaverTest {
 
     @Override
     public List<DataFileExtension> getFileExtensions() {
-        return ImmutableList.of(DataFileExtension.XLSX, DataFileExtension.XLS);
+        return ImmutableList.of(DataFileExtension.XLSX);
     }
 }

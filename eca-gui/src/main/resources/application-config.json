@@ -4,7 +4,7 @@
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
     "version": "${project.version}",
-    "releaseDate": "17.06.2024",
+    "releaseDate": "25.11.2024",
     "author": "Roman Batygin",
     "authorEmail": "roman.batygin@mail.ru"
   },
@@ -63,5 +63,7 @@
   "experimentConfig": {
     "numBestResults": 10
   },
-  "maxIndividualClassifiers": 25
+  "maxIndividualClassifiers": 25,
+  "memoryThresholdForGC": 512000000,
+  "memoryMonitoringPeriodMinutes": 2
 }

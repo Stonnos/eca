@@ -7,10 +7,12 @@ package eca.gui.panels;
 
 import eca.config.VelocityConfigService;
 import eca.gui.ButtonUtils;
+import eca.gui.Cleanable;
 import eca.gui.tables.ROCThresholdTable;
 import eca.roc.RocCurve;
 import eca.roc.ThresholdModel;
 import eca.text.NumericFormatFactory;
+import lombok.RequiredArgsConstructor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.jfree.chart.ChartFactory;
@@ -39,12 +41,14 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * Roc - curve panel.
  *
  * @author Roman Batygin
  */
-public class ROCCurvePanel extends JPanel {
+public class ROCCurvePanel extends JPanel implements Cleanable {
 
     private static final String VM_TEMPLATES_ROC_CURVE_VM = "vm-templates/optionsTable.vm";
 
@@ -65,7 +69,7 @@ public class ROCCurvePanel extends JPanel {
 
     private final RocCurveTooltipGenerator tooltipGenerator = new RocCurveTooltipGenerator();
     private final DecimalFormat format = NumericFormatFactory.getInstance();
-    private final RocCurve rocCurve;
+    private RocCurve rocCurve;
     private ChartPanel chartPanel;
     private JFreeChart[] plots;
     private JFrame[] dataFrames;
@@ -149,16 +153,7 @@ public class ROCCurvePanel extends JPanel {
             }
         });
         chartPanel.getPopupMenu().add(dataMenu);
-        parentFrame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent evt) {
-                for (JFrame frame : dataFrames) {
-                    if (frame != null) {
-                        frame.dispose();
-                    }
-                }
-            }
-        });
+        this.parentFrame.addWindowListener(new HideDataFramesListener(dataFrames));
         this.add(chartPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
         JPanel optionsPanel = new JPanel(new GridBagLayout());
@@ -210,6 +205,18 @@ public class ROCCurvePanel extends JPanel {
         chartPanel = new ChartPanel(plots[plots.length - 1]);
     }
 
+    @Override
+    public void clear() {
+        chartPanel = null;
+        rocCurve = null;
+        plots = null;
+        for (JFrame frame : dataFrames) {
+            if (frame != null) {
+                frame.dispose();
+            }
+        }
+    }
+
     public Image createImage() {
         JFreeChart chart = chartPanel.getChart();
         return chart.createBufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -231,8 +238,24 @@ public class ROCCurvePanel extends JPanel {
     private void calculateOptimalThreshold(XYSeriesCollection xySeriesCollection, Instances rocCurveData) {
         ThresholdModel thresholdModel = rocCurve.findOptimalThreshold(rocCurveData);
         RocCurveSeries points = new RocCurveSeries(OPTIMAL_THRESHOLD);
-        points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100, thresholdModel.getThresholdValue());
+        points.add(thresholdModel.getSpecificity() * 100, thresholdModel.getSensitivity() * 100,
+                thresholdModel.getThresholdValue());
         xySeriesCollection.addSeries(points);
+    }
+
+    @RequiredArgsConstructor
+    private static class HideDataFramesListener extends WindowAdapter {
+
+        private final JFrame[] frames;
+
+        @Override
+        public void windowClosing(WindowEvent evt) {
+            for (JFrame frame : frames) {
+                if (frame != null) {
+                    frame.setVisible(false);
+                }
+            }
+        }
     }
 
     /**
@@ -240,7 +263,7 @@ public class ROCCurvePanel extends JPanel {
      */
     private static class RocCurveSeries extends XYSeries {
 
-       java.util.List<Double> thresholdValues = new ArrayList<>();
+        java.util.List<Double> thresholdValues = new ArrayList<>();
 
         RocCurveSeries(Comparable key) {
             super(key, false);
@@ -319,6 +342,12 @@ public class ROCCurvePanel extends JPanel {
             this.pack();
             this.setLocationRelativeTo(parentFrame);
             this.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        }
+
+        @Override
+        public void dispose() {
+            removeComponents(this);
+            super.dispose();
         }
     }
 

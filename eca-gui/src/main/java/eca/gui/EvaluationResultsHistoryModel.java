@@ -23,7 +23,7 @@ public class EvaluationResultsHistoryModel extends DefaultListModel<String> {
 
     private final Object lifecycleMonitor = new Object();
 
-    private ArrayList<ClassificationResultsFrameBase> resultsFrameBases = new ArrayList<>();
+    private final ArrayList<ClassificationResultsFrameBase> resultsFrameBases = new ArrayList<>();
 
     public void add(ClassificationResultsFrameBase resultsFrameBase) {
         synchronized (lifecycleMonitor) {
@@ -44,6 +44,7 @@ public class EvaluationResultsHistoryModel extends DefaultListModel<String> {
         synchronized (lifecycleMonitor) {
             ClassificationResultsFrameBase classifierOptionsDialogBase = resultsFrameBases.remove(i);
             classifierOptionsDialogBase.dispose();
+            remove(i);
         }
     }
 

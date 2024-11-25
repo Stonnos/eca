@@ -11,6 +11,7 @@ import eca.data.file.xml.XmlSaver;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import weka.core.Instances;
 
 import java.io.File;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -98,8 +100,12 @@ public class FileDataSaver {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         String.format("Can't save data %s to file '%s'", data.relationName(), file.getAbsoluteFile())));
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         writeData(saverConfig.getDataSaverSupplier().get(), file, data);
-        log.info("Instances [{}] has been saved to file [{}]", data.relationName(), file.getAbsolutePath());
+        stopWatch.stop();
+        log.info("Instances [{}] has been saved to file [{}] ins {} ms", data.relationName(), file.getAbsolutePath(),
+                stopWatch.getTime(TimeUnit.MILLISECONDS));
     }
 
     private void writeData(AbstractDataSaver saver, File file, Instances data) throws Exception {

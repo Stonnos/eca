@@ -30,7 +30,7 @@ public class TestHelperUtils {
 
     public static final int SEED = 1;
 
-    public static final String DATA_IRIS_XLS = "data/iris.xls";
+    public static final String DATA_IRIS_XLS = "data/iris.xlsx";
     public static final String DATA_CREDIT_ARFF = "data/credit-g.arff";
     public static final String DATA_GLASS_ARFF = "data/glass.arff";
 

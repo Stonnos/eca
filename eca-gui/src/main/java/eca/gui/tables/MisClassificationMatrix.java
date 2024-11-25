@@ -2,6 +2,7 @@ package eca.gui.tables;
 
 import eca.core.evaluation.Evaluation;
 import eca.gui.tables.models.MisClassificationTableModel;
+import eca.model.ReferenceWrapper;
 
 import javax.swing.*;
 
@@ -10,7 +11,7 @@ import javax.swing.*;
  */
 public class MisClassificationMatrix extends JDataTableBase {
 
-    public MisClassificationMatrix(Evaluation evaluation)  {
+    public MisClassificationMatrix(ReferenceWrapper<Evaluation> evaluation)  {
         super(new MisClassificationTableModel(evaluation));
         this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     }

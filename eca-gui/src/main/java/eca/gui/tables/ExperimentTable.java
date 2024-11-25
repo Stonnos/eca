@@ -12,6 +12,7 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.EnsembleTableModel;
 import eca.gui.tables.models.ExperimentTableModel;
+import eca.model.ReferenceWrapper;
 import eca.report.ReportGenerator;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
@@ -89,8 +90,18 @@ public class ExperimentTable extends JDataTableBase {
     }
 
     public void clear() {
+        boolean isEmpty = experimentModel().getExperiment().getHistory().isEmpty();
         experimentModel().clear();
+        classificationResultsFrameBases.forEach((key, value) -> value.dispose());
         classificationResultsFrameBases.clear();
+        if (!isEmpty) {
+            SwingUtilities.invokeLater(System::gc);
+        }
+    }
+
+    public void clearAndResetExperimentModel() {
+        clear();
+        experimentModel().resetExperimentModel();
     }
 
     public void setRenderer(final Color color) {
@@ -157,11 +168,12 @@ public class ExperimentTable extends JDataTableBase {
                     String title = getClassifierName(classifierDescriptor.getClassifier());
                     ClassificationResultsFrameBase result =
                             ClassificationResultsFrameFactory.buildClassificationResultsFrameBase(parentFrame, title,
-                                    classifierDescriptor.getClassifier(), dataSet, classifierDescriptor.getEvaluation(),
-                                    model.digits());
+                                    new ReferenceWrapper<>(classifierDescriptor.getClassifier()), dataSet,
+                                    classifierDescriptor.getEvaluation(), model.digits());
                     classificationResultsFrameBases.put(index, result);
                 }
                 classificationResultsFrameBases.get(index).setVisible(true);
+                this.classifierDescriptor = null;
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
                 JOptionPane.showMessageDialog(ExperimentTable.this.getParent(), e.getMessage(),

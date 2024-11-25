@@ -6,13 +6,18 @@ import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.HtmlChooser;
 import eca.gui.logging.LoggerUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+
+import static eca.gui.GuiUtils.removeComponents;
 
 /**
  * Frame showing text information.
@@ -60,8 +65,27 @@ public class HtmlFrame extends JFrame {
         saveMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
         fileMenu.add(saveMenu);
         menu.add(fileMenu);
+        ActionListener saveDataActionListener = new SaveDataActionListener();
+        saveMenu.addActionListener(saveDataActionListener);
+        this.setJMenuBar(menu);
+        inputOptionsPane.setText(text);
+        inputOptionsPane.setCaretPosition(0);
+        this.pack();
+        this.setLocationRelativeTo(parent);
+    }
 
-        saveMenu.addActionListener(event -> {
+    @Override
+    public void dispose() {
+        inputOptionsPane = null;
+        removeComponents(this);
+        super.dispose();
+    }
+
+    @RequiredArgsConstructor
+    private class SaveDataActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
             try {
                 HtmlChooser fileChooser = SingletonRegistry.getSingleton(HtmlChooser.class);
                 File file = fileChooser.getSelectedFile(HtmlFrame.this);
@@ -73,12 +97,6 @@ public class HtmlFrame extends JFrame {
                 JOptionPane.showMessageDialog(HtmlFrame.this, e.getMessage(),
                         null, JOptionPane.ERROR_MESSAGE);
             }
-        });
-        this.setJMenuBar(menu);
-        inputOptionsPane.setText(text);
-        inputOptionsPane.setCaretPosition(0);
-        this.pack();
-        this.setLocationRelativeTo(parent);
+        }
     }
-
 }

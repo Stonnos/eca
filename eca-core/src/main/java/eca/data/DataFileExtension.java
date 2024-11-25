@@ -12,11 +12,6 @@ import java.util.stream.Stream;
 public enum DataFileExtension implements DescriptiveEnum {
 
     /**
-     * Xls file extension
-     */
-    XLS("xls", "Xls data files (*.xls)"),
-
-    /**
      * Xlsx file extension
      */
     XLSX("xlsx", "Xlsx data files (*.xlsx)"),

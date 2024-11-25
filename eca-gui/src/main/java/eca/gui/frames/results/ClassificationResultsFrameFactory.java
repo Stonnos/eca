@@ -4,6 +4,7 @@ import eca.core.evaluation.Evaluation;
 import eca.gui.frames.results.model.ComponentModel;
 import eca.gui.tables.EvaluationStatisticsTableFactory;
 import eca.gui.tables.models.EvaluationStatisticsModel;
+import eca.model.ReferenceWrapper;
 import lombok.experimental.UtilityClass;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
@@ -32,7 +33,7 @@ public class ClassificationResultsFrameFactory {
      * @throws Exception in case of error
      */
     public static ClassificationResultsFrameBase buildClassificationResultsFrameBase(JFrame parent, String title,
-                                                                                     Classifier classifier,
+                                                                                     ReferenceWrapper<Classifier> classifier,
                                                                                      Instances data,
                                                                                      Evaluation evaluation,
                                                                                      int maxFractionDigits)
@@ -40,11 +41,11 @@ public class ClassificationResultsFrameFactory {
         ClassificationResultsFrameBase classificationResultsFrameBase =
                 new ClassificationResultsFrameBase(parent, title, classifier, data, evaluation, maxFractionDigits);
         EvaluationStatisticsModel evaluationStatisticsTable =
-                EvaluationStatisticsTableFactory.buildEvaluationStatisticsTable(classifier, evaluation,
-                        maxFractionDigits);
+                EvaluationStatisticsTableFactory.buildEvaluationStatisticsTable(classifier.getItem(),
+                        evaluation, maxFractionDigits);
         classificationResultsFrameBase.setEvaluationStatisticsModel(evaluationStatisticsTable);
         List<ComponentModel> componentModels =
-                EvaluationResultsComponentsFactory.getComponents(classifier, data, maxFractionDigits,
+                EvaluationResultsComponentsFactory.getComponents(classifier.getItem(), data, maxFractionDigits,
                         classificationResultsFrameBase);
         classificationResultsFrameBase.setEvaluationResultsComponents(componentModels);
         return classificationResultsFrameBase;

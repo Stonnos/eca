@@ -33,6 +33,7 @@ import eca.gui.tables.JDataTableBase;
 import eca.gui.tables.LogisticCoefficientsTable;
 import eca.gui.tables.MisClassificationMatrix;
 import eca.gui.tables.models.EvaluationStatisticsModel;
+import eca.model.ReferenceWrapper;
 import eca.neural.NetworkVisualizer;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
@@ -70,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 
@@ -106,9 +108,9 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final int ATTACHMENT_TAB_INDEX = 3;
 
     private final Date creationDate = new Date();
-    private final Classifier classifier;
-    private final Instances data;
-    private final Evaluation evaluation;
+    private final ReferenceWrapper<Classifier> classifier;
+    private Instances data;
+    private final ReferenceWrapper<Evaluation> evaluation;
     private final int digits;
     private final DecimalFormat decimalFormat = NumericFormatFactory.getInstance();
     private JTabbedPane pane;
@@ -118,17 +120,29 @@ public class ClassificationResultsFrameBase extends JFrame {
 
     private ROCCurvePanel rocCurvePanel;
 
-    public ClassificationResultsFrameBase(JFrame parent, String title, Classifier classifier, Instances data,
-                                          Evaluation evaluation, int digits) {
+    private HtmlFrame inputParamInfo;
+
+    private InstancesFrame dataFrame;
+    private AttributesStatisticsFrame attributesStatisticsFrame;
+
+    private JMenuItem inputMenu;
+
+    public ClassificationResultsFrameBase(JFrame parent,
+                                          String title,
+                                          ReferenceWrapper<Classifier> classifier,
+                                          Instances data,
+                                          Evaluation evaluation,
+                                          int digits) {
         this.classifier = classifier;
         this.data = data;
         this.setTitle(title);
         this.setIconImage(parent.getIconImage());
-        this.evaluation = evaluation;
+        this.evaluation = new ReferenceWrapper<>(evaluation);
         this.digits = digits;
         this.decimalFormat.setMaximumFractionDigits(digits);
         this.createGUI();
         this.createMenuBar();
+        this.addWindowClosingListener();
         this.setLocationRelativeTo(parent);
     }
 
@@ -137,7 +151,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     }
 
     public Classifier classifier() {
-        return classifier;
+        return classifier.getItem();
     }
 
     public Instances data() {
@@ -145,7 +159,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     }
 
     public Evaluation evaluation() {
-        return evaluation;
+        return evaluation.getItem();
     }
 
 
@@ -164,7 +178,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         JDataTableBase dataTableBase = new JDataTableBase(evaluationStatisticsModel);
         dataTableBase.setAutoResizeOff(false);
         dataTableBase.setRowSelectionAllowed(false);
-        dataTableBase.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(classifier, false));
+        dataTableBase.setToolTipText(ReportGenerator.getClassifierInputOptionsAsHtml(classifier.getItem(), false));
         return dataTableBase;
     }
 
@@ -175,7 +189,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         JMenu helpMenu = new JMenu(REFERENCE_MENU_TEXT);
         JMenuItem saveModelMenu = new JMenuItem(SAVE_MODEL_MENU_TEXT);
         saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
-        JMenuItem inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
+        inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
@@ -185,59 +199,17 @@ public class ClassificationResultsFrameBase extends JFrame {
 
         saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
 
-        saveModelMenu.addActionListener(new SaveModelListener());
-        inputMenu.addActionListener(new ActionListener() {
+        ActionListener saveModelActionListener = new SaveModelListener();
+        saveModelMenu.addActionListener(saveModelActionListener);
+        ActionListener classifierInputOptionsInfoActionListener = new ClassifierInputOptionsInfoListener();
+        inputMenu.addActionListener(classifierInputOptionsInfoActionListener);
+        ActionListener refActionListener = new ReferenceListener(ClassificationResultsFrameBase.this);
+        refMenu.addActionListener(refActionListener);
+        ActionListener dataInfoActionListener = new DataInfoActionListener();
+        dataMenu.addActionListener(dataInfoActionListener);
 
-            HtmlFrame inputParamInfo;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (inputParamInfo == null) {
-                    inputParamInfo = new HtmlFrame(inputMenu.getText(),
-                            ReportGenerator.getClassifierInputOptionsAsHtml(classifier, true),
-                            ClassificationResultsFrameBase.this);
-                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent evt) {
-                            inputParamInfo.dispose();
-                        }
-                    });
-                }
-                inputParamInfo.setVisible(true);
-            }
-        });
-        refMenu.addActionListener(new ReferenceListener(ClassificationResultsFrameBase.this));
-        dataMenu.addActionListener(new ActionListener() {
-
-            InstancesFrame dataFrame;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (dataFrame == null) {
-                    dataFrame = new InstancesFrame(data, ClassificationResultsFrameBase.this);
-                    ClassificationResultsFrameBase.this.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent evt) {
-                            dataFrame.dispose();
-                        }
-                    });
-                }
-                dataFrame.setVisible(true);
-            }
-        });
-
-        statMenu.addActionListener(new ActionListener() {
-
-            AttributesStatisticsFrame frame;
-
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (frame == null) {
-                    frame = new AttributesStatisticsFrame(data, ClassificationResultsFrameBase.this, digits);
-                }
-                frame.setVisible(true);
-            }
-        });
+        ActionListener attributeStatsActionListener = new AttributeStatsActionListener();
+        statMenu.addActionListener(attributeStatsActionListener);
 
         fileMenu.add(saveModelMenu);
         serviceMenu.add(dataMenu);
@@ -282,7 +254,7 @@ public class ClassificationResultsFrameBase extends JFrame {
 
         saveButton.addActionListener(new SaveReportListener());
 
-        rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation), this, digits);
+        rocCurvePanel = new ROCCurvePanel(new RocCurve(evaluation.getItem()), this, digits);
 
         pane.add(RESULTS_TEXT, resultPanel);
         pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
@@ -291,8 +263,92 @@ public class ClassificationResultsFrameBase extends JFrame {
         this.add(pane);
     }
 
+    private void addWindowClosingListener() {
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (inputParamInfo != null) {
+                    inputParamInfo.setVisible(false);
+                }
+                if (dataFrame != null) {
+                    dataFrame.setVisible(false);
+                }
+                if (attributesStatisticsFrame != null) {
+                    attributesStatisticsFrame.setVisible(false);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void dispose() {
+        this.classifier.clear();
+        this.evaluation.clear();
+        this.data = null;
+        rocCurvePanel = null;
+        closeAdditionalFrames();
+        removeComponents(this);
+        super.dispose();
+    }
+
+    private void closeAdditionalFrames() {
+        if (inputParamInfo != null) {
+            inputParamInfo.dispose();
+        }
+        if (dataFrame != null) {
+            dataFrame.dispose();
+        }
+        if (attributesStatisticsFrame != null) {
+            attributesStatisticsFrame.dispose();
+        }
+    }
+
     /**
-     * Save classifier model action listener
+     * Classifier input options info listener.
+     */
+    private class ClassifierInputOptionsInfoListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (inputParamInfo == null) {
+                inputParamInfo = new HtmlFrame(inputMenu.getText(),
+                        ReportGenerator.getClassifierInputOptionsAsHtml(classifier.getItem(), true),
+                        ClassificationResultsFrameBase.this);
+            }
+            inputParamInfo.setVisible(true);
+        }
+    }
+
+    /**
+     * Instances info action listener.
+     */
+    private class DataInfoActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (dataFrame == null) {
+                dataFrame = new InstancesFrame(data, ClassificationResultsFrameBase.this);
+            }
+            dataFrame.setVisible(true);
+        }
+    }
+
+    /**
+     * Attributes stats action listener.
+     */
+    private class AttributeStatsActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (attributesStatisticsFrame == null) {
+                attributesStatisticsFrame = new AttributesStatisticsFrame(data, ClassificationResultsFrameBase.this, digits);
+            }
+            attributesStatisticsFrame.setVisible(true);
+        }
+    }
+
+    /**
+     * Save classifier model action listener.
      */
     private class SaveModelListener implements ActionListener {
 
@@ -304,8 +360,9 @@ public class ClassificationResultsFrameBase extends JFrame {
                 File file = fileChooser.getSelectedFile(ClassificationResultsFrameBase.this);
                 if (file != null) {
                     ClassificationModel classificationModel =
-                            new ClassificationModel((AbstractClassifier) classifier, data, evaluation, digits);
-                    CallbackAction action = () ->  ModelSerializationHelper.serialize(file, classificationModel);
+                            new ClassificationModel((AbstractClassifier) classifier.getItem(), data,
+                                    evaluation.getItem(), digits);
+                    CallbackAction action = () -> ModelSerializationHelper.serialize(file, classificationModel);
                     LoadDialog loadDialog = new LoadDialog(ClassificationResultsFrameBase.this,
                             action, SAVE_MODEL_TITLE, false);
                     ExecutorService.process(loadDialog, ClassificationResultsFrameBase.this);
@@ -380,8 +437,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         T populateEvaluationReportData() {
             T report = internalPopulateReportData();
             report.setData(data);
-            report.setClassifier(classifier);
-            report.setEvaluation(evaluation);
+            report.setClassifier(classifier.getItem());
+            report.setEvaluation(evaluation.getItem());
             report.setStatisticsMap(createStatisticsMap());
             report.setRocCurveImage(new AttachmentImage(ROC_CURVES_TEXT, rocCurvePanel.createImage()));
             return report;

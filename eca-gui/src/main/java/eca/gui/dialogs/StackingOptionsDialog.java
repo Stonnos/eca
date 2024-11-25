@@ -84,6 +84,13 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         }
     }
 
+    @Override
+    public void dispose() {
+        baseClassifiersListModel.clear();
+        metaClsOptionsDialog.dispose();
+        super.dispose();
+    }
+
     private void setMetaDataSelectionMethod() {
         useTestingSet.setSelected(classifier().getUseCrossValidation());
         foldsSpinner.getModel().setValue(classifier().getNumFolds());
@@ -236,6 +243,9 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
                 String selectedClassifier = (String) metaClassifierBox.getSelectedItem();
                 if (StringUtils.isEmpty(selectedClassifier)) {
                     throw new IllegalArgumentException(EMPTY_CLASSIFIERS_SET_ERROR_MESSAGE);
+                }
+                if (metaClsOptionsDialog != null) {
+                    metaClsOptionsDialog.dispose();
                 }
                 switch (selectedClassifier) {
                     case ClassifiersNamesDictionary.ID3:

@@ -36,6 +36,7 @@ public class ExecutorService {
                 failAction.apply();
             }
         }
+        progress.clear();
     }
 
     /**

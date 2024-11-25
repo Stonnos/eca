@@ -1,16 +1,9 @@
 package eca.data.file.xls;
 
 import eca.data.AbstractDataSaver;
-import eca.data.DataFileExtension;
 import eca.data.FileUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dhatim.fastexcel.Workbook;
+import org.dhatim.fastexcel.Worksheet;
 import weka.core.Attribute;
 import weka.core.Instances;
 
@@ -29,73 +22,63 @@ public class XLSSaver extends AbstractDataSaver {
 
     private static final short FONT_SIZE = 12;
 
+    private static final String EXCEL_DATE_FORMAT = "dd-mm-yyyy h:mm:ss";
+    private static final String APPLICATION_VERSION = "1.0";
+
     public XLSSaver() {
         super(FileUtils.XLS_EXTENSIONS);
     }
 
     @Override
     protected void internalWrite(Instances data, File file) throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file); Workbook book = createWorkbook(file)) {
-            writeWorkbook(book, data, fileOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             Workbook book = createWorkbook(fileOutputStream, data);
+             Worksheet sheet = book.newWorksheet(data.relationName())) {
+            writeWorkbook(sheet, data);
+            book.finish();
         }
     }
 
     @Override
     public void write(Instances data, OutputStream outputStream) throws Exception {
-        try (Workbook book = new XSSFWorkbook()) {
-            writeWorkbook(book, data, outputStream);
+        try (Workbook book = new Workbook(outputStream, data.relationName(), "1.0");
+             Worksheet sheet = book.newWorksheet(data.relationName())) {
+            writeWorkbook(sheet, data);
+            book.finish();
         }
     }
 
-    private void writeWorkbook(Workbook book, Instances data, OutputStream outputStream) throws IOException {
-        Sheet sheet = book.createSheet(data.relationName());
-        fillHeaderCells(data, sheet.createRow(sheet.getPhysicalNumberOfRows()), createCellStyle(book));
-        fillDataCells(data, book, sheet);
-        book.write(outputStream);
+    private void writeWorkbook(Worksheet sheet, Instances data) {
+        fillHeaderCells(data, sheet);
+        fillDataCells(data, sheet);
     }
 
-    private CellStyle createCellStyle(Workbook book) {
-        Font font = book.createFont();
-        font.setBold(true);
-        font.setFontHeightInPoints(FONT_SIZE);
-        CellStyle style = book.createCellStyle();
-        style.setFont(font);
-        return style;
-    }
-
-    private void fillHeaderCells(Instances data, Row row, CellStyle style) {
+    private void fillHeaderCells(Instances data, Worksheet sheet) {
         for (int i = 0; i < data.numAttributes(); i++) {
-            Cell cell = row.createCell(i);
-            cell.setCellStyle(style);
-            cell.setCellValue(data.attribute(i).name());
+            sheet.style(0, i).bold().fontSize(FONT_SIZE).set();
+            sheet.value(0, i, data.attribute(i).name());
         }
     }
 
-    private void fillDataCells(Instances data, Workbook book, Sheet sheet) {
-        CellStyle dateStyle = book.createCellStyle();
-        short date = book.createDataFormat().getFormat(getDateFormat());
-        dateStyle.setDataFormat(date);
+    private void fillDataCells(Instances data, Worksheet sheet) {
         for (int i = 0; i < data.numInstances(); i++) {
-            Row row = sheet.createRow(sheet.getPhysicalNumberOfRows());
             for (int j = 0; j < data.numAttributes(); j++) {
-                Cell cell = row.createCell(j);
                 Attribute a = data.attribute(j);
                 if (!data.instance(i).isMissing(a)) {
                     if (a.isDate()) {
-                        cell.setCellStyle(dateStyle);
-                        cell.setCellValue(new Date((long) data.instance(i).value(a)));
+                        sheet.style(i + 1, j).format(EXCEL_DATE_FORMAT).set();
+                        sheet.value(i + 1, j, new Date((long) data.instance(i).value(a)));
                     } else if (a.isNumeric()) {
-                        cell.setCellValue(data.instance(i).value(a));
+                        sheet.value(i + 1, j, data.instance(i).value(a));
                     } else {
-                        cell.setCellValue(data.instance(i).stringValue(a));
+                        sheet.value(i + 1, j, data.instance(i).stringValue(a));
                     }
                 }
             }
         }
     }
 
-    private Workbook createWorkbook(File file) {
-        return file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension()) ? new HSSFWorkbook() :
-                new XSSFWorkbook();
+    private Workbook createWorkbook(OutputStream outputStream, Instances data) {
+        return new Workbook(outputStream, data.relationName(), APPLICATION_VERSION);
     }
 }

@@ -1,5 +1,6 @@
 package eca.data.file.converter;
 
+import com.google.common.math.DoubleMath;
 import eca.data.file.model.AttributeModel;
 import eca.data.file.model.AttributeType;
 import eca.data.file.model.AttributeTypeVisitor;
@@ -12,9 +13,9 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -80,23 +81,7 @@ public class InstancesConverter {
         InstanceModel instanceModel = new InstanceModel();
         instanceModel.setValues(newArrayList());
         for (int i = 0; i < instance.numAttributes(); i++) {
-            String value = StringUtils.EMPTY;
-            if (!instance.isMissing(i)) {
-                Attribute attribute = instance.attribute(i);
-                switch (attribute.type()) {
-                    case Attribute.DATE:
-                    case Attribute.NOMINAL:
-                        value = instance.stringValue(i);
-                        break;
-                    case Attribute.NUMERIC:
-                        value = String.valueOf(instance.value(i));
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                                String.format("Unexpected attribute [%s] type: %d!", attribute.name(),
-                                        attribute.type()));
-                }
-            }
+            Double value = !instance.isMissing(i) ? instance.value(i) : null;
             instanceModel.getValues().add(value);
         }
         return instanceModel;
@@ -142,7 +127,7 @@ public class InstancesConverter {
         if (attributeModel.getType() == null) {
             throw new IllegalStateException("Attribute type must be not null!");
         }
-        return attributeModel.getType().handle(new AttributeTypeVisitor<Attribute>() {
+        return attributeModel.getType().handle(new AttributeTypeVisitor<>() {
             @Override
             public Attribute caseNumeric() {
                 return new Attribute(attributeModel.getName());
@@ -171,20 +156,20 @@ public class InstancesConverter {
         instance.setDataset(instances);
         for (int j = 0; j < instances.numAttributes(); j++) {
             Attribute attribute = instances.attribute(j);
-            String val = instanceModel.getValues().get(j);
-            if (StringUtils.isEmpty(val)) {
-                instance.setValue(attribute, Utils.missingValue());
-            } else if (attribute.isDate()) {
-                try {
-                    instance.setValue(attribute, attribute.parseDate(val));
-                } catch (ParseException ex) {
-                    throw new IllegalArgumentException(ex.getMessage());
-                }
-            } else if (attribute.isNumeric()) {
-                instance.setValue(attribute, Double.parseDouble(val));
-            } else {
-                instance.setValue(attribute, val);
+            Double val = instanceModel.getValues().get(j);
+            if (attribute.isNominal() && val != null && !DoubleMath.isMathematicalInteger(val)) {
+                String errorMessage =
+                        String.format("Invalid value %s. Nominal attribute [%s] code must be integer", val,
+                                attribute.name());
+                throw new IllegalStateException(errorMessage);
             }
+            if (attribute.isNominal() && val != null && (val < 0 || val > attribute.numValues())) {
+                String errorMessage =
+                        String.format("Invalid value %s. Nominal attribute [%s] code must in interval [%d, %d]", val,
+                                attribute.name(), 0, attribute.numValues() - 1);
+                throw new IllegalStateException(errorMessage);
+            }
+            instance.setValue(attribute, Objects.requireNonNullElseGet(val, Utils::missingValue));
         }
         return instance;
     }

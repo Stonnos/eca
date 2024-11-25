@@ -13,6 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemListener;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * Font options dialog.
  *
@@ -66,6 +68,16 @@ public class JFontChooser extends JDialog {
         this.setExample();
         this.pack();
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        exampleField = null;
+        fontStyle.removeAll();
+        fontSize.removeAll();
+        fontNameBox.removeAll();
+        removeComponents(this);
+        super.dispose();
     }
 
     public boolean dialogResult() {

@@ -106,6 +106,13 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         super.showDialog();
     }
 
+    @Override
+    public void dispose() {
+        baseClassifiersListModel.clear();
+        baseClassifiersListModel = null;
+        super.dispose();
+    }
+
     public void setSampleEnabled(boolean flag) {
         ensembleOptionsTabbedPane.setEnabledAt(1, flag);
     }

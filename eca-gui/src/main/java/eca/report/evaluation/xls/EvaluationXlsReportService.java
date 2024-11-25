@@ -2,7 +2,6 @@ package eca.report.evaluation.xls;
 
 import com.google.common.collect.ImmutableList;
 import eca.core.evaluation.Evaluation;
-import eca.data.DataFileExtension;
 import eca.data.FileUtils;
 import eca.ensemble.AbstractHeterogeneousClassifier;
 import eca.ensemble.ClassifiersSet;
@@ -15,7 +14,6 @@ import eca.report.model.LogisticReport;
 import eca.report.model.NeuralNetworkReport;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -88,7 +86,7 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
 
     @Override
     public void saveReport() throws Exception {
-        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook(getFile())) {
+        try (FileOutputStream stream = new FileOutputStream(getFile()); Workbook book = createWorkbook()) {
             populateReportData(book);
             book.write(stream);
         }
@@ -101,9 +99,8 @@ public class EvaluationXlsReportService extends AbstractEvaluationReportService 
         }
     }
 
-    private Workbook createWorkbook(File file) {
-        return file.getName().endsWith(DataFileExtension.XLS.getExtendedExtension()) ? new HSSFWorkbook() :
-                new XSSFWorkbook();
+    private Workbook createWorkbook() {
+        return new XSSFWorkbook();
     }
 
     private Font createTitleFont(Workbook book) {

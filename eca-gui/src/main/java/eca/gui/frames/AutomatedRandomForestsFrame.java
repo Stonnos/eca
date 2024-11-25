@@ -29,6 +29,7 @@ public class AutomatedRandomForestsFrame extends ExperimentFrame<AutomatedRandom
             automatedRandomForests.setNumIterations(optionsDialog.getNumIterations());
             automatedRandomForests.setNumThreads(optionsDialog.getNumThreads());
         }
+        optionsDialog.dispose();
     }
 
 }

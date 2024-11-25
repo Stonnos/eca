@@ -5,18 +5,19 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>6.9.9</version>
+        <version>7.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-core</artifactId>
-    <version>6.9.9</version>
+    <version>7.0</version>
     <packaging>jar</packaging>
 
     <properties>
         <weka.version>3.8.6</weka.version>
         <apache.poi.version>4.0.0</apache.poi.version>
         <org-apache-commons.version>3.14.0</org-apache-commons.version>
+        <fastexcel.version>0.18.4</fastexcel.version>
         <commons.io.version>2.16.1</commons.io.version>
         <guava.version>33.2.1-jre</guava.version>
         <jackson.version>2.15.4</jackson.version>
@@ -58,6 +59,22 @@
             <artifactId>poi-ooxml</artifactId>
             <version>${apache.poi.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.dhatim/fastexcel-reader -->
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>fastexcel</artifactId>
+            <version>${fastexcel.version}</version>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.dhatim/fastexcel-reader -->
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>fastexcel-reader</artifactId>
+            <version>${fastexcel.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.apache.commons</groupId>

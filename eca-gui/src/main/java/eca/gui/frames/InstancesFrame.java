@@ -16,6 +16,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
+import static eca.gui.GuiUtils.removeComponents;
+
 /**
  * @author Roman Batygin
  */
@@ -48,6 +50,13 @@ public class InstancesFrame extends JFrame {
                 new Insets(4, 0, 4, 0), 0, 0));
         this.pack();
         this.setLocationRelativeTo(parent);
+    }
+
+    @Override
+    public void dispose() {
+        data = null;
+        removeComponents(this);
+        super.dispose();
     }
 
     public Instances getData() {

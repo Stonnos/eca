@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables.models;
 
 import eca.config.ConfigurationService;
@@ -30,7 +25,7 @@ public class InstancesTableModel extends AbstractTableModel {
 
     private static final String NUMBER = "№";
 
-    private final Instances data;
+    private Instances data;
     private final List<List<Object>> values;
 
     private final SimpleDateFormat simpleDateFormat =
@@ -89,12 +84,18 @@ public class InstancesTableModel extends AbstractTableModel {
      * Clear all data
      */
     public void clear() {
-        for (List<Object> row : values) {
-            row.clear();
-        }
+        clearRows();
         values.clear();
         modificationCount++;
         fireTableDataChanged();
+    }
+
+    /**
+     * Clear all data fully.
+     */
+    public void clearFully() {
+        clearRows();
+        data = null;
     }
 
     /**
@@ -211,6 +212,13 @@ public class InstancesTableModel extends AbstractTableModel {
             values.get(i).set(j, val);
             modificationCount++;
         }
+    }
+
+    private void clearRows() {
+        for (List<Object> row : values) {
+            row.clear();
+        }
+        values.clear();
     }
 
     private int compareAsDate(Object x, Object y) {

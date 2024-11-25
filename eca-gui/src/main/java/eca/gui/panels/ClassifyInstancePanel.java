@@ -7,6 +7,7 @@ package eca.gui.panels;
 
 import eca.config.VelocityConfigService;
 import eca.gui.PanelBorderUtils;
+import eca.model.ReferenceWrapper;
 import eca.report.ReportGenerator;
 import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
@@ -44,13 +45,13 @@ public class ClassifyInstancePanel extends JPanel {
     private static final String CLASS_PROBABILITY = "classProbability";
     private static final String CONTENT_TYPE = "text/html";
 
-    private Classifier classifier;
+    private ReferenceWrapper<Classifier> classifier;
     private final ClassifyInstanceTable classifyInstanceTable;
 
     private Template template;
     private VelocityContext velocityContext;
 
-    public ClassifyInstancePanel(ClassifyInstanceTable table, Classifier classifier) {
+    public ClassifyInstancePanel(ClassifyInstanceTable table, ReferenceWrapper<Classifier> classifier) {
         this.setClassifier(classifier);
         this.classifyInstanceTable = table;
         this.setLayout(new GridBagLayout());
@@ -63,10 +64,10 @@ public class ClassifyInstancePanel extends JPanel {
     }
 
     public final Classifier classifier() {
-        return classifier;
+        return classifier.getItem();
     }
 
-    public final void setClassifier(Classifier classifier) {
+    public final void setClassifier(ReferenceWrapper<Classifier> classifier) {
         this.classifier = classifier;
     }
 
@@ -119,8 +120,8 @@ public class ClassifyInstancePanel extends JPanel {
 
     private String buildClassificationResult() throws Exception {
         Instance obj = classifyInstanceTable.buildInstance();
-        int i = (int) classifier.classifyInstance(obj);
-        double probability = classifier.distributionForInstance(obj)[i];
+        int i = (int) classifier.getItem().classifyInstance(obj);
+        double probability = classifier.getItem().distributionForInstance(obj)[i];
         if (template == null) {
             template = VelocityConfigService.getTemplate(VM_TEMPLATES_CLASSIFY_OBJECT_VM);
         }

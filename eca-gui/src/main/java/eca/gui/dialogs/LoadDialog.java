@@ -1,6 +1,7 @@
 package eca.gui.dialogs;
 
 import eca.gui.actions.CallbackAction;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.awt.*;
 @Slf4j
 public class LoadDialog extends AbstractProgressDialog {
 
-    private final CallbackAction action;
+    private CallbackAction action;
 
     public LoadDialog(Window parent, CallbackAction action, String loadingMessage) {
         this(parent, action, loadingMessage, true);
@@ -26,17 +27,26 @@ public class LoadDialog extends AbstractProgressDialog {
 
     @Override
     protected AbstractBackgroundTask createBackgroundTask() {
-        return new LoadingTask();
+        return new LoadingTask(action);
+    }
+
+    @Override
+    public void clear() {
+        action = null;
+        super.clear();
     }
 
     /**
      * Loading task implementation.
      */
+    @RequiredArgsConstructor
     private class LoadingTask extends AbstractBackgroundTask {
+
+        private final CallbackAction callbackAction;
 
         @Override
         void performTask() throws Exception {
-            action.apply();
+            callbackAction.apply();
         }
     }
 }

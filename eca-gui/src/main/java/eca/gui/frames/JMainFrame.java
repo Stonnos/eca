@@ -56,13 +56,13 @@ import eca.gui.EvaluationResultsHistoryModel;
 import eca.gui.PanelBorderUtils;
 import eca.gui.actions.AbstractCallback;
 import eca.gui.actions.CallbackAction;
+import eca.gui.actions.ClassifierModelLoader;
 import eca.gui.actions.ContingencyTableAction;
 import eca.gui.actions.DataBaseConnectionAction;
 import eca.gui.actions.DataGeneratorCallback;
 import eca.gui.actions.DatabaseSaverAction;
 import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
-import eca.gui.actions.ClassifierModelLoader;
 import eca.gui.actions.UrlLoader;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
@@ -101,6 +101,7 @@ import eca.metrics.KNearestNeighbours;
 import eca.model.EcaServiceRequestType;
 import eca.model.EcaServiceTrack;
 import eca.model.EcaServiceTrackStatus;
+import eca.model.ReferenceWrapper;
 import eca.neural.NeuralNetwork;
 import eca.regression.Logistic;
 import eca.report.contingency.ContingencyTableReportModel;
@@ -144,6 +145,7 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
+import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.GuiUtils.showValidationErrorsDialog;
 import static eca.gui.dictionary.KeyStrokes.DATA_GENERATOR_KEY_STROKE;
@@ -255,8 +257,21 @@ public class JMainFrame extends JFrame {
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
-    private static final String ECA_SERVICE_REQUEST_SENT_MESSAGE = "Запрос отправлен в Eca - service";
-    private static final String RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE = "Получен ответ от Eca - service";
+
+    private static final String ECA_SERVICE_EVALUATION_REQUEST_SENT_MESSAGE
+            = "Запрос на построение классификатора \"%s\" отправлен";
+
+    private static final String ECA_SERVICE_OPTIMAL_CLASSIFIER_REQUEST_SENT_MESSAGE
+            = "Запрос на построение оптимального классификатора отправлен";
+
+    private static final String ECA_SERVICE_EXPERIMENT_REQUEST_SENT_MESSAGE
+            = "Запрос на построение эксперимента \"%s\" отправлен";
+
+    private static final String RECEIVED_EVALUATION_RESPONSE_FROM_ECA_SERVICE_MESSAGE
+            = "Построение модели классификатора \"%s\" завершено";
+
+    private static final String RECEIVED_OPTIMAL_CLASSIFIER_RESPONSE_FROM_ECA_SERVICE_MESSAGE
+            = "Построение оптимального классификатора завершено";
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
     private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
@@ -429,7 +444,14 @@ public class JMainFrame extends JFrame {
             this.setClosable(true);
             this.setResizable(true);
             this.setMaximizable(true);
+            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             this.pack();
+        }
+
+        @Override
+        public void dispose() {
+            removeComponents(this);
+            super.dispose();
         }
 
         void setMenu(JMenuItem menu) {
@@ -587,6 +609,9 @@ public class JMainFrame extends JFrame {
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());
         }
 
+        void clear() {
+            instanceTable.clear();
+        }
     } //End of class DataInternalFrame
 
     /**
@@ -633,7 +658,7 @@ public class JMainFrame extends JFrame {
     }
 
     private ClassificationResultsFrameBase createEvaluationResults(String title,
-                                                                   Classifier classifier,
+                                                                   ReferenceWrapper<Classifier> classifier,
                                                                    Instances data,
                                                                    Evaluation evaluation,
                                                                    int digits) throws Exception {
@@ -645,7 +670,7 @@ public class JMainFrame extends JFrame {
     }
 
     private void createEvaluationResultsAsync(String title,
-                                              Classifier classifier,
+                                              ReferenceWrapper<Classifier> classifier,
                                               Instances data,
                                               Evaluation evaluation,
                                               int digits) throws Exception {
@@ -682,7 +707,9 @@ public class JMainFrame extends JFrame {
             String dataUuid = uploadInstancesCacheService.uploadInstances(instancesDataModel);
             rabbitClient.sendEvaluationRequest(classifier, dataUuid, evaluationQueue, correlationId);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-            popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
+            String infoMessage =
+                    String.format(ECA_SERVICE_EVALUATION_REQUEST_SENT_MESSAGE, ecaServiceTrack.getDetails());
+            popupService.showInfoPopup(infoMessage, this);
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -729,7 +756,7 @@ public class JMainFrame extends JFrame {
 
         processAsyncTask(progress, () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
-            createEvaluationResultsAsync(frame.getTitle(), frame.classifier(), frame.data(),
+            createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
                     builder.getResult(), maximumFractionDigits);
         });
     }
@@ -1149,6 +1176,7 @@ public class JMainFrame extends JFrame {
                         AttributesStatisticsFrame frame =
                                 new AttributesStatisticsFrame(dataBuilder.getResult().getData(), JMainFrame.this,
                                         maximumFractionDigits);
+                        frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
                         frame.setVisible(true);
                     });
                 })
@@ -1402,6 +1430,7 @@ public class JMainFrame extends JFrame {
             }
 
         }
+        frame.dispose();
     }
 
     private void processIterativeBuilding(ClassifierOptionsDialogBase frame, String progressMessage) throws Exception {
@@ -1409,7 +1438,7 @@ public class JMainFrame extends JFrame {
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
         processAsyncTask(progress,
-                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifier(), frame.data(),
+                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
                         iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
@@ -1653,8 +1682,16 @@ public class JMainFrame extends JFrame {
                 log.info("Received evaluation response with correlation id [{}], status [{}], request id [{}]",
                         basicProperties.getCorrelationId(), evaluationResponse.getStatus(),
                         evaluationResponse.getRequestId());
-                updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), evaluationResponse);
-                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
+                EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
+                updateEcaServiceTrackStatus(ecaServiceTrack.getCorrelationId(), evaluationResponse);
+                String infoMessage;
+                if (ecaServiceTrack.getRequestType().equals(EcaServiceRequestType.OPTIMAL_CLASSIFIER)) {
+                    infoMessage = RECEIVED_OPTIMAL_CLASSIFIER_RESPONSE_FROM_ECA_SERVICE_MESSAGE;
+                } else {
+                    infoMessage = String.format(RECEIVED_EVALUATION_RESPONSE_FROM_ECA_SERVICE_MESSAGE,
+                            ecaServiceTrack.getDetails());
+                }
+                popupService.showInfoPopup(infoMessage, this);
                 evaluationResponse.getStatus().handle(new TechnicalStatusVisitor() {
                     @Override
                     public void caseSuccessStatus() {
@@ -1663,8 +1700,10 @@ public class JMainFrame extends JFrame {
                             String title =
                                     ClassifierNamesFactory.getClassifierName(classificationModel.getClassifier());
                             ClassificationResultsFrameBase classificationResultsFrameBase =
-                                    createEvaluationResults(title, classificationModel.getClassifier(),
-                                            classificationModel.getData(), classificationModel.getEvaluation(),
+                                    createEvaluationResults(title,
+                                            new ReferenceWrapper<>(classificationModel.getClassifier()),
+                                            classificationModel.getData(),
+                                            classificationModel.getEvaluation(),
                                             maximumFractionDigits);
                             classificationResultsFrameBase.setVisible(true);
                         } catch (Exception ex) {
@@ -1709,7 +1748,6 @@ public class JMainFrame extends JFrame {
                         experimentResponse.getRequestId());
                 EcaServiceTrack ecaServiceTrack = getEcaServiceTrack(basicProperties.getCorrelationId());
                 updateEcaServiceTrackStatus(basicProperties.getCorrelationId(), experimentResponse);
-                popupService.showInfoPopup(RECEIVED_RESPONSE_FROM_ECA_SERVICE_MESSAGE, this);
                 handleExperimentResponse(experimentResponse, ecaServiceTrack);
             } catch (Exception e) {
                 LoggerUtils.error(log, e);
@@ -1803,13 +1841,16 @@ public class JMainFrame extends JFrame {
                                     rabbitClient.sendExperimentRequest(experimentRequestDto, experimentQueue,
                                             correlationId);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-                                    popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, JMainFrame.this);
+                                    String infoMessage = String.format(ECA_SERVICE_EXPERIMENT_REQUEST_SENT_MESSAGE,
+                                            ecaServiceTrack.getDetails());
+                                    popupService.showInfoPopup(infoMessage, JMainFrame.this);
                                 } catch (Exception ex) {
                                     LoggerUtils.error(log, ex);
                                     updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
                                     showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                                 }
                             }
+                            experimentRequestDialog.dispose();
                         });
                     });
                 }
@@ -1838,7 +1879,7 @@ public class JMainFrame extends JFrame {
                             String dataUuid = uploadInstancesCacheService.uploadInstances(dataBuilder.getResult());
                             rabbitClient.sendEvaluationRequest(dataUuid, evaluationQueue, correlationId);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.REQUEST_SENT);
-                            popupService.showInfoPopup(ECA_SERVICE_REQUEST_SENT_MESSAGE, this);
+                            popupService.showInfoPopup(ECA_SERVICE_OPTIMAL_CLASSIFIER_REQUEST_SENT_MESSAGE, this);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
@@ -2052,7 +2093,7 @@ public class JMainFrame extends JFrame {
                         int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
                                 .orElse(maximumFractionDigits);
                         String title = getClassifierName(classificationModel.getClassifier());
-                        createEvaluationResultsAsync(title, classificationModel.getClassifier(),
+                        createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
                                 classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
                                 digits);
                     });
@@ -2118,6 +2159,7 @@ public class JMainFrame extends JFrame {
                     showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
                 }
             }
+            dialog.dispose();
         };
     }
 

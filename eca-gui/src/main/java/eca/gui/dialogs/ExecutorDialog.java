@@ -33,4 +33,9 @@ public interface ExecutorDialog {
      */
     String getErrorMessageText();
 
+    /**
+     * Clears resources.
+     */
+    void clear();
+
 }

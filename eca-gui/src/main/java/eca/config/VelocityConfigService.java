@@ -22,11 +22,14 @@ public class VelocityConfigService {
     private static final String CLASSPATH_PROPERTY = "classpath";
     private static final String CLASSPATH_RESOURCE_LOADER_PROPERTY = "classpath.resource.loader.class";
 
+    private static final int PARSER_POOL_SIZE = 4;
+
     private static VelocityEngine velocityEngine;
 
     static {
         try {
             velocityEngine = new VelocityEngine();
+            velocityEngine.setProperty(RuntimeConstants.PARSER_POOL_SIZE, PARSER_POOL_SIZE);
             velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, CLASSPATH_PROPERTY);
             velocityEngine.setProperty(CLASSPATH_RESOURCE_LOADER_PROPERTY, ClasspathResourceLoader.class.getName());
             velocityEngine.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, IncludeRelativePath.class.getName());
