@@ -65,5 +65,5 @@
   },
   "maxIndividualClassifiers": 25,
   "memoryThresholdForGC": 512000000,
-  "memoryMonitoringPeriodMinutes": 3
+  "memoryMonitoringPeriodMinutes": 2
 }
