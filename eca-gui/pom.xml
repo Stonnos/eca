@@ -19,7 +19,7 @@
         <exe.file.name>ECA</exe.file.name>
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <jre.version>1.8.0</jre.version>
-        <mysql.version>8.0.26</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <postresql.version>42.2.23</postresql.version>
         <mssql.version>7.2.1.jre8</mssql.version>
         <unaccess.version>4.0.4</unaccess.version>
