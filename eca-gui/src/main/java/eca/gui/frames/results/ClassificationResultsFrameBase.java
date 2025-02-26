@@ -407,7 +407,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         void saveReportToFile(File file) throws Exception {
             EvaluationReport evaluationReport = evaluationReportDataProviders
                     .stream()
-                    .filter(p -> p.canHandle(classifier))
+                    .filter(p -> p.canHandle(classifier.getItem()))
                     .findFirst()
                     .map(EvaluationReportDataProvider::populateEvaluationReportData)
                     .orElse(defaultEvaluationReportDataProvider.populateEvaluationReportData());
