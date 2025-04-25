@@ -34,7 +34,17 @@ public enum EcaServiceTrackStatus implements DescriptiveEnum {
     /**
      * Error status
      */
-    ERROR("Ошибка");
+    ERROR("Ошибка"),
+
+    /**
+     * Timeout status
+     */
+    TIMEOUT("Таймаут"),
+
+    /**
+     * Canceled status
+     */
+    CANCELED("Прервано");
 
     private final String description;
 

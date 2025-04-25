@@ -253,7 +253,9 @@ public class JMainFrame extends JFrame {
     private static final String EVALUATION_RESULTS_QUEUE_FORMAT = "evaluation-results-%s";
     private static final String EXPERIMENT_QUEUE_FORMAT = "experiment-%s";
     private static final String EVALUATION_TIMEOUT_MESSAGE = "Произошел таймаут при построении модели";
+    private static final String EVALUATION_CANCEL_MESSAGE = "Построение модели было прервано";
     private static final String EXPERIMENT_TIMEOUT_MESSAGE = "Произошел таймаут при построении эксперимента";
+    private static final String EXPERIMENT_CANCEL_MESSAGE = "Построение эксперимента было прервано";
     private static final String ECA_SERVICE_DISABLED_MESSAGE =
             String.format("Данная опция не доступна. Задайте значение свойства %s в настройках сервиса ECA",
                     CommonDictionary.ECA_SERVICE_ENABLED);
@@ -1666,12 +1668,17 @@ public class JMainFrame extends JFrame {
 
             @Override
             public void caseTimeoutStatus() {
-                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.TIMEOUT);
             }
 
             @Override
             public void caseValidationErrorStatus() {
                 updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.ERROR);
+            }
+
+            @Override
+            public void caseCanceledStatus() {
+                updateEcaServiceTrackStatus(correlationId, EcaServiceTrackStatus.CANCELED);
             }
         });
     }
@@ -1731,6 +1738,12 @@ public class JMainFrame extends JFrame {
                     @Override
                     public void caseValidationErrorStatus() {
                         showValidationErrorsDialog(JMainFrame.this, evaluationResponse);
+                    }
+
+                    @Override
+                    public void caseCanceledStatus() {
+                        JOptionPane.showMessageDialog(JMainFrame.this, EVALUATION_CANCEL_MESSAGE, null,
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 });
             } catch (Exception ex) {
@@ -1799,6 +1812,12 @@ public class JMainFrame extends JFrame {
             @Override
             public void caseValidationErrorStatus() {
                 showValidationErrorsDialog(JMainFrame.this, experimentResponse);
+            }
+
+            @Override
+            public void caseCanceledStatus() {
+                JOptionPane.showMessageDialog(JMainFrame.this, EXPERIMENT_CANCEL_MESSAGE, null,
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }

@@ -33,4 +33,9 @@ public interface TechnicalStatusVisitor {
      * Method executed in case if technical status is VALIDATION_ERROR.
      */
     void caseValidationErrorStatus();
+
+    /**
+     * Method executed in case if technical status is CANCELED.
+     */
+    void caseCanceledStatus();
 }

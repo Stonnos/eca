@@ -75,3 +75,4 @@
 
 1. Улучшение производительности загрузки данных из excel файлов с помощью библиотеки fastexcel (https://tracker.yandex.ru/ECS-47)
 2. Устранены утечки памяти (https://tracker.yandex.ru/ECS-53)
+3. Добавлена обработка статуса CANCELED от eca-service (https://tracker.yandex.ru/ECS-73)

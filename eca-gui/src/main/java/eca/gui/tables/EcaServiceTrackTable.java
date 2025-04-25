@@ -39,6 +39,8 @@ public class EcaServiceTrackTable extends JDataTableBase {
         trackStatusColorMap.put(EcaServiceTrackStatus.IN_PROGRESS, Color.BLUE);
         trackStatusColorMap.put(EcaServiceTrackStatus.COMPLETED, Color.GREEN);
         trackStatusColorMap.put(EcaServiceTrackStatus.ERROR, Color.RED);
+        trackStatusColorMap.put(EcaServiceTrackStatus.TIMEOUT, Color.DARK_GRAY);
+        trackStatusColorMap.put(EcaServiceTrackStatus.CANCELED, Color.ORANGE);
     }
 
     public EcaServiceTrackTable() {

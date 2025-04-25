@@ -55,6 +55,16 @@ public enum TechnicalStatus {
         public void handle(TechnicalStatusVisitor visitor) {
             visitor.caseValidationErrorStatus();
         }
+    },
+
+    /**
+     * Canceled status
+     */
+    CANCELED {
+        @Override
+        public void handle(TechnicalStatusVisitor visitor) {
+            visitor.caseCanceledStatus();
+        }
     };
 
     /**
