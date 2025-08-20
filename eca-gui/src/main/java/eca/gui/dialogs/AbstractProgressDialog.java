@@ -131,7 +131,7 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
                 stopWatch.start();
                 performTask();
                 stopWatch.stop();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 handleError(e);
             }
             setProgress(FULL_PROGRESS);
@@ -139,7 +139,7 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
             return null;
         }
 
-        void handleError(Exception e) {
+        void handleError(Throwable e) {
             LoggerUtils.error(log, e);
             isSuccess = false;
             errorMessage = e.getMessage();

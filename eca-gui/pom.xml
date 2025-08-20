@@ -31,6 +31,7 @@
         <l4j.maxHeapSize>4096</l4j.maxHeapSize>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
         <installer-script>compile-installer.bat</installer-script>
+        <jvm-options.fileName>@jvm.options</jvm-options.fileName>
     </properties>
 
     <profiles>
@@ -280,7 +281,7 @@
                                 <minVersion>${jre.version}</minVersion>
                                 <maxHeapSize>${l4j.maxHeapSize}</maxHeapSize>
                                 <opts>
-                                    <opt>${jdk17.options}</opt>
+                                    <opt>${jvm-options.fileName}</opt>
                                 </opts>
                             </jre>
                             <splash>
