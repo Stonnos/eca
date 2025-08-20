@@ -306,6 +306,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             this.setTitle(INFO_TITLE);
             this.setIconImage(frame.getIconImage());
             JTextPane textInfo = new JTextPane();
+            textInfo.setBackground(Color.WHITE);
             textInfo.setEditable(false);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
@@ -369,6 +370,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             infoPanel.setBorder(
                     PanelBorderUtils.createTitledBorder(String.format(NODE_INDEX_FORMAT, neuronNode.neuron().index())));
             JTextPane textInfo = new JTextPane();
+            textInfo.setBackground(Color.WHITE);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
             textInfo.setPreferredSize(new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT));

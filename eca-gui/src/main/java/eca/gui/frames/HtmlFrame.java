@@ -46,6 +46,7 @@ public class HtmlFrame extends JFrame {
         }
         inputOptionsPane.setContentType(CONTENT_TYPE);
         inputOptionsPane.setEditable(false);
+        inputOptionsPane.setBackground(Color.WHITE);
         inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
         JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
         JButton closeButton = ButtonUtils.createCloseButton();

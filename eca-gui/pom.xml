@@ -32,6 +32,7 @@
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
         <installer-script>compile-installer.bat</installer-script>
         <jvm-options.fileName>@jvm.options</jvm-options.fileName>
+        <flatlaf.version>3.6.1</flatlaf.version>
     </properties>
 
     <profiles>
@@ -191,6 +192,13 @@
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>${sqllite.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>${flatlaf.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>

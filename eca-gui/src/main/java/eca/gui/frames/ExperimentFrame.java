@@ -262,6 +262,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
         experimentResultsPane.setEditable(false);
         experimentResultsPane.setFont(TEXT_AREA_FONT);
         experimentResultsPane.setContentType(TEXT_HTML);
+        experimentResultsPane.setBackground(Color.WHITE);
         experimentResultsPane.setPreferredSize(RESULTS_PANE_PREFERRED_SIZE);
         JScrollPane experimentResultsPanel = new JScrollPane(experimentResultsPane);
         experimentResultsPanel.setBorder(PanelBorderUtils.createTitledBorder(INFO_TITLE));

@@ -180,7 +180,7 @@ public class JMainFrame extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
-    private static final Color FRAME_COLOR = new Color(198, 226, 255);
+    private static final Color FRAME_COLOR = new Color(227, 232, 234);
 
     private static final String ENSEMBLE_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение ансамбля...";
     private static final String NETWORK_BUILDING_PROGRESS_TITLE =

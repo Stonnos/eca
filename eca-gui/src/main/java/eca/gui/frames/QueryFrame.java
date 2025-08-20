@@ -238,6 +238,7 @@ public class QueryFrame extends JFrame {
 
     private void createSqlPaneEditor() {
         queryArea = new JTextPane();
+        queryArea.setBackground(Color.WHITE);
         queryArea.setPreferredSize(SQL_EDITOR_PREFERRED_SIZE);
         queryArea.setFont(QUERY_AREA_FONT);
         DefaultStyledDocument styledDocument = (DefaultStyledDocument) queryArea.getStyledDocument();

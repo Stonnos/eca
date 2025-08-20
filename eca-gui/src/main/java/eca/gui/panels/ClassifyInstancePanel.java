@@ -81,6 +81,7 @@ public class ClassifyInstancePanel extends JPanel {
         classField.setPreferredSize(new Dimension(300,100));
         classField.setEditable(false);
         classField.setContentType(CONTENT_TYPE);
+        classField.setBackground(Color.WHITE);
         JScrollPane bottom = new JScrollPane(classField);
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, classifyInstanceTable.data().classAttribute().name())));

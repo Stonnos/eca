@@ -37,7 +37,7 @@ public class JDataTableBase extends JTable {
     private static final int COLUMN_MIN_WIDTH = 15;
     private static final int INDEX_COLUMN = 0;
     private static final int ROW_HEIGHT_SHIFT = 6;
-    private static final Color BORDER_COLOR = new Color(133, 133, 133);
+    private static final Color BORDER_COLOR = new Color(199, 201, 203);
     private static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
     private static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
 
@@ -160,10 +160,10 @@ public class JDataTableBase extends JTable {
         }
         this.getTableHeader().setReorderingAllowed(false);
         this.getTableHeader().setBackground(HEADER_BACKGROUND_COLOR);
-        this.getTableHeader().setBorder(BorderFactory.
-                createEtchedBorder(BORDER_COLOR, null));
         this.createPopupMenu();
         this.font(DEFAULT_FONT);
+        this.setBorder(BorderFactory.
+                createEtchedBorder(BORDER_COLOR, null));
         this.setAutoResizeOff(true);
     }
 

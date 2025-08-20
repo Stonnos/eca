@@ -82,6 +82,7 @@ public class ContingencyTableResultFrame extends JFrame {
         contingencyTableScrollPanel.setPreferredSize(TABLE_SCROLL_PANE_PREFERRED_SIZE);
 
         JTextPane chiSquaredResultPane = new JTextPane();
+        chiSquaredResultPane.setBackground(Color.WHITE);
         chiSquaredResultPane.setContentType(CONTENT_TYPE);
         chiSquaredResultPane.setPreferredSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultPane.setEditable(false);
