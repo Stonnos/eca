@@ -645,17 +645,24 @@ public class JMainFrame extends JFrame {
          * Validates and filter instances using {@link eca.filter.ConstantAttributesFilter}?
          */
         boolean validateAndFilter = true;
+        boolean validateAttributes = true;
 
         DataBuilder() {
         }
 
-        DataBuilder(boolean validateAndFilter) {
+        DataBuilder(boolean validateAndFilter, boolean validateAttributes) {
             this.validateAndFilter = validateAndFilter;
+            this.validateAttributes = validateAttributes;
         }
 
         @Override
         protected InstancesDataModel performAndGetResult() throws Exception {
+            validateDataInternal(validateAttributes);
             return validateAndFilter ? selectedPanel().getFilteredValidData() : selectedPanel().getSimpleData();
+        }
+
+        void validateDataInternal(boolean validateAttributes) {
+            selectedPanel().validateData(validateAttributes);
         }
     }
 
@@ -720,13 +727,11 @@ public class JMainFrame extends JFrame {
     }
 
     private void performTaskWithDataAndAttributesValidation(CallbackAction action) {
-        if (isDataAndAttributesValid()) {
-            try {
-                action.apply();
-            } catch (Exception ex) {
-                LoggerUtils.error(log, ex);
-                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-            }
+        try {
+            action.apply();
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
         }
     }
 
@@ -1444,25 +1449,6 @@ public class JMainFrame extends JFrame {
                         iterativeBuilder.evaluation(), maximumFractionDigits));
     }
 
-    private boolean isDataAndAttributesValid() {
-        return validateDataInternal(true);
-    }
-
-    private boolean isDataValid() {
-        return validateDataInternal(false);
-    }
-
-    private boolean validateDataInternal(boolean validateAttributes) {
-        try {
-            selectedPanel().validateData(validateAttributes);
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-            return false;
-        }
-        return true;
-    }
-
     private void createTreeOptionDialog(final String title, final DecisionTreeClassifier tree) {
         try {
             final DataBuilder dataBuilder = new DataBuilder();
@@ -1985,23 +1971,21 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    if (isDataValid()) {
-                        final DataBuilder dataBuilder = new DataBuilder(false);
-                        prepareTrainingData(dataBuilder, () -> {
-                            SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
-                            fileChooser.setSelectedFile(new File(dataBuilder.getResult().getData().relationName()));
-                            File file = fileChooser.getSelectedFile(JMainFrame.this);
-                            if (file != null) {
-                                dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                CallbackAction action =
-                                        () -> dataSaver.saveData(file, dataBuilder.getResult().getData());
-                                LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
-                                        action, SAVE_DATA_TITLE, false);
-                                processAsyncTask(loadDialog, () -> {
-                                });
-                            }
-                        });
-                    }
+                    final DataBuilder dataBuilder = new DataBuilder(false, false);
+                    prepareTrainingData(dataBuilder, () -> {
+                        SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
+                        fileChooser.setSelectedFile(new File(dataBuilder.getResult().getData().relationName()));
+                        File file = fileChooser.getSelectedFile(JMainFrame.this);
+                        if (file != null) {
+                            dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                            CallbackAction action =
+                                    () -> dataSaver.saveData(file, dataBuilder.getResult().getData());
+                            LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                                    action, SAVE_DATA_TITLE, false);
+                            processAsyncTask(loadDialog, () -> {
+                            });
+                        }
+                    });
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
@@ -2040,33 +2024,31 @@ public class JMainFrame extends JFrame {
 
     private ActionListener dbSaverActionListener() {
         return event -> {
-            if (isDataValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder(false);
-                    prepareTrainingData(dataBuilder, () -> {
-                        DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
-                        databaseSaverDialog.setTableName(dataBuilder.getResult().getData().relationName());
-                        databaseSaverDialog.setVisible(true);
-                        if (databaseSaverDialog.dialogResult()) {
-                            DatabaseSaver databaseSaver =
-                                    new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
-                            databaseSaver.setTableName(databaseSaverDialog.getTableName());
-                            LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getResult().getData()),
-                                    DB_SAVE_PROGRESS_MESSAGE_TEXT, false);
-                            processAsyncTask(progress, () ->
-                                    JOptionPane.showMessageDialog(JMainFrame.this,
-                                            String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
-                                            JOptionPane.INFORMATION_MESSAGE)
-                            );
-                        }
-                        databaseSaverDialog.dispose();
-                    });
+            try {
+                final DataBuilder dataBuilder = new DataBuilder(false, false);
+                prepareTrainingData(dataBuilder, () -> {
+                    DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
+                    databaseSaverDialog.setTableName(dataBuilder.getResult().getData().relationName());
+                    databaseSaverDialog.setVisible(true);
+                    if (databaseSaverDialog.dialogResult()) {
+                        DatabaseSaver databaseSaver =
+                                new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
+                        databaseSaver.setTableName(databaseSaverDialog.getTableName());
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                new DatabaseSaverAction(databaseSaver, dataBuilder.getResult().getData()),
+                                DB_SAVE_PROGRESS_MESSAGE_TEXT, false);
+                        processAsyncTask(progress, () ->
+                                JOptionPane.showMessageDialog(JMainFrame.this,
+                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
+                                        JOptionPane.INFORMATION_MESSAGE)
+                        );
+                    }
+                    databaseSaverDialog.dispose();
+                });
 
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
         };
     }
