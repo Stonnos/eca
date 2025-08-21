@@ -7,9 +7,9 @@ package eca.gui.panels;
 
 import eca.config.VelocityConfigService;
 import eca.gui.PanelBorderUtils;
+import eca.gui.tables.ClassifyInstanceTable;
 import eca.model.ReferenceWrapper;
 import eca.report.ReportGenerator;
-import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

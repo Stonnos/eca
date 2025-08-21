@@ -23,6 +23,8 @@ import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
 import eca.util.FontUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
@@ -47,6 +49,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Neural network visualization panel.
@@ -194,17 +198,17 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem textView = new JMenuItem(MODEL_TEXT_MENU);
-        textView.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.INFO_ICON)));
+        textView.setIcon(IconFontSwing.buildIcon(FontAwesome.INFO_CIRCLE, ICON_SIZE, Color.BLUE));
         JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TEXT);
-        saveImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveImage.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
-        copyImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyImage.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem options = new JMenuItem(IMAGE_OPTIONS_MENU_TEXT);
-        options.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SETTINGS_ICON)));
+        options.setIcon(IconFontSwing.buildIcon(FontAwesome.COGS, ICON_SIZE));
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
-        increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
+        increase.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE, Color.GREEN));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
-        decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
+        decrease.setIcon(IconFontSwing.buildIcon(FontAwesome.MINUS, ICON_SIZE, Color.RED));
 
         increase.addActionListener(evt -> increaseImage());
 

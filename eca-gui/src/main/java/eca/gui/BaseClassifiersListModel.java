@@ -5,7 +5,6 @@ import eca.config.ConfigurationService;
 import eca.dictionary.ClassifiersNamesDictionary;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.DecisionTreeOptionsDialog;
-import eca.gui.dialogs.EnsembleOptionsDialog;
 import eca.gui.dialogs.J48OptionsDialog;
 import eca.gui.dialogs.KNNOptionDialog;
 import eca.gui.dialogs.LogisticOptionsDialogBase;

@@ -8,8 +8,9 @@ package eca.gui.tables;
 
 import eca.buffer.StringCopier;
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.gui.dialogs.JFontChooser;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,6 +18,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Basic class for all tables.
@@ -98,7 +101,7 @@ public class JDataTableBase extends JTable {
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem fontMenu = new JMenuItem(FONT_SELECTION_MENU_TEXT);
-        fontMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.FONT_ICON)));
+        fontMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FONT, ICON_SIZE));
 
         fontMenu.addActionListener(e -> {
             JFontChooser chooser = new JFontChooser(null, JDataTableBase.this.getFont());
@@ -113,9 +116,9 @@ public class JDataTableBase extends JTable {
         resizeMenu.addItemListener(e -> setAutoResizeOffMode(!resizeMenu.getState()));
         //-----------------------------------
         JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
-        copyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem copyWithHeaderMenu = new JMenuItem(ALL_DATA_COPY_MENU_TEXT);
-        copyWithHeaderMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyWithHeaderMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
 
         copyMenu.addActionListener(new ActionListener() {
 

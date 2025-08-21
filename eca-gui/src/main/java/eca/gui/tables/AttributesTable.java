@@ -6,12 +6,13 @@
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.Cleanable;
 import eca.gui.GuiUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.models.AttributesTableModel;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -22,6 +23,8 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * @author Roman Batygin
@@ -74,7 +77,7 @@ public class AttributesTable extends JDataTableBase implements Cleanable {
             }
         });
 
-        renameMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EDIT_ICON)));
+        renameMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, ICON_SIZE));
 
         renameMenu.addActionListener(evt -> {
             int i = getSelectedRow();

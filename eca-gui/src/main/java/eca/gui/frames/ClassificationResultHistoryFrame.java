@@ -1,10 +1,11 @@
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.gui.ButtonUtils;
 import eca.gui.EvaluationResultsHistoryModel;
 import eca.gui.frames.results.ClassificationResultsFrameBase;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -12,6 +13,8 @@ import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Classification results history frame.
@@ -86,9 +89,9 @@ public class ClassificationResultHistoryFrame extends JFrame {
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.setPopupSize(POPUP_DIMENSION);
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
-        deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
+        deleteMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
         clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
-        clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
+        clearMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TRASH, ICON_SIZE));
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override

@@ -115,6 +115,8 @@ import eca.trees.ID3;
 import eca.trees.J48;
 import eca.util.ClassifierNamesFactory;
 import eca.util.Utils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -143,6 +145,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
 import static eca.gui.GuiUtils.removeComponents;
@@ -286,6 +289,8 @@ public class JMainFrame extends JFrame {
     private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
     private static final String SAVE_DATA_TITLE = "Пожалуйста подождите, идет сохранение данных...";
     private static final String RESET_BUTTON_TOOLTIP_TEXT = "Установка настроек атрибутов и их типов по умолчанию";
+    private static final Color DATABASE_ICON_COLOR = new Color(19, 148, 238);
+    private static final Color DECISION_TREE_ICON_COLOR = new Color(1, 50, 32);
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -488,9 +493,9 @@ public class JMainFrame extends JFrame {
         void createPopMenu() {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem(DATA_CHANGE_NAME_MENU_TEXT);
-            nameMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EDIT_ICON)));
+            nameMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, ICON_SIZE));
             JMenuItem colorMenu = new JMenuItem(CHOOSE_COLOR_MENU_TEXT);
-            colorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
+            colorMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PAINT_BRUSH, ICON_SIZE, Color.RED));
             nameMenu.addActionListener(e -> {
                 String newRelationName = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
                         DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
@@ -878,7 +883,7 @@ public class JMainFrame extends JFrame {
         algorithmsMenu.add(ensembleMenu);
 
         JMenu treesMenu = new JMenu(DECISION_TREES_MENU_TEXT);
-        treesMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.TREE_ICON)));
+        treesMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.SITEMAP, ICON_SIZE, DECISION_TREE_ICON_COLOR));
         classifiersMenu.add(treesMenu);
         JMenuItem id3Item = new JMenuItem(ClassifiersNamesDictionary.ID3);
         JMenuItem c45Item = new JMenuItem(ClassifiersNamesDictionary.C45);
@@ -911,7 +916,7 @@ public class JMainFrame extends JFrame {
         treesMenu.add(j48Item);
 
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
-        logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
+        logisticItem.setIcon(IconFontSwing.buildIcon(FontAwesome.LINE_CHART, ICON_SIZE));
         classifiersMenu.add(logisticItem);
         logisticItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -925,7 +930,7 @@ public class JMainFrame extends JFrame {
         );
 
         JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
-        mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
+        mlpItem.setIcon(IconFontSwing.buildIcon(FontAwesome.SHARE_ALT, ICON_SIZE, Color.BLUE));
         classifiersMenu.add(mlpItem);
         mlpItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -943,7 +948,6 @@ public class JMainFrame extends JFrame {
         );
 
         JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
-        knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
         knnItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -1175,7 +1179,7 @@ public class JMainFrame extends JFrame {
 
     private void fillStatisticsMenu(JMenu statisticsMenu) {
         JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
-        attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
+        attrStatisticsMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.BAR_CHART, ICON_SIZE));
         attrStatisticsMenu.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
@@ -1191,7 +1195,6 @@ public class JMainFrame extends JFrame {
         statisticsMenu.add(attrStatisticsMenu);
 
         JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
-        scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
         scatterDiagramMenu.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
@@ -1211,7 +1214,7 @@ public class JMainFrame extends JFrame {
 
     private void fillServiceMenu(JMenu serviceMenu) {
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
-        historyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.HISTORY_ICON)));
+        historyMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.HISTORY, ICON_SIZE));
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
 
         JMenu ecaServiceMenu = new JMenu(ECA_SERVICE_MENU_TEXT);
@@ -1219,15 +1222,13 @@ public class JMainFrame extends JFrame {
         disabledMenuElementList.add(ecaServiceMenu);
 
         JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
-        experimentRequestMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXPERIMENT_ICON)));
+        experimentRequestMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.GAVEL, ICON_SIZE));
         experimentRequestMenu.addActionListener(experimentRequestActionListener());
         JMenuItem optimalClassifierMenu = new JMenuItem(OPTIMAL_CLASSIFIER_MENU_TEXT);
-        optimalClassifierMenu.setIcon(
-                new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPTIMAL_CLASSIFIER_ICON)));
         optimalClassifierMenu.addActionListener(optimalClassifierActionListener());
 
         JMenuItem ecaServiceTracksMenu = new JMenuItem(ECA_SERVICE_TRACKS_MENU_TEXT);
-        ecaServiceTracksMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_TRACKS_ICON)));
+        ecaServiceTracksMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LIST_UL, ICON_SIZE));
         ecaServiceTracksMenu.addActionListener(event -> ecaServiceTrackFrame.setVisible(true));
 
         ecaServiceMenu.add(experimentRequestMenu);
@@ -1237,7 +1238,7 @@ public class JMainFrame extends JFrame {
         serviceMenu.add(ecaServiceMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
-        loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));
+        loggingMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LAPTOP, ICON_SIZE));
         loggingMenu.addActionListener(new ActionListener() {
 
             ConsoleFrame consoleFrame = new ConsoleFrame(JMainFrame.this,
@@ -1341,13 +1342,13 @@ public class JMainFrame extends JFrame {
 
     private void fillFileMenu(JMenu fileMenu) {
         JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
-        openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
+        openFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FOLDER_OPEN, ICON_SIZE, Color.ORANGE));
         openFileMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_FILE_MENU_KEY_STROKE));
         openFileMenu.addActionListener(openFileActionListener());
         fileMenu.add(openFileMenu);
 
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
-        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         disabledMenuElementList.add(saveFileMenu);
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
         fileMenu.add(saveFileMenu);
@@ -1355,13 +1356,13 @@ public class JMainFrame extends JFrame {
 
         JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
         dbMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_DB_MENU_KEY_STROKE));
-        dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
+        dbMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.DATABASE, ICON_SIZE, DATABASE_ICON_COLOR));
         fileMenu.addSeparator();
         fileMenu.add(dbMenu);
         dbMenu.addActionListener(dbConnectionActionListener());
 
         JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
-        dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
+        dbSaverMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_DB_MENU_KEY_STROKE));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(dbSaverActionListener());
@@ -1369,38 +1370,38 @@ public class JMainFrame extends JFrame {
 
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
         urlMenu.setAccelerator(KeyStroke.getKeyStroke(URL_MENU_KEY_STROKE));
-        urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        urlMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(urlLoaderActionListener());
 
         JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
         loadModelMenu.setAccelerator(KeyStroke.getKeyStroke(LOAD_MODEL_KEY_STROKE));
-        loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        loadModelMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.UPLOAD, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
         JMenuItem loadExperimentFromFileMenu = new JMenuItem(LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT);
-        loadExperimentFromFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        loadExperimentFromFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.UPLOAD, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(loadExperimentFromFileMenu);
         loadExperimentFromFileMenu.addActionListener(loadExperimentFromFileActionListener());
 
         JMenuItem loadExperimentFromUrlMenu = new JMenuItem(LOAD_EXPERIMENT_FORM_NET_TEXT);
-        loadExperimentFromUrlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        loadExperimentFromUrlMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
         fileMenu.add(loadExperimentFromUrlMenu);
         loadExperimentFromUrlMenu.addActionListener(loadExperimentFromUrlActionListener());
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
-        generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
+        generatorMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CUBES, ICON_SIZE));
         generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
         fileMenu.addSeparator();
         fileMenu.add(generatorMenu);
         generatorMenu.addActionListener(dataGeneratorActionListener());
 
         JMenuItem exitMenu = new JMenuItem(EXIT_MENU_TEXT);
-        exitMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXIT_ICON)));
+        exitMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.SIGN_OUT, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(exitMenu);
         exitMenu.addActionListener(e -> JMainFrame.this.closeWindow());

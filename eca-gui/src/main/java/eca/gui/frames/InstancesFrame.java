@@ -9,6 +9,8 @@ import eca.gui.GuiUtils;
 import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.ResultInstancesTable;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;
 
@@ -16,6 +18,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 
 /**
@@ -73,7 +76,7 @@ public class InstancesFrame extends JFrame {
 
     private void addSaveDataMenuItem(JMenu menu) {
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
-        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke("ctrl S"));
 
         saveFileMenu.addActionListener(event -> {

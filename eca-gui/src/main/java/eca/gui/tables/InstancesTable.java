@@ -6,7 +6,6 @@
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.core.InstancesDataModel;
 import eca.filter.ConstantAttributesFilter;
 import eca.gui.Cleanable;
@@ -17,6 +16,8 @@ import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.tables.models.InstancesTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.util.Entry;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
 import static eca.gui.service.ValidationService.parseDate;
@@ -164,17 +166,17 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private void createPopupMenuList(final JTextField numInstances) {
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
-        deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
+        deleteMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
         JMenuItem deleteAllMenu = new JMenuItem(DELETE_ATTRS_MENU_TEXT);
-        deleteAllMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
+        deleteAllMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
         JMenuItem insertMenu = new JMenuItem(ADD_INSTANCE_MENU_TEXT);
-        insertMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ADD_ICON)));
+        insertMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE));
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
-        clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
+        //TODO
+        clearMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TRASH_O, ICON_SIZE));
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
-        missMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
-        reValueMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.REPLACE_ICON)));
+        reValueMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.RETWEET, ICON_SIZE));
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override

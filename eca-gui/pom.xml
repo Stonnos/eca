@@ -33,6 +33,8 @@
         <installer-script>compile-installer.bat</installer-script>
         <jvm-options.fileName>@jvm.options</jvm-options.fileName>
         <flatlaf.version>3.6.1</flatlaf.version>
+        <jifont-swing.version>1.0.1</jifont-swing.version>
+        <jifont-swing-fontawesome.version>4.7.0.1</jifont-swing-fontawesome.version>
     </properties>
 
     <profiles>
@@ -198,7 +200,18 @@
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
             <version>${flatlaf.version}</version>
-            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-swing</artifactId>
+            <version>${jifont-swing.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-font_awesome</artifactId>
+            <version>${jifont-swing-fontawesome.version}</version>
         </dependency>
 
     </dependencies>

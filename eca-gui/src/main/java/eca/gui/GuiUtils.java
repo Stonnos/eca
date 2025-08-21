@@ -25,6 +25,8 @@ import static eca.gui.service.TemplateService.getValidationErrorsMessageAsHtml;
 @UtilityClass
 public class GuiUtils {
 
+    public static final int ICON_SIZE = 18;
+
     private static final String INPUT_ERROR_TEXT = "Ошибка ввода";
     private static final String FILL_ALL_FIELDS_ERROR_TEXT = "Заполните все поля!";
     private static final int MAX_ERROR_MESSAGE_LENGTH = 1024;

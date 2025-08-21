@@ -1,7 +1,10 @@
 package eca;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import eca.config.ConfigurationService;
 import eca.gui.frames.JMainFrame;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -17,14 +20,11 @@ public class Eca {
 
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
-    /**
-     * Look and feel UI theme
-     */
-    private static final String LOOK_AND_FEEL = "com.formdev.flatlaf.FlatLightLaf";
-
     public static void main(String[] args) throws Exception {
         // Sets Look and feel UI theme
-        UIManager.setLookAndFeel(LOOK_AND_FEEL);
+        UIManager.setLookAndFeel(new FlatLightLaf());
+        // Register FontAwesome icon fonts
+        IconFontSwing.register(FontAwesome.getIconFont());
         EventQueue.invokeLater(() -> {
             JMainFrame mainFrame = new JMainFrame();
             mainFrame.setVisible(true);

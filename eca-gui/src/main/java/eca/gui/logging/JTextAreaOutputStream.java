@@ -1,6 +1,6 @@
 package eca.gui.logging;
 
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.text.Document;
 import java.io.OutputStream;
 import java.util.Objects;

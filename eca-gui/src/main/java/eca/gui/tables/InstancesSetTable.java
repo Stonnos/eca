@@ -2,9 +2,9 @@ package eca.gui.tables;
 
 import eca.gui.Cleanable;
 import eca.gui.editors.JButtonEditor;
-import eca.gui.renderers.JButtonRenderer;
 import eca.gui.frames.InstancesFrame;
 import eca.gui.logging.LoggerUtils;
+import eca.gui.renderers.JButtonRenderer;
 import eca.gui.tables.models.InstancesSetTableModel;
 import lombok.extern.slf4j.Slf4j;
 import weka.core.Instances;

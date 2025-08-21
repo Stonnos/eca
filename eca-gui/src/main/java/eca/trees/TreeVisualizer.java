@@ -19,6 +19,8 @@ import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import eca.util.FileUtils;
 import eca.util.FontUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
@@ -37,6 +39,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Decision tree visualization panel.
@@ -164,15 +168,15 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TITLE);
-        saveImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveImage.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
-        copyImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyImage.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem options = new JMenuItem(OPTIONS_MENU_TEXT);
-        options.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SETTINGS_ICON)));
+        options.setIcon(IconFontSwing.buildIcon(FontAwesome.COGS, ICON_SIZE));
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
-        increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
+        increase.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE, Color.GREEN));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
-        decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
+        decrease.setIcon(IconFontSwing.buildIcon(FontAwesome.MINUS, ICON_SIZE, Color.RED));
         options.addActionListener(evt -> {
             TreeOptions frame = new TreeOptions(null);
             frame.setVisible(true);

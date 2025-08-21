@@ -2,10 +2,11 @@ package eca.gui.frames;
 
 import eca.buffer.StringCopier;
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.core.TextSearcher;
 import eca.gui.ButtonUtils;
 import eca.gui.dialogs.JFontChooser;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +19,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
+
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * @author Roman Batygin
@@ -87,7 +90,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createCopyMenuItem() {
         JMenuItem copyMenuItem = new JMenuItem(DATA_COPY_MENU_TEXT);
-        copyMenuItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyMenuItem.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         copyMenuItem.addActionListener(new ActionListener() {
 
             StringCopier stringCopier = new StringCopier();
@@ -103,7 +106,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createBackgroundColorMenuItem() {
         JMenuItem backgroundColorMenuItem = new JMenuItem(BACKGROUND_COLOR_MENU_TEXT);
-        backgroundColorMenuItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
+        backgroundColorMenuItem.setIcon(IconFontSwing.buildIcon(FontAwesome.PAINT_BRUSH, ICON_SIZE, Color.RED));
         backgroundColorMenuItem.addActionListener(e -> {
             Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, BACKGROUND_COLOR_MENU_TEXT,
                     textArea.getForeground());
@@ -116,7 +119,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createFontMenuItem() {
         JMenuItem fontMenuItem = new JMenuItem(SELECTED_FONT_MENU_TEXT);
-        fontMenuItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.FONT_ICON)));
+        fontMenuItem.setIcon(IconFontSwing.buildIcon(FontAwesome.FONT, ICON_SIZE));
         fontMenuItem.addActionListener(e -> {
             JFontChooser chooser = new JFontChooser(ConsoleFrame.this, textArea.getFont());
             chooser.setVisible(true);
@@ -131,7 +134,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createFontColorMenuItem() {
         JMenuItem fontColorMenu = new JMenuItem(FONT_COLOR_MENU_TEXT);
-        fontColorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
+        fontColorMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PAINT_BRUSH, ICON_SIZE, Color.RED));
         fontColorMenu.addActionListener(e -> {
             Color selectedColor = JColorChooser.showDialog(ConsoleFrame.this, FONT_COLOR_MENU_TEXT,
                     textArea.getForeground());
@@ -144,7 +147,7 @@ public class ConsoleFrame extends JFrame {
 
     private JMenuItem createSearchMenuItem() {
         JMenuItem searchMenuItem = new JMenuItem(SEARCH_MENU_TEXT);
-        searchMenuItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SEARCH_ICON)));
+        searchMenuItem.setIcon(IconFontSwing.buildIcon(FontAwesome.SEARCH, ICON_SIZE));
         searchMenuItem.addActionListener(actionEvent -> {
             TextSearchDialog textSearchDialog = new TextSearchDialog();
             textSearchDialog.setVisible(true);
