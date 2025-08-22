@@ -18,7 +18,6 @@ import eca.config.RabbitConfiguration;
 import eca.config.RabbitConnectionOptions;
 import eca.config.registry.SingletonRegistry;
 import eca.core.InstancesDataModel;
-import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationService;
@@ -116,7 +115,6 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 import eca.trees.J48;
-import eca.util.ClassifierNamesFactory;
 import eca.util.Utils;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
@@ -137,7 +135,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -1730,16 +1727,19 @@ public class JMainFrame extends JFrame {
                     @Override
                     public void caseSuccessStatus() {
                         try {
-                            ClassificationModel classificationModel = downloadModel(evaluationResponse);
-                            String title =
-                                    ClassifierNamesFactory.getClassifierName(classificationModel.getClassifier());
-                            ClassificationResultsFrameBase classificationResultsFrameBase =
-                                    createEvaluationResults(title,
-                                            new ReferenceWrapper<>(classificationModel.getClassifier()),
-                                            classificationModel.getData(),
-                                            classificationModel.getEvaluation(),
-                                            maximumFractionDigits);
-                            classificationResultsFrameBase.setVisible(true);
+                            URL modelUrl = new URL(evaluationResponse.getModelUrl());
+                            UrlResource urlResource = new UrlResource(modelUrl);
+                            ClassifierModelLoader modelLoader = new ClassifierModelLoader(urlResource);
+                            LoadDialog loadModelProgress = new LoadDialog(JMainFrame.this,
+                                    modelLoader, MODEL_LOADING_MESSAGE);
+
+                            processAsyncTask(loadModelProgress, () -> {
+                                ClassificationModel classificationModel = modelLoader.getResult();
+                                String title = getClassifierName(classificationModel.getClassifier());
+                                createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
+                                        classificationModel.getData(), classificationModel.getEvaluation(),
+                                        maximumFractionDigits);
+                            });
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2215,12 +2215,6 @@ public class JMainFrame extends JFrame {
                             this.maximumFractionDigits);
             experimentFrame.setVisible(true);
         });
-    }
-
-    private ClassificationModel downloadModel(EvaluationResponse evaluationResponse) throws IOException {
-        URL modelUrl = new URL(evaluationResponse.getModelUrl());
-        UrlResource urlResource = new UrlResource(modelUrl);
-        return ModelSerializationHelper.deserialize(urlResource, ClassificationModel.class);
     }
 
     private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {
