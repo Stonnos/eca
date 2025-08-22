@@ -64,9 +64,12 @@ import eca.gui.actions.DatabaseSaverAction;
 import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.UrlLoader;
+import eca.gui.backgroundtasks.BackgroundTaskInfo;
+import eca.gui.backgroundtasks.BackgroundTasksManager;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
+import eca.gui.dialogs.AbstractProgressDialog;
 import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.ContingencyTableOptionsDialog;
@@ -184,12 +187,8 @@ public class JMainFrame extends JFrame {
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
     private static final Color FRAME_COLOR = new Color(227, 232, 234);
-
-    private static final String ENSEMBLE_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение ансамбля...";
-    private static final String NETWORK_BUILDING_PROGRESS_TITLE =
-            "Пожалуйста подождите, идет обучение нейронной сети...";
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
-    private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
+    private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели \"%s\"...";
     private static final String MODEL_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка модели...";
     private static final String EXPERIMENT_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка эксперимента...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
@@ -291,6 +290,9 @@ public class JMainFrame extends JFrame {
     private static final String RESET_BUTTON_TOOLTIP_TEXT = "Установка настроек атрибутов и их типов по умолчанию";
     private static final Color DATABASE_ICON_COLOR = new Color(19, 148, 238);
     private static final Color DECISION_TREE_ICON_COLOR = new Color(1, 50, 32);
+    private static final String MODEL_BUILDING_FINISHED_MESSAGE = "Построение модели классификатора \"%s\" завершено";
+    private static final String BACKGROUND_TASKS_MENU_TEXT = "Фоновые процессы";
+    private static final String MODEL_BUILDING_TASK_TITLE = "Построение модели \"%s\"";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -309,6 +311,8 @@ public class JMainFrame extends JFrame {
     private EcaServiceTrackFrame ecaServiceTrackFrame = new EcaServiceTrackFrame(this);
 
     private final PopupService popupService = new PopupService();
+
+    private final BackgroundTasksManager backgroundTasksManager = new BackgroundTasksManager(this);
 
     private List<AbstractButton> disabledMenuElementList = newArrayList();
 
@@ -745,8 +749,7 @@ public class JMainFrame extends JFrame {
                 () -> showFormattedErrorMessageDialog(JMainFrame.this, executorDialog.getErrorMessageText()));
     }
 
-    private void executeSimpleBuilding(ClassifierOptionsDialogBase frame, InstancesDataModel instancesDataModel)
-            throws Exception {
+    private void executeSimpleBuilding(ClassifierOptionsDialogBase frame, InstancesDataModel instancesDataModel) {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -761,16 +764,24 @@ public class JMainFrame extends JFrame {
         frame.dispose();
     }
 
-    private void processSimpleBuilding(ClassifierOptionsDialogBase frame) throws Exception {
+    private void processSimpleBuilding(ClassifierOptionsDialogBase frame) {
         ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
-        LoadDialog progress = new LoadDialog(JMainFrame.this,
-                builder, MODEL_BUILDING_MESSAGE);
+        String classifierName = getClassifierName(frame.classifier());
+        LoadDialog progress = new LoadDialog(JMainFrame.this, builder,
+                String.format(MODEL_BUILDING_MESSAGE, classifierName), true, true);
 
-        processAsyncTask(progress, () -> {
+        ReferenceWrapper<Classifier> classifierReferenceWrapper = frame.classifierReference();
+        Instances data = frame.data();
+
+        CallbackAction successAction = () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
-            createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
+            String infoMessage = String.format(MODEL_BUILDING_FINISHED_MESSAGE, classifierName);
+            popupService.showInfoPopup(infoMessage, this);
+            createEvaluationResultsAsync(frame.getTitle(), classifierReferenceWrapper, data,
                     builder.getResult(), maximumFractionDigits);
-        });
+        };
+        String taskTitle = String.format(MODEL_BUILDING_TASK_TITLE, classifierName);
+        processBackgroundAsyncTask(taskTitle, progress, successAction);
     }
 
     private void prepareTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
@@ -942,7 +953,7 @@ public class JMainFrame extends JFrame {
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
                                 ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork,
                                 dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), NETWORK_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
@@ -997,7 +1008,7 @@ public class JMainFrame extends JFrame {
                                 new RandomForestsOptionDialog(JMainFrame.this,
                                         EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests,
                                         dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
@@ -1014,7 +1025,7 @@ public class JMainFrame extends JFrame {
                         RandomForestsOptionDialog frame = new RandomForestsOptionDialog(JMainFrame.this,
                                 EnsemblesNamesDictionary.EXTRA_TREES, extraTreesClassifier,
                                 dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
@@ -1048,8 +1059,7 @@ public class JMainFrame extends JFrame {
                                 new RandomNetworkOptionsDialog(JMainFrame.this,
                                         EnsemblesNamesDictionary.RANDOM_NETWORKS, randomNetworks,
                                         dataBuilder.getResult().getData());
-                        executeIterativeBuilding(networkOptionsDialog, dataBuilder.getResult(),
-                                ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(networkOptionsDialog, dataBuilder.getResult());
                     });
                 })
         );
@@ -1217,6 +1227,10 @@ public class JMainFrame extends JFrame {
         historyMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.HISTORY, ICON_SIZE));
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
 
+        JMenuItem backgroundTasksMenu = new JMenuItem(BACKGROUND_TASKS_MENU_TEXT);
+        backgroundTasksMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LIST, ICON_SIZE, Color.BLUE));
+        backgroundTasksMenu.addActionListener(e -> backgroundTasksManager.show());
+
         JMenu ecaServiceMenu = new JMenu(ECA_SERVICE_MENU_TEXT);
         ecaServiceMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_ICON)));
         disabledMenuElementList.add(ecaServiceMenu);
@@ -1235,6 +1249,7 @@ public class JMainFrame extends JFrame {
         ecaServiceMenu.add(optimalClassifierMenu);
         ecaServiceMenu.add(ecaServiceTracksMenu);
         serviceMenu.add(historyMenu);
+        serviceMenu.add(backgroundTasksMenu);
         serviceMenu.add(ecaServiceMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
@@ -1412,11 +1427,9 @@ public class JMainFrame extends JFrame {
      *
      * @param frame              - classifier options dialog base object
      * @param instancesDataModel - instances data model
-     * @param progressMessage    - progress message
      */
     private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame,
-                                          final InstancesDataModel instancesDataModel,
-                                          final String progressMessage) {
+                                          final InstancesDataModel instancesDataModel) {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -1429,7 +1442,7 @@ public class JMainFrame extends JFrame {
                     if (EnsembleUtils.isConcurrentClassifier(frame.classifier())) {
                         processSimpleBuilding(frame);
                     } else {
-                        processIterativeBuilding(frame, progressMessage);
+                        processIterativeBuilding(frame);
                     }
                 }
             } catch (Exception ex) {
@@ -1441,13 +1454,40 @@ public class JMainFrame extends JFrame {
         frame.dispose();
     }
 
-    private void processIterativeBuilding(ClassifierOptionsDialogBase frame, String progressMessage) throws Exception {
+    private void processIterativeBuilding(ClassifierOptionsDialogBase frame) throws Exception {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
+        String classifierName = getClassifierName(frame.classifier());
+        String progressMessage = String.format(MODEL_BUILDING_MESSAGE, classifierName);
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        processAsyncTask(progress,
-                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
-                        iterativeBuilder.evaluation(), maximumFractionDigits));
+        ReferenceWrapper<Classifier> classifierReferenceWrapper = frame.classifierReference();
+        Instances data = frame.data();
+
+        CallbackAction successAction = () -> {
+            String infoMessage = String.format(MODEL_BUILDING_FINISHED_MESSAGE, classifierName);
+            popupService.showInfoPopup(infoMessage, this);
+            createEvaluationResultsAsync(frame.getTitle(), classifierReferenceWrapper, data,
+                    iterativeBuilder.evaluation(), maximumFractionDigits);
+        };
+        String taskTitle = String.format(MODEL_BUILDING_TASK_TITLE, classifierName);
+        processBackgroundAsyncTask(taskTitle, progress, successAction);
+    }
+
+    private void processBackgroundAsyncTask(String taskTitle,
+                                            AbstractProgressDialog progressDialog,
+                                            CallbackAction successAction) {
+        BackgroundTaskInfo backgroundTaskInfo =
+                new BackgroundTaskInfo(UUID.randomUUID().toString(), taskTitle, progressDialog);
+        backgroundTasksManager.addTask(backgroundTaskInfo);
+        progressDialog.setSuccessAction(() -> {
+            backgroundTasksManager.removeTask(backgroundTaskInfo.getId());
+            successAction.apply();
+        });
+        progressDialog.setFailAction(() -> {
+            backgroundTasksManager.removeTask(backgroundTaskInfo.getId());
+            showFormattedErrorMessageDialog(JMainFrame.this, progressDialog.getErrorMessageText());
+        });
+        progressDialog.execute();
     }
 
     private void createTreeOptionDialog(final String title, final DecisionTreeClassifier tree) {
@@ -1475,7 +1515,7 @@ public class JMainFrame extends JFrame {
                 EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
                         title, heterogeneousClassifier, dataBuilder.getResult().getData(), maximumFractionDigits);
                 frame.setSampleEnabled(sample);
-                executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                executeIterativeBuilding(frame, dataBuilder.getResult());
             });
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);

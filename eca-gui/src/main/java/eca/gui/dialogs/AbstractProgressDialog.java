@@ -1,6 +1,11 @@
 package eca.gui.dialogs;
 
+import eca.gui.ButtonUtils;
+import eca.gui.actions.CallbackAction;
 import eca.gui.logging.LoggerUtils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -24,6 +29,16 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     private static final long DELAY = 300L;
     private static final int FULL_PROGRESS = 100;
     private static final String PROGRESS_PROPERTY_NAME = "progress";
+    private static final String RUN_IN_BACKGROUND_BUTTON_TEXT = "Выполнять в фоне";
+    private static final Dimension RUN_IN_BACKGROUND_BUTTON_SIZE = new Dimension(175, 25);
+
+    @Setter
+    @Getter
+    private CallbackAction successAction;
+
+    @Setter
+    @Getter
+    private CallbackAction failAction;
 
     private JProgressBar progress;
     private AbstractBackgroundTask backgroundTask;
@@ -31,14 +46,17 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     private boolean isSuccess = true;
     private String errorMessage;
 
+    private final boolean runInBackgroundEnabled;
+
     private final StopWatch stopWatch = new StopWatch();
 
     protected AbstractProgressDialog(Window parent, String loadingMessage, boolean intermediate,
-                                  boolean progressValuePainted, boolean closable) {
+                                     boolean progressValuePainted, boolean closable, boolean runInBackgroundEnabled) {
         super(parent, StringUtils.EMPTY);
         this.setModal(true);
         this.setResizable(false);
         this.setUndecorated(!closable);
+        this.runInBackgroundEnabled = runInBackgroundEnabled;
         this.createGUI(loadingMessage, intermediate, progressValuePainted);
         this.addCancelListener();
         this.pack();
@@ -70,6 +88,8 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     @Override
     public void clear() {
         backgroundTask = null;
+        successAction = null;
+        failAction = null;
         removeComponents(this);
     }
 
@@ -95,6 +115,15 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
                         new Insets(10, 5, 10, 5), 0, 0));
         this.add(progress, new GridBagConstraints(0, 1, 3, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
+        if (runInBackgroundEnabled) {
+            JButton runInBackgroundButton = ButtonUtils.createButton(RUN_IN_BACKGROUND_BUTTON_TEXT);
+            runInBackgroundButton.setMinimumSize(RUN_IN_BACKGROUND_BUTTON_SIZE);
+            runInBackgroundButton.setPreferredSize(RUN_IN_BACKGROUND_BUTTON_SIZE);
+            runInBackgroundButton.addActionListener(actionEvent -> setVisible(false));
+            this.add(runInBackgroundButton, new GridBagConstraints(0, 2, 1, 1, 1, 0,
+                    GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                    new Insets(5, 0, 5, 0), 0, 0));
+        }
     }
 
     private void addCancelListener() {
@@ -156,8 +185,20 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
         }
 
         @Override
+        @SneakyThrows
         protected void done() {
             setVisible(false);
+            if (runInBackgroundEnabled) {
+                if (!isCancelled()) {
+                    if (isSuccess && successAction != null) {
+                        successAction.apply();
+                    }
+                    if (!isSuccess && failAction != null) {
+                        failAction.apply();
+                    }
+                }
+                clear();
+            }
         }
     }
 }

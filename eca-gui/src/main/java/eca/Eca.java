@@ -34,6 +34,5 @@ public class Eca {
                     CONFIG_SERVICE.getApplicationConfig().getProjectInfo().getVersion());
             MemoryMonitor.INSTANCE.start();
         });
-
     }
 }

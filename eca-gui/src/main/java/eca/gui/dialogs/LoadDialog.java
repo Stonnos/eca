@@ -21,7 +21,12 @@ public class LoadDialog extends AbstractProgressDialog {
     }
 
     public LoadDialog(Window parent, CallbackAction action, String loadingMessage, boolean closable) {
-        super(parent, loadingMessage, true, false, closable);
+        this(parent, action, loadingMessage,closable, false);
+    }
+
+    public LoadDialog(Window parent, CallbackAction action, String loadingMessage,
+                      boolean closable, boolean runInBackgroundEnabled) {
+        super(parent, loadingMessage, true, false, closable, runInBackgroundEnabled);
         this.action = action;
     }
 
