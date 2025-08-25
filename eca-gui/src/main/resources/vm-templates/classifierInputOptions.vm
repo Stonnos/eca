@@ -7,7 +7,7 @@
 <body>
 <table class="table" style="margin: auto;">
     <tr>
-        <th class="attr text-center" colspan="2">Входные параметры классификатора</th>
+        <th class="attr" style="text-align: center;" colspan="2">Входные параметры классификатора</th>
     </tr>
     #foreach($entry in $optionsMap.entrySet())
         <tr>
