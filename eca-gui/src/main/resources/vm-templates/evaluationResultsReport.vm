@@ -1,6 +1,7 @@
 <html>
 <head>
     <style>
+        #include("styles/bootstrap/bootstrap.min.css")
         #include("styles/evaluation-results.css")
     </style>
 </head>
@@ -9,9 +10,9 @@
 <center>
     <h2 class="title">Отчет по результатам классификации</h2>
 </center>
-<table class="statistics-table">
+<table class="table statistics-table">
     <tr>
-        <th colspan="2">Основная статистика</th>
+        <th colspan="2" class="text-center">Основная статистика</th>
     </tr>
     #foreach($entry in $statistics.entrySet())
         <tr>
@@ -25,9 +26,9 @@
     #parse("classifierInputOptions.vm")
 </div>
 
-<table class="classification-cost-table">
+<table class="table classification-cost-table">
     <tr>
-        <th colspan="9">Результаты классификации</th>
+        <th colspan="9" class="text-center">Результаты классификации</th>
     </tr>
     <tr>
         <th>Класс</th>
@@ -56,9 +57,9 @@
 </table>
 
 <center>
-    <h3 style="margin: 15px;">Матрица классификации</h3>
+    <h6 style="margin: 15px; font-weight: bold;">Матрица классификации</h6>
 </center>
-<table class="confusion-table">
+<table class="table confusion-table">
     <tr>
         <th>Реальное</th>
         #foreach($classValue in $confusionMatrix.classValues)

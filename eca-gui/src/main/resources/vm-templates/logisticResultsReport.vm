@@ -8,9 +8,9 @@
 #parse("evaluationResultsReport.vm")
 
 <center>
-    <h3 style="margin: 15px;">Оценки коэффициентов модели</h3>
+    <h6 style="margin: 15px; font-weight: bold;">Оценки коэффициентов модели</h6>
 </center>
-<table class="logistic-coefficients-table">
+<table class="table logistic-coefficients-table">
     <tr>
         #foreach($header in $logisticCoefficients.headers)
             <th>$header</th>

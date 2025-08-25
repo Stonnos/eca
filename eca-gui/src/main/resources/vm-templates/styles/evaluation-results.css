@@ -2,6 +2,7 @@
     margin: auto;
     width: 50%;
     margin-bottom: 30px;
+    background: white;
 }
 
 .classification-cost-table {
@@ -9,6 +10,7 @@
     width: 80%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .confusion-table {
@@ -16,6 +18,7 @@
     width: 90%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .logistic-coefficients-table {
@@ -23,6 +26,7 @@
     width: 90%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .attachment {
@@ -35,7 +39,9 @@
 
 .inputOptions {
     margin: auto;
+    width: 50%;
     margin-bottom: 30px;
+    background: white;
 }
 
 .title {
@@ -43,13 +49,8 @@
     margin-bottom: 20px;
 }
 
-th, td {
-    border: 1px solid black;
-    background: #e2e2e2;
-}
-
 body {
-    background: rgb(198, 226, 255);
+    background: #EDEEF0;
 }
 
 .attr {

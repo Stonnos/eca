@@ -5,9 +5,9 @@
     </style>
 </head>
 <body>
-<table style="margin: auto;">
+<table class="table" style="margin: auto;">
     <tr>
-        <th class="attr" colspan="2">Входные параметры классификатора</th>
+        <th class="attr text-center" colspan="2">Входные параметры классификатора</th>
     </tr>
     #foreach($entry in $optionsMap.entrySet())
         <tr>
