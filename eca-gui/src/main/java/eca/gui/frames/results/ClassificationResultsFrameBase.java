@@ -194,7 +194,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
-        dataMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LIST, ICON_SIZE));
+        dataMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TABLE, ICON_SIZE));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
         statMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.BAR_CHART, ICON_SIZE));
 

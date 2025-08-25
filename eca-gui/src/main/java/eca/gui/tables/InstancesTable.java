@@ -172,7 +172,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         JMenuItem insertMenu = new JMenuItem(ADD_INSTANCE_MENU_TEXT);
         insertMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE));
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
-        //TODO
         clearMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TRASH_O, ICON_SIZE));
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
