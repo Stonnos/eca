@@ -3,6 +3,7 @@
     <style>
         #include("styles/bootstrap/bootstrap.min.css")
         #include("styles/evaluation-results.css")
+        #include("styles/styles.css")
     </style>
 </head>
 <body>
@@ -11,7 +12,7 @@
     <h2 class="title">Отчет с результатами классификации</h2>
 </center>
 <table class="table statistics-table">
-    <tr>
+    <tr class="table-header-color">
         <th colspan="2" class="text-center">Основная статистика</th>
     </tr>
     #foreach($entry in $statistics.entrySet())
@@ -26,11 +27,11 @@
     #parse("classifierInputOptions.vm")
 </div>
 
+<center>
+    <h6 style="margin: 15px; font-weight: bold;">Результаты классификации</h6>
+</center>
 <table class="table classification-cost-table">
-    <tr>
-        <th colspan="9" class="text-center">Результаты классификации</th>
-    </tr>
-    <tr>
+    <tr class="table-header-color">
         <th>Класс</th>
         <th>TPR</th>
         <th>FPR</th>
@@ -60,7 +61,7 @@
     <h6 style="margin: 15px; font-weight: bold;">Матрица классификации</h6>
 </center>
 <table class="table confusion-table">
-    <tr>
+    <tr class="table-header-color">
         <th>Реальное</th>
         #foreach($classValue in $confusionMatrix.classValues)
             <th>$classValue (Прогнозное)</th>

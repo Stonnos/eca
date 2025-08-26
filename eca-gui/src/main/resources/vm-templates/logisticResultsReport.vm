@@ -11,7 +11,7 @@
     <h6 style="margin: 15px; font-weight: bold;">Оценки коэффициентов модели</h6>
 </center>
 <table class="table logistic-coefficients-table">
-    <tr>
+    <tr class="table-header-color">
         #foreach($header in $logisticCoefficients.headers)
             <th>$header</th>
         #end

@@ -6,7 +6,7 @@
 </head>
 <body>
 <table class="table" style="margin: auto;">
-    <tr>
+    <tr class="table-header-color">
         <th class="attr" style="text-align: center;" colspan="2">Входные параметры классификатора</th>
     </tr>
     #foreach($entry in $optionsMap.entrySet())
