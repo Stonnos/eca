@@ -8,7 +8,7 @@
 <body>
 
 <center>
-    <h2 class="title">Отчет по результатам классификации</h2>
+    <h2 class="title">Отчет с результатами классификации</h2>
 </center>
 <table class="table statistics-table">
     <tr>
@@ -16,7 +16,7 @@
     </tr>
     #foreach($entry in $statistics.entrySet())
         <tr>
-            <td>$entry.key</td>
+            <td style="font-weight: bold;">$entry.key</td>
             <td>$entry.value</td>
         </tr>
     #end

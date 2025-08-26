@@ -89,7 +89,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
     private static final String CLASSIFY_TAB_TITLE = "Классификация";
-    private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
+    private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить отчет";
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 650;
     private static final String FILE_MENU_TEXT = "Файл";
@@ -247,7 +247,7 @@ public class ClassificationResultsFrameBase extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
 
         JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
-        saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
+        saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FILE_O, ICON_SIZE));
         Dimension dim = new Dimension(150, 25);
         saveButton.setPreferredSize(dim);
         saveButton.setMinimumSize(dim);
