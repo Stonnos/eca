@@ -8,7 +8,7 @@
 #parse("evaluationResultsReport.vm")
 <figure class="attachment">
     <p><img src="data:image/png;base64,$networkImage.base64String"></p>
-    <figcaption>$networkImage.title</figcaption>
+    <figcaption>Рисунок 2 $networkImage.title</figcaption>
 </figure>
 </body>
 </html>
