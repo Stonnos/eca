@@ -79,7 +79,7 @@
 
 <figure class="attachment">
     <p><img src="data:image/png;base64,$rocCurveImage.base64String"></p>
-    <figcaption>Рисунок 1 $rocCurveImage.title</figcaption>
 </figure>
+<div class="img-caption">Рисунок 1 $rocCurveImage.title</div>
 </body>
 </html>

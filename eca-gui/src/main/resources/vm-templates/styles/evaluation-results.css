@@ -30,7 +30,6 @@
 }
 
 .attachment {
-    display: block;
     text-align: center;
     margin-top: 20px;
     margin-bottom: 5px;
@@ -59,4 +58,19 @@ body {
 
 .val {
     font-size: 16px !important;
+}
+
+.img-scroll-pane {
+    margin: 0 auto;
+    justify-content: center;
+    text-align: center;
+    max-height: 1080px;
+    max-width: 1920px;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.img-caption {
+    display: block;
+    text-align: center;
 }
