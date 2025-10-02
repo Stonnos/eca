@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
@@ -107,6 +108,7 @@ public class ClassificationResultsFrameBase extends JFrame {
     private static final int STATISTICS_TAB_INDEX = 0;
     private static final int CLASSIFY_INSTANCE_TAB_INDEX = 1;
     private static final int ROC_CURVE_TAB_INDEX = 2;
+    private static final Dimension SAVE_RESULTS_BUTTON_DIMENSION = new Dimension(160, 25);
 
     private final Date creationDate = new Date();
     private final ReferenceWrapper<Classifier> classifier;
@@ -246,11 +248,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
 
-        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
+        JButton saveButton = createButton(SAVE_RESULTS_BUTTON_TEXT, SAVE_RESULTS_BUTTON_DIMENSION);
         saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FILE_O, ICON_SIZE));
-        Dimension dim = new Dimension(150, 25);
-        saveButton.setPreferredSize(dim);
-        saveButton.setMinimumSize(dim);
         resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
 

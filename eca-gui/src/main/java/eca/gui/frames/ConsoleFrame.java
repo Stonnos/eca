@@ -184,7 +184,7 @@ public class ConsoleFrame extends JFrame {
 
         void createGUI() {
             JPanel optionPanel = new JPanel(new GridBagLayout());
-            JButton searchButton = ButtonUtils.createButton(SEARCH_BUTTON_TEXT);
+            JButton searchButton = ButtonUtils.createButton(SEARCH_BUTTON_TEXT, ButtonUtils.DEFAULT_DIMENSION);
             searchButton.setPreferredSize(SEARCH_BUTTON_PREFERRED_SIZE);
             searchButton.setMinimumSize(SEARCH_BUTTON_PREFERRED_SIZE);
             searchButton.setEnabled(false);

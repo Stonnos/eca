@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 
@@ -96,7 +97,7 @@ public class ContingencyTableResultFrame extends JFrame {
 
         JButton closeButton = ButtonUtils.createCloseButton();
 
-        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
+        JButton saveButton = createButton(SAVE_RESULTS_BUTTON_TEXT);
         saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         saveButton.setPreferredSize(SAVE_BUTTON_DIM);
         saveButton.setMinimumSize(SAVE_BUTTON_DIM);

@@ -145,6 +145,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
@@ -573,8 +574,8 @@ public class JMainFrame extends JFrame {
         void createAttrPanel() {
             attrPanel = new JPanel(new GridBagLayout());
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
-            selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
-            resetButton = new JButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
+            selectButton = createButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
+            resetButton = createButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
             resetButton.setToolTipText(RESET_BUTTON_TOOLTIP_TEXT);
 
             selectButton.addActionListener(e -> attributesTable.selectAllAttributes());

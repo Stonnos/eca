@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 
@@ -153,9 +154,9 @@ public class QueryFrame extends JFrame {
         queryPanel.setBorder(PanelBorderUtils.createTitledBorder(QUERY_TITLE));
         createSqlPaneEditor();
         JScrollPane scrollPanel = new JScrollPane(queryArea);
-        executeButton = new JButton(START_BUTTON_TEXT);
-        JButton clearButton = new JButton(CLEAR_BUTTON_TEXT);
-        interruptButton = new JButton(INTERRUPT_BUTTON_TEXT);
+        executeButton = createButton(START_BUTTON_TEXT);
+        JButton clearButton = createButton(CLEAR_BUTTON_TEXT);
+        interruptButton = createButton(INTERRUPT_BUTTON_TEXT);
         interruptButton.setEnabled(false);
         //-----------------------------------------
         executeButton.addActionListener(e -> {

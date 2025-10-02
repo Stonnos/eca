@@ -116,7 +116,8 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
         this.add(progress, new GridBagConstraints(0, 1, 3, 1, 0, 0,
                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
         if (runInBackgroundEnabled) {
-            JButton runInBackgroundButton = ButtonUtils.createButton(RUN_IN_BACKGROUND_BUTTON_TEXT);
+            JButton runInBackgroundButton =
+                    ButtonUtils.createButton(RUN_IN_BACKGROUND_BUTTON_TEXT, ButtonUtils.DEFAULT_DIMENSION);
             runInBackgroundButton.setMinimumSize(RUN_IN_BACKGROUND_BUTTON_SIZE);
             runInBackgroundButton.setPreferredSize(RUN_IN_BACKGROUND_BUTTON_SIZE);
             runInBackgroundButton.addActionListener(actionEvent -> setVisible(false));

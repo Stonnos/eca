@@ -29,6 +29,8 @@ import weka.core.Instances;
 import javax.swing.*;
 import java.awt.*;
 
+import static eca.gui.ButtonUtils.createButton;
+
 /**
  * @author Roman Batygin
  */
@@ -160,7 +162,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
     }
 
     private void createMetaClassifierOptionsButton() {
-        metaOptionsButton = new JButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
+        metaOptionsButton = createButton(META_CLASSIFIER_OPTIONS_BUTTON_TEXT);
         metaOptionsButton.addActionListener(e -> metaClsOptionsDialog.showDialog());
     }
 
@@ -173,7 +175,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         JScrollPane algorithmsPane = new JScrollPane(algorithmsList);
         algorithmsPane.setPreferredSize(ALGORITHMS_LIST_DIM);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TEXT));
-        final JButton addButton = new JButton(ADD_CLASSIFIER_BUTTON_TEXT);
+        final JButton addButton = createButton(ADD_CLASSIFIER_BUTTON_TEXT);
         addButton.setEnabled(false);
         addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithmsList.getSelectedValue()));
         algorithmsList.addListSelectionListener(e -> addButton.setEnabled(true));
@@ -194,7 +196,7 @@ public class StackingOptionsDialog extends ClassifierOptionsDialogBase<StackingC
         selectedAlgorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TEXT));
         selectedPane.setPreferredSize(ALGORITHMS_LIST_DIM);
 
-        final JButton removeButton = new JButton(DELETE_CLASSIFIER_BUTTON_TEXT);
+        final JButton removeButton = createButton(DELETE_CLASSIFIER_BUTTON_TEXT);
         removeButton.setEnabled(false);
         removeButton.addActionListener(e -> {
             baseClassifiersListModel.remove(selectedAlgorithmsList.getSelectedIndex());

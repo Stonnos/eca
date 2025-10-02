@@ -5,6 +5,8 @@ import eca.gui.GuiUtils;
 import javax.swing.*;
 import java.awt.*;
 
+import static eca.gui.ButtonUtils.createButton;
+
 /**
  * @author Roman Batygin
  */
@@ -19,7 +21,7 @@ public abstract class JButtonEditor extends DefaultCellEditor {
     protected JButtonEditor(String text) {
         super(new JCheckBox());
         this.setClickCountToStart(0);
-        button = new JButton(text);
+        button = createButton(text);
         button.setOpaque(true);
         button.setCursor(HAND_CURSOR);
         button.addActionListener(e -> fireEditingStopped());

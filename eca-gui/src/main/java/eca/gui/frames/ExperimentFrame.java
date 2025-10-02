@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
 
+import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 
@@ -278,13 +279,13 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private JPanel createExperimentMenuPanel() {
         JPanel experimentMenuPanel = new JPanel(new GridBagLayout());
-        JButton initialDataButton = new JButton(INITIAL_DATA_BUTTON_TEXT);
-        startButton = new JButton(START_BUTTON_TEXT);
-        stopButton = new JButton(STOP_BUTTON_TEXT);
+        JButton initialDataButton = createButton(INITIAL_DATA_BUTTON_TEXT);
+        startButton = createButton(START_BUTTON_TEXT);
+        stopButton = createButton(STOP_BUTTON_TEXT);
         stopButton.setEnabled(false);
-        optionsButton = new JButton(OPTIONS_BUTTON_TEXT);
-        saveButton = new JButton(SAVE_BUTTON_TEXT);
-        loadButton = new JButton(LOAD_BUTTON_TEXT);
+        optionsButton = createButton(OPTIONS_BUTTON_TEXT);
+        saveButton = createButton(SAVE_BUTTON_TEXT);
+        loadButton = createButton(LOAD_BUTTON_TEXT);
 
         initialDataButton.addActionListener(e -> {
             if (dataFrame == null) {
