@@ -8,6 +8,7 @@ import eca.util.FileUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,8 @@ public class ConfigurationService {
 
     private static final String APPLICATION_CONFIG_PATH = "application-config.json";
     private static final String ECA_SERVICE_CONFIG_PATH = "eca-service-config.json";
+
+    private static final String UI_TEXT_PROPERTIES_PATH = "ui-text-properties.json";
     private static final String DB_CONFIG_PATH = "db-config.json";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -117,10 +120,22 @@ public class ConfigurationService {
         return getClass().getClassLoader().getResource(iconTypeStringMap.get(iconType));
     }
 
+    /**
+     * Loads ui text properties
+     */
+    public void loadUiTextProperties() {
+        Map<String, String> uiTextMap = loadConfig(UI_TEXT_PROPERTIES_PATH, new TypeReference<>() {
+        });
+        uiTextMap.forEach(UIManager::put);
+    }
+
     private <T> T loadConfig(String fileName, Class<T> configType) {
+        log.info("Loads config from file [{}]", fileName);
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
-            return OBJECT_MAPPER.readValue(inputStream, configType);
+            T config = OBJECT_MAPPER.readValue(inputStream, configType);
+            log.info("Config has been loaded from file [{}]", fileName);
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
             throw new ConfigException(ex);

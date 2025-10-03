@@ -23,6 +23,7 @@ public class Eca {
     public static void main(String[] args) throws Exception {
         // Sets Look and feel UI theme
         UIManager.setLookAndFeel(new FlatLightLaf());
+        CONFIG_SERVICE.loadUiTextProperties();
         // Register FontAwesome icon fonts
         IconFontSwing.register(FontAwesome.getIconFont());
         EventQueue.invokeLater(() -> {
