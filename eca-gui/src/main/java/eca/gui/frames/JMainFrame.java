@@ -543,11 +543,17 @@ public class JMainFrame extends JFrame {
             numAttributesTextField = new JTextField(NUM_ATTRIBUTES_FIELD_LENGTH);
             numAttributesTextField.setEditable(false);
             numAttributesTextField.setBackground(Color.WHITE);
-            upperPanel.add(new JLabel(DATA_NAME_TEXT));
+            JLabel dataNameLabel = new JLabel(DATA_NAME_TEXT);
+            dataNameLabel.setFont(dataNameLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(dataNameLabel);
             upperPanel.add(relationNameTextField);
-            upperPanel.add(new JLabel(NUMBER_OF_INSTANCES_TEXT));
+            JLabel instancesNumberLabel = new JLabel(NUMBER_OF_INSTANCES_TEXT);
+            instancesNumberLabel.setFont(instancesNumberLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(instancesNumberLabel);
             upperPanel.add(numInstancesTextField);
-            upperPanel.add(new JLabel(NUMBER_OF_ATTRIBUTES_TEXT));
+            JLabel attributesNumberLabel = new JLabel(NUMBER_OF_ATTRIBUTES_TEXT);
+            attributesNumberLabel.setFont(attributesNumberLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(attributesNumberLabel);
             upperPanel.add(numAttributesTextField);
             this.add(upperPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
