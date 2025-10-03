@@ -5,6 +5,7 @@
   "ColorChooser.sampleText": "Пример текста",
   "ColorChooser.previewText": "Просмотр",
   "ColorChooser.swatchesRecentText": "Последние",
+  "FileChooser.directoryOpenButtonText": "Открыть",
   "FileChooser.fileNameLabelText": "Имя файла:",
   "FileChooser.filesOfTypeLabelText": "Тип файлов:",
   "FileChooser.lookInLabelText": "Папка:",
