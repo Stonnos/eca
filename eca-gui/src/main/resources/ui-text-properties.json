@@ -11,6 +11,7 @@
   "FileChooser.openButtonText": "Открыть",
   "FileChooser.cancelButtonText": "Отмена",
   "FileChooser.saveButtonText": "Сохранить",
+  "FileChooser.saveDialogTitleText": "Сохранить",
   "FileChooser.upFolderToolTipText": "Вверх",
   "FileChooser.newFolderToolTipText": "Новая папка",
   "FileChooser.homeFolderToolTipText": "Рабочий стол",
