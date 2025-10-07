@@ -69,7 +69,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private static final String NOT_ENOUGH_ATTRS_ERROR_MESSAGE = "Выберите хотя бы 2 атрибута!";
     private static final String BAD_CLASS_TYPE_ERROR_MESSAGE = "Атрибут класса должен иметь категориальный тип!";
     private static final String CLASS_NOT_SELECTED_ERROR_MESSAGE = "Не выбран атрибут класса!";
-    private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
+    private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT =
+            "Недопустимые значения числового атрибута %s в строке %d!";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
@@ -356,22 +357,22 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private void validateColumn(int j) {
         String attribute = getColumnName(j);
         int attrIndex = j - 1;
-        for (int k = 0; k < getRowCount(); k++) {
-            String str = (String) getValueAt(k, j);
+        DataSetList dataSetList = getDataSetList();
+        for (int k = 0; k < dataSetList.size(); k++) {
+            String str = (String) dataSetList.getValue(k, attrIndex);
             if (str != null) {
                 try {
                     if (attributesTable.isNumeric(attrIndex)) {
                         if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
                             throw new IllegalArgumentException(
-                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute, k + 1));
                         }
-                        isNumericOverflow(attribute, str);
+                        isNumericOverflow(attribute, str, k + 1);
                     }
                     if (attributesTable.isDate(attrIndex)) {
-                        parseDate(attribute, str);
+                        parseDate(attribute, str, k + 1);
                     }
                 } catch (Exception ex) {
-                    changeSelection(k, j, false, false);
                     throw new IllegalArgumentException(ex.getMessage());
                 }
             }
@@ -379,14 +380,15 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     }
 
     private Instances createInstances(String relationName) throws ParseException {
-        Instances newDataSet = new Instances(relationName, createAttributesList(), getRowCount());
+        DataSetList dataSetList = getDataSetList();
+        Instances newDataSet = new Instances(relationName, createAttributesList(), dataSetList.size());
         DecimalFormat format = getInstancesTableModel().format();
-        for (int i = 0; i < getRowCount(); i++) {
+        for (int i = 0; i < dataSetList.size(); i++) {
             Instance obj = new DenseInstance(newDataSet.numAttributes());
             obj.setDataset(newDataSet);
             for (int j = 0; j < newDataSet.numAttributes(); j++) {
                 Attribute attribute = newDataSet.attribute(j);
-                String valueAt = (String) getValueAt(i, getAttrIndex(attribute.name()));
+                String valueAt = (String) dataSetList.getValue(i, j);
                 if (valueAt == null) {
                     obj.setValue(attribute, Utils.missingValue());
                 } else if (attribute.isDate()) {
@@ -463,17 +465,22 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
                 } else if (attributesTable.isDate(attrIndex)) {
                     attr.add(new Attribute(attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                 } else {
-                    attr.add(createNominalAttribute(attribute));
+                    attr.add(createNominalAttribute(attribute, attrIndex));
                 }
             }
         }
         return attr;
     }
 
-    private Attribute createNominalAttribute(String attribute) {
+    private DataSetList getDataSetList() {
+        return getInstancesTableModel().getDataSetList();
+    }
+
+    private Attribute createNominalAttribute(String attribute, int attrIdx) {
         ArrayList<String> values = new ArrayList<>();
-        for (int j = 0; j < getRowCount(); j++) {
-            String stringValue = (String) getValueAt(j, getAttrIndex(attribute));
+        DataSetList dataSetList = getDataSetList();
+        for (int j = 0; j < dataSetList.size(); j++) {
+            String stringValue = (String) dataSetList.getValue(j, attrIdx);
             if (stringValue != null) {
                 String trimValue = stringValue.trim();
                 if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {

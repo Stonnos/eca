@@ -40,6 +40,10 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     @Getter
     private CallbackAction failAction;
 
+    @Setter
+    @Getter
+    private CallbackAction cancelAction;
+
     private JProgressBar progress;
     private AbstractBackgroundTask backgroundTask;
 
@@ -90,6 +94,7 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
         backgroundTask = null;
         successAction = null;
         failAction = null;
+        cancelAction = null;
         removeComponents(this);
     }
 
@@ -130,9 +135,13 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
     private void addCancelListener() {
         this.addWindowListener(new WindowAdapter() {
             @Override
+            @SneakyThrows
             public void windowClosing(WindowEvent evt) {
                 if (!isCancelled()) {
                     backgroundTask.cancel(true);
+                    if (cancelAction != null) {
+                        cancelAction.apply();
+                    }
                 }
             }
         });

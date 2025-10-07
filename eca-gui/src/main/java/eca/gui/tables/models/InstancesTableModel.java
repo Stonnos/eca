@@ -1,6 +1,7 @@
 package eca.gui.tables.models;
 
 import eca.config.ConfigurationService;
+import eca.gui.tables.PageableTable;
 import eca.model.DataSetList;
 import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
@@ -8,8 +9,11 @@ import lombok.Getter;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -17,20 +21,26 @@ import java.util.Objects;
 /**
  * @author Roman Batygin
  */
-public class InstancesTableModel extends AbstractTableModel {
+public class InstancesTableModel extends AbstractTableModel implements PageableTable {
 
     private static final ConfigurationService CONFIG_SERVICE =
             ConfigurationService.getApplicationConfigService();
 
     private static final String NUMBER = "№";
+    private static final int FIRST_PAGE = 1;
+    private static final int PAGE_SIZE = 500;
 
     @Getter
-    private final DataSetList dataSetList;
+    private DataSetList dataSetList;
 
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
     @Getter
     private int modificationCount;
+
+    private int page = 1;
+
+    private final List<ActionListener> dataChangeActionListeners = new ArrayList<>();
 
     public InstancesTableModel(Instances data, int digits) {
         this.format.setMaximumFractionDigits(digits);
@@ -48,9 +58,13 @@ public class InstancesTableModel extends AbstractTableModel {
      * @param i - row index
      */
     public void remove(int i) {
-        dataSetList.remove(i);
+        dataSetList.remove(i + getOffset());
         modificationCount++;
-        fireTableRowsDeleted(i, i);
+        if (getOffset() >= dataSetList.size()) {
+            previousPage();
+        }
+        notifyListeners();
+        fireTableDataChanged();
     }
 
     /**
@@ -74,17 +88,18 @@ public class InstancesTableModel extends AbstractTableModel {
      * Clear all data
      */
     public void clear() {
-        clearRows();
         dataSetList.clear();
         modificationCount++;
-        fireTableDataChanged();
+        setFirstPage();
     }
 
     /**
      * Clear all data fully.
      */
     public void clearFully() {
-        clearRows();
+        dataSetList.clear();
+        dataChangeActionListeners.clear();
+        dataSetList = null;
     }
 
     /**
@@ -94,8 +109,14 @@ public class InstancesTableModel extends AbstractTableModel {
      */
     public void remove(int[] indices) {
         for (int i = 0; i < indices.length; i++) {
-            remove(indices[i] - i);
+            dataSetList.remove(indices[i] - i + getOffset());
+            modificationCount++;
         }
+        if (getOffset() >= dataSetList.size()) {
+            previousPage();
+        }
+        notifyListeners();
+        fireTableDataChanged();
     }
 
     /**
@@ -109,7 +130,7 @@ public class InstancesTableModel extends AbstractTableModel {
                 modificationCount++;
             }
         }
-        fireTableDataChanged();
+        setFirstPage();
     }
 
     /**
@@ -120,7 +141,10 @@ public class InstancesTableModel extends AbstractTableModel {
     public void addRow(List<Object> row) {
         dataSetList.addRow(row);
         modificationCount++;
-        fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+        if (getPage() == totalPages() && getRowCount() < pageSize()) {
+            fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
+        }
+        notifyListeners();
     }
 
     /**
@@ -133,7 +157,7 @@ public class InstancesTableModel extends AbstractTableModel {
     public void sort(final int columnIndex, final int attributeType, final boolean ascending) {
         dataSetList.sort(columnIndex - 1, attributeType, ascending);
         modificationCount++;
-        fireTableDataChanged();
+        setFirstPage();
     }
 
     @Override
@@ -143,18 +167,25 @@ public class InstancesTableModel extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return dataSetList.size();
+        if (getPage() == totalPages()) {
+            int offset = getOffset();
+            return dataSetList.size() - offset;
+        } else {
+            return dataSetList.size() > 0 ? pageSize(): 0;
+        }
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-        return column == 0 ? row + 1 : getValue(row, column - 1);
+        int offset = getOffset();
+        return column == 0 ? row + offset + 1 : getValue(row + offset, column - 1);
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         String value = aValue.toString().trim();
-        setValue(rowIndex, columnIndex - 1, value.isEmpty() ? null : value);
+        int offset = getOffset();
+        setValue(offset + rowIndex, columnIndex - 1, value.isEmpty() ? null : value);
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
@@ -166,6 +197,10 @@ public class InstancesTableModel extends AbstractTableModel {
     @Override
     public String getColumnName(int column) {
         return column == 0 ? NUMBER : dataSetList.getAttributes().get(column - 1);
+    }
+
+    private int getOffset() {
+        return (getPage() - 1) * pageSize();
     }
 
     private Object getValue(int i, int j) {
@@ -180,7 +215,60 @@ public class InstancesTableModel extends AbstractTableModel {
         }
     }
 
-    private void clearRows() {
-        dataSetList.clear();
+    @Override
+    public int getPage() {
+        return page;
+    }
+
+    @Override
+    public int totalPages() {
+        return (int) Math.ceil((double) dataSetList.getValues().size() / pageSize());
+    }
+
+    @Override
+    public int pageSize() {
+        return PAGE_SIZE;
+    }
+
+    @Override
+    public void nextPage() {
+        if (page < totalPages()) {
+            ++page;
+            fireTableDataChanged();
+        }
+    }
+
+    @Override
+    public void previousPage() {
+        if (page > FIRST_PAGE) {
+            --page;
+            fireTableDataChanged();
+        }
+    }
+
+    @Override
+    public void firstPage() {
+        page = FIRST_PAGE;
+        fireTableDataChanged();
+    }
+
+    @Override
+    public void lastPage() {
+        page = totalPages();
+        fireTableDataChanged();
+    }
+
+    private void setFirstPage() {
+        firstPage();
+        notifyListeners();
+    }
+
+    private void notifyListeners() {
+        dataChangeActionListeners.forEach(actionListener -> actionListener.actionPerformed(new ActionEvent(this, 0, "")));
+    }
+
+    @Override
+    public void addDataChangeActionListener(ActionListener actionListener) {
+        this.dataChangeActionListeners.add(actionListener);
     }
 }

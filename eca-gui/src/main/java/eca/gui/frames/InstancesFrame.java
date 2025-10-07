@@ -8,6 +8,8 @@ import eca.gui.ButtonUtils;
 import eca.gui.GuiUtils;
 import eca.gui.choosers.SaveDataFileChooser;
 import eca.gui.logging.LoggerUtils;
+import eca.gui.tables.PageableTable;
+import eca.gui.tables.PaginatedTable;
 import eca.gui.tables.ResultInstancesTable;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
@@ -42,10 +44,13 @@ public class InstancesFrame extends JFrame {
         this.setLayout(new GridBagLayout());
         this.createMenuBar();
         GuiUtils.setIcon(this, CONFIG_SERVICE.getIconUrl(IconType.MAIN_ICON));
-        JScrollPane scrollPanel = new JScrollPane(new ResultInstancesTable(data));
+        ResultInstancesTable resultInstancesTable = new ResultInstancesTable(data);
+        JScrollPane scrollPanel = new JScrollPane(resultInstancesTable);
         JButton closeButton = ButtonUtils.createCloseButton();
         closeButton.addActionListener(e -> setVisible(false));
-        this.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
+        PaginatedTable instancesPaginatedPanel =
+                new PaginatedTable(scrollPanel, (PageableTable) resultInstancesTable.getModel());
+        this.add(instancesPaginatedPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0), 0, 0));
         this.add(closeButton, new GridBagConstraints(0, 1, 1, 1, 1, 0,

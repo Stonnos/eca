@@ -98,9 +98,9 @@ public class CreateInstanceTable extends JDataTableBase {
             if (!StringUtils.isEmpty(value)) {
                 try {
                     if (attributes.get(i).getValue() == Attribute.DATE) {
-                        parseDate(attrName, value);
+                        parseDate(attrName, value, i);
                     } else if (attributes.get(i).getValue() == Attribute.NUMERIC) {
-                        isNumericOverflow(attrName, value);
+                        isNumericOverflow(attrName, value, i);
                     }
                 } catch (Exception ex) {
                     changeSelection(i, CreateInstanceTableModel.INPUT_TEXT_COLUMN_INDEX, false, false);

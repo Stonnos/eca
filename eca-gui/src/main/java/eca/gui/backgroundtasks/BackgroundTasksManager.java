@@ -56,6 +56,7 @@ public class BackgroundTasksManager {
         infoPanel.setBorder(PanelBorderUtils.createEtchedBorder());
 
         JLabel messageLabel = new JLabel(BACKGROUND_TASKS_LABEL_TEXT);
+        messageLabel.setFont(messageLabel.getFont().deriveFont(Font.BOLD));
         JPanel tasksListPanel = createTasksListScrollPanel();
         JButton closeButton = ButtonUtils.createCloseButton();
 

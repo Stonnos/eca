@@ -21,25 +21,25 @@ public class ValidationService {
             new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
-            "Формат даты для атрибута '%s' должен быть следующим: %s";
+            "Формат даты для атрибута '%s' в строке %d должен быть следующим: %s";
     private static final String NUMERIC_OVERFLOW_ERROR_FORMAT =
-            "Для числового атрибута '%s' найдено слишком большое значение!\nДлина целой части не должна превышать %d знаков!";
+            "Для числового атрибута '%s' найдено слишком большое значение в строке %d!\nДлина целой части не должна превышать %d знаков!";
 
-    public static void isNumericOverflow(String attribute, String val) {
+    public static void isNumericOverflow(String attribute, String val, int row) {
         int delimiterIndex = val.lastIndexOf(NumericFormatFactory.DECIMAL_SEPARATOR);
         int length = delimiterIndex < 0 ? val.length() : delimiterIndex;
         if (length > CommonDictionary.MAXIMUM_INTEGER_DIGITS) {
             throw new IllegalArgumentException(
-                    String.format(NUMERIC_OVERFLOW_ERROR_FORMAT, attribute, CommonDictionary.MAXIMUM_INTEGER_DIGITS));
+                    String.format(NUMERIC_OVERFLOW_ERROR_FORMAT, attribute, row, CommonDictionary.MAXIMUM_INTEGER_DIGITS));
         }
     }
 
-    public static Date parseDate(String attribute, String val) {
+    public static Date parseDate(String attribute, String val, int row) {
         try {
             return SIMPLE_DATE_FORMAT.parse(val);
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
-                    attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
+                    attribute, row, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
         }
     }
 }

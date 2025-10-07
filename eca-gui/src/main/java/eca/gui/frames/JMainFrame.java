@@ -99,6 +99,7 @@ import eca.gui.popup.PopupService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
+import eca.gui.tables.PaginatedTable;
 import eca.metrics.KNearestNeighbours;
 import eca.model.EcaServiceRequestType;
 import eca.model.EcaServiceTrack;
@@ -450,6 +451,7 @@ public class JMainFrame extends JFrame {
             this.createPopMenu();
             this.setRelationInfo(data);
             this.convertDataToTables(data, digits);
+            this.creteGUI();
             this.setClosable(true);
             this.setResizable(true);
             this.setMaximizable(true);
@@ -567,7 +569,11 @@ public class JMainFrame extends JFrame {
             dataScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
             this.createAttrPanel();
-            lowerPanel.add(dataScrollPane, new GridBagConstraints(0, 0, 1, 2, 1, 1,
+        }
+
+        void creteGUI() {
+            var instancesPaginatedTable = new PaginatedTable(dataScrollPane, instanceTable.getInstancesTableModel());
+            lowerPanel.add(instancesPaginatedTable, new GridBagConstraints(0, 0, 1, 2, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 2, 5), 0, 0));
             lowerPanel.add(attrPanel, new GridBagConstraints(1, 0, 1, 1, 0, 1,
@@ -1491,6 +1497,7 @@ public class JMainFrame extends JFrame {
             backgroundTasksManager.removeTask(backgroundTaskInfo.getId());
             showFormattedErrorMessageDialog(JMainFrame.this, progressDialog.getErrorMessageText());
         });
+        progressDialog.setCancelAction(() -> backgroundTasksManager.removeTask(backgroundTaskInfo.getId()));
         progressDialog.execute();
     }
 
