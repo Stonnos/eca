@@ -260,6 +260,7 @@
                                     <directory>src/main/resources</directory>
                                     <excludes>
                                         <exclude>application-config.json</exclude>
+                                        <exclude>ui-text-properties.json</exclude>
                                         <exclude>db-config.json</exclude>
                                         <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
