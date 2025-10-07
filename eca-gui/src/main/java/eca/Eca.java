@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 
 /**
  * Main class.
@@ -19,8 +20,10 @@ import java.awt.*;
 public class Eca {
 
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
+    private static final Locale RUSSIAN_LOCALE = new Locale("ru", "RU");
 
     public static void main(String[] args) throws Exception {
+        Locale.setDefault(RUSSIAN_LOCALE);
         // Sets Look and feel UI theme
         UIManager.setLookAndFeel(new FlatLightLaf());
         CONFIG_SERVICE.loadUiTextProperties();

@@ -140,7 +140,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -326,7 +325,6 @@ public class JMainFrame extends JFrame {
     private volatile boolean rabbitStarted;
 
     public JMainFrame() {
-        Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
