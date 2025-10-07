@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables;
 
-import eca.config.ConfigurationService;
 import eca.dictionary.AttributesTypesDictionary;
 import eca.gui.Cleanable;
 import eca.gui.GuiUtils;
@@ -16,6 +10,7 @@ import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -32,17 +27,14 @@ import static eca.gui.GuiUtils.ICON_SIZE;
 @Slf4j
 public class AttributesTable extends JDataTableBase implements Cleanable {
 
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
-
     private static final String RENAME_ATTR_MENU_TEXT = "Переименовать атрибут";
     private static final String ATTR_NAME_TEXT = "Имя:";
     private static final String NEW_ATTR_NAME_FORMAT = "Новое имя атрибута: %s";
     private static final String DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT = "Атрибут с именем '%s' уже существует!";
     private static final int INDEX_COLUMN_PREFERRED_WIDTH = 50;
 
-    public AttributesTable(InstancesTable instancesTable, final JComboBox<String> classBox) {
-        super(new AttributesTableModel(instancesTable.data()));
+    public AttributesTable(Instances data, InstancesTable instancesTable, final JComboBox<String> classBox) {
+        super(new AttributesTableModel(data));
         this.getColumnModel().getColumn(0).setPreferredWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMaxWidth(INDEX_COLUMN_PREFERRED_WIDTH);
         this.getColumnModel().getColumn(0).setMinWidth(INDEX_COLUMN_PREFERRED_WIDTH);
@@ -84,9 +76,9 @@ public class AttributesTable extends JDataTableBase implements Cleanable {
             if (i != -1) {
                 String attrNewName = (String) JOptionPane.showInputDialog(AttributesTable.this.getRootPane(),
                         ATTR_NAME_TEXT,
-                        String.format(NEW_ATTR_NAME_FORMAT, instancesTable.data().attribute(i).name()),
+                        String.format(NEW_ATTR_NAME_FORMAT, getAttributeName(i)),
                         JOptionPane.INFORMATION_MESSAGE, null,
-                        null, instancesTable.data().attribute(i).name());
+                        null, getAttributeName(i));
                 if (attrNewName != null) {
                     String trimName = attrNewName.trim();
                     if (!StringUtils.isEmpty(trimName)) {
@@ -125,6 +117,10 @@ public class AttributesTable extends JDataTableBase implements Cleanable {
 
     public AttributesTableModel getAttributesTableModel() {
         return (AttributesTableModel) this.getModel();
+    }
+
+    public String getAttributeName(int i) {
+        return getAttributesTableModel().getAttributeName(i);
     }
 
     public boolean isNumeric(int i) {

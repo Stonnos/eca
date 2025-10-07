@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
@@ -15,9 +10,11 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.tables.models.InstancesTableModel;
 import eca.gui.text.DoubleDocument;
+import eca.model.DataSetList;
 import eca.util.Entry;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -90,6 +87,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private int classModificationCount;
     private Instances lastCreatedInstances;
 
+    @Getter
     private String relationName;
     private final String uuid;
 
@@ -118,12 +116,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     @Override
     public void clear() {
         getInstancesTableModel().clear();
-        data().clear();
         lastCreatedInstances = null;
-    }
-
-    public String getRelationName() {
-        return relationName;
     }
 
     public void setRelationName(String newRelationName) {
@@ -140,19 +133,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
      */
     public InstancesTableModel getInstancesTableModel() {
         return (InstancesTableModel) this.getModel();
-    }
-
-    /**
-     * Returns initial instances.
-     *
-     * @return initial instances
-     */
-    public Instances data() {
-        return getInstancesTableModel().data();
-    }
-
-    public AttributesTable getAttributesTable() {
-        return attributesTable;
     }
 
     public void setAttributesTable(AttributesTable attributesTable) {
@@ -475,8 +455,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private ArrayList<Attribute> createAttributesList() {
         ArrayList<Attribute> attr = new ArrayList<>(getColumnCount() - 1);
         for (int i = 1; i < getColumnCount(); i++) {
-            String attribute = getColumnName(i);
             int attrIndex = i - 1;
+            String attribute = attributesTable.getAttributeName(attrIndex);
             if (attributesTable.isSelected(attrIndex)) {
                 if (attributesTable.isNumeric(attrIndex)) {
                     attr.add(new Attribute(attribute));
@@ -505,11 +485,11 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     }
 
     private List<Entry<String, Integer>> createAttributesInfo() {
-        Instances data = data();
+        DataSetList dataSetList = getInstancesTableModel().getDataSetList();
         List<Entry<String, Integer>> attributes = new ArrayList<>();
-        for (int i = 0; i < data.numAttributes(); i++) {
+        for (int i = 0; i < dataSetList.getAttributes().size(); i++) {
             Entry<String, Integer> entry = new Entry<>();
-            entry.setKey(data.attribute(i).name());
+            entry.setKey(dataSetList.getAttributes().get(i));
             if (attributesTable.isDate(i)) {
                 entry.setValue(Attribute.DATE);
             } else if (attributesTable.isNumeric(i)) {

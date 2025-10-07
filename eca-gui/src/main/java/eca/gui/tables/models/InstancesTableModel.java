@@ -1,16 +1,15 @@
 package eca.gui.tables.models;
 
 import eca.config.ConfigurationService;
+import eca.model.DataSetList;
 import eca.text.NumericFormatFactory;
 import eca.util.InstancesConverter;
-import weka.core.Attribute;
+import lombok.Getter;
 import weka.core.Instances;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -25,31 +24,22 @@ public class InstancesTableModel extends AbstractTableModel {
 
     private static final String NUMBER = "№";
 
-    private Instances data;
-    private final List<List<Object>> values;
+    @Getter
+    private final DataSetList dataSetList;
 
-    private final SimpleDateFormat simpleDateFormat =
-            new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
     private final DecimalFormat format = NumericFormatFactory.getInstance();
 
+    @Getter
     private int modificationCount;
 
     public InstancesTableModel(Instances data, int digits) {
-        this.data = data;
         this.format.setMaximumFractionDigits(digits);
-        this.values = InstancesConverter.toArray(data, format, simpleDateFormat);
-    }
-
-    public int getModificationCount() {
-        return modificationCount;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+        this.dataSetList = InstancesConverter.convertToDataSet(data, format, simpleDateFormat);
     }
 
     public DecimalFormat format() {
         return format;
-    }
-
-    public Instances data() {
-        return data;
     }
 
     /**
@@ -58,7 +48,7 @@ public class InstancesTableModel extends AbstractTableModel {
      * @param i - row index
      */
     public void remove(int i) {
-        values.remove(i);
+        dataSetList.remove(i);
         modificationCount++;
         fireTableRowsDeleted(i, i);
     }
@@ -71,7 +61,7 @@ public class InstancesTableModel extends AbstractTableModel {
      * @param newVal - new value
      */
     public void replace(int j, Object oldVal, Object newVal) {
-        for (int i = 0; i < values.size(); i++) {
+        for (int i = 0; i < dataSetList.size(); i++) {
             if ((oldVal.toString().isEmpty() && getValue(i, j) == null) ||
                     (getValue(i, j) != null && getValue(i, j).equals(oldVal))) {
                 setValue(i, j, newVal.toString().isEmpty() ? null : newVal);
@@ -85,7 +75,7 @@ public class InstancesTableModel extends AbstractTableModel {
      */
     public void clear() {
         clearRows();
-        values.clear();
+        dataSetList.clear();
         modificationCount++;
         fireTableDataChanged();
     }
@@ -95,7 +85,6 @@ public class InstancesTableModel extends AbstractTableModel {
      */
     public void clearFully() {
         clearRows();
-        data = null;
     }
 
     /**
@@ -113,7 +102,7 @@ public class InstancesTableModel extends AbstractTableModel {
      * Removes rows with missing values.
      */
     public void removeMissing() {
-        ListIterator<List<Object>> iterator = values.listIterator();
+        ListIterator<List<Object>> iterator = dataSetList.getValues().listIterator();
         while (iterator.hasNext()) {
             if (iterator.next().contains(null)) {
                 iterator.remove();
@@ -129,7 +118,7 @@ public class InstancesTableModel extends AbstractTableModel {
      * @param row - values list
      */
     public void addRow(List<Object> row) {
-        values.add(row);
+        dataSetList.addRow(row);
         modificationCount++;
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
@@ -142,42 +131,19 @@ public class InstancesTableModel extends AbstractTableModel {
      * @param ascending     - sorts by ascending?
      */
     public void sort(final int columnIndex, final int attributeType, final boolean ascending) {
-        values.sort((o1, o2) -> {
-            Object x = o1.get(columnIndex - 1);
-            Object y = o2.get(columnIndex - 1);
-            int sign = ascending ? 1 : -1;
-            if (Objects.equals(x, y)) {
-                return 0;
-            } else if (x == null) {
-                return ascending ? sign : -sign;
-            } else if (y == null) {
-                return ascending ? -sign : sign;
-            } else {
-                switch (attributeType) {
-                    case Attribute.DATE:
-                        return sign * compareAsDate(x, y);
-                    case Attribute.NUMERIC:
-                        return sign * compareAsNumeric(x, y);
-                    case Attribute.NOMINAL:
-                        return sign * x.toString().compareTo(y.toString());
-                    default:
-                        throw new IllegalArgumentException(
-                                String.format("Unexpected attribute type for column index %d!", columnIndex));
-                }
-            }
-        });
+        dataSetList.sort(columnIndex - 1, attributeType, ascending);
         modificationCount++;
         fireTableDataChanged();
     }
 
     @Override
     public int getColumnCount() {
-        return data.numAttributes() + 1;
+        return dataSetList.getAttributes().size() + 1;
     }
 
     @Override
     public int getRowCount() {
-        return values.size();
+        return dataSetList.size();
     }
 
     @Override
@@ -199,45 +165,22 @@ public class InstancesTableModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return column == 0 ? NUMBER : data.attribute(column - 1).name();
+        return column == 0 ? NUMBER : dataSetList.getAttributes().get(column - 1);
     }
 
     private Object getValue(int i, int j) {
-        return values.get(i).get(j);
+        return dataSetList.getValue(i, j);
     }
 
     private void setValue(int i, int j, Object val) {
         Object oldVal = getValue(i, j);
         if (!Objects.equals(oldVal, val)) {
-            values.get(i).set(j, val);
+            dataSetList.setValue(i, j, val);
             modificationCount++;
         }
     }
 
     private void clearRows() {
-        for (List<Object> row : values) {
-            row.clear();
-        }
-        values.clear();
-    }
-
-    private int compareAsDate(Object x, Object y) {
-        try {
-            Date dateX = simpleDateFormat.parse(x.toString());
-            Date dateY = simpleDateFormat.parse(y.toString());
-            return dateX.compareTo(dateY);
-        } catch (ParseException ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
-    }
-
-    private int compareAsNumeric(Object x, Object y) {
-        try {
-            Number numberX = format.parse(x.toString());
-            Number numberY = format.parse(y.toString());
-            return Double.compare(numberX.doubleValue(), numberY.doubleValue());
-        } catch (ParseException ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        dataSetList.clear();
     }
 }

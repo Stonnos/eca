@@ -618,7 +618,7 @@ public class JMainFrame extends JFrame {
             classBox.setSelectedIndex(data.classIndex());
             instanceTable = new InstancesTable(data, numInstancesTextField, classBox, digits);
             dataScrollPane.setViewportView(instanceTable);
-            attributesTable = new AttributesTable(instanceTable, classBox);
+            attributesTable = new AttributesTable(data, instanceTable, classBox);
             instanceTable.setAttributesTable(attributesTable);
             attrScrollPane.setViewportView(attributesTable);
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());

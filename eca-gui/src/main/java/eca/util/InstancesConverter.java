@@ -1,5 +1,6 @@
 package eca.util;
 
+import eca.model.DataSetList;
 import lombok.experimental.UtilityClass;
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -8,7 +9,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Class for converting {@link Instances} objects to lists.
@@ -18,16 +22,36 @@ import java.util.List;
 @UtilityClass
 public class InstancesConverter {
 
-    /**
-     * Converts <tt>Instances</tt> object to list.
-     *
-     * @param data   <tt>Instances</tt>
-     * @param format <tt>DecimalFormat</tt> object
-     * @param simpleDateFormat <tt>SimpleDateFormat</tt> object
-     * @return list representation of <tt>Instances</tt> object
-     */
-    public static List<List<Object>> toArray(Instances data, DecimalFormat format,
-                                             SimpleDateFormat simpleDateFormat) {
+    public static DataSetList convertToDataSet(Instances data,
+                                               DecimalFormat decimalFormat,
+                                               SimpleDateFormat simpleDateFormat) {
+        DataSetList dataSetList = new DataSetList();
+        List<String> attributes = IntStream.range(0, data.numAttributes())
+                .mapToObj(i -> data.attribute(i).name())
+                .toList();
+        dataSetList.setAttributes(attributes);
+        dataSetList.setValues(convertValues(data, simpleDateFormat));
+        dataSetList.setAttributesCodes(convertAttributesCodes(data));
+        dataSetList.setDecimalFormat(decimalFormat);
+        return dataSetList;
+    }
+
+    public static Map<Integer, Map<Integer, String>> convertAttributesCodes(Instances data) {
+        Map<Integer, Map<Integer, String>> attributeCodes = new HashMap<>();
+        IntStream.range(0, data.numAttributes()).forEach(attrIdx -> {
+            Attribute attribute = data.attribute(attrIdx);
+            if (attribute.isNominal()) {
+                Map<Integer, String> codesMap = new HashMap<>();
+                IntStream.range(0, attribute.numValues()).forEach(
+                        codeIdx -> codesMap.put(codeIdx, attribute.value(codeIdx))
+                );
+                attributeCodes.put(attrIdx, codesMap);
+            }
+        });
+        return attributeCodes;
+    }
+
+    public static List<List<Object>> convertValues(Instances data, SimpleDateFormat simpleDateFormat) {
         List<List<Object>> values = new ArrayList<>(data.numInstances());
         for (int i = 0; i < data.numInstances(); i++) {
             ArrayList<Object> row = new ArrayList<>(data.numAttributes());
@@ -37,14 +61,14 @@ public class InstancesConverter {
                     row.add(null);
                 } else if (attr.isDate()) {
                     row.add(simpleDateFormat.format(new Date((long) data.instance(i).value(j))));
+                } else if (attr.isNumeric()) {
+                    row.add(data.instance(i).value(j));
                 } else {
-                    row.add(attr.isNumeric() ? format.format(data.instance(i).value(j))
-                            : data.instance(i).stringValue(j));
+                    row.add((int) data.instance(i).value(j));
                 }
             }
             values.add(row);
         }
         return values;
     }
-
 }
