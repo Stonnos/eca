@@ -114,6 +114,7 @@ public abstract class AbstractProgressDialog extends JDialog implements Executor
         progress = new JProgressBar();
         progress.setIndeterminate(intermediate);
         progress.setStringPainted(progressValuePainted);
+        progress.setFont(progress.getFont().deriveFont(Font.BOLD));
         this.add(new JLabel(loadingMessage),
                 new GridBagConstraints(0, 0, 1, 1, 0, 0,
                         GridBagConstraints.CENTER, GridBagConstraints.NONE,

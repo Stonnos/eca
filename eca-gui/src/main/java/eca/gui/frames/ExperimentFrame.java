@@ -460,6 +460,7 @@ public abstract class ExperimentFrame<T extends AbstractExperiment<?>> extends J
 
     private void createExperimentProgressBar() {
         experimentProgressBar = new JProgressBar();
+        experimentProgressBar.setFont(experimentProgressBar.getFont().deriveFont(Font.BOLD));
         experimentProgressBar.setStringPainted(true);
     }
 
