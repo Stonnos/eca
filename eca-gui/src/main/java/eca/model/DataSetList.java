@@ -1,5 +1,6 @@
 package eca.model;
 
+import eca.gui.text.DoubleDocument;
 import lombok.Getter;
 import lombok.Setter;
 import weka.core.Attribute;
@@ -36,7 +37,7 @@ public class DataSetList {
     }
 
     public void setValue(int rowIdx, int attrIdx, Object value) {
-        values.get(rowIdx).set(attrIdx, value);
+        values.get(rowIdx).set(attrIdx, convertToTypedValue(value));
     }
 
     public int size() {
@@ -59,8 +60,8 @@ public class DataSetList {
 
     public void sort(final int columnIndex, final int attributeType, final boolean ascending) {
         values.sort((o1, o2) -> {
-            Object x = getStringValue(o1.get(columnIndex), columnIndex);
-            Object y = getStringValue(o2.get(columnIndex), columnIndex);
+            Object x = getTypedValue(o1.get(columnIndex), columnIndex);
+            Object y = getTypedValue(o2.get(columnIndex), columnIndex);
             int sign = ascending ? 1 : -1;
             if (Objects.equals(x, y)) {
                 return 0;
@@ -84,14 +85,42 @@ public class DataSetList {
         if (value == null) {
             return null;
         } else if (value instanceof Integer nominalCodeValue) {
-            String codeStrValue = attributesCodes.get(attrIdx).get(nominalCodeValue);
-            Objects.requireNonNull(codeStrValue,
-                    String.format("Expected not null string value for code [%d]", nominalCodeValue));
-            return codeStrValue;
+            return codeToString(nominalCodeValue, attrIdx);
         } else if (value instanceof Double doubleValue) {
             return decimalFormat.format(doubleValue);
         } else {
             return value.toString();
+        }
+    }
+
+    private Object getTypedValue(Object value, int attrIdx) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof Integer nominalCodeValue) {
+            return codeToString(nominalCodeValue, attrIdx);
+        } else {
+            return value;
+        }
+    }
+
+    private String codeToString(Integer nominalCodeValue, int attrIdx) {
+        String codeStrValue = attributesCodes.get(attrIdx).get(nominalCodeValue);
+        Objects.requireNonNull(codeStrValue,
+                String.format("Expected not null string value for code [%d]", nominalCodeValue));
+        return codeStrValue;
+    }
+
+    private Object convertToTypedValue(Object value) {
+        try {
+            if (value == null) {
+                return null;
+            } else if (value.toString().matches(DoubleDocument.DOUBLE_FORMAT)) {
+                return decimalFormat.parse(value.toString()).doubleValue();
+            } else {
+                return value;
+            }
+        } catch (ParseException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -106,12 +135,8 @@ public class DataSetList {
     }
 
     private int compareAsNumeric(Object x, Object y) {
-        try {
-            Number numberX = decimalFormat.parse(x.toString());
-            Number numberY = decimalFormat.parse(y.toString());
-            return Double.compare(numberX.doubleValue(), numberY.doubleValue());
-        } catch (ParseException ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        Double numberX = (Double) x;
+        Double numberY = (Double) y;
+        return Double.compare(numberX, numberY);
     }
 }
