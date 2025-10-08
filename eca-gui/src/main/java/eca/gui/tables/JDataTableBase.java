@@ -7,7 +7,6 @@ package eca.gui.tables;
 
 
 import eca.buffer.StringCopier;
-import eca.config.ConfigurationService;
 import eca.gui.dialogs.JFontChooser;
 import jiconfont.icons.font_awesome.FontAwesome;
 import jiconfont.swing.IconFontSwing;
@@ -28,9 +27,6 @@ import static eca.gui.GuiUtils.ICON_SIZE;
  */
 public class JDataTableBase extends JTable {
 
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
-
     private static final String FONT_SELECTION_MENU_TEXT = "Выбор шрифта";
     private static final String AUTO_SIZE_MENU_TEXT = "Автомасштабирование";
     private static final String DATA_COPY_MENU_TEXT = "Копировать данные";
@@ -40,9 +36,9 @@ public class JDataTableBase extends JTable {
     private static final int COLUMN_MIN_WIDTH = 15;
     private static final int INDEX_COLUMN = 0;
     private static final int ROW_HEIGHT_SHIFT = 6;
-    private static final Color BORDER_COLOR = new Color(199, 201, 203);
-    private static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
-    private static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
+    public static final Color BORDER_COLOR = new Color(199, 201, 203);
+    public static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
+    public static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
 
     private JCheckBoxMenuItem resizeMenu;
 
@@ -174,6 +170,10 @@ public class JDataTableBase extends JTable {
         this.setFont(font);
         this.setRowHeight(this.getFont().getSize() + ROW_HEIGHT_SHIFT);
         this.getTableHeader().setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 2));
+        this.customizeChangeFont(font);
+    }
+
+    protected void customizeChangeFont(Font font) {
     }
 
     /**

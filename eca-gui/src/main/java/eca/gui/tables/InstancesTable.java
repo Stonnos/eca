@@ -8,6 +8,7 @@ import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.MissingCellRenderer;
+import eca.gui.renderers.TableHeaderIconRenderer;
 import eca.gui.tables.models.InstancesTableModel;
 import eca.gui.text.DoubleDocument;
 import eca.model.DataSetList;
@@ -27,8 +28,9 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.event.InputEvent;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
@@ -75,6 +78,9 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
+    private static final int SORT_ICON_SIZE = 16;
+    private static final Icon DESC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_DOWN, SORT_ICON_SIZE);
+    private static final Icon ASC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_UP, SORT_ICON_SIZE);
 
     private AttributesTable attributesTable;
     private JComboBox<String> classBox;
@@ -92,6 +98,9 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private String relationName;
     private final String uuid;
 
+    private int lastSortColumn = -1;
+    private boolean lastSortAscending = true;
+
     private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
     public InstancesTable(Instances data,
@@ -108,6 +117,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         }
         this.createPopupMenuList(numInstances);
         this.addClassAttributeListener();
+        this.setHeaderSortIconRender();
         this.addSortListenerToHeader();
     }
 
@@ -318,6 +328,28 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         validateValues();
     }
 
+    @Override
+    protected void customizeChangeFont(Font font) {
+        IntStream.range(0, getColumnCount()).forEach(i -> {
+            TableColumn tableColumn = getColumnModel().getColumn(i);
+            if (tableColumn.getHeaderRenderer() != null) {
+                var tableHeaderIconRenderer = (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                tableHeaderIconRenderer.setLabelFont(new Font(getTableHeader().getFont().getName(),
+                        getTableHeader().getFont().getStyle(), getTableHeader().getFont().getSize()));
+            }
+        });
+    }
+
+    private void setHeaderSortIconRender() {
+        IntStream.range(0, getColumnCount()).forEach(i -> {
+            TableColumn tableColumn = getColumnModel().getColumn(i);
+            var tableHeaderIconRenderer = new TableHeaderIconRenderer();
+            tableHeaderIconRenderer.setLabelFont(new Font(getTableHeader().getFont().getName(),
+                    getTableHeader().getFont().getStyle(), getTableHeader().getFont().getSize()));
+            tableColumn.setHeaderRenderer(tableHeaderIconRenderer);
+        });
+    }
+
     private void addSortListenerToHeader() {
         setColumnSelectionAllowed(false);
         JTableHeader header = getTableHeader();
@@ -331,15 +363,40 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
                     if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && !e.isAltDown() && column > 0) {
                         try {
                             validateColumn(column);
-                            int shiftPressed = e.getModifiers() & InputEvent.SHIFT_MASK;
-                            boolean ascending = (shiftPressed == 0);
+                            boolean ascending = isAscending(column);
                             getInstancesTableModel().sort(column, attributesTable.getAttributeType(column - 1),
                                     ascending);
+                            changeSortIcon(ascending, column);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             showFormattedErrorMessageDialog(InstancesTable.this.getRootPane(), ex.getMessage());
                         }
                     }
+                }
+
+                void changeSortIcon(boolean ascending, int column) {
+                    if (lastSortColumn > 0) {
+                        TableColumn tableColumn = getColumnModel().getColumn(lastSortColumn);
+                        TableHeaderIconRenderer tableHeaderIconRenderer =
+                                (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                        tableHeaderIconRenderer.setIcon(null);
+                    }
+                    Icon icon = ascending ? ASC_ICON : DESC_ICON;
+                    lastSortColumn = column;
+                    lastSortAscending = ascending;
+                    TableColumn tableColumn = getColumnModel().getColumn(column);
+                    TableHeaderIconRenderer tableHeaderIconRenderer =
+                            (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                    tableHeaderIconRenderer.setIcon(icon);
+                    tableHeaderIconRenderer.setLabelFont(getTableHeader().getFont());
+                    getTableHeader().repaint();
+                }
+
+                boolean isAscending(int column) {
+                    if (lastSortColumn < 0 || lastSortColumn != column) {
+                        return false;
+                    }
+                    return !lastSortAscending;
                 }
             };
             header.addMouseListener(listMouseListener);
