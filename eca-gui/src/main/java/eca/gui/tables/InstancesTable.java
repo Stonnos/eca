@@ -44,7 +44,7 @@ import java.util.stream.IntStream;
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
 import static eca.gui.service.ValidationService.isNumericOverflow;
-import static eca.gui.service.ValidationService.parseDate;
+import static eca.gui.service.ValidationService.isValidDate;
 
 /**
  * @author Roman Batygin
@@ -78,6 +78,9 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
+
+    private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
+            "Формат даты для атрибута '%s' в строке %d должен быть следующим: %s";
     private static final int SORT_ICON_SIZE = 16;
     private static final Icon DESC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_DOWN, SORT_ICON_SIZE);
     private static final Icon ASC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_UP, SORT_ICON_SIZE);
@@ -426,8 +429,9 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
                         }
                         isNumericOverflow(attribute, str, k + 1);
                     }
-                    if (attributesTable.isDate(attrIndex)) {
-                        parseDate(attribute, str, k + 1);
+                    if (attributesTable.isDate(attrIndex) && !isValidDate(str)) {
+                        throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
+                                attribute, k + 1, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                     }
                 } catch (Exception ex) {
                     throw new IllegalArgumentException(ex.getMessage());

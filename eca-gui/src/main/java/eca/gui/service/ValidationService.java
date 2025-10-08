@@ -5,7 +5,10 @@ import eca.gui.dictionary.CommonDictionary;
 import eca.text.NumericFormatFactory;
 import lombok.experimental.UtilityClass;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 /**
@@ -19,6 +22,9 @@ public class ValidationService {
 
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT =
             new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
 
     private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
             "Формат даты для атрибута '%s' в строке %d должен быть следующим: %s";
@@ -40,6 +46,23 @@ public class ValidationService {
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
                     attribute, row, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
+        }
+    }
+
+    public static Date parseDate(String val) {
+        try {
+            return SIMPLE_DATE_FORMAT.parse(val);
+        } catch (ParseException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    public static boolean isValidDate(String value) {
+        try {
+            DATE_TIME_FORMATTER.parse(value);
+            return true;
+        } catch (DateTimeParseException ex) {
+            return false;
         }
     }
 }

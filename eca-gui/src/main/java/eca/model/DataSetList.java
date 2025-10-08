@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static eca.gui.service.ValidationService.isValidDate;
+import static eca.gui.service.ValidationService.parseDate;
+
 @Getter
 public class DataSetList {
 
@@ -88,6 +91,8 @@ public class DataSetList {
             return codeToString(nominalCodeValue, attrIdx);
         } else if (value instanceof Double doubleValue) {
             return decimalFormat.format(doubleValue);
+        } else if (value instanceof Date date) {
+            return simpleDateFormat.format(date);
         } else {
             return value.toString();
         }
@@ -116,6 +121,8 @@ public class DataSetList {
                 return null;
             } else if (value.toString().matches(DoubleDocument.DOUBLE_FORMAT)) {
                 return decimalFormat.parse(value.toString()).doubleValue();
+            } else if (isValidDate(value.toString())) {
+                return parseDate(value.toString());
             } else {
                 return value;
             }
@@ -125,13 +132,9 @@ public class DataSetList {
     }
 
     private int compareAsDate(Object x, Object y) {
-        try {
-            Date dateX = simpleDateFormat.parse(x.toString());
-            Date dateY = simpleDateFormat.parse(y.toString());
-            return dateX.compareTo(dateY);
-        } catch (ParseException ex) {
-            throw new IllegalStateException(ex.getMessage());
-        }
+        Date dateX = (Date) x;
+        Date dateY = (Date) y;
+        return dateX.compareTo(dateY);
     }
 
     private int compareAsNumeric(Object x, Object y) {

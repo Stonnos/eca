@@ -30,9 +30,10 @@ public class InstancesConverter {
                 .mapToObj(i -> data.attribute(i).name())
                 .toList();
         dataSetList.setAttributes(attributes);
-        dataSetList.setValues(convertValues(data, simpleDateFormat));
+        dataSetList.setValues(convertValues(data));
         dataSetList.setAttributesCodes(convertAttributesCodes(data));
         dataSetList.setDecimalFormat(decimalFormat);
+        dataSetList.setSimpleDateFormat(simpleDateFormat);
         return dataSetList;
     }
 
@@ -51,7 +52,7 @@ public class InstancesConverter {
         return attributeCodes;
     }
 
-    public static List<List<Object>> convertValues(Instances data, SimpleDateFormat simpleDateFormat) {
+    public static List<List<Object>> convertValues(Instances data) {
         List<List<Object>> values = new ArrayList<>(data.numInstances());
         for (int i = 0; i < data.numInstances(); i++) {
             ArrayList<Object> row = new ArrayList<>(data.numAttributes());
@@ -60,7 +61,7 @@ public class InstancesConverter {
                 if (data.instance(i).isMissing(attr)) {
                     row.add(null);
                 } else if (attr.isDate()) {
-                    row.add(simpleDateFormat.format(new Date((long) data.instance(i).value(j))));
+                    row.add(new Date((long) data.instance(i).value(j)));
                 } else if (attr.isNumeric()) {
                     row.add(data.instance(i).value(j));
                 } else {
