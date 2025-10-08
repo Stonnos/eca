@@ -464,6 +464,7 @@ public class JMainFrame extends JFrame {
         public void dispose() {
             removeComponents(this);
             super.dispose();
+            System.gc();
         }
 
         void setMenu(JMenuItem menu) {
@@ -818,10 +819,6 @@ public class JMainFrame extends JFrame {
                     CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()));
         }
         return createDataInternalFrame(data, digits);
-    }
-
-    public void createDataFrame(Instances data) throws Exception {
-        createDataFrame(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
     }
 
     private DataInternalFrame createDataInternalFrame(Instances data, int digits) {
@@ -2254,7 +2251,10 @@ public class JMainFrame extends JFrame {
             }
         };
         LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);
-        processAsyncTask(loadDialog, () -> action.getResult().setVisible(true));
+        processAsyncTask(loadDialog, () -> {
+            action.getResult().setVisible(true);
+            System.gc();
+        });
 
     }
 
