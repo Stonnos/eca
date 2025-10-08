@@ -143,6 +143,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static eca.gui.ButtonUtils.createButton;
@@ -291,6 +293,7 @@ public class JMainFrame extends JFrame {
     private static final String MODEL_BUILDING_FINISHED_MESSAGE = "Построение модели классификатора \"%s\" завершено";
     private static final String BACKGROUND_TASKS_MENU_TEXT = "Фоновые процессы";
     private static final String MODEL_BUILDING_TASK_TITLE = "Построение модели \"%s\"";
+    private static final String PREPARE_DATA_FRAME_TEXT_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -809,11 +812,19 @@ public class JMainFrame extends JFrame {
         this.add(dataPanels);
     }
 
-    private void createDataFrame(Instances data, int digits) throws Exception {
+    private DataInternalFrame createDataFrame(Instances data, int digits) {
         if (dataPanels.getComponentCount() >= CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()) {
-            throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
+            throw new IllegalStateException(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
                     CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()));
         }
+        return createDataInternalFrame(data, digits);
+    }
+
+    public void createDataFrame(Instances data) throws Exception {
+        createDataFrame(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
+    }
+
+    private DataInternalFrame createDataInternalFrame(Instances data, int digits) {
         final DataInternalFrame dataInternalFrame =
                 new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()), digits);
 
@@ -846,16 +857,11 @@ public class JMainFrame extends JFrame {
                 LoggerUtils.error(log, e);
             }
         });
-
         dataPanels.add(dataInternalFrame);
-        dataInternalFrame.setVisible(true);
         setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
         started = true;
-    }
-
-    public void createDataFrame(Instances data) throws Exception {
-        createDataFrame(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
+        return dataInternalFrame;
     }
 
     private void setEnabledMenuComponents(boolean enabled) {
@@ -1748,7 +1754,8 @@ public class JMainFrame extends JFrame {
                             processAsyncTask(loadModelProgress, () -> {
                                 ClassificationModel classificationModel = modelLoader.getResult();
                                 String title = getClassifierName(classificationModel.getClassifier());
-                                createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
+                                createEvaluationResultsAsync(title,
+                                        new ReferenceWrapper<>(classificationModel.getClassifier()),
                                         classificationModel.getData(), classificationModel.getEvaluation(),
                                         maximumFractionDigits);
                             });
@@ -2005,7 +2012,7 @@ public class JMainFrame extends JFrame {
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                        processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -2063,6 +2070,7 @@ public class JMainFrame extends JFrame {
 
                     processAsyncTask(progress, () -> {
                         QueryFrame queryFrame = new QueryFrame(JMainFrame.this, connection);
+                        queryFrame.setSelectedInstancesConsumer(querySelectedInstancesConsumer());
                         queryFrame.setVisible(true);
                     });
 
@@ -2072,6 +2080,27 @@ public class JMainFrame extends JFrame {
                 }
             }
             conn.dispose();
+        };
+    }
+
+    private Consumer<List<Instances>> querySelectedInstancesConsumer() {
+        return instancesList -> {
+            AbstractCallback<List<DataInternalFrame>> action = new AbstractCallback<>() {
+                @Override
+                protected List<DataInternalFrame> performAndGetResult() {
+                    return instancesList.stream()
+                            .map(data -> createDataFrame(data, maximumFractionDigits))
+                            .collect(Collectors.toList());
+                }
+            };
+            LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);
+            try {
+                processAsyncTask(loadDialog,
+                        () -> action.getResult().forEach(dataInternalFrame -> dataInternalFrame.setVisible(true)));
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
         };
     }
 
@@ -2122,7 +2151,7 @@ public class JMainFrame extends JFrame {
                         UrlLoader loader = new UrlLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                        processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                     } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2207,7 +2236,7 @@ public class JMainFrame extends JFrame {
                     DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
                     LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
                             DATA_GENERATION_LOADING_MESSAGE);
-                    processAsyncTask(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
+                    processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2215,6 +2244,18 @@ public class JMainFrame extends JFrame {
             }
             dialog.dispose();
         };
+    }
+
+    private void createDataFrameAsync(Instances data) throws Exception {
+        AbstractCallback<DataInternalFrame> action = new AbstractCallback<>() {
+            @Override
+            protected DataInternalFrame performAndGetResult() throws Exception {
+                return createDataFrame(data, maximumFractionDigits);
+            }
+        };
+        LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);
+        processAsyncTask(loadDialog, () -> action.getResult().setVisible(true));
+
     }
 
     private void processExperimentLoading(ExperimentLoader loader) throws Exception {

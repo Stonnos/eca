@@ -7,6 +7,8 @@ import eca.gui.GuiUtils;
 import eca.gui.PanelBorderUtils;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.tables.InstancesSetTable;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Instances;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static eca.gui.ButtonUtils.createButton;
 import static eca.gui.GuiUtils.removeComponents;
@@ -72,10 +75,11 @@ public class QueryFrame extends JFrame {
 
     private QueryWorker worker;
 
-    private final JMainFrame parentFrame;
+    @Getter
+    @Setter
+    private Consumer<List<Instances>> selectedInstancesConsumer;
 
-    public QueryFrame(JMainFrame parentFrame, JdbcQueryExecutor connection) {
-        this.parentFrame = parentFrame;
+    public QueryFrame(JFrame parentFrame, JdbcQueryExecutor connection) {
         this.connection = connection;
         this.initializeSql2003KeyWords();
         this.setLayout(new GridBagLayout());
@@ -204,16 +208,9 @@ public class QueryFrame extends JFrame {
         okButton.addActionListener(e -> {
             interruptWorker();
             if (instancesSetTable.getSelectedRows().length != 0) {
-                try {
-                    for (Instances instances : getSelectedInstances()) {
-                        parentFrame.createDataFrame(instances);
-                    }
-                    dispose();
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    showFormattedErrorMessageDialog(parentFrame, ex.getMessage());
-                }
-
+                setVisible(false);
+                selectedInstancesConsumer.accept(getSelectedInstances());
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(QueryFrame.this,
                         CREATE_SAMPLE_ERROR_MESSAGE,
@@ -353,7 +350,8 @@ public class QueryFrame extends JFrame {
                         next = content.indexOf(word, next);
                         int end = next + word.length();
                         document.setCharacterAttributes(next, end,
-                                queryArea.getStyle(sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
+                                queryArea.getStyle(
+                                        sql2003KeyWords.contains(word) ? BLUE_STYLE_NAME : DEFAULT_STYLE_NAME),
                                 true);
                         next = end;
                     }
