@@ -352,6 +352,9 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
         static final String NODE_INDEX_FORMAT = "Узел %d";
         static final String CONTENT_TYPE = "text/html";
 
+        static final Dimension TEXT_INFO_PREFERRED_SIZE =
+                new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT);
+
         NeuronNode neuronNode;
         Popup popup;
 
@@ -378,10 +381,11 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             textInfo.setBackground(Color.WHITE);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
-            textInfo.setPreferredSize(new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT));
             textInfo.setText(neuronNode.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
             JScrollPane scrollPanel = new JScrollPane(textInfo);
+            scrollPanel.setPreferredSize(TEXT_INFO_PREFERRED_SIZE);
+            scrollPanel.setMaximumSize(TEXT_INFO_PREFERRED_SIZE);
             JButton closeButton = ButtonUtils.createCloseButton();
             closeButton.addActionListener(evt -> hide());
             infoPanel.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
