@@ -44,21 +44,21 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <production>false</production>
+                <configStorageType>IN_MEMORY</configStorageType>
             </properties>
         </profile>
 
         <profile>
             <id>prod</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
         </profile>
 
         <profile>
             <id>installer</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
 
             <build>
@@ -91,7 +91,7 @@
         <profile>
             <id>build-artifacts</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
 
            <build>

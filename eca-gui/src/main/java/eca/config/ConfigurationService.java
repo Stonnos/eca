@@ -73,7 +73,7 @@ public class ConfigurationService {
      */
     public EcaServiceConfig getEcaServiceConfig() {
         if (ecaServiceConfig == null) {
-            if (Boolean.TRUE.equals(getApplicationConfig().getProduction())) {
+            if (ConfigStorageType.FILE.equals(applicationConfig.getConfigStorageType())) {
                 ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
             } else {
                 ecaServiceConfig = loadConfig(ECA_SERVICE_CONFIG_PATH, EcaServiceConfig.class);
@@ -88,10 +88,10 @@ public class ConfigurationService {
      * @throws IOException in case an I/O error
      */
     public void saveEcaServiceConfig() throws IOException {
-        if (!Boolean.TRUE.equals(getApplicationConfig().getProduction())) {
-            log.warn("Eca - service options saving is available only in production mode!");
-        } else {
-            OBJECT_MAPPER.writeValue(getEcaServiceConfigFile(), ecaServiceConfig);
+        if (ConfigStorageType.FILE.equals(applicationConfig.getConfigStorageType())) {
+            File file = getEcaServiceConfigFile();
+            OBJECT_MAPPER.writeValue(file, ecaServiceConfig);
+            log.info("Eca service config has been saved to file [{}]", file.getAbsolutePath());
         }
     }
 

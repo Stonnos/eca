@@ -13,9 +13,9 @@ import java.util.Map;
 public class ApplicationConfig {
 
     /**
-     * Is production mode?
+     * Config storage type
      */
-    private Boolean production;
+    private ConfigStorageType configStorageType;
 
     /**
      * Project info

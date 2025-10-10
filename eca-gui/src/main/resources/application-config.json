@@ -1,5 +1,5 @@
 {
-  "production": "${production}",
+  "configStorageType": "${configStorageType}",
   "projectInfo": {
     "title": "ECA",
     "titleDescription": "Ensemble Classification Algorithms",
