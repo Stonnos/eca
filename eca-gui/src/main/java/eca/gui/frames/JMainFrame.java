@@ -236,8 +236,8 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
             "Ваша заявка на эксперимент '%s' была успешно создана.";
 
-    private static final double WIDTH_COEFFICIENT = 0.8;
-    private static final double HEIGHT_COEFFICIENT = 0.9;
+    private static final double WIDTH_COEFFICIENT = 0.75;
+    private static final double HEIGHT_COEFFICIENT = 0.75;
     private static final String RANDOM_GENERATOR_MENU_TEXT = "Настройки генератора случайных чисел";
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
