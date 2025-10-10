@@ -96,6 +96,7 @@ public class QueryFrame extends JFrame {
         interruptWorker();
         closeConnection();
         sql2003KeyWords.clear();
+        selectedInstancesConsumer = null;
         clearNotSelectedInstances();
         removeComponents(this);
         super.dispose();
