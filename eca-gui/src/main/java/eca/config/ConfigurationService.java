@@ -144,7 +144,10 @@ public class ConfigurationService {
 
     private <T> T loadConfig(File file, Class<T> configType) {
         try {
-            return OBJECT_MAPPER.readValue(file, configType);
+            log.info("Loads config from file [{}]", file.getAbsolutePath());
+            T config = OBJECT_MAPPER.readValue(file, configType);
+            log.info("Config has been loaded from file [{}]", file.getAbsolutePath());
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, file.getAbsolutePath(), ex.getMessage()));
             throw new ConfigException(ex);
@@ -154,7 +157,10 @@ public class ConfigurationService {
     private <T> T loadConfig(String fileName, TypeReference<T> tTypeReference) {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
-            return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
+            log.info("Loads config from file [{}]", fileName);
+            T config =  OBJECT_MAPPER.readValue(inputStream, tTypeReference);
+            log.info("Config has been loaded from file [{}]", fileName);
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
             throw new ConfigException(ex);
