@@ -39,6 +39,11 @@ public class DataSetList {
         return getStringValue(value, attrIdx);
     }
 
+    public Object getTypedValue(int rowIdx, int attrIdx) {
+        Object value = values.get(rowIdx).get(attrIdx);
+        return getTypedValue(value, attrIdx);
+    }
+
     public void setValue(int rowIdx, int attrIdx, Object value) {
         values.get(rowIdx).set(attrIdx, convertToTypedValue(value));
     }

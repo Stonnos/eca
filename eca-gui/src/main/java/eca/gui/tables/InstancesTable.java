@@ -287,9 +287,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
      * Creates instances taking into selected attributes and class attribute if specified.
      *
      * @return created instances
-     * @throws Exception in case of error
      */
-    public InstancesDataModel createSimpleData() throws Exception {
+    public InstancesDataModel createSimpleData() {
         Instances instances = createInstances(getRelationName());
         if (attributesTable.isSelected(getClassIndex())) {
             instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
@@ -436,24 +435,25 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         }
     }
 
-    private Instances createInstances(String relationName) throws ParseException {
+    private Instances createInstances(String relationName) {
         DataSetList dataSetList = getDataSetList();
         Instances newDataSet = new Instances(relationName, createAttributesList(), dataSetList.size());
-        DecimalFormat format = getInstancesTableModel().format();
         for (int i = 0; i < dataSetList.size(); i++) {
             Instance obj = new DenseInstance(newDataSet.numAttributes());
             obj.setDataset(newDataSet);
             for (int j = 0; j < newDataSet.numAttributes(); j++) {
                 Attribute attribute = newDataSet.attribute(j);
-                String valueAt = (String) dataSetList.getValue(i, j);
+                Object valueAt = dataSetList.getTypedValue(i, j);
                 if (valueAt == null) {
                     obj.setValue(attribute, Utils.missingValue());
                 } else if (attribute.isDate()) {
-                    obj.setValue(attribute, attribute.parseDate(valueAt));
+                    Date date = (Date) valueAt;
+                    obj.setValue(attribute, date.getTime());
                 } else if (attribute.isNumeric()) {
-                    obj.setValue(attribute, format.parse(valueAt).doubleValue());
+                    Double doubleValue = (Double) valueAt;
+                    obj.setValue(attribute, doubleValue);
                 } else {
-                    obj.setValue(attribute, valueAt.trim());
+                    obj.setValue(attribute, valueAt.toString().trim());
                 }
             }
             newDataSet.add(obj);
@@ -501,10 +501,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
             }
         }
         return count < MIN_NUMBER_OF_SELECTED_ATTRIBUTES;
-    }
-
-    private int getAttrIndex(String name) {
-        return getTableHeader().getColumnModel().getColumnIndex(name);
     }
 
     private int getClassIndex() {
