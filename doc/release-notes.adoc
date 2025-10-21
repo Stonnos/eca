@@ -76,3 +76,12 @@
 1. Улучшение производительности загрузки данных из excel файлов с помощью библиотеки fastexcel (https://tracker.yandex.ru/ECS-47)
 2. Устранены утечки памяти (https://tracker.yandex.ru/ECS-53)
 3. Добавлена обработка статуса CANCELED от eca-service (https://tracker.yandex.ru/ECS-73)
+
+== Релиз 7.1
+
+1. Загрузка датасетов в формате zip (https://tracker.yandex.ru/ECS-82)
+2. Обновление интерфейса с использованием темы flatlaf look and feel (https://tracker.yandex.ru/ECS-75)
+3. Добавление файла jvm.options с конфигурацией jvm (https://tracker.yandex.ru/ECS-76)
+4. Построение нескольких моделей одновременно (https://tracker.yandex.ru/ECS-77)
+5. Оптимизация работы с большимим таблицами данных (https://tracker.yandex.ru/ECS-78)
+6. Поддежка персональных токенов доступа, для интеграции с eca-service (https://tracker.yandex.ru/ECS-79)

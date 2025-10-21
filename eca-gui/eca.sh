@@ -1,1 +1,1 @@
-java @jvm.options -jar eca-gui-7.0.jar
+java @jvm.options -jar eca-gui-7.1.jar
