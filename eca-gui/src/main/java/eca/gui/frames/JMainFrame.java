@@ -1634,7 +1634,6 @@ public class JMainFrame extends JFrame {
         } else {
             resetRabbitConfiguration();
         }
-
         updateQueues(currentConfig);
     }
 
