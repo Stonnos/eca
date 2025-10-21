@@ -453,7 +453,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
                     Double doubleValue = (Double) valueAt;
                     obj.setValue(attribute, doubleValue);
                 } else {
-                    obj.setValue(attribute, valueAt.toString().trim());
+                    String strValue = dataSetList.getStringValue(valueAt, j);
+                    obj.setValue(attribute, strValue);
                 }
             }
             newDataSet.add(obj);

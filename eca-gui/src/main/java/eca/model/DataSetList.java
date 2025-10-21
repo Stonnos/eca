@@ -89,7 +89,7 @@ public class DataSetList {
         });
     }
 
-    private String getStringValue(Object value, int attrIdx) {
+    public String getStringValue(Object value, int attrIdx) {
         if (value == null) {
             return null;
         } else if (value instanceof Integer nominalCodeValue) {
