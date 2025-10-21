@@ -86,6 +86,7 @@ class EcaClientIT {
         rabbitClient = new RabbitClient(rabbitSender);
         rabbitClient.setEvaluationRequestQueue(EcaClientTestConfiguration.getEvaluationRequestQueue());
         rabbitClient.setExperimentRequestQueue(EcaClientTestConfiguration.getExperimentRequestQueue());
+        rabbitClient.setAuthToken(EcaClientTestConfiguration.getAuthToken());
         uploadInstancesCacheService = ecaClientConfiguration.createUploadInstancesCacheService();
         startContainer(connectionFactory);
     }

@@ -58,4 +58,9 @@ public class EcaServiceConfig {
      * Client secret
      */
     private String clientSecret;
+
+    /**
+     * Auth token for incoming messages
+     */
+    private String authToken;
 }

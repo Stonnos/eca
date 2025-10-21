@@ -88,5 +88,7 @@ public class EcaServiceOptionsTableModel extends AbstractTableModel {
                 CONFIG_SERVICE.getEcaServiceConfig().getClientId()));
         options.add(new Entry<>(CommonDictionary.CLIENT_SECRET,
                 CONFIG_SERVICE.getEcaServiceConfig().getClientSecret()));
+        options.add(new Entry<>(CommonDictionary.AUTH_TOKEN,
+                CONFIG_SERVICE.getEcaServiceConfig().getAuthToken()));
     }
 }

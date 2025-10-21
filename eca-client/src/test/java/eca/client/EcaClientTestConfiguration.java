@@ -27,6 +27,7 @@ public class EcaClientTestConfiguration {
     private static final String TOKEN_URL = "token.url";
     private static final String CLIENT_ID = "client-id";
     private static final String CLIENT_SECRET = "client-secret";
+    private static final String AUTH_TOKEN = "auth-token";
 
     private ConnectionFactory connectionFactory;
 
@@ -73,6 +74,15 @@ public class EcaClientTestConfiguration {
      */
     public static String getExperimentRequestQueue() {
         return properties.getProperty(EXPERIMENT_REQUEST_QUEUE);
+    }
+
+    /**
+     * Gets auth token.
+     *
+     * @return auth token
+     */
+    public static String getAuthToken() {
+        return properties.getProperty(AUTH_TOKEN);
     }
 
     /**

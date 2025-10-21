@@ -30,6 +30,7 @@ public class EcaServiceOptionsDictionary {
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.TOKEN_URL, "Url сервиса авторизации");
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.CLIENT_ID, "Идентифифактор клиента (client id)");
         OPTION_DESCRIPTION_MAP.put(CommonDictionary.CLIENT_SECRET, "Секрет клиента (client secret)");
+        OPTION_DESCRIPTION_MAP.put(CommonDictionary.AUTH_TOKEN, "Персональный токен доступа для сообщений");
     }
 
     /**

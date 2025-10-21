@@ -54,7 +54,8 @@ class RabbitSenderTest {
     void testSendMessage() throws IOException {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
         experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
-        AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
+        AMQP.BasicProperties properties =
+                RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString(), UUID.randomUUID().toString());
         rabbitSender.sendMessage(QUEUE, experimentRequestDto, properties);
         verify(channel, atLeastOnce()).basicPublish(StringUtils.EMPTY, QUEUE, properties,
                 jsonMessageConverter.toMessage(experimentRequestDto));
@@ -64,7 +65,8 @@ class RabbitSenderTest {
     void testSendMessageWithException() throws IOException {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
         experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
-        AMQP.BasicProperties properties = RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString());
+        AMQP.BasicProperties properties =
+                RabbitUtils.buildMessageProperties(QUEUE, UUID.randomUUID().toString(), UUID.randomUUID().toString());
         doThrow(new EcaServiceException(StringUtils.EMPTY)).when(channel).basicPublish(anyString(), anyString(), any(),
                 any());
         assertThrows(EcaServiceException.class,

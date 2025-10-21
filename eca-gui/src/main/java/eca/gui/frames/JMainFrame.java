@@ -1346,7 +1346,8 @@ public class JMainFrame extends JFrame {
                             ecaServiceConfig.getEvaluationOptimizerRequestQueue(),
                             ecaServiceConfig.getExperimentRequestQueue(), ecaServiceConfig.getDataLoaderUrl(),
                             ecaServiceConfig.getTokenUrl(), ecaServiceConfig.getClientId(),
-                            ecaServiceConfig.getClientSecret()
+                            ecaServiceConfig.getClientSecret(),
+                            ecaServiceConfig.getAuthToken()
                     );
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
@@ -1633,6 +1634,7 @@ public class JMainFrame extends JFrame {
         } else {
             resetRabbitConfiguration();
         }
+
         updateQueues(currentConfig);
     }
 
@@ -1651,6 +1653,7 @@ public class JMainFrame extends JFrame {
             client.setEvaluationRequestQueue(ecaServiceConfig.getEvaluationRequestQueue());
             client.setEvaluationOptimizerRequestQueue(ecaServiceConfig.getEvaluationOptimizerRequestQueue());
             client.setExperimentRequestQueue(ecaServiceConfig.getExperimentRequestQueue());
+            client.setAuthToken(ecaServiceConfig.getAuthToken());
         });
     }
 

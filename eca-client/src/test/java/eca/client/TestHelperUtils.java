@@ -19,7 +19,7 @@ import java.io.File;
 @UtilityClass
 public class TestHelperUtils {
 
-    private static final String DATA_PATH = "iris.xls";
+    private static final String DATA_PATH = "iris.xlsx";
     private static final String EMAIL = "bat1238@yandex.ru";
 
     /**

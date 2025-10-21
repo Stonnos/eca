@@ -52,4 +52,5 @@ public class CommonDictionary {
     public static final String TOKEN_URL = "token.url";
     public static final String CLIENT_ID = "client-id";
     public static final String CLIENT_SECRET = "client-secret";
+    public static final String AUTH_TOKEN = "auth-token";
 }
