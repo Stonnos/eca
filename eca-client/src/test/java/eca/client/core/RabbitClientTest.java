@@ -49,6 +49,7 @@ class RabbitClientTest {
         rabbitClient.setEvaluationRequestQueue(EVALUATION_REQUEST_QUEUE);
         rabbitClient.setEvaluationOptimizerRequestQueue(EVALUATION_OPTIMIZER_REQUEST_QUEUE);
         rabbitClient.setExperimentRequestQueue(EXPERIMENT_REQUEST_QUEUE);
+        rabbitClient.setAuthToken(UUID.randomUUID().toString());
     }
 
     @Test
@@ -63,7 +64,7 @@ class RabbitClientTest {
         ExperimentRequestDto experimentRequestDto = createExperimentRequestDto();
         experimentRequestDto.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties expectedProperties =
-                buildMessageProperties(REPLY_TO, correlationId, UUID.randomUUID().toString());
+                buildMessageProperties(REPLY_TO, correlationId, rabbitClient.getAuthToken());
         rabbitClient.sendExperimentRequest(experimentRequestDto, REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EXPERIMENT_REQUEST_QUEUE, experimentRequestDto,
                 expectedProperties);
@@ -81,7 +82,7 @@ class RabbitClientTest {
         InstancesRequest expectedRequest = new InstancesRequest();
         expectedRequest.setDataUuid(UUID.randomUUID().toString());
         AMQP.BasicProperties expectedProperties =
-                buildMessageProperties(REPLY_TO, correlationId, UUID.randomUUID().toString());
+                buildMessageProperties(REPLY_TO, correlationId, rabbitClient.getAuthToken());
         rabbitClient.sendEvaluationRequest(expectedRequest.getDataUuid(), REPLY_TO, correlationId);
         verify(rabbitSender, atLeastOnce()).sendMessage(EVALUATION_OPTIMIZER_REQUEST_QUEUE, expectedRequest,
                 expectedProperties);
