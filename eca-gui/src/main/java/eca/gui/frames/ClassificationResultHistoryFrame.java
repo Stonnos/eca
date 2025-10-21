@@ -90,7 +90,9 @@ public class ClassificationResultHistoryFrame extends JFrame {
         popupMenu.setPopupSize(POPUP_DIMENSION);
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
         deleteMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
+        deleteMenu.setEnabled(false);
         clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
+        clearMenu.setEnabled(false);
         clearMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TRASH, ICON_SIZE));
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
