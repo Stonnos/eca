@@ -443,7 +443,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        DataInternalFrame(Instances data, JMenuItem menu, int digits) {
+        DataInternalFrame(Instances data, JMenuItem menu) {
             this.setLayout(new GridBagLayout());
             this.createUpperPanel();
             this.createLowerPanel();
@@ -451,7 +451,7 @@ public class JMainFrame extends JFrame {
             this.setMenu(menu);
             this.createPopMenu();
             this.setRelationInfo(data);
-            this.convertDataToTables(data, digits);
+            this.convertDataToTables(data);
             this.creteGUI();
             this.setClosable(true);
             this.setResizable(true);
@@ -619,12 +619,12 @@ public class JMainFrame extends JFrame {
                     new Insets(0, 0, 2, 0), 0, 0));
         }
 
-        void convertDataToTables(Instances data, int digits) {
+        void convertDataToTables(Instances data) {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
             }
             classBox.setSelectedIndex(data.classIndex());
-            instanceTable = new InstancesTable(data, numInstancesTextField, classBox, digits);
+            instanceTable = new InstancesTable(data, numInstancesTextField, classBox);
             dataScrollPane.setViewportView(instanceTable);
             attributesTable = new AttributesTable(data, instanceTable, classBox);
             instanceTable.setAttributesTable(attributesTable);
@@ -813,17 +813,17 @@ public class JMainFrame extends JFrame {
         this.add(dataPanels);
     }
 
-    private DataInternalFrame createDataFrame(Instances data, int digits) {
+    private DataInternalFrame createDataFrame(Instances data) {
         if (dataPanels.getComponentCount() >= CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()) {
             throw new IllegalStateException(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
                     CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()));
         }
-        return createDataInternalFrame(data, digits);
+        return createDataInternalFrame(data);
     }
 
-    private DataInternalFrame createDataInternalFrame(Instances data, int digits) {
+    private DataInternalFrame createDataInternalFrame(Instances data) {
         final DataInternalFrame dataInternalFrame =
-                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()), digits);
+                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
 
         dataInternalFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
@@ -2088,7 +2088,7 @@ public class JMainFrame extends JFrame {
                 @Override
                 protected List<DataInternalFrame> performAndGetResult() {
                     return instancesList.stream()
-                            .map(data -> createDataFrame(data, maximumFractionDigits))
+                            .map(data -> createDataFrame(data))
                             .collect(Collectors.toList());
                 }
             };
@@ -2248,8 +2248,8 @@ public class JMainFrame extends JFrame {
     private void createDataFrameAsync(Instances data) throws Exception {
         AbstractCallback<DataInternalFrame> action = new AbstractCallback<>() {
             @Override
-            protected DataInternalFrame performAndGetResult() throws Exception {
-                return createDataFrame(data, maximumFractionDigits);
+            protected DataInternalFrame performAndGetResult() {
+                return createDataFrame(data);
             }
         };
         LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);

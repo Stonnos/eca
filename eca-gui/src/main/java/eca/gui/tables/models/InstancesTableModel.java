@@ -1,6 +1,7 @@
 package eca.gui.tables.models;
 
 import eca.config.ConfigurationService;
+import eca.gui.dictionary.CommonDictionary;
 import eca.gui.tables.PageableTable;
 import eca.model.DataSetList;
 import eca.text.NumericFormatFactory;
@@ -42,8 +43,8 @@ public class InstancesTableModel extends AbstractTableModel implements PageableT
 
     private final List<ActionListener> dataChangeActionListeners = new ArrayList<>();
 
-    public InstancesTableModel(Instances data, int digits) {
-        this.format.setMaximumFractionDigits(digits);
+    public InstancesTableModel(Instances data) {
+        this.format.setMaximumFractionDigits(CommonDictionary.MAXIMUM_FRACTION_DIGITS);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
         this.dataSetList = InstancesConverter.convertToDataSet(data, format, simpleDateFormat);
     }

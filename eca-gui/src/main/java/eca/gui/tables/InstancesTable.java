@@ -10,7 +10,6 @@ import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.MissingCellRenderer;
 import eca.gui.renderers.TableHeaderIconRenderer;
 import eca.gui.tables.models.InstancesTableModel;
-import eca.gui.text.DoubleDocument;
 import eca.model.DataSetList;
 import eca.util.Entry;
 import jiconfont.icons.font_awesome.FontAwesome;
@@ -36,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,8 +43,6 @@ import java.util.stream.IntStream;
 
 import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
-import static eca.gui.service.ValidationService.isNumericOverflow;
-import static eca.gui.service.ValidationService.isValidDate;
 
 /**
  * @author Roman Batygin
@@ -108,9 +106,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
 
     public InstancesTable(Instances data,
                           JTextField numInstances,
-                          JComboBox<String> classBox,
-                          int digits) {
-        super(new InstancesTableModel(data, digits));
+                          JComboBox<String> classBox) {
+        super(new InstancesTableModel(data));
         this.classBox = classBox;
         this.uuid = UUID.randomUUID().toString();
         this.relationName = data.relationName();
@@ -419,17 +416,16 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         int attrIndex = j - 1;
         DataSetList dataSetList = getDataSetList();
         for (int k = 0; k < dataSetList.size(); k++) {
-            String str = (String) dataSetList.getValue(k, attrIndex);
+            Object str = dataSetList.getValues().get(k).get(attrIndex);
             if (str != null) {
                 try {
                     if (attributesTable.isNumeric(attrIndex)) {
-                        if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                        if (!(str instanceof Double)) {
                             throw new IllegalArgumentException(
                                     String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute, k + 1));
                         }
-                        isNumericOverflow(attribute, str, k + 1);
                     }
-                    if (attributesTable.isDate(attrIndex) && !isValidDate(str)) {
+                    if (attributesTable.isDate(attrIndex) && !(str instanceof Date)) {
                         throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
                                 attribute, k + 1, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                     }
