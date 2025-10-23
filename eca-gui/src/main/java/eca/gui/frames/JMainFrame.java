@@ -213,7 +213,7 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет подключение к базе данных...";
     private static final String LOAD_MODEL_MENU_TEXT = "Загрузить модель";
     private static final String LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT = "Загрузить эксперимент";
-    private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
+    private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные по ссылке";
     private static final String URL_FILE_TEXT = "URL файла:";
     private static final String EXPERIMENT_URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
@@ -278,7 +278,9 @@ public class JMainFrame extends JFrame {
             = "Построение оптимального классификатора завершено";
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
-    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
+    private static final String DOWNLOAD_CLASSIFIER_MODEL_TITLE = "Загрузка модели классификатора";
+    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент по ссылке";
+    private static final String LOAD_CLASSIFIER_MODEL_LINK_TEXT = "Загрузить модель по ссылке";
     private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
             "Эксперимент '%s' успешно завершен. Загрузить результаты?";
     private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
@@ -1409,6 +1411,11 @@ public class JMainFrame extends JFrame {
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
+        JMenuItem loadModelLinkMenu = new JMenuItem(LOAD_CLASSIFIER_MODEL_LINK_TEXT);
+        loadModelLinkMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
+        fileMenu.add(loadModelLinkMenu);
+        loadModelLinkMenu.addActionListener(loadClassifierFromUrlActionListener());
+
         JMenuItem loadExperimentFromFileMenu = new JMenuItem(LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT);
         loadExperimentFromFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.UPLOAD, ICON_SIZE));
         fileMenu.addSeparator();
@@ -2167,19 +2174,7 @@ public class JMainFrame extends JFrame {
                 File file = fileChooser.openFile(JMainFrame.this);
                 if (file != null) {
                     ClassifierModelLoader loader = new ClassifierModelLoader(new FileResource(file));
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, MODEL_LOADING_MESSAGE);
-
-                    processAsyncTask(progress, () -> {
-                        ClassificationModel classificationModel = loader.getResult();
-                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
-                                .orElse(maximumFractionDigits);
-                        String title = getClassifierName(classificationModel.getClassifier());
-                        createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
-                                classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
-                                digits);
-                    });
-
+                    processClassifierModelLoading(loader);
                 }
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
@@ -2217,6 +2212,28 @@ public class JMainFrame extends JFrame {
                         URL experimentUrl = new URL(url.trim());
                         ExperimentLoader loader = new ExperimentLoader(new UrlResource(experimentUrl));
                         processExperimentLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
+            }
+        };
+    }
+
+    private ActionListener loadClassifierFromUrlActionListener() {
+        return event -> {
+            String url = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                    EXPERIMENT_URL_FILE_TEXT, DOWNLOAD_CLASSIFIER_MODEL_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, null);
+            if (url != null) {
+                if (!isValidUrl(url)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        URL modelUrl = new URL(url.trim());
+                        ClassifierModelLoader loader = new ClassifierModelLoader(new UrlResource(modelUrl));
+                        processClassifierModelLoading(loader);
                     } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2269,6 +2286,21 @@ public class JMainFrame extends JFrame {
                     ExperimentFrameFactory.getExperimentFrame(experiment, JMainFrame.this,
                             this.maximumFractionDigits);
             experimentFrame.setVisible(true);
+        });
+    }
+
+    private void processClassifierModelLoading(ClassifierModelLoader loader) throws Exception {
+        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                loader, MODEL_LOADING_MESSAGE);
+
+        processAsyncTask(progress, () -> {
+            ClassificationModel classificationModel = loader.getResult();
+            int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
+                    .orElse(maximumFractionDigits);
+            String title = getClassifierName(classificationModel.getClassifier());
+            createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
+                    classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
+                    digits);
         });
     }
 
