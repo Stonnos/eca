@@ -2,7 +2,6 @@ package eca.gui.tables;
 
 import eca.config.ConfigurationService;
 import eca.core.InstancesDataModel;
-import eca.filter.ConstantAttributesFilter;
 import eca.gui.Cleanable;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
@@ -32,8 +31,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -101,8 +98,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
 
     private int lastSortColumn = -1;
     private boolean lastSortAscending = true;
-
-    private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
 
     public InstancesTable(Instances data,
                           JTextField numInstances,
@@ -258,23 +253,20 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
 
     /**
      * Creates filtered instances taking into selected attributes with assigned class attribute.
-     * {@link ConstantAttributesFilter} is used for filtering instances.
      *
      * @return created instances
-     * @throws Exception in case of error
      */
-    public InstancesDataModel createAndFilterValidData() throws Exception {
+    public InstancesDataModel createAndFilterValidData() {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(getRelationName());
             if (!attributesTable.isSelected(getClassIndex())) {
                 throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
             newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
-            if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
+            if (newDataSet.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
             }
-            updateLastCreatedInstances(filterInstances);
+            updateLastCreatedInstances(newDataSet);
         }
         return InstancesDataModel.builder()
                 .uuid(uuid)

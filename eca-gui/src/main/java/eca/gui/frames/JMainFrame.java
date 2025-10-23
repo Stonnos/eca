@@ -663,7 +663,7 @@ public class JMainFrame extends JFrame {
     private class DataBuilder extends AbstractCallback<InstancesDataModel> {
 
         /**
-         * Validates and filter instances using {@link eca.filter.ConstantAttributesFilter}?
+         * Validates and filter instances
          */
         boolean validateAndFilter = true;
         boolean validateAttributes = true;
