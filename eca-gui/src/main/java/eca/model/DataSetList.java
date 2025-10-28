@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static eca.gui.service.ValidationService.isValidDate;
 import static eca.gui.service.ValidationService.parseDate;
@@ -65,7 +66,7 @@ public class DataSetList {
     public void addRow(List<Object> row) {
         List<Object> convertedTypedValues = row.stream()
                 .map(this::convertToTypedValue)
-                .toList();
+                .collect(Collectors.toList());
         values.add(convertedTypedValues);
     }
 
