@@ -63,7 +63,10 @@ public class DataSetList {
     }
 
     public void addRow(List<Object> row) {
-        values.add(row);
+        List<Object> convertedTypedValues = row.stream()
+                .map(this::convertToTypedValue)
+                .toList();
+        values.add(convertedTypedValues);
     }
 
     public void sort(final int columnIndex, final int attributeType, final boolean ascending) {
