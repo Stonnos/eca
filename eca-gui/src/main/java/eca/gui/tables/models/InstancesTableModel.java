@@ -30,6 +30,7 @@ public class InstancesTableModel extends AbstractTableModel implements PageableT
     private static final String NUMBER = "№";
     private static final int FIRST_PAGE = 1;
     private static final int PAGE_SIZE = 500;
+    private static final int ONE = 1;
 
     @Getter
     private DataSetList dataSetList;
@@ -223,6 +224,9 @@ public class InstancesTableModel extends AbstractTableModel implements PageableT
 
     @Override
     public int totalPages() {
+        if (dataSetList.getValues().isEmpty()) {
+            return ONE;
+        }
         return (int) Math.ceil((double) dataSetList.getValues().size() / pageSize());
     }
 
