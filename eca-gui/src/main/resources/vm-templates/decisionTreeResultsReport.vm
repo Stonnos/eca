@@ -6,9 +6,11 @@
 </head>
 <body>
 #parse("evaluationResultsReport.vm")
-<figure class="attachment">
-    <p><img src="data:image/png;base64,$treeImage.base64String"></p>
-    <figcaption>$treeImage.title</figcaption>
-</figure>
+<div class="img-scroll-pane">
+    <figure class="attachment">
+        <p><img src="data:image/png;base64,$treeImage.base64String"></p>
+    </figure>
+</div>
+<div class="img-caption">Рисунок 2 $treeImage.title</div>
 </body>
 </html>

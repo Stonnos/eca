@@ -14,11 +14,14 @@ import java.io.File;
  */
 public abstract class OpenFileChooser {
 
-    private JFileChooser chooser = new JFileChooser();
+    private static final String DIALOG_TITLE = "Открыть";
+
+    private final JFileChooser chooser = new JFileChooser();
 
     protected OpenFileChooser() {
         chooser.setCurrentDirectory(new File("."));
         chooser.setAcceptAllFileFilterUsed(false);
+        chooser.setDialogTitle(DIALOG_TITLE);
     }
 
     public File openFile(Component parent) {

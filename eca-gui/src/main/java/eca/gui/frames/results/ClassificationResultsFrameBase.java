@@ -6,8 +6,6 @@
 package eca.gui.frames.results;
 
 import com.google.common.collect.ImmutableList;
-import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
 import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.Evaluation;
@@ -50,6 +48,8 @@ import eca.text.NumericFormatFactory;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.TreeVisualizer;
 import eca.util.Entry;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import weka.classifiers.AbstractClassifier;
@@ -71,6 +71,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static eca.gui.ButtonUtils.createButton;
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 import static eca.gui.dictionary.KeyStrokes.REFERENCE_MENU_KEY_STROKE;
 import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
@@ -83,15 +85,12 @@ import static eca.gui.dictionary.KeyStrokes.SAVE_FILE_MENU_KEY_STROKE;
 @Slf4j
 public class ClassificationResultsFrameBase extends JFrame {
 
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
-
     private static final String RESULTS_TEXT = "Результаты классификации";
     private static final String STATISTICS_TEXT = "Статистика";
     private static final String MATRIX_TEXT = "Матрица классификации";
     private static final String ROC_CURVES_TEXT = "ROC кривые";
     private static final String CLASSIFY_TAB_TITLE = "Классификация";
-    private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить";
+    private static final String SAVE_RESULTS_BUTTON_TEXT = "Сохранить отчет";
     private static final int DEFAULT_WIDTH = 875;
     private static final int DEFAULT_HEIGHT = 650;
     private static final String FILE_MENU_TEXT = "Файл";
@@ -106,6 +105,10 @@ public class ClassificationResultsFrameBase extends JFrame {
             "Пожалуйста подождите, идет сохранение результатов классификации...";
     private static final String SAVE_MODEL_TITLE = "Пожалуйста подождите, идет сохранение модели...";
     private static final int ATTACHMENT_TAB_INDEX = 3;
+    private static final int STATISTICS_TAB_INDEX = 0;
+    private static final int CLASSIFY_INSTANCE_TAB_INDEX = 1;
+    private static final int ROC_CURVE_TAB_INDEX = 2;
+    private static final Dimension SAVE_RESULTS_BUTTON_DIMENSION = new Dimension(160, 25);
 
     private final Date creationDate = new Date();
     private final ReferenceWrapper<Classifier> classifier;
@@ -188,14 +191,14 @@ public class ClassificationResultsFrameBase extends JFrame {
         JMenu serviceMenu = new JMenu(SERVICE_MENU_TEXT);
         JMenu helpMenu = new JMenu(REFERENCE_MENU_TEXT);
         JMenuItem saveModelMenu = new JMenuItem(SAVE_MODEL_MENU_TEXT);
-        saveModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveModelMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         inputMenu = new JMenuItem(INPUT_OPTIONS_MENU_TEXT);
         JMenuItem refMenu = new JMenuItem(SHOW_REFERENCE_MENU_TEXT);
         refMenu.setAccelerator(KeyStroke.getKeyStroke(REFERENCE_MENU_KEY_STROKE));
         JMenuItem dataMenu = new JMenuItem(INITIAL_DATA_MENU_TEXT);
-        dataMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATA_ICON)));
+        dataMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TABLE, ICON_SIZE));
         JMenuItem statMenu = new JMenuItem(ATTR_STATISTICS_MENU_TEXT);
-        statMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
+        statMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.BAR_CHART, ICON_SIZE));
 
         saveModelMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
 
@@ -203,6 +206,7 @@ public class ClassificationResultsFrameBase extends JFrame {
         saveModelMenu.addActionListener(saveModelActionListener);
         ActionListener classifierInputOptionsInfoActionListener = new ClassifierInputOptionsInfoListener();
         inputMenu.addActionListener(classifierInputOptionsInfoActionListener);
+        inputMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.INFO, ICON_SIZE));
         ActionListener refActionListener = new ReferenceListener(ClassificationResultsFrameBase.this);
         refMenu.addActionListener(refActionListener);
         ActionListener dataInfoActionListener = new DataInfoActionListener();
@@ -244,11 +248,8 @@ public class ClassificationResultsFrameBase extends JFrame {
         resultPanel.add(misClassPane, new GridBagConstraints(0, 2, 1, 1, 1, 0.25,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 5, 0), 0, 0));
 
-        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
-        saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
-        Dimension dim = new Dimension(150, 25);
-        saveButton.setPreferredSize(dim);
-        saveButton.setMinimumSize(dim);
+        JButton saveButton = createButton(SAVE_RESULTS_BUTTON_TEXT, SAVE_RESULTS_BUTTON_DIMENSION);
+        saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FILE_O, ICON_SIZE));
         resultPanel.add(saveButton, new GridBagConstraints(0, 3, 1, 1, 1, 0,
                 GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 10), 0, 0));
 
@@ -260,7 +261,14 @@ public class ClassificationResultsFrameBase extends JFrame {
         pane.add(CLASSIFY_TAB_TITLE, new ClassifyInstancePanel(
                 new ClassifyInstanceTable(data, digits), classifier));
         pane.add(ROC_CURVES_TEXT, rocCurvePanel);
+        setIcons();
         this.add(pane);
+    }
+
+    private void setIcons() {
+        pane.setIconAt(STATISTICS_TAB_INDEX, IconFontSwing.buildIcon(FontAwesome.LIST, ICON_SIZE));
+        pane.setIconAt(CLASSIFY_INSTANCE_TAB_INDEX, IconFontSwing.buildIcon(FontAwesome.SITEMAP, ICON_SIZE));
+        pane.setIconAt(ROC_CURVE_TAB_INDEX, IconFontSwing.buildIcon(FontAwesome.LINE_CHART, ICON_SIZE));
     }
 
     private void addWindowClosingListener() {

@@ -1,21 +1,23 @@
 <html>
 <head>
     <style>
+        #include("styles/bootstrap/bootstrap.min.css")
         #include("styles/evaluation-results.css")
+        #include("styles/styles.css")
     </style>
 </head>
 <body>
 
 <center>
-    <h2 class="title">Отчет по результатам классификации</h2>
+    <h2 class="title">Отчет с результатами классификации</h2>
 </center>
-<table class="statistics-table">
-    <tr>
-        <th colspan="2">Основная статистика</th>
+<table class="table statistics-table">
+    <tr class="table-header-color">
+        <th colspan="2" class="text-center">Основная статистика</th>
     </tr>
     #foreach($entry in $statistics.entrySet())
         <tr>
-            <td>$entry.key</td>
+            <td style="font-weight: bold;">$entry.key</td>
             <td>$entry.value</td>
         </tr>
     #end
@@ -25,11 +27,11 @@
     #parse("classifierInputOptions.vm")
 </div>
 
-<table class="classification-cost-table">
-    <tr>
-        <th colspan="9">Результаты классификации</th>
-    </tr>
-    <tr>
+<center>
+    <h6 style="margin: 15px; font-weight: bold;">Результаты классификации</h6>
+</center>
+<table class="table classification-cost-table">
+    <tr class="table-header-color">
         <th>Класс</th>
         <th>TPR</th>
         <th>FPR</th>
@@ -56,10 +58,10 @@
 </table>
 
 <center>
-    <h3 style="margin: 15px;">Матрица классификации</h3>
+    <h6 style="margin: 15px; font-weight: bold;">Матрица классификации</h6>
 </center>
-<table class="confusion-table">
-    <tr>
+<table class="table confusion-table">
+    <tr class="table-header-color">
         <th>Реальное</th>
         #foreach($classValue in $confusionMatrix.classValues)
             <th>$classValue (Прогнозное)</th>
@@ -77,7 +79,7 @@
 
 <figure class="attachment">
     <p><img src="data:image/png;base64,$rocCurveImage.base64String"></p>
-    <figcaption>$rocCurveImage.title</figcaption>
 </figure>
+<div class="img-caption">Рисунок 1 $rocCurveImage.title</div>
 </body>
 </html>

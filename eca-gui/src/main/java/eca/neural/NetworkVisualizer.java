@@ -23,6 +23,8 @@ import eca.neural.functions.ActivationFunctionsDictionary;
 import eca.text.NumericFormatFactory;
 import eca.util.FileUtils;
 import eca.util.FontUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import weka.core.Attribute;
@@ -47,6 +49,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static eca.gui.ButtonUtils.createButton;
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Neural network visualization panel.
@@ -194,17 +199,17 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem textView = new JMenuItem(MODEL_TEXT_MENU);
-        textView.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.INFO_ICON)));
+        textView.setIcon(IconFontSwing.buildIcon(FontAwesome.INFO_CIRCLE, ICON_SIZE, Color.BLUE));
         JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TEXT);
-        saveImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveImage.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
-        copyImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyImage.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem options = new JMenuItem(IMAGE_OPTIONS_MENU_TEXT);
-        options.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SETTINGS_ICON)));
+        options.setIcon(IconFontSwing.buildIcon(FontAwesome.COGS, ICON_SIZE));
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
-        increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
+        increase.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE, Color.GREEN));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
-        decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
+        decrease.setIcon(IconFontSwing.buildIcon(FontAwesome.MINUS, ICON_SIZE, Color.RED));
 
         increase.addActionListener(evt -> increaseImage());
 
@@ -306,6 +311,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             this.setTitle(INFO_TITLE);
             this.setIconImage(frame.getIconImage());
             JTextPane textInfo = new JTextPane();
+            textInfo.setBackground(Color.WHITE);
             textInfo.setEditable(false);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setPreferredSize(new Dimension(PREFERRED_WIDTH, PREFERRED_HEIGHT));
@@ -346,6 +352,9 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
         static final String NODE_INDEX_FORMAT = "Узел %d";
         static final String CONTENT_TYPE = "text/html";
 
+        static final Dimension TEXT_INFO_PREFERRED_SIZE =
+                new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT);
+
         NeuronNode neuronNode;
         Popup popup;
 
@@ -369,12 +378,14 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             infoPanel.setBorder(
                     PanelBorderUtils.createTitledBorder(String.format(NODE_INDEX_FORMAT, neuronNode.neuron().index())));
             JTextPane textInfo = new JTextPane();
+            textInfo.setBackground(Color.WHITE);
             textInfo.setContentType(CONTENT_TYPE);
             textInfo.setEditable(false);
-            textInfo.setPreferredSize(new Dimension(NEURON_INFO_PREFERRED_WIDTH, NEURON_INFO_PREFERRED_HEIGHT));
             textInfo.setText(neuronNode.getNeuronInfoAsHtml());
             textInfo.setCaretPosition(0);
             JScrollPane scrollPanel = new JScrollPane(textInfo);
+            scrollPanel.setPreferredSize(TEXT_INFO_PREFERRED_SIZE);
+            scrollPanel.setMaximumSize(TEXT_INFO_PREFERRED_SIZE);
             JButton closeButton = ButtonUtils.createCloseButton();
             closeButton.addActionListener(evt -> hide());
             infoPanel.add(scrollPanel, new GridBagConstraints(0, 0, 1, 1, 1, 1,
@@ -782,15 +793,15 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
             panel.add(new JLabel(NEURON_DIAM_TEXT));
             panel.add(diamSpinner);
 
-            JButton nodeButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton nodeButton = createButton(SELECT_BUTTON_TEXT);
             nodeButton.addActionListener(evt -> selectedNodeFont =
                     JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedNodeFont));
-            JButton attrButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton attrButton = createButton(SELECT_BUTTON_TEXT);
 
             attrButton.addActionListener(evt -> selectedAttrFont =
                     JFontChooserFactory.getSelectedFontOrDefault(NeuronOptions.this, selectedAttrFont));
 
-            JButton inColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton inColorButton = createButton(SELECT_BUTTON_TEXT);
             inColorButton.addActionListener(evt -> {
                 Color newInLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                         SELECT_IN_LAYER_COLOR_TEXT, selectedInLayerColor);
@@ -798,7 +809,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedInLayerColor = newInLayerColor;
                 }
             });
-            JButton outColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton outColorButton = createButton(SELECT_BUTTON_TEXT);
             outColorButton.addActionListener(evt -> {
                 Color newOutLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                         SELECT_OUT_LAYER_COLOR_TEXT, selectedOutLayerColor);
@@ -806,7 +817,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedOutLayerColor = newOutLayerColor;
                 }
             });
-            JButton linkColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton linkColorButton = createButton(SELECT_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(NeuronOptions.this,
                         SELECT_LINK_COLOR_TEXT, selectedLinkColor);
@@ -814,7 +825,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedLinkColor = newLinkColor;
                 }
             });
-            JButton hidColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton hidColorButton = createButton(SELECT_BUTTON_TEXT);
             hidColorButton.addActionListener(evt -> {
                 Color newHiddenLayerColor = JColorChooser.showDialog(NeuronOptions.this,
                         SELECT_HIDDEN_LAYER_COLOR_TEXT, selectedHiddenLayerColor);
@@ -822,7 +833,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedHiddenLayerColor = newHiddenLayerColor;
                 }
             });
-            JButton attrColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton attrColorButton = createButton(SELECT_BUTTON_TEXT);
             attrColorButton.addActionListener(evt -> {
                 Color newAttrColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_ATTR_COLOR_TEXT,
                         selectedAttrColor);
@@ -830,7 +841,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedAttrColor = newAttrColor;
                 }
             });
-            JButton classColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton classColorButton = createButton(SELECT_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_CLASS_COLOR_TEXT,
                         selectedClassColor);
@@ -838,7 +849,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedClassColor = newClassColor;
                 }
             });
-            JButton textColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton textColorButton = createButton(SELECT_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_TEXT_COLOR,
                         selectedTextColor);
@@ -846,7 +857,7 @@ public class NetworkVisualizer extends JPanel implements ResizeableImage, Cleana
                     selectedTextColor = newTextColor;
                 }
             });
-            JButton backgroundColorButton = new JButton(SELECT_BUTTON_TEXT);
+            JButton backgroundColorButton = createButton(SELECT_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(NeuronOptions.this, SELECT_BACKGROUND_TEXT,
                         selectedBackgroundColor);

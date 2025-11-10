@@ -44,17 +44,22 @@ public enum DataFileExtension implements DescriptiveEnum {
     /**
      * Xml extension
      */
-    XML("xml", "Xml data files (*.xml)");
+    XML("xml", "Xml data files (*.xml)"),
+
+    /**
+     * Zip extension
+     */
+    ZIP("zip", "Zip data files (*.zip)");
 
     /**
      * File extension
      */
-    private String extension;
+    private final String extension;
 
     /**
      * Extension description
      */
-    private String description;
+    private final String description;
 
     DataFileExtension(String extension, String description) {
         this.extension = extension;

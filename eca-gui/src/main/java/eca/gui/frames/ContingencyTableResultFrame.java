@@ -1,7 +1,6 @@
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.PanelBorderUtils;
@@ -11,6 +10,8 @@ import eca.gui.tables.ContingencyJTable;
 import eca.report.ReportGenerator;
 import eca.report.contingency.ContingencyTableReportModel;
 import eca.report.contingency.ContingencyTableReportService;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -19,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import static eca.gui.ButtonUtils.createButton;
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 
 /**
@@ -82,6 +85,7 @@ public class ContingencyTableResultFrame extends JFrame {
         contingencyTableScrollPanel.setPreferredSize(TABLE_SCROLL_PANE_PREFERRED_SIZE);
 
         JTextPane chiSquaredResultPane = new JTextPane();
+        chiSquaredResultPane.setBackground(Color.WHITE);
         chiSquaredResultPane.setContentType(CONTENT_TYPE);
         chiSquaredResultPane.setPreferredSize(CHI_SQUARED_PANE_PREFERRED_SIZE);
         chiSquaredResultPane.setEditable(false);
@@ -93,8 +97,8 @@ public class ContingencyTableResultFrame extends JFrame {
 
         JButton closeButton = ButtonUtils.createCloseButton();
 
-        JButton saveButton = new JButton(SAVE_RESULTS_BUTTON_TEXT);
-        saveButton.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        JButton saveButton = createButton(SAVE_RESULTS_BUTTON_TEXT);
+        saveButton.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         saveButton.setPreferredSize(SAVE_BUTTON_DIM);
         saveButton.setMinimumSize(SAVE_BUTTON_DIM);
         saveButton.setMaximumSize(SAVE_BUTTON_DIM);

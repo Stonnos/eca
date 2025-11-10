@@ -2,6 +2,7 @@
     margin: auto;
     width: 50%;
     margin-bottom: 30px;
+    background: white;
 }
 
 .classification-cost-table {
@@ -9,6 +10,7 @@
     width: 80%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .confusion-table {
@@ -16,6 +18,7 @@
     width: 90%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .logistic-coefficients-table {
@@ -23,19 +26,20 @@
     width: 90%;
     overflow: scroll;
     margin-bottom: 30px;
+    background: white;
 }
 
 .attachment {
-    display: block;
     text-align: center;
-    font-style: italic;
     margin-top: 20px;
     margin-bottom: 5px;
 }
 
 .inputOptions {
     margin: auto;
+    width: 50%;
     margin-bottom: 30px;
+    background: white;
 }
 
 .title {
@@ -43,21 +47,30 @@
     margin-bottom: 20px;
 }
 
-th, td {
-    border: 1px solid black;
-    background: #e2e2e2;
-}
-
 body {
-    background: rgb(198, 226, 255);
+    background: #EDEEF0;
+    font-family: 'Arial';
 }
 
 .attr {
-    font-family: initial !important;
     font-size: 16px !important
 }
 
 .val {
-    font-family: initial !important;
     font-size: 16px !important;
+}
+
+.img-scroll-pane {
+    margin: 0 auto;
+    justify-content: center;
+    text-align: center;
+    max-height: 1080px;
+    max-width: 1920px;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+.img-caption {
+    display: block;
+    text-align: center;
 }

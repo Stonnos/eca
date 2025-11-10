@@ -1,11 +1,12 @@
 package eca.gui.frames;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.config.registry.SingletonRegistry;
 import eca.gui.ButtonUtils;
 import eca.gui.choosers.HtmlChooser;
 import eca.gui.logging.LoggerUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -17,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.removeComponents;
 
 /**
@@ -46,6 +48,7 @@ public class HtmlFrame extends JFrame {
         }
         inputOptionsPane.setContentType(CONTENT_TYPE);
         inputOptionsPane.setEditable(false);
+        inputOptionsPane.setBackground(Color.WHITE);
         inputOptionsPane.setPreferredSize(OPTIONS_PANE_PREFERRED_SIZE);
         JScrollPane scrollPanel = new JScrollPane(inputOptionsPane);
         JButton closeButton = ButtonUtils.createCloseButton();
@@ -62,7 +65,7 @@ public class HtmlFrame extends JFrame {
         JMenuBar menu = new JMenuBar();
         JMenu fileMenu = new JMenu(FILE_MENU_TEXT);
         JMenuItem saveMenu = new JMenuItem(SAVE_MENU_TEXT);
-        saveMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         fileMenu.add(saveMenu);
         menu.add(fileMenu);
         ActionListener saveDataActionListener = new SaveDataActionListener();

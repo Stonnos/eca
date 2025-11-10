@@ -7,9 +7,9 @@ package eca.gui.tables;
 
 
 import eca.buffer.StringCopier;
-import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.gui.dialogs.JFontChooser;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -18,15 +18,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static eca.gui.GuiUtils.ICON_SIZE;
+
 /**
  * Basic class for all tables.
  *
  * @author Roman Batygin
  */
 public class JDataTableBase extends JTable {
-
-    private static final ConfigurationService CONFIG_SERVICE =
-            ConfigurationService.getApplicationConfigService();
 
     private static final String FONT_SELECTION_MENU_TEXT = "Выбор шрифта";
     private static final String AUTO_SIZE_MENU_TEXT = "Автомасштабирование";
@@ -37,9 +36,9 @@ public class JDataTableBase extends JTable {
     private static final int COLUMN_MIN_WIDTH = 15;
     private static final int INDEX_COLUMN = 0;
     private static final int ROW_HEIGHT_SHIFT = 6;
-    private static final Color BORDER_COLOR = new Color(133, 133, 133);
-    private static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
-    private static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
+    public static final Color BORDER_COLOR = new Color(199, 201, 203);
+    public static final Color HEADER_BACKGROUND_COLOR = new Color(192, 192, 192);
+    public static final Color BACKGROUND_COLOR = new Color(224, 224, 224);
 
     private JCheckBoxMenuItem resizeMenu;
 
@@ -98,7 +97,7 @@ public class JDataTableBase extends JTable {
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem fontMenu = new JMenuItem(FONT_SELECTION_MENU_TEXT);
-        fontMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.FONT_ICON)));
+        fontMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FONT, ICON_SIZE));
 
         fontMenu.addActionListener(e -> {
             JFontChooser chooser = new JFontChooser(null, JDataTableBase.this.getFont());
@@ -113,9 +112,9 @@ public class JDataTableBase extends JTable {
         resizeMenu.addItemListener(e -> setAutoResizeOffMode(!resizeMenu.getState()));
         //-----------------------------------
         JMenuItem copyMenu = new JMenuItem(DATA_COPY_MENU_TEXT);
-        copyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem copyWithHeaderMenu = new JMenuItem(ALL_DATA_COPY_MENU_TEXT);
-        copyWithHeaderMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyWithHeaderMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
 
         copyMenu.addActionListener(new ActionListener() {
 
@@ -160,10 +159,10 @@ public class JDataTableBase extends JTable {
         }
         this.getTableHeader().setReorderingAllowed(false);
         this.getTableHeader().setBackground(HEADER_BACKGROUND_COLOR);
-        this.getTableHeader().setBorder(BorderFactory.
-                createEtchedBorder(BORDER_COLOR, null));
         this.createPopupMenu();
         this.font(DEFAULT_FONT);
+        this.setBorder(BorderFactory.
+                createEtchedBorder(BORDER_COLOR, null));
         this.setAutoResizeOff(true);
     }
 
@@ -171,6 +170,10 @@ public class JDataTableBase extends JTable {
         this.setFont(font);
         this.setRowHeight(this.getFont().getSize() + ROW_HEIGHT_SHIFT);
         this.getTableHeader().setFont(new Font(font.getName(), Font.BOLD, font.getSize() + 2));
+        this.customizeChangeFont(font);
+    }
+
+    protected void customizeChangeFont(Font font) {
     }
 
     /**

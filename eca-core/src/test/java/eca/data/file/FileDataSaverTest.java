@@ -13,6 +13,7 @@ import static eca.AssertionUtils.assertInstances;
 import static eca.TestHelperUtils.DATA_CREDIT_ARFF;
 import static eca.TestHelperUtils.getTargetPath;
 import static eca.TestHelperUtils.loadInstances;
+import static eca.data.FileUtils.SAVE_DATA_EXTENSIONS;
 
 /**
  * Unit tests for {@link FileDataSaver} class.
@@ -35,7 +36,7 @@ class FileDataSaverTest {
 
     @Test
     void testSaveDataIntoFile() throws Exception {
-        for (DataFileExtension extension : DataFileExtension.values()) {
+        for (DataFileExtension extension : SAVE_DATA_EXTENSIONS) {
             File file = new File(getTargetPath(),
                     String.format(DATA_FORMAT, System.currentTimeMillis(), extension.getExtension()));
             fileDataSaver.saveData(file, expected);

@@ -108,9 +108,13 @@ public class ScatterDiagramsFrame extends JFrame {
                 new Insets(5, 5, 10, 5), 0, 0));
 
         JPanel optionsPanel = new JPanel(new FlowLayout());
-        optionsPanel.add(new JLabel(X_LABEL));
+        JLabel attrXLabel = new JLabel(X_LABEL);
+        attrXLabel.setFont(attrXLabel.getFont().deriveFont(Font.BOLD));
+        JLabel attrYLabel = new JLabel(Y_LABEL);
+        attrYLabel.setFont(attrYLabel.getFont().deriveFont(Font.BOLD));
+        optionsPanel.add(attrXLabel);
         optionsPanel.add(xAttributeBox);
-        optionsPanel.add(new JLabel(Y_LABEL));
+        optionsPanel.add(attrYLabel);
         optionsPanel.add(yAttributeBox);
         optionsPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         plotPanel.add(optionsPanel, new GridBagConstraints(0, 1, 4, 1, 1, 1,

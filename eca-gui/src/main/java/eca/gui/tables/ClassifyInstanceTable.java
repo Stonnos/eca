@@ -120,11 +120,11 @@ public class ClassifyInstanceTable extends JDataTableBase {
                             String.format(ATTR_VALUE_NOT_SPECIFIED_ERROR_FORMAT, attribute.name()));
                 }
                 if (attribute.isDate()) {
-                    instance.setValue(attribute, parseDate(attribute.name(), strValue).getTime());
+                    instance.setValue(attribute, parseDate(attribute.name(), strValue, attribute.index()).getTime());
                 } else {
                     double value = decimalFormat.parse(strValue).doubleValue();
                     if (attribute.isNumeric()) {
-                        isNumericOverflow(attribute.name(), strValue);
+                        isNumericOverflow(attribute.name(), strValue, attribute.index());
                     } else if (attribute.isNominal() &&
                             (!strValue.matches(INTEGER_REGEX) || !attribute.isInRange(value))) {
                         throw new IllegalArgumentException(

@@ -1,6 +1,7 @@
 <html>
 <head>
     <style>
+       #include("styles/bootstrap/bootstrap.min.css")
        #include("styles/contingency-table.css")
     </style>
 </head>
@@ -10,10 +11,10 @@
     <h2 class="title">Таблица сопряженности для атрибутов $rowAttrName и $colAttrName</h2>
 </center>
 
-<table class="contingency-table">
+<table class="table table-bordered contingency-table">
     <tr>
-        <th rowspan="2">$rowAttrName</th>
-        <th colspan="$colAttrValues.size()">$colAttrName</th>
+        <th rowspan="2" class="text-center">$rowAttrName</th>
+        <th colspan="$colAttrValues.size()" class="text-center">$colAttrName</th>
         <th rowspan="2">Всего</th>
     </tr>
     <tr>

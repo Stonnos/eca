@@ -2,7 +2,6 @@ package eca.gui.service;
 
 import eca.gui.actions.CallbackAction;
 import eca.gui.dialogs.ExecutorDialog;
-import eca.gui.frames.results.ClassificationResultsFrameBase;
 import lombok.experimental.UtilityClass;
 
 import java.awt.*;

@@ -81,6 +81,13 @@ public class RabbitClient {
     @Setter
     private String experimentRequestQueue;
 
+    /**
+     * Auth token for incoming message
+     */
+    @Getter
+    @Setter
+    private String authToken;
+
     private final ClassifierOptionsAdapter classifierOptionsAdapter = new ClassifierOptionsAdapter();
 
     /**
@@ -98,7 +105,7 @@ public class RabbitClient {
         log.info("Starting to send request with correlation id [{}] to eca - service for model '{}', data uuid '{}'.",
                 correlationId, classifier.getClass().getSimpleName(), dataUuid);
         EvaluationRequestDto evaluationRequestDto = createEvaluationRequest(classifier, dataUuid);
-        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
+        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId, authToken);
         rabbitSender.sendMessage(evaluationRequestQueue, evaluationRequestDto, basicProperties);
         log.info("Request with correlation id [{}] has been sent for model '{}', data uuid '{}'.",
                 correlationId, classifier.getClass().getSimpleName(), dataUuid);
@@ -116,7 +123,7 @@ public class RabbitClient {
         log.info(
                 "Starting to send request with correlation id [{}] to eca - service for experiment '{}', data uuid '{}'.",
                 correlationId, experimentRequestDto.getExperimentType(), experimentRequestDto.getDataUuid());
-        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
+        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId, authToken);
         rabbitSender.sendMessage(experimentRequestQueue, experimentRequestDto, basicProperties);
         log.info("Request with correlation id [{}] has been sent for experiment {}.", correlationId,
                 experimentRequestDto.getExperimentType());
@@ -133,7 +140,7 @@ public class RabbitClient {
         Objects.requireNonNull(dataUuid, "Instances must be specified!");
         log.info("Starting to send evaluation request with correlation id [{}] to eca - service for data uuid '{}'.",
                 correlationId, dataUuid);
-        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId);
+        AMQP.BasicProperties basicProperties = buildMessageProperties(replyTo, correlationId, authToken);
         rabbitSender.sendMessage(evaluationOptimizerRequestQueue, new InstancesRequest(dataUuid), basicProperties);
         log.info("Evaluation request with correlation id [{}] has been sent to eca - service for data uuid '{}'.",
                 correlationId, dataUuid);

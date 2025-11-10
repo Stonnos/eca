@@ -17,7 +17,7 @@ public class ClassifierBuilderDialog extends AbstractProgressDialog {
     private IterativeBuilder builder;
 
     public ClassifierBuilderDialog(Window parent, IterativeBuilder builder, String loadingMessage) {
-        super(parent, loadingMessage, false, true, true);
+        super(parent, loadingMessage, false, true, true, true);
         this.builder = builder;
     }
 

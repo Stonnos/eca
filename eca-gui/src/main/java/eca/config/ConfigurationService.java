@@ -8,6 +8,7 @@ import eca.util.FileUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,8 @@ public class ConfigurationService {
 
     private static final String APPLICATION_CONFIG_PATH = "application-config.json";
     private static final String ECA_SERVICE_CONFIG_PATH = "eca-service-config.json";
+
+    private static final String UI_TEXT_PROPERTIES_PATH = "ui-text-properties.json";
     private static final String DB_CONFIG_PATH = "db-config.json";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -70,7 +73,7 @@ public class ConfigurationService {
      */
     public EcaServiceConfig getEcaServiceConfig() {
         if (ecaServiceConfig == null) {
-            if (Boolean.TRUE.equals(getApplicationConfig().getProduction())) {
+            if (ConfigStorageType.FILE.equals(applicationConfig.getConfigStorageType())) {
                 ecaServiceConfig = loadConfig(getEcaServiceConfigFile(), EcaServiceConfig.class);
             } else {
                 ecaServiceConfig = loadConfig(ECA_SERVICE_CONFIG_PATH, EcaServiceConfig.class);
@@ -85,10 +88,10 @@ public class ConfigurationService {
      * @throws IOException in case an I/O error
      */
     public void saveEcaServiceConfig() throws IOException {
-        if (!Boolean.TRUE.equals(getApplicationConfig().getProduction())) {
-            log.warn("Eca - service options saving is available only in production mode!");
-        } else {
-            OBJECT_MAPPER.writeValue(getEcaServiceConfigFile(), ecaServiceConfig);
+        if (ConfigStorageType.FILE.equals(applicationConfig.getConfigStorageType())) {
+            File file = getEcaServiceConfigFile();
+            OBJECT_MAPPER.writeValue(file, ecaServiceConfig);
+            log.info("Eca service config has been saved to file [{}]", file.getAbsolutePath());
         }
     }
 
@@ -117,10 +120,22 @@ public class ConfigurationService {
         return getClass().getClassLoader().getResource(iconTypeStringMap.get(iconType));
     }
 
+    /**
+     * Loads ui text properties
+     */
+    public void loadUiTextProperties() {
+        Map<String, String> uiTextMap = loadConfig(UI_TEXT_PROPERTIES_PATH, new TypeReference<>() {
+        });
+        uiTextMap.forEach(UIManager::put);
+    }
+
     private <T> T loadConfig(String fileName, Class<T> configType) {
+        log.info("Loads config from file [{}]", fileName);
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
-            return OBJECT_MAPPER.readValue(inputStream, configType);
+            T config = OBJECT_MAPPER.readValue(inputStream, configType);
+            log.info("Config has been loaded from file [{}]", fileName);
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
             throw new ConfigException(ex);
@@ -129,7 +144,10 @@ public class ConfigurationService {
 
     private <T> T loadConfig(File file, Class<T> configType) {
         try {
-            return OBJECT_MAPPER.readValue(file, configType);
+            log.info("Loads config from file [{}]", file.getAbsolutePath());
+            T config = OBJECT_MAPPER.readValue(file, configType);
+            log.info("Config has been loaded from file [{}]", file.getAbsolutePath());
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, file.getAbsolutePath(), ex.getMessage()));
             throw new ConfigException(ex);
@@ -139,7 +157,10 @@ public class ConfigurationService {
     private <T> T loadConfig(String fileName, TypeReference<T> tTypeReference) {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
                 fileName)) {
-            return OBJECT_MAPPER.readValue(inputStream, tTypeReference);
+            log.info("Loads config from file [{}]", fileName);
+            T config =  OBJECT_MAPPER.readValue(inputStream, tTypeReference);
+            log.info("Config has been loaded from file [{}]", fileName);
+            return config;
         } catch (IOException ex) {
             log.error(String.format(ERROR_FORMAT, fileName, ex.getMessage()));
             throw new ConfigException(ex);

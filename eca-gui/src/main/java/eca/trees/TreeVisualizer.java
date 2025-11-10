@@ -19,6 +19,8 @@ import eca.trees.rules.AbstractRule;
 import eca.trees.rules.NumericRule;
 import eca.util.FileUtils;
 import eca.util.FontUtils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 
@@ -37,6 +39,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static eca.gui.ButtonUtils.createButton;
+import static eca.gui.GuiUtils.ICON_SIZE;
 
 /**
  * Decision tree visualization panel.
@@ -164,15 +169,15 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
     private void createPopupMenu() {
         JPopupMenu popMenu = new JPopupMenu();
         JMenuItem saveImage = new JMenuItem(SAVE_IMAGE_MENU_TITLE);
-        saveImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveImage.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         JMenuItem copyImage = new JMenuItem(COPY_IMAGE_MENU_TEXT);
-        copyImage.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COPY_ICON)));
+        copyImage.setIcon(IconFontSwing.buildIcon(FontAwesome.CLONE, ICON_SIZE));
         JMenuItem options = new JMenuItem(OPTIONS_MENU_TEXT);
-        options.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SETTINGS_ICON)));
+        options.setIcon(IconFontSwing.buildIcon(FontAwesome.COGS, ICON_SIZE));
         JMenuItem increase = new JMenuItem(INCREASE_IMAGE_MENU_TEXT);
-        increase.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.PLUS_ICON)));
+        increase.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE, Color.GREEN));
         JMenuItem decrease = new JMenuItem(DECREASE_IMAGE_MENU_TEXT);
-        decrease.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.MINUS_ICON)));
+        decrease.setIcon(IconFontSwing.buildIcon(FontAwesome.MINUS, ICON_SIZE, Color.RED));
         options.addActionListener(evt -> {
             TreeOptions frame = new TreeOptions(null);
             frame.setVisible(true);
@@ -565,14 +570,14 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
             panel.add(new JLabel(NODE_STROKE_TITLE));
             panel.add(strokeSpinner);
 
-            JButton nodeButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton nodeButton = createButton(CHOOSE_BUTTON_TEXT);
             nodeButton.addActionListener(evt -> selectedNodeFont =
                     JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedNodeFont));
-            JButton ruleButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton ruleButton = createButton(CHOOSE_BUTTON_TEXT);
             ruleButton.addActionListener(evt -> selectedRuleFont =
                     JFontChooserFactory.getSelectedFontOrDefault(TreeOptions.this, selectedRuleFont));
 
-            JButton ruleColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton ruleColorButton = createButton(CHOOSE_BUTTON_TEXT);
             ruleColorButton.addActionListener(evt -> {
                 Color newRuleColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_RULE_COLOR_TEXT,
                         selectedRuleColor);
@@ -581,7 +586,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton textColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton textColorButton = createButton(CHOOSE_BUTTON_TEXT);
             textColorButton.addActionListener(evt -> {
                 Color newTextColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_TEXT_COLOR,
                         selectedTextColor);
@@ -590,7 +595,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton linkColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton linkColorButton = createButton(CHOOSE_BUTTON_TEXT);
             linkColorButton.addActionListener(evt -> {
                 Color newLinkColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LINK_COLOR_TEXT,
                         selectedLinkColor);
@@ -599,7 +604,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton nodeColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton nodeColorButton = createButton(CHOOSE_BUTTON_TEXT);
             nodeColorButton.addActionListener(evt -> {
                 Color newLeafColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_COLOR_TEXT,
                         selectedNodeColor);
@@ -608,7 +613,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton leafColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton leafColorButton = createButton(CHOOSE_BUTTON_TEXT);
             leafColorButton.addActionListener(evt -> {
                 Color color = JColorChooser.showDialog(TreeOptions.this, CHOOSE_LEAF_COLOR_TEXT,
                         selectedLeafColor);
@@ -617,7 +622,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton classColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton classColorButton = createButton(CHOOSE_BUTTON_TEXT);
             classColorButton.addActionListener(evt -> {
                 Color newClassColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_CLASS_COLOR_TEXT,
                         selectedClassColor);
@@ -626,7 +631,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton borderColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton borderColorButton = createButton(CHOOSE_BUTTON_TEXT);
             borderColorButton.addActionListener(evt -> {
                 Color newBorderColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_NODE_BORDER_COLOR_TEXT,
                         selectedBorderColor);
@@ -635,7 +640,7 @@ public class TreeVisualizer extends JPanel implements ResizeableImage, Cleanable
                 }
             });
 
-            JButton backgroundColorButton = new JButton(CHOOSE_BUTTON_TEXT);
+            JButton backgroundColorButton = createButton(CHOOSE_BUTTON_TEXT);
             backgroundColorButton.addActionListener(evt -> {
                 Color newBackgroundColor = JColorChooser.showDialog(TreeOptions.this, CHOOSE_BACKGROUND_COLOR_TEXT,
                         backgroundColor);

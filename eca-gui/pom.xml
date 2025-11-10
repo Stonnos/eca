@@ -5,12 +5,12 @@
     <parent>
         <artifactId>eca</artifactId>
         <groupId>eca</groupId>
-        <version>7.0</version>
+        <version>7.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>eca-gui</artifactId>
-    <version>7.0</version>
+    <version>7.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -20,7 +20,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <jre.version>1.8.0</jre.version>
         <mysql.version>8.0.26</mysql.version>
-        <postresql.version>42.2.23</postresql.version>
+        <postresql.version>42.6.0</postresql.version>
         <mssql.version>7.2.1.jre8</mssql.version>
         <unaccess.version>4.0.4</unaccess.version>
         <sqllite.version>3.27.2.1</sqllite.version>
@@ -31,6 +31,10 @@
         <l4j.maxHeapSize>4096</l4j.maxHeapSize>
         <sonar.coverage.exclusions>**/*.*</sonar.coverage.exclusions>
         <installer-script>compile-installer.bat</installer-script>
+        <jvm-options.fileName>@jvm.options</jvm-options.fileName>
+        <flatlaf.version>3.6.1</flatlaf.version>
+        <jifont-swing.version>1.0.1</jifont-swing.version>
+        <jifont-swing-fontawesome.version>4.7.0.1</jifont-swing-fontawesome.version>
     </properties>
 
     <profiles>
@@ -40,21 +44,21 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <production>false</production>
+                <configStorageType>IN_MEMORY</configStorageType>
             </properties>
         </profile>
 
         <profile>
             <id>prod</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
         </profile>
 
         <profile>
             <id>installer</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
 
             <build>
@@ -87,7 +91,7 @@
         <profile>
             <id>build-artifacts</id>
             <properties>
-                <production>true</production>
+                <configStorageType>FILE</configStorageType>
             </properties>
 
            <build>
@@ -192,6 +196,24 @@
             <version>${sqllite.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.formdev</groupId>
+            <artifactId>flatlaf</artifactId>
+            <version>${flatlaf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-swing</artifactId>
+            <version>${jifont-swing.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jiconfont</groupId>
+            <artifactId>jiconfont-font_awesome</artifactId>
+            <version>${jifont-swing-fontawesome.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -238,6 +260,7 @@
                                     <directory>src/main/resources</directory>
                                     <excludes>
                                         <exclude>application-config.json</exclude>
+                                        <exclude>ui-text-properties.json</exclude>
                                         <exclude>db-config.json</exclude>
                                         <exclude>**/vm-templates/**</exclude>
                                         <exclude>logback.xml</exclude>
@@ -280,7 +303,7 @@
                                 <minVersion>${jre.version}</minVersion>
                                 <maxHeapSize>${l4j.maxHeapSize}</maxHeapSize>
                                 <opts>
-                                    <opt>${jdk17.options}</opt>
+                                    <opt>${jvm-options.fileName}</opt>
                                 </opts>
                             </jre>
                             <splash>

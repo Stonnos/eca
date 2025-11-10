@@ -14,8 +14,6 @@ import lombok.experimental.UtilityClass;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.google.common.collect.Maps.newHashMap;
-
 /**
  * Experiment names factory.
  *

@@ -29,6 +29,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 
+import static eca.gui.ButtonUtils.createButton;
+
 /**
  * @author Roman Batygin
  */
@@ -216,7 +218,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         algorithmsPane.setPreferredSize(algorithmsPaneDim);
         algorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(AVAILABLE_CLASSIFIERS_TITLE));
 
-        final JButton addButton = new JButton(ADD_BUTTON_TEXT);
+        final JButton addButton = createButton(ADD_BUTTON_TEXT);
         addButton.setEnabled(false);
         addButton.addActionListener(e -> baseClassifiersListModel.addElement(algorithms.getSelectedValue()));
         algorithms.addListSelectionListener(e -> addButton.setEnabled(true));
@@ -237,7 +239,7 @@ public class EnsembleOptionsDialog extends ClassifierOptionsDialogBase<AbstractH
         selectedPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
         selectedAlgorithmsPanel.setBorder(PanelBorderUtils.createTitledBorder(SELECTED_CLASSIFIERS_TITLE));
         selectedPane.setPreferredSize(algorithmsPaneDim);
-        final JButton removeButton = new JButton(DELETE_BUTTON_TEXT);
+        final JButton removeButton = createButton(DELETE_BUTTON_TEXT);
         removeButton.setEnabled(false);
         removeButton.addActionListener(evt -> {
             baseClassifiersListModel.remove(selectedAlgorithms.getSelectedIndex());

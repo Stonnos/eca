@@ -1,22 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eca.gui.tables;
 
 import eca.config.ConfigurationService;
-import eca.config.IconType;
 import eca.core.InstancesDataModel;
-import eca.filter.ConstantAttributesFilter;
 import eca.gui.Cleanable;
 import eca.gui.dialogs.CreateNewInstanceDialog;
 import eca.gui.dialogs.JTextFieldMatrixDialog;
 import eca.gui.logging.LoggerUtils;
 import eca.gui.renderers.MissingCellRenderer;
+import eca.gui.renderers.TableHeaderIconRenderer;
 import eca.gui.tables.models.InstancesTableModel;
-import eca.gui.text.DoubleDocument;
+import eca.model.DataSetList;
 import eca.util.Entry;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.core.Attribute;
@@ -29,20 +26,20 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import java.awt.event.InputEvent;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.showFormattedErrorMessageDialog;
-import static eca.gui.service.ValidationService.isNumericOverflow;
-import static eca.gui.service.ValidationService.parseDate;
 
 /**
  * @author Roman Batygin
@@ -70,11 +67,18 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private static final String NOT_ENOUGH_ATTRS_ERROR_MESSAGE = "Выберите хотя бы 2 атрибута!";
     private static final String BAD_CLASS_TYPE_ERROR_MESSAGE = "Атрибут класса должен иметь категориальный тип!";
     private static final String CLASS_NOT_SELECTED_ERROR_MESSAGE = "Не выбран атрибут класса!";
-    private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT = "Недопустимые значения числового атрибута %s!";
+    private static final String INCORRECT_NUMERIC_VALUES_ERROR_FORMAT =
+            "Недопустимые значения числового атрибута %s в строке %d!";
 
     private static final int MIN_NUMBER_OF_SELECTED_ATTRIBUTES = 2;
     private static final String CONSTANT_ATTR_ERROR_MESSAGE =
             "После удаления константных атрибутов не осталось ни одного входного атрибута!";
+
+    private static final String INCORRECT_DATE_VALUES_ERROR_FORMAT =
+            "Формат даты для атрибута '%s' в строке %d должен быть следующим: %s";
+    private static final int SORT_ICON_SIZE = 16;
+    private static final Icon DESC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_DOWN, SORT_ICON_SIZE);
+    private static final Icon ASC_ICON = IconFontSwing.buildIcon(FontAwesome.CARET_UP, SORT_ICON_SIZE);
 
     private AttributesTable attributesTable;
     private JComboBox<String> classBox;
@@ -88,16 +92,17 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private int classModificationCount;
     private Instances lastCreatedInstances;
 
+    @Getter
     private String relationName;
     private final String uuid;
 
-    private final ConstantAttributesFilter constantAttributesFilter = new ConstantAttributesFilter();
+    private int lastSortColumn = -1;
+    private boolean lastSortAscending = true;
 
     public InstancesTable(Instances data,
                           JTextField numInstances,
-                          JComboBox<String> classBox,
-                          int digits) {
-        super(new InstancesTableModel(data, digits));
+                          JComboBox<String> classBox) {
+        super(new InstancesTableModel(data));
         this.classBox = classBox;
         this.uuid = UUID.randomUUID().toString();
         this.relationName = data.relationName();
@@ -107,6 +112,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         }
         this.createPopupMenuList(numInstances);
         this.addClassAttributeListener();
+        this.setHeaderSortIconRender();
         this.addSortListenerToHeader();
     }
 
@@ -116,12 +122,7 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     @Override
     public void clear() {
         getInstancesTableModel().clear();
-        data().clear();
         lastCreatedInstances = null;
-    }
-
-    public String getRelationName() {
-        return relationName;
     }
 
     public void setRelationName(String newRelationName) {
@@ -140,19 +141,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         return (InstancesTableModel) this.getModel();
     }
 
-    /**
-     * Returns initial instances.
-     *
-     * @return initial instances
-     */
-    public Instances data() {
-        return getInstancesTableModel().data();
-    }
-
-    public AttributesTable getAttributesTable() {
-        return attributesTable;
-    }
-
     public void setAttributesTable(AttributesTable attributesTable) {
         this.attributesTable = attributesTable;
     }
@@ -164,17 +152,16 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private void createPopupMenuList(final JTextField numInstances) {
         JPopupMenu popMenu = this.getComponentPopupMenu();
         JMenuItem deleteMenu = new JMenuItem(DELETE_ATTR_MENU_TEXT);
-        deleteMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ICON)));
+        deleteMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
         JMenuItem deleteAllMenu = new JMenuItem(DELETE_ATTRS_MENU_TEXT);
-        deleteAllMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
+        deleteAllMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TIMES, ICON_SIZE));
         JMenuItem insertMenu = new JMenuItem(ADD_INSTANCE_MENU_TEXT);
-        insertMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ADD_ICON)));
+        insertMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PLUS, ICON_SIZE));
         JMenuItem clearMenu = new JMenuItem(CLEAR_DATA_MENU_TEXT);
-        clearMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CLEAR_ICON)));
+        clearMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.TRASH_O, ICON_SIZE));
         JMenuItem missMenu = new JMenuItem(DELETE_MISSING_VALUES_MENU_TEXT);
-        missMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DELETE_ALL_ICON)));
         JMenuItem reValueMenu = new JMenuItem(REPLACE_ATTRS_VALUES_MENU_TEXT);
-        reValueMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.REPLACE_ICON)));
+        reValueMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.RETWEET, ICON_SIZE));
         popMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override
@@ -266,23 +253,20 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
 
     /**
      * Creates filtered instances taking into selected attributes with assigned class attribute.
-     * {@link ConstantAttributesFilter} is used for filtering instances.
      *
      * @return created instances
-     * @throws Exception in case of error
      */
-    public InstancesDataModel createAndFilterValidData() throws Exception {
+    public InstancesDataModel createAndFilterValidData() {
         if (isInstancesModified()) {
             Instances newDataSet = createInstances(getRelationName());
             if (!attributesTable.isSelected(getClassIndex())) {
                 throw new IllegalStateException(CLASS_NOT_SELECTED_ERROR_MESSAGE);
             }
             newDataSet.setClass(newDataSet.attribute(classBox.getSelectedItem().toString()));
-            Instances filterInstances = constantAttributesFilter.filterInstances(newDataSet);
-            if (filterInstances.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
+            if (newDataSet.numAttributes() < MIN_NUMBER_OF_SELECTED_ATTRIBUTES) {
                 throw new IllegalArgumentException(CONSTANT_ATTR_ERROR_MESSAGE);
             }
-            updateLastCreatedInstances(filterInstances);
+            updateLastCreatedInstances(newDataSet);
         }
         return InstancesDataModel.builder()
                 .uuid(uuid)
@@ -295,9 +279,8 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
      * Creates instances taking into selected attributes and class attribute if specified.
      *
      * @return created instances
-     * @throws Exception in case of error
      */
-    public InstancesDataModel createSimpleData() throws Exception {
+    public InstancesDataModel createSimpleData() {
         Instances instances = createInstances(getRelationName());
         if (attributesTable.isSelected(getClassIndex())) {
             instances.setClass(instances.attribute(classBox.getSelectedItem().toString()));
@@ -336,6 +319,28 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         validateValues();
     }
 
+    @Override
+    protected void customizeChangeFont(Font font) {
+        IntStream.range(0, getColumnCount()).forEach(i -> {
+            TableColumn tableColumn = getColumnModel().getColumn(i);
+            if (tableColumn.getHeaderRenderer() != null) {
+                var tableHeaderIconRenderer = (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                tableHeaderIconRenderer.setLabelFont(new Font(getTableHeader().getFont().getName(),
+                        getTableHeader().getFont().getStyle(), getTableHeader().getFont().getSize()));
+            }
+        });
+    }
+
+    private void setHeaderSortIconRender() {
+        IntStream.range(0, getColumnCount()).forEach(i -> {
+            TableColumn tableColumn = getColumnModel().getColumn(i);
+            var tableHeaderIconRenderer = new TableHeaderIconRenderer();
+            tableHeaderIconRenderer.setLabelFont(new Font(getTableHeader().getFont().getName(),
+                    getTableHeader().getFont().getStyle(), getTableHeader().getFont().getSize()));
+            tableColumn.setHeaderRenderer(tableHeaderIconRenderer);
+        });
+    }
+
     private void addSortListenerToHeader() {
         setColumnSelectionAllowed(false);
         JTableHeader header = getTableHeader();
@@ -349,15 +354,40 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
                     if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1 && !e.isAltDown() && column > 0) {
                         try {
                             validateColumn(column);
-                            int shiftPressed = e.getModifiers() & InputEvent.SHIFT_MASK;
-                            boolean ascending = (shiftPressed == 0);
+                            boolean ascending = isAscending(column);
                             getInstancesTableModel().sort(column, attributesTable.getAttributeType(column - 1),
                                     ascending);
+                            changeSortIcon(ascending, column);
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             showFormattedErrorMessageDialog(InstancesTable.this.getRootPane(), ex.getMessage());
                         }
                     }
+                }
+
+                void changeSortIcon(boolean ascending, int column) {
+                    if (lastSortColumn > 0) {
+                        TableColumn tableColumn = getColumnModel().getColumn(lastSortColumn);
+                        TableHeaderIconRenderer tableHeaderIconRenderer =
+                                (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                        tableHeaderIconRenderer.setIcon(null);
+                    }
+                    Icon icon = ascending ? ASC_ICON : DESC_ICON;
+                    lastSortColumn = column;
+                    lastSortAscending = ascending;
+                    TableColumn tableColumn = getColumnModel().getColumn(column);
+                    TableHeaderIconRenderer tableHeaderIconRenderer =
+                            (TableHeaderIconRenderer) tableColumn.getHeaderRenderer();
+                    tableHeaderIconRenderer.setIcon(icon);
+                    tableHeaderIconRenderer.setLabelFont(getTableHeader().getFont());
+                    getTableHeader().repaint();
+                }
+
+                boolean isAscending(int column) {
+                    if (lastSortColumn < 0 || lastSortColumn != column) {
+                        return false;
+                    }
+                    return !lastSortAscending;
                 }
             };
             header.addMouseListener(listMouseListener);
@@ -375,45 +405,48 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private void validateColumn(int j) {
         String attribute = getColumnName(j);
         int attrIndex = j - 1;
-        for (int k = 0; k < getRowCount(); k++) {
-            String str = (String) getValueAt(k, j);
+        DataSetList dataSetList = getDataSetList();
+        for (int k = 0; k < dataSetList.size(); k++) {
+            Object str = dataSetList.getValues().get(k).get(attrIndex);
             if (str != null) {
                 try {
                     if (attributesTable.isNumeric(attrIndex)) {
-                        if (!str.matches(DoubleDocument.DOUBLE_FORMAT)) {
+                        if (!(str instanceof Double)) {
                             throw new IllegalArgumentException(
-                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute));
+                                    String.format(INCORRECT_NUMERIC_VALUES_ERROR_FORMAT, attribute, k + 1));
                         }
-                        isNumericOverflow(attribute, str);
                     }
-                    if (attributesTable.isDate(attrIndex)) {
-                        parseDate(attribute, str);
+                    if (attributesTable.isDate(attrIndex) && !(str instanceof Date)) {
+                        throw new IllegalArgumentException(String.format(INCORRECT_DATE_VALUES_ERROR_FORMAT,
+                                attribute, k + 1, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                     }
                 } catch (Exception ex) {
-                    changeSelection(k, j, false, false);
                     throw new IllegalArgumentException(ex.getMessage());
                 }
             }
         }
     }
 
-    private Instances createInstances(String relationName) throws ParseException {
-        Instances newDataSet = new Instances(relationName, createAttributesList(), getRowCount());
-        DecimalFormat format = getInstancesTableModel().format();
-        for (int i = 0; i < getRowCount(); i++) {
+    private Instances createInstances(String relationName) {
+        DataSetList dataSetList = getDataSetList();
+        Instances newDataSet = new Instances(relationName, createAttributesList(), dataSetList.size());
+        for (int i = 0; i < dataSetList.size(); i++) {
             Instance obj = new DenseInstance(newDataSet.numAttributes());
             obj.setDataset(newDataSet);
             for (int j = 0; j < newDataSet.numAttributes(); j++) {
                 Attribute attribute = newDataSet.attribute(j);
-                String valueAt = (String) getValueAt(i, getAttrIndex(attribute.name()));
+                Object valueAt = dataSetList.getTypedValue(i, j);
                 if (valueAt == null) {
                     obj.setValue(attribute, Utils.missingValue());
                 } else if (attribute.isDate()) {
-                    obj.setValue(attribute, attribute.parseDate(valueAt));
+                    Date date = (Date) valueAt;
+                    obj.setValue(attribute, date.getTime());
                 } else if (attribute.isNumeric()) {
-                    obj.setValue(attribute, format.parse(valueAt).doubleValue());
+                    Double doubleValue = (Double) valueAt;
+                    obj.setValue(attribute, doubleValue);
                 } else {
-                    obj.setValue(attribute, valueAt.trim());
+                    String strValue = dataSetList.getStringValue(valueAt, j);
+                    obj.setValue(attribute, strValue);
                 }
             }
             newDataSet.add(obj);
@@ -463,10 +496,6 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         return count < MIN_NUMBER_OF_SELECTED_ATTRIBUTES;
     }
 
-    private int getAttrIndex(String name) {
-        return getTableHeader().getColumnModel().getColumnIndex(name);
-    }
-
     private int getClassIndex() {
         return classBox.getSelectedIndex();
     }
@@ -474,25 +503,30 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     private ArrayList<Attribute> createAttributesList() {
         ArrayList<Attribute> attr = new ArrayList<>(getColumnCount() - 1);
         for (int i = 1; i < getColumnCount(); i++) {
-            String attribute = getColumnName(i);
             int attrIndex = i - 1;
+            String attribute = attributesTable.getAttributeName(attrIndex);
             if (attributesTable.isSelected(attrIndex)) {
                 if (attributesTable.isNumeric(attrIndex)) {
                     attr.add(new Attribute(attribute));
                 } else if (attributesTable.isDate(attrIndex)) {
                     attr.add(new Attribute(attribute, CONFIG_SERVICE.getApplicationConfig().getDateFormat()));
                 } else {
-                    attr.add(createNominalAttribute(attribute));
+                    attr.add(createNominalAttribute(attribute, attrIndex));
                 }
             }
         }
         return attr;
     }
 
-    private Attribute createNominalAttribute(String attribute) {
+    private DataSetList getDataSetList() {
+        return getInstancesTableModel().getDataSetList();
+    }
+
+    private Attribute createNominalAttribute(String attribute, int attrIdx) {
         ArrayList<String> values = new ArrayList<>();
-        for (int j = 0; j < getRowCount(); j++) {
-            String stringValue = (String) getValueAt(j, getAttrIndex(attribute));
+        DataSetList dataSetList = getDataSetList();
+        for (int j = 0; j < dataSetList.size(); j++) {
+            String stringValue = (String) dataSetList.getValue(j, attrIdx);
             if (stringValue != null) {
                 String trimValue = stringValue.trim();
                 if (!StringUtils.isEmpty(trimValue) && !values.contains(trimValue)) {
@@ -504,11 +538,11 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
     }
 
     private List<Entry<String, Integer>> createAttributesInfo() {
-        Instances data = data();
+        DataSetList dataSetList = getInstancesTableModel().getDataSetList();
         List<Entry<String, Integer>> attributes = new ArrayList<>();
-        for (int i = 0; i < data.numAttributes(); i++) {
+        for (int i = 0; i < dataSetList.getAttributes().size(); i++) {
             Entry<String, Integer> entry = new Entry<>();
-            entry.setKey(data.attribute(i).name());
+            entry.setKey(dataSetList.getAttributes().get(i));
             if (attributesTable.isDate(i)) {
                 entry.setValue(Attribute.DATE);
             } else if (attributesTable.isNumeric(i)) {

@@ -12,5 +12,6 @@
   "dataLoaderUrl": "http://localhost:8080/eca-data-loader/api/external/upload-train-data",
   "tokenUrl": "http://localhost:8080/eca-oauth/oauth2/token",
   "clientId": "external-api",
-  "clientSecret": "external_api_secret"
+  "clientSecret": "external_api_secret",
+  "authToken": "uR5D7_6P4Ydv58MjU8--BGEyEvOjkFHZejZRMaU8xG6SisgmCg8pCH6UV7_SiOuZAs69nFowpC-AY92ASwOxrH-7Mch6Cad1oAtef3pi4057hySSB3_uyPIaF7yt1Qrj"
 }

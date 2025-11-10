@@ -8,6 +8,7 @@ import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -20,19 +21,23 @@ public class RabbitUtils {
 
     private static final String APPLICATION_JSON = "application/json";
 
+    private static final String AUTH_TOKEN_HEADER = "auth-token";
+
     /**
      * Builds message properties.
      *
      * @param replyTo       - reply to header
      * @param correlationId - correlation id header
+     * @param authToken     - auth token
      * @return amqp basic properties object
      */
-    public static AMQP.BasicProperties buildMessageProperties(String replyTo, String correlationId) {
+    public static AMQP.BasicProperties buildMessageProperties(String replyTo, String correlationId, String authToken) {
         return new AMQP.BasicProperties.Builder()
                 .replyTo(replyTo)
                 .correlationId(correlationId)
                 .deliveryMode(MessageDeliveryMode.PERSISTENT.getCode())
                 .contentEncoding(StandardCharsets.UTF_8.name())
+                .headers(Map.of(AUTH_TOKEN_HEADER, authToken))
                 .contentType(APPLICATION_JSON).build();
     }
 

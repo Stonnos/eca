@@ -7,9 +7,9 @@ package eca.gui.panels;
 
 import eca.config.VelocityConfigService;
 import eca.gui.PanelBorderUtils;
+import eca.gui.tables.ClassifyInstanceTable;
 import eca.model.ReferenceWrapper;
 import eca.report.ReportGenerator;
-import eca.gui.tables.ClassifyInstanceTable;
 import eca.statistics.AttributeStatistics;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.StringWriter;
 
+import static eca.gui.ButtonUtils.createButton;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 
@@ -81,6 +82,7 @@ public class ClassifyInstancePanel extends JPanel {
         classField.setPreferredSize(new Dimension(300,100));
         classField.setEditable(false);
         classField.setContentType(CONTENT_TYPE);
+        classField.setBackground(Color.WHITE);
         JScrollPane bottom = new JScrollPane(classField);
         bottom.setBorder(PanelBorderUtils
                 .createTitledBorder(String.format(CLASS_NAME_FORMAT, classifyInstanceTable.data().classAttribute().name())));
@@ -88,7 +90,7 @@ public class ClassifyInstancePanel extends JPanel {
                 classifyInstanceTable.getAttributeStatistics()));
         JPanel top = new JPanel(new GridBagLayout());
 
-        JButton classifyButton = new JButton(CLASSIFY_BUTTON_TEXT);
+        JButton classifyButton = createButton(CLASSIFY_BUTTON_TEXT);
         classifyButton.setToolTipText(CLASSIFY_INFO);
         classifyButton.addActionListener(event -> {
             try {
@@ -99,7 +101,7 @@ public class ClassifyInstancePanel extends JPanel {
                         JOptionPane.WARNING_MESSAGE);
             }
         });
-        JButton resetButton = new JButton(RESET_BUTTON_TEXT);
+        JButton resetButton = createButton(RESET_BUTTON_TEXT);
         resetButton.setToolTipText(RESET_INFO);
         resetButton.addActionListener(e -> {
             classifyInstanceTable.reset();

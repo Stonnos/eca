@@ -6,6 +6,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +37,13 @@ public class FileUtils {
     public static final Set<String> ALL_EXTENSIONS = Stream.of(DataFileExtension.values())
             .map(DataFileExtension::getExtension)
             .collect(Collectors.toSet());
+
+    /**
+     * Save train data extensions
+     */
+    public static final List<DataFileExtension> SAVE_DATA_EXTENSIONS = Stream.of(DataFileExtension.values())
+            .filter(dataFileExtension -> !dataFileExtension.equals(DataFileExtension.ZIP))
+            .toList();
 
     /**
      * Returns true if specified file extension belongs to xls formats (xls, xlsx).

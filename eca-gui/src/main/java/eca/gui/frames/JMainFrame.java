@@ -18,7 +18,6 @@ import eca.config.RabbitConfiguration;
 import eca.config.RabbitConnectionOptions;
 import eca.config.registry.SingletonRegistry;
 import eca.core.InstancesDataModel;
-import eca.core.ModelSerializationHelper;
 import eca.core.evaluation.Evaluation;
 import eca.core.evaluation.EvaluationMethod;
 import eca.core.evaluation.EvaluationService;
@@ -64,9 +63,12 @@ import eca.gui.actions.DatabaseSaverAction;
 import eca.gui.actions.ExperimentLoader;
 import eca.gui.actions.InstancesLoader;
 import eca.gui.actions.UrlLoader;
+import eca.gui.backgroundtasks.BackgroundTaskInfo;
+import eca.gui.backgroundtasks.BackgroundTasksManager;
 import eca.gui.choosers.OpenDataFileChooser;
 import eca.gui.choosers.OpenModelChooser;
 import eca.gui.choosers.SaveDataFileChooser;
+import eca.gui.dialogs.AbstractProgressDialog;
 import eca.gui.dialogs.ClassifierBuilderDialog;
 import eca.gui.dialogs.ClassifierOptionsDialogBase;
 import eca.gui.dialogs.ContingencyTableOptionsDialog;
@@ -97,6 +99,7 @@ import eca.gui.popup.PopupService;
 import eca.gui.service.ExecutorService;
 import eca.gui.tables.AttributesTable;
 import eca.gui.tables.InstancesTable;
+import eca.gui.tables.PaginatedTable;
 import eca.metrics.KNearestNeighbours;
 import eca.model.EcaServiceRequestType;
 import eca.model.EcaServiceTrack;
@@ -113,8 +116,9 @@ import eca.trees.CHAID;
 import eca.trees.DecisionTreeClassifier;
 import eca.trees.ID3;
 import eca.trees.J48;
-import eca.util.ClassifierNamesFactory;
 import eca.util.Utils;
+import jiconfont.icons.font_awesome.FontAwesome;
+import jiconfont.swing.IconFontSwing;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.AbstractClassifier;
@@ -132,17 +136,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static eca.gui.ButtonUtils.createButton;
+import static eca.gui.GuiUtils.ICON_SIZE;
 import static eca.gui.GuiUtils.getScreenHeight;
 import static eca.gui.GuiUtils.getScreenWidth;
 import static eca.gui.GuiUtils.removeComponents;
@@ -180,13 +186,9 @@ public class JMainFrame extends JFrame {
 
     private static final ConfigurationService CONFIG_SERVICE = ConfigurationService.getApplicationConfigService();
 
-    private static final Color FRAME_COLOR = new Color(198, 226, 255);
-
-    private static final String ENSEMBLE_BUILDING_PROGRESS_TITLE = "Пожалуйста подождите, идет построение ансамбля...";
-    private static final String NETWORK_BUILDING_PROGRESS_TITLE =
-            "Пожалуйста подождите, идет обучение нейронной сети...";
+    private static final Color FRAME_COLOR = new Color(227, 232, 234);
     private static final String ON_EXIT_TEXT = "Вы уверены, что хотите выйти?";
-    private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели...";
+    private static final String MODEL_BUILDING_MESSAGE = "Пожалуйста подождите, идет построение модели \"%s\"...";
     private static final String MODEL_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка модели...";
     private static final String EXPERIMENT_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка эксперимента...";
     private static final String DATA_LOADING_MESSAGE = "Пожалуйста подождите, идет загрузка данных...";
@@ -211,7 +213,7 @@ public class JMainFrame extends JFrame {
             "Пожалуйста подождите, идет подключение к базе данных...";
     private static final String LOAD_MODEL_MENU_TEXT = "Загрузить модель";
     private static final String LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT = "Загрузить эксперимент";
-    private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные из сети";
+    private static final String LOAD_DATA_FROM_NET_MENU_TEXT = "Загрузить данные по ссылке";
     private static final String URL_FILE_TEXT = "URL файла:";
     private static final String EXPERIMENT_URL_FILE_TEXT = "URL файла:";
     private static final String LOAD_DATA_FROM_NET_TITLE = "Загрузка данных из сети";
@@ -234,8 +236,8 @@ public class JMainFrame extends JFrame {
     private static final String EXPERIMENT_SUCCESS_MESSAGE_FORMAT =
             "Ваша заявка на эксперимент '%s' была успешно создана.";
 
-    private static final double WIDTH_COEFFICIENT = 0.8;
-    private static final double HEIGHT_COEFFICIENT = 0.9;
+    private static final double WIDTH_COEFFICIENT = 0.75;
+    private static final double HEIGHT_COEFFICIENT = 0.75;
     private static final String RANDOM_GENERATOR_MENU_TEXT = "Настройки генератора случайных чисел";
     private static final String RANDOM_GENERATOR_TITLE = "Настройки генератора";
     private static final String SEED_TEXT = "Начальное значение (seed):";
@@ -276,7 +278,9 @@ public class JMainFrame extends JFrame {
             = "Построение оптимального классификатора завершено";
     private static final String INVALID_FILE_URL_MESSAGE = "Задан некорректный url файла";
     private static final String DOWNLOAD_EXPERIMENT_TITLE = "Загрузка эксперимента";
-    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент из сети";
+    private static final String DOWNLOAD_CLASSIFIER_MODEL_TITLE = "Загрузка модели классификатора";
+    private static final String LOAD_EXPERIMENT_FORM_NET_TEXT = "Загрузить эксперимент по ссылке";
+    private static final String LOAD_CLASSIFIER_MODEL_LINK_TEXT = "Загрузить модель по ссылке";
     private static final String EXPERIMENT_FINISHED_MESSAGE_TEXT_FORMAT =
             "Эксперимент '%s' успешно завершен. Загрузить результаты?";
     private static final String SUCCESS_RABBIT_CONNECTION_MESSAGE_FORMAT = "Соединение с %s:%d успешно установлено";
@@ -286,6 +290,12 @@ public class JMainFrame extends JFrame {
     private static final String RABBIT_CONNECTION_SHUTDOWN_MESSAGE_FORMAT = "Соединение с %s:%d разорвано";
     private static final String SAVE_DATA_TITLE = "Пожалуйста подождите, идет сохранение данных...";
     private static final String RESET_BUTTON_TOOLTIP_TEXT = "Установка настроек атрибутов и их типов по умолчанию";
+    private static final Color DATABASE_ICON_COLOR = new Color(19, 148, 238);
+    private static final Color DECISION_TREE_ICON_COLOR = new Color(1, 50, 32);
+    private static final String MODEL_BUILDING_FINISHED_MESSAGE = "Построение модели классификатора \"%s\" завершено";
+    private static final String BACKGROUND_TASKS_MENU_TEXT = "Фоновые процессы";
+    private static final String MODEL_BUILDING_TASK_TITLE = "Построение модели \"%s\"";
+    private static final String PREPARE_DATA_FRAME_TEXT_MESSAGE = "Пожалуйста подождите, идет подготовка данных...";
 
     private final JDesktopPane dataPanels = new JDesktopPane();
 
@@ -305,6 +315,8 @@ public class JMainFrame extends JFrame {
 
     private final PopupService popupService = new PopupService();
 
+    private final BackgroundTasksManager backgroundTasksManager = new BackgroundTasksManager(this);
+
     private List<AbstractButton> disabledMenuElementList = newArrayList();
 
     private RabbitClient rabbitClient;
@@ -318,7 +330,6 @@ public class JMainFrame extends JFrame {
     private volatile boolean rabbitStarted;
 
     public JMainFrame() {
-        Locale.setDefault(Locale.ENGLISH);
         this.init();
         this.createGUI();
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -434,7 +445,7 @@ public class JMainFrame extends JFrame {
 
         JMenuItem menu;
 
-        DataInternalFrame(Instances data, JMenuItem menu, int digits) {
+        DataInternalFrame(Instances data, JMenuItem menu) {
             this.setLayout(new GridBagLayout());
             this.createUpperPanel();
             this.createLowerPanel();
@@ -442,7 +453,8 @@ public class JMainFrame extends JFrame {
             this.setMenu(menu);
             this.createPopMenu();
             this.setRelationInfo(data);
-            this.convertDataToTables(data, digits);
+            this.convertDataToTables(data);
+            this.creteGUI();
             this.setClosable(true);
             this.setResizable(true);
             this.setMaximizable(true);
@@ -454,6 +466,7 @@ public class JMainFrame extends JFrame {
         public void dispose() {
             removeComponents(this);
             super.dispose();
+            System.gc();
         }
 
         void setMenu(JMenuItem menu) {
@@ -488,9 +501,9 @@ public class JMainFrame extends JFrame {
         void createPopMenu() {
             JPopupMenu popMenu = new JPopupMenu();
             JMenuItem nameMenu = new JMenuItem(DATA_CHANGE_NAME_MENU_TEXT);
-            nameMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EDIT_ICON)));
+            nameMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PENCIL, ICON_SIZE));
             JMenuItem colorMenu = new JMenuItem(CHOOSE_COLOR_MENU_TEXT);
-            colorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.COLOR_ICON)));
+            colorMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.PAINT_BRUSH, ICON_SIZE, Color.RED));
             nameMenu.addActionListener(e -> {
                 String newRelationName = (String) JOptionPane.showInputDialog(DataInternalFrame.this,
                         DATA_NAME_TEXT, NEW_DATA_NAME_TEXT, JOptionPane.INFORMATION_MESSAGE, null,
@@ -536,11 +549,17 @@ public class JMainFrame extends JFrame {
             numAttributesTextField = new JTextField(NUM_ATTRIBUTES_FIELD_LENGTH);
             numAttributesTextField.setEditable(false);
             numAttributesTextField.setBackground(Color.WHITE);
-            upperPanel.add(new JLabel(DATA_NAME_TEXT));
+            JLabel dataNameLabel = new JLabel(DATA_NAME_TEXT);
+            dataNameLabel.setFont(dataNameLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(dataNameLabel);
             upperPanel.add(relationNameTextField);
-            upperPanel.add(new JLabel(NUMBER_OF_INSTANCES_TEXT));
+            JLabel instancesNumberLabel = new JLabel(NUMBER_OF_INSTANCES_TEXT);
+            instancesNumberLabel.setFont(instancesNumberLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(instancesNumberLabel);
             upperPanel.add(numInstancesTextField);
-            upperPanel.add(new JLabel(NUMBER_OF_ATTRIBUTES_TEXT));
+            JLabel attributesNumberLabel = new JLabel(NUMBER_OF_ATTRIBUTES_TEXT);
+            attributesNumberLabel.setFont(attributesNumberLabel.getFont().deriveFont(Font.BOLD));
+            upperPanel.add(attributesNumberLabel);
             upperPanel.add(numAttributesTextField);
             this.add(upperPanel, new GridBagConstraints(0, 0, 1, 1, 1, 0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -554,7 +573,11 @@ public class JMainFrame extends JFrame {
             dataScrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
             dataScrollPane.setBorder(PanelBorderUtils.createTitledBorder(DATA_TITLE));
             this.createAttrPanel();
-            lowerPanel.add(dataScrollPane, new GridBagConstraints(0, 0, 1, 2, 1, 1,
+        }
+
+        void creteGUI() {
+            var instancesPaginatedTable = new PaginatedTable(dataScrollPane, instanceTable.getInstancesTableModel());
+            lowerPanel.add(instancesPaginatedTable, new GridBagConstraints(0, 0, 1, 2, 1, 1,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 2, 5), 0, 0));
             lowerPanel.add(attrPanel, new GridBagConstraints(1, 0, 1, 1, 0, 1,
@@ -567,8 +590,8 @@ public class JMainFrame extends JFrame {
         void createAttrPanel() {
             attrPanel = new JPanel(new GridBagLayout());
             attrPanel.setBorder(PanelBorderUtils.createTitledBorder(ATTR_TITLE));
-            selectButton = new JButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
-            resetButton = new JButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
+            selectButton = createButton(CHOOSE_ALL_ATTRIBUTES_BUTTON_TEXT);
+            resetButton = createButton(RESET_ALL_ATTRIBUTES_BUTTON_TEXT);
             resetButton.setToolTipText(RESET_BUTTON_TOOLTIP_TEXT);
 
             selectButton.addActionListener(e -> attributesTable.selectAllAttributes());
@@ -598,14 +621,14 @@ public class JMainFrame extends JFrame {
                     new Insets(0, 0, 2, 0), 0, 0));
         }
 
-        void convertDataToTables(Instances data, int digits) {
+        void convertDataToTables(Instances data) {
             for (int i = 0; i < data.numAttributes(); i++) {
                 classBox.addItem(data.attribute(i).name());
             }
             classBox.setSelectedIndex(data.classIndex());
-            instanceTable = new InstancesTable(data, numInstancesTextField, classBox, digits);
+            instanceTable = new InstancesTable(data, numInstancesTextField, classBox);
             dataScrollPane.setViewportView(instanceTable);
-            attributesTable = new AttributesTable(instanceTable, classBox);
+            attributesTable = new AttributesTable(data, instanceTable, classBox);
             instanceTable.setAttributesTable(attributesTable);
             attrScrollPane.setViewportView(attributesTable);
             dataScrollPane.setComponentPopupMenu(instanceTable.getComponentPopupMenu());
@@ -642,20 +665,27 @@ public class JMainFrame extends JFrame {
     private class DataBuilder extends AbstractCallback<InstancesDataModel> {
 
         /**
-         * Validates and filter instances using {@link eca.filter.ConstantAttributesFilter}?
+         * Validates and filter instances
          */
         boolean validateAndFilter = true;
+        boolean validateAttributes = true;
 
         DataBuilder() {
         }
 
-        DataBuilder(boolean validateAndFilter) {
+        DataBuilder(boolean validateAndFilter, boolean validateAttributes) {
             this.validateAndFilter = validateAndFilter;
+            this.validateAttributes = validateAttributes;
         }
 
         @Override
         protected InstancesDataModel performAndGetResult() throws Exception {
+            validateDataInternal(validateAttributes);
             return validateAndFilter ? selectedPanel().getFilteredValidData() : selectedPanel().getSimpleData();
+        }
+
+        void validateDataInternal(boolean validateAttributes) {
+            selectedPanel().validateData(validateAttributes);
         }
     }
 
@@ -720,13 +750,11 @@ public class JMainFrame extends JFrame {
     }
 
     private void performTaskWithDataAndAttributesValidation(CallbackAction action) {
-        if (isDataAndAttributesValid()) {
-            try {
-                action.apply();
-            } catch (Exception ex) {
-                LoggerUtils.error(log, ex);
-                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-            }
+        try {
+            action.apply();
+        } catch (Exception ex) {
+            LoggerUtils.error(log, ex);
+            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
         }
     }
 
@@ -735,8 +763,7 @@ public class JMainFrame extends JFrame {
                 () -> showFormattedErrorMessageDialog(JMainFrame.this, executorDialog.getErrorMessageText()));
     }
 
-    private void executeSimpleBuilding(ClassifierOptionsDialogBase frame, InstancesDataModel instancesDataModel)
-            throws Exception {
+    private void executeSimpleBuilding(ClassifierOptionsDialogBase frame, InstancesDataModel instancesDataModel) {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -751,16 +778,24 @@ public class JMainFrame extends JFrame {
         frame.dispose();
     }
 
-    private void processSimpleBuilding(ClassifierOptionsDialogBase frame) throws Exception {
+    private void processSimpleBuilding(ClassifierOptionsDialogBase frame) {
         ModelBuilder builder = new ModelBuilder(frame.classifier(), frame.data());
-        LoadDialog progress = new LoadDialog(JMainFrame.this,
-                builder, MODEL_BUILDING_MESSAGE);
+        String classifierName = getClassifierName(frame.classifier());
+        LoadDialog progress = new LoadDialog(JMainFrame.this, builder,
+                String.format(MODEL_BUILDING_MESSAGE, classifierName), true, true);
 
-        processAsyncTask(progress, () -> {
+        ReferenceWrapper<Classifier> classifierReferenceWrapper = frame.classifierReference();
+        Instances data = frame.data();
+
+        CallbackAction successAction = () -> {
             builder.getResult().setTotalTimeMillis(progress.getTotalTimeMillis());
-            createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
+            String infoMessage = String.format(MODEL_BUILDING_FINISHED_MESSAGE, classifierName);
+            popupService.showInfoPopup(infoMessage, this);
+            createEvaluationResultsAsync(frame.getTitle(), classifierReferenceWrapper, data,
                     builder.getResult(), maximumFractionDigits);
-        });
+        };
+        String taskTitle = String.format(MODEL_BUILDING_TASK_TITLE, classifierName);
+        processBackgroundAsyncTask(taskTitle, progress, successAction);
     }
 
     private void prepareTrainingData(DataBuilder dataBuilder, CallbackAction callbackAction) throws Exception {
@@ -780,13 +815,17 @@ public class JMainFrame extends JFrame {
         this.add(dataPanels);
     }
 
-    private void createDataFrame(Instances data, int digits) throws Exception {
+    private DataInternalFrame createDataFrame(Instances data) {
         if (dataPanels.getComponentCount() >= CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()) {
-            throw new Exception(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
+            throw new IllegalStateException(String.format(EXCEED_DATA_LIST_SIZE_ERROR_FORMAT,
                     CONFIG_SERVICE.getApplicationConfig().getMaxDataListSize()));
         }
+        return createDataInternalFrame(data);
+    }
+
+    private DataInternalFrame createDataInternalFrame(Instances data) {
         final DataInternalFrame dataInternalFrame =
-                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()), digits);
+                new DataInternalFrame(data, new JCheckBoxMenuItem(data.relationName()));
 
         dataInternalFrame.addInternalFrameListener(new InternalFrameAdapter() {
 
@@ -817,16 +856,11 @@ public class JMainFrame extends JFrame {
                 LoggerUtils.error(log, e);
             }
         });
-
         dataPanels.add(dataInternalFrame);
-        dataInternalFrame.setVisible(true);
         setEnabledMenuComponents(true);
         windowsMenu.add(dataInternalFrame.getMenu());
         started = true;
-    }
-
-    public void createDataFrame(Instances data) throws Exception {
-        createDataFrame(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
+        return dataInternalFrame;
     }
 
     private void setEnabledMenuComponents(boolean enabled) {
@@ -873,7 +907,7 @@ public class JMainFrame extends JFrame {
         algorithmsMenu.add(ensembleMenu);
 
         JMenu treesMenu = new JMenu(DECISION_TREES_MENU_TEXT);
-        treesMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.TREE_ICON)));
+        treesMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.SITEMAP, ICON_SIZE, DECISION_TREE_ICON_COLOR));
         classifiersMenu.add(treesMenu);
         JMenuItem id3Item = new JMenuItem(ClassifiersNamesDictionary.ID3);
         JMenuItem c45Item = new JMenuItem(ClassifiersNamesDictionary.C45);
@@ -906,7 +940,7 @@ public class JMainFrame extends JFrame {
         treesMenu.add(j48Item);
 
         JMenuItem logisticItem = new JMenuItem(ClassifiersNamesDictionary.LOGISTIC);
-        logisticItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOGISTIC_ICON)));
+        logisticItem.setIcon(IconFontSwing.buildIcon(FontAwesome.LINE_CHART, ICON_SIZE));
         classifiersMenu.add(logisticItem);
         logisticItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -920,7 +954,7 @@ public class JMainFrame extends JFrame {
         );
 
         JMenuItem mlpItem = new JMenuItem(ClassifiersNamesDictionary.NEURAL_NETWORK);
-        mlpItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NEURAL_ICON)));
+        mlpItem.setIcon(IconFontSwing.buildIcon(FontAwesome.SHARE_ALT, ICON_SIZE, Color.BLUE));
         classifiersMenu.add(mlpItem);
         mlpItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -932,13 +966,12 @@ public class JMainFrame extends JFrame {
                         NetworkOptionsDialog frame = new NetworkOptionsDialog(JMainFrame.this,
                                 ClassifiersNamesDictionary.NEURAL_NETWORK, neuralNetwork,
                                 dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), NETWORK_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
 
         JMenuItem knnItem = new JMenuItem(ClassifiersNamesDictionary.KNN);
-        knnItem.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.KNN_ICON)));
         classifiersMenu.add(knnItem);
         knnItem.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
@@ -988,7 +1021,7 @@ public class JMainFrame extends JFrame {
                                 new RandomForestsOptionDialog(JMainFrame.this,
                                         EnsemblesNamesDictionary.RANDOM_FORESTS, randomForests,
                                         dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
@@ -1005,7 +1038,7 @@ public class JMainFrame extends JFrame {
                         RandomForestsOptionDialog frame = new RandomForestsOptionDialog(JMainFrame.this,
                                 EnsemblesNamesDictionary.EXTRA_TREES, extraTreesClassifier,
                                 dataBuilder.getResult().getData());
-                        executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(frame, dataBuilder.getResult());
                     });
                 })
         );
@@ -1039,8 +1072,7 @@ public class JMainFrame extends JFrame {
                                 new RandomNetworkOptionsDialog(JMainFrame.this,
                                         EnsemblesNamesDictionary.RANDOM_NETWORKS, randomNetworks,
                                         dataBuilder.getResult().getData());
-                        executeIterativeBuilding(networkOptionsDialog, dataBuilder.getResult(),
-                                ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                        executeIterativeBuilding(networkOptionsDialog, dataBuilder.getResult());
                     });
                 })
         );
@@ -1170,7 +1202,7 @@ public class JMainFrame extends JFrame {
 
     private void fillStatisticsMenu(JMenu statisticsMenu) {
         JMenuItem attrStatisticsMenu = new JMenuItem(ATTRIBUTES_STATISTICS_MENU_TEXT);
-        attrStatisticsMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.STATISTICS_ICON)));
+        attrStatisticsMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.BAR_CHART, ICON_SIZE));
         attrStatisticsMenu.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
@@ -1186,7 +1218,6 @@ public class JMainFrame extends JFrame {
         statisticsMenu.add(attrStatisticsMenu);
 
         JMenuItem scatterDiagramMenu = new JMenuItem(SCATTER_DIAGRAM_MENU_TEXT);
-        scatterDiagramMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SCATTER_ICON)));
         scatterDiagramMenu.addActionListener(event ->
                 performTaskWithDataAndAttributesValidation(() -> {
                     final DataBuilder dataBuilder = new DataBuilder();
@@ -1206,33 +1237,36 @@ public class JMainFrame extends JFrame {
 
     private void fillServiceMenu(JMenu serviceMenu) {
         JMenuItem historyMenu = new JMenuItem(CLASSIFIERS_HISTORY_MENU_TEXT);
-        historyMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.HISTORY_ICON)));
+        historyMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.HISTORY, ICON_SIZE));
         historyMenu.addActionListener(e -> resultHistoryFrame.setVisible(true));
+
+        JMenuItem backgroundTasksMenu = new JMenuItem(BACKGROUND_TASKS_MENU_TEXT);
+        backgroundTasksMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LIST, ICON_SIZE, Color.BLUE));
+        backgroundTasksMenu.addActionListener(e -> backgroundTasksManager.show());
 
         JMenu ecaServiceMenu = new JMenu(ECA_SERVICE_MENU_TEXT);
         ecaServiceMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_ICON)));
         disabledMenuElementList.add(ecaServiceMenu);
 
         JMenuItem experimentRequestMenu = new JMenuItem(EXPERIMENT_REQUEST_MENU_TEXT);
-        experimentRequestMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXPERIMENT_ICON)));
+        experimentRequestMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.GAVEL, ICON_SIZE));
         experimentRequestMenu.addActionListener(experimentRequestActionListener());
         JMenuItem optimalClassifierMenu = new JMenuItem(OPTIMAL_CLASSIFIER_MENU_TEXT);
-        optimalClassifierMenu.setIcon(
-                new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPTIMAL_CLASSIFIER_ICON)));
         optimalClassifierMenu.addActionListener(optimalClassifierActionListener());
 
         JMenuItem ecaServiceTracksMenu = new JMenuItem(ECA_SERVICE_TRACKS_MENU_TEXT);
-        ecaServiceTracksMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.ECA_SERVICE_TRACKS_ICON)));
+        ecaServiceTracksMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LIST_UL, ICON_SIZE));
         ecaServiceTracksMenu.addActionListener(event -> ecaServiceTrackFrame.setVisible(true));
 
         ecaServiceMenu.add(experimentRequestMenu);
         ecaServiceMenu.add(optimalClassifierMenu);
         ecaServiceMenu.add(ecaServiceTracksMenu);
         serviceMenu.add(historyMenu);
+        serviceMenu.add(backgroundTasksMenu);
         serviceMenu.add(ecaServiceMenu);
 
         JMenuItem loggingMenu = new JMenuItem(CONSOLE_MENU_TEXT);
-        loggingMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.CONSOLE_ICON)));
+        loggingMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.LAPTOP, ICON_SIZE));
         loggingMenu.addActionListener(new ActionListener() {
 
             ConsoleFrame consoleFrame = new ConsoleFrame(JMainFrame.this,
@@ -1314,7 +1348,8 @@ public class JMainFrame extends JFrame {
                             ecaServiceConfig.getEvaluationOptimizerRequestQueue(),
                             ecaServiceConfig.getExperimentRequestQueue(), ecaServiceConfig.getDataLoaderUrl(),
                             ecaServiceConfig.getTokenUrl(), ecaServiceConfig.getClientId(),
-                            ecaServiceConfig.getClientSecret()
+                            ecaServiceConfig.getClientSecret(),
+                            ecaServiceConfig.getAuthToken()
                     );
             EcaServiceOptionsDialog ecaServiceOptionsDialog = new EcaServiceOptionsDialog(JMainFrame.this);
             ecaServiceOptionsDialog.setVisible(true);
@@ -1336,13 +1371,13 @@ public class JMainFrame extends JFrame {
 
     private void fillFileMenu(JMenu fileMenu) {
         JMenuItem openFileMenu = new JMenuItem(OPEN_FILE_MENU_TEXT);
-        openFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.OPEN_ICON)));
+        openFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FOLDER_OPEN, ICON_SIZE, Color.ORANGE));
         openFileMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_FILE_MENU_KEY_STROKE));
         openFileMenu.addActionListener(openFileActionListener());
         fileMenu.add(openFileMenu);
 
         JMenuItem saveFileMenu = new JMenuItem(SAVE_FILE_MENU_TEXT);
-        saveFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.SAVE_ICON)));
+        saveFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         disabledMenuElementList.add(saveFileMenu);
         saveFileMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_FILE_MENU_KEY_STROKE));
         fileMenu.add(saveFileMenu);
@@ -1350,13 +1385,13 @@ public class JMainFrame extends JFrame {
 
         JMenuItem dbMenu = new JMenuItem(DB_CONNECTION_MENU_TEXT);
         dbMenu.setAccelerator(KeyStroke.getKeyStroke(OPEN_DB_MENU_KEY_STROKE));
-        dbMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DATABASE_ICON)));
+        dbMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.DATABASE, ICON_SIZE, DATABASE_ICON_COLOR));
         fileMenu.addSeparator();
         fileMenu.add(dbMenu);
         dbMenu.addActionListener(dbConnectionActionListener());
 
         JMenuItem dbSaverMenu = new JMenuItem(DB_SAVE_MENU_TEXT);
-        dbSaverMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.DB_SAVE_ICON)));
+        dbSaverMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.FLOPPY_O, ICON_SIZE, Color.BLUE));
         dbSaverMenu.setAccelerator(KeyStroke.getKeyStroke(SAVE_DB_MENU_KEY_STROKE));
         disabledMenuElementList.add(dbSaverMenu);
         dbSaverMenu.addActionListener(dbSaverActionListener());
@@ -1364,38 +1399,43 @@ public class JMainFrame extends JFrame {
 
         JMenuItem urlMenu = new JMenuItem(LOAD_DATA_FROM_NET_MENU_TEXT);
         urlMenu.setAccelerator(KeyStroke.getKeyStroke(URL_MENU_KEY_STROKE));
-        urlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        urlMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
         fileMenu.addSeparator();
         fileMenu.add(urlMenu);
         urlMenu.addActionListener(urlLoaderActionListener());
 
         JMenuItem loadModelMenu = new JMenuItem(LOAD_MODEL_MENU_TEXT);
         loadModelMenu.setAccelerator(KeyStroke.getKeyStroke(LOAD_MODEL_KEY_STROKE));
-        loadModelMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        loadModelMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.UPLOAD, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(loadModelMenu);
         loadModelMenu.addActionListener(loadModelActionListener());
 
+        JMenuItem loadModelLinkMenu = new JMenuItem(LOAD_CLASSIFIER_MODEL_LINK_TEXT);
+        loadModelLinkMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
+        fileMenu.add(loadModelLinkMenu);
+        loadModelLinkMenu.addActionListener(loadClassifierFromUrlActionListener());
+
         JMenuItem loadExperimentFromFileMenu = new JMenuItem(LOAD_EXPERIMENT_FROM_FILE_MENU_TEXT);
-        loadExperimentFromFileMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.LOAD_ICON)));
+        loadExperimentFromFileMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.UPLOAD, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(loadExperimentFromFileMenu);
         loadExperimentFromFileMenu.addActionListener(loadExperimentFromFileActionListener());
 
         JMenuItem loadExperimentFromUrlMenu = new JMenuItem(LOAD_EXPERIMENT_FORM_NET_TEXT);
-        loadExperimentFromUrlMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.NET_ICON)));
+        loadExperimentFromUrlMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.EXTERNAL_LINK, ICON_SIZE, Color.BLUE));
         fileMenu.add(loadExperimentFromUrlMenu);
         loadExperimentFromUrlMenu.addActionListener(loadExperimentFromUrlActionListener());
 
         JMenuItem generatorMenu = new JMenuItem(DATA_GENERATION_MENU_TEXT);
-        generatorMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.GENERATOR_ICON)));
+        generatorMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.CUBES, ICON_SIZE));
         generatorMenu.setAccelerator(KeyStroke.getKeyStroke(DATA_GENERATOR_KEY_STROKE));
         fileMenu.addSeparator();
         fileMenu.add(generatorMenu);
         generatorMenu.addActionListener(dataGeneratorActionListener());
 
         JMenuItem exitMenu = new JMenuItem(EXIT_MENU_TEXT);
-        exitMenu.setIcon(new ImageIcon(CONFIG_SERVICE.getIconUrl(IconType.EXIT_ICON)));
+        exitMenu.setIcon(IconFontSwing.buildIcon(FontAwesome.SIGN_OUT, ICON_SIZE));
         fileMenu.addSeparator();
         fileMenu.add(exitMenu);
         exitMenu.addActionListener(e -> JMainFrame.this.closeWindow());
@@ -1406,11 +1446,9 @@ public class JMainFrame extends JFrame {
      *
      * @param frame              - classifier options dialog base object
      * @param instancesDataModel - instances data model
-     * @param progressMessage    - progress message
      */
     private void executeIterativeBuilding(final ClassifierOptionsDialogBase frame,
-                                          final InstancesDataModel instancesDataModel,
-                                          final String progressMessage) {
+                                          final InstancesDataModel instancesDataModel) {
         frame.showDialog();
         if (frame.dialogResult()) {
             List<String> options = Arrays.asList(((AbstractClassifier) frame.classifier()).getOptions());
@@ -1423,7 +1461,7 @@ public class JMainFrame extends JFrame {
                     if (EnsembleUtils.isConcurrentClassifier(frame.classifier())) {
                         processSimpleBuilding(frame);
                     } else {
-                        processIterativeBuilding(frame, progressMessage);
+                        processIterativeBuilding(frame);
                     }
                 }
             } catch (Exception ex) {
@@ -1435,32 +1473,41 @@ public class JMainFrame extends JFrame {
         frame.dispose();
     }
 
-    private void processIterativeBuilding(ClassifierOptionsDialogBase frame, String progressMessage) throws Exception {
+    private void processIterativeBuilding(ClassifierOptionsDialogBase frame) throws Exception {
         IterativeBuilder iterativeBuilder = createIterativeClassifier((Iterable) frame.classifier(), frame.data());
+        String classifierName = getClassifierName(frame.classifier());
+        String progressMessage = String.format(MODEL_BUILDING_MESSAGE, classifierName);
         ClassifierBuilderDialog progress
                 = new ClassifierBuilderDialog(JMainFrame.this, iterativeBuilder, progressMessage);
-        processAsyncTask(progress,
-                () -> createEvaluationResultsAsync(frame.getTitle(), frame.classifierReference(), frame.data(),
-                        iterativeBuilder.evaluation(), maximumFractionDigits));
+        ReferenceWrapper<Classifier> classifierReferenceWrapper = frame.classifierReference();
+        Instances data = frame.data();
+
+        CallbackAction successAction = () -> {
+            String infoMessage = String.format(MODEL_BUILDING_FINISHED_MESSAGE, classifierName);
+            popupService.showInfoPopup(infoMessage, this);
+            createEvaluationResultsAsync(frame.getTitle(), classifierReferenceWrapper, data,
+                    iterativeBuilder.evaluation(), maximumFractionDigits);
+        };
+        String taskTitle = String.format(MODEL_BUILDING_TASK_TITLE, classifierName);
+        processBackgroundAsyncTask(taskTitle, progress, successAction);
     }
 
-    private boolean isDataAndAttributesValid() {
-        return validateDataInternal(true);
-    }
-
-    private boolean isDataValid() {
-        return validateDataInternal(false);
-    }
-
-    private boolean validateDataInternal(boolean validateAttributes) {
-        try {
-            selectedPanel().validateData(validateAttributes);
-        } catch (Exception ex) {
-            LoggerUtils.error(log, ex);
-            showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-            return false;
-        }
-        return true;
+    private void processBackgroundAsyncTask(String taskTitle,
+                                            AbstractProgressDialog progressDialog,
+                                            CallbackAction successAction) {
+        BackgroundTaskInfo backgroundTaskInfo =
+                new BackgroundTaskInfo(UUID.randomUUID().toString(), taskTitle, progressDialog);
+        backgroundTasksManager.addTask(backgroundTaskInfo);
+        progressDialog.setSuccessAction(() -> {
+            backgroundTasksManager.removeTask(backgroundTaskInfo.getId());
+            successAction.apply();
+        });
+        progressDialog.setFailAction(() -> {
+            backgroundTasksManager.removeTask(backgroundTaskInfo.getId());
+            showFormattedErrorMessageDialog(JMainFrame.this, progressDialog.getErrorMessageText());
+        });
+        progressDialog.setCancelAction(() -> backgroundTasksManager.removeTask(backgroundTaskInfo.getId()));
+        progressDialog.execute();
     }
 
     private void createTreeOptionDialog(final String title, final DecisionTreeClassifier tree) {
@@ -1488,7 +1535,7 @@ public class JMainFrame extends JFrame {
                 EnsembleOptionsDialog frame = new EnsembleOptionsDialog(JMainFrame.this,
                         title, heterogeneousClassifier, dataBuilder.getResult().getData(), maximumFractionDigits);
                 frame.setSampleEnabled(sample);
-                executeIterativeBuilding(frame, dataBuilder.getResult(), ENSEMBLE_BUILDING_PROGRESS_TITLE);
+                executeIterativeBuilding(frame, dataBuilder.getResult());
             });
         } catch (Exception ex) {
             LoggerUtils.error(log, ex);
@@ -1612,6 +1659,7 @@ public class JMainFrame extends JFrame {
             client.setEvaluationRequestQueue(ecaServiceConfig.getEvaluationRequestQueue());
             client.setEvaluationOptimizerRequestQueue(ecaServiceConfig.getEvaluationOptimizerRequestQueue());
             client.setExperimentRequestQueue(ecaServiceConfig.getExperimentRequestQueue());
+            client.setAuthToken(ecaServiceConfig.getAuthToken());
         });
     }
 
@@ -1703,16 +1751,20 @@ public class JMainFrame extends JFrame {
                     @Override
                     public void caseSuccessStatus() {
                         try {
-                            ClassificationModel classificationModel = downloadModel(evaluationResponse);
-                            String title =
-                                    ClassifierNamesFactory.getClassifierName(classificationModel.getClassifier());
-                            ClassificationResultsFrameBase classificationResultsFrameBase =
-                                    createEvaluationResults(title,
-                                            new ReferenceWrapper<>(classificationModel.getClassifier()),
-                                            classificationModel.getData(),
-                                            classificationModel.getEvaluation(),
-                                            maximumFractionDigits);
-                            classificationResultsFrameBase.setVisible(true);
+                            URL modelUrl = new URL(evaluationResponse.getModelUrl());
+                            UrlResource urlResource = new UrlResource(modelUrl);
+                            ClassifierModelLoader modelLoader = new ClassifierModelLoader(urlResource);
+                            LoadDialog loadModelProgress = new LoadDialog(JMainFrame.this,
+                                    modelLoader, MODEL_LOADING_MESSAGE);
+
+                            processAsyncTask(loadModelProgress, () -> {
+                                ClassificationModel classificationModel = modelLoader.getResult();
+                                String title = getClassifierName(classificationModel.getClassifier());
+                                createEvaluationResultsAsync(title,
+                                        new ReferenceWrapper<>(classificationModel.getClassifier()),
+                                        classificationModel.getData(), classificationModel.getEvaluation(),
+                                        maximumFractionDigits);
+                            });
                         } catch (Exception ex) {
                             LoggerUtils.error(log, ex);
                             showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -1966,7 +2018,7 @@ public class JMainFrame extends JFrame {
                         InstancesLoader loader = new InstancesLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                        processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                     }
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
@@ -1985,23 +2037,21 @@ public class JMainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 try {
-                    if (isDataValid()) {
-                        final DataBuilder dataBuilder = new DataBuilder(false);
-                        prepareTrainingData(dataBuilder, () -> {
-                            SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
-                            fileChooser.setSelectedFile(new File(dataBuilder.getResult().getData().relationName()));
-                            File file = fileChooser.getSelectedFile(JMainFrame.this);
-                            if (file != null) {
-                                dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
-                                CallbackAction action =
-                                        () -> dataSaver.saveData(file, dataBuilder.getResult().getData());
-                                LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
-                                        action, SAVE_DATA_TITLE, false);
-                                processAsyncTask(loadDialog, () -> {
-                                });
-                            }
-                        });
-                    }
+                    final DataBuilder dataBuilder = new DataBuilder(false, false);
+                    prepareTrainingData(dataBuilder, () -> {
+                        SaveDataFileChooser fileChooser = SingletonRegistry.getSingleton(SaveDataFileChooser.class);
+                        fileChooser.setSelectedFile(new File(dataBuilder.getResult().getData().relationName()));
+                        File file = fileChooser.getSelectedFile(JMainFrame.this);
+                        if (file != null) {
+                            dataSaver.setDateFormat(CONFIG_SERVICE.getApplicationConfig().getDateFormat());
+                            CallbackAction action =
+                                    () -> dataSaver.saveData(file, dataBuilder.getResult().getData());
+                            LoadDialog loadDialog = new LoadDialog(JMainFrame.this,
+                                    action, SAVE_DATA_TITLE, false);
+                            processAsyncTask(loadDialog, () -> {
+                            });
+                        }
+                    });
                 } catch (Exception e) {
                     LoggerUtils.error(log, e);
                     JOptionPane.showMessageDialog(JMainFrame.this, e.getMessage(),
@@ -2026,6 +2076,7 @@ public class JMainFrame extends JFrame {
 
                     processAsyncTask(progress, () -> {
                         QueryFrame queryFrame = new QueryFrame(JMainFrame.this, connection);
+                        queryFrame.setSelectedInstancesConsumer(querySelectedInstancesConsumer());
                         queryFrame.setVisible(true);
                     });
 
@@ -2038,35 +2089,54 @@ public class JMainFrame extends JFrame {
         };
     }
 
+    private Consumer<List<Instances>> querySelectedInstancesConsumer() {
+        return instancesList -> {
+            AbstractCallback<List<DataInternalFrame>> action = new AbstractCallback<>() {
+                @Override
+                protected List<DataInternalFrame> performAndGetResult() {
+                    return instancesList.stream()
+                            .map(data -> createDataFrame(data))
+                            .collect(Collectors.toList());
+                }
+            };
+            LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);
+            try {
+                processAsyncTask(loadDialog,
+                        () -> action.getResult().forEach(dataInternalFrame -> dataInternalFrame.setVisible(true)));
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+            }
+        };
+    }
+
     private ActionListener dbSaverActionListener() {
         return event -> {
-            if (isDataValid()) {
-                try {
-                    final DataBuilder dataBuilder = new DataBuilder(false);
-                    prepareTrainingData(dataBuilder, () -> {
-                        DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
-                        databaseSaverDialog.setTableName(dataBuilder.getResult().getData().relationName());
-                        databaseSaverDialog.setVisible(true);
-                        if (databaseSaverDialog.dialogResult()) {
-                            DatabaseSaver databaseSaver =
-                                    new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
-                            databaseSaver.setTableName(databaseSaverDialog.getTableName());
-                            LoadDialog progress = new LoadDialog(JMainFrame.this,
-                                    new DatabaseSaverAction(databaseSaver, dataBuilder.getResult().getData()),
-                                    DB_SAVE_PROGRESS_MESSAGE_TEXT, false);
-                            processAsyncTask(progress, () ->
-                                    JOptionPane.showMessageDialog(JMainFrame.this,
-                                            String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
-                                            JOptionPane.INFORMATION_MESSAGE)
-                            );
-                        }
-                        databaseSaverDialog.dispose();
-                    });
+            try {
+                final DataBuilder dataBuilder = new DataBuilder(false, false);
+                prepareTrainingData(dataBuilder, () -> {
+                    DatabaseSaverDialog databaseSaverDialog = new DatabaseSaverDialog(JMainFrame.this);
+                    databaseSaverDialog.setTableName(dataBuilder.getResult().getData().relationName());
+                    databaseSaverDialog.setVisible(true);
+                    if (databaseSaverDialog.dialogResult()) {
+                        DatabaseSaver databaseSaver =
+                                new DatabaseSaver(databaseSaverDialog.getConnectionDescriptor());
+                        databaseSaver.setTableName(databaseSaverDialog.getTableName());
+                        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                                new DatabaseSaverAction(databaseSaver, dataBuilder.getResult().getData()),
+                                DB_SAVE_PROGRESS_MESSAGE_TEXT, false);
+                        processAsyncTask(progress, () ->
+                                JOptionPane.showMessageDialog(JMainFrame.this,
+                                        String.format(SAVE_DATA_INFO_FORMAT, databaseSaver.getTableName()), null,
+                                        JOptionPane.INFORMATION_MESSAGE)
+                        );
+                    }
+                    databaseSaverDialog.dispose();
+                });
 
-                } catch (Exception ex) {
-                    LoggerUtils.error(log, ex);
-                    showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
-                }
+            } catch (Exception ex) {
+                LoggerUtils.error(log, ex);
+                showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
             }
         };
     }
@@ -2087,7 +2157,7 @@ public class JMainFrame extends JFrame {
                         UrlLoader loader = new UrlLoader(dataLoader);
                         LoadDialog progress = new LoadDialog(JMainFrame.this,
                                 loader, DATA_LOADING_MESSAGE);
-                        processAsyncTask(progress, () -> createDataFrame(loader.getResult()));
+                        processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                     } catch (Exception ex) {
                         LoggerUtils.error(log, ex);
                         showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2104,19 +2174,7 @@ public class JMainFrame extends JFrame {
                 File file = fileChooser.openFile(JMainFrame.this);
                 if (file != null) {
                     ClassifierModelLoader loader = new ClassifierModelLoader(new FileResource(file));
-                    LoadDialog progress = new LoadDialog(JMainFrame.this,
-                            loader, MODEL_LOADING_MESSAGE);
-
-                    processAsyncTask(progress, () -> {
-                        ClassificationModel classificationModel = loader.getResult();
-                        int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
-                                .orElse(maximumFractionDigits);
-                        String title = getClassifierName(classificationModel.getClassifier());
-                        createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
-                                classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
-                                digits);
-                    });
-
+                    processClassifierModelLoading(loader);
                 }
             } catch (Exception ex) {
                 LoggerUtils.error(log, ex);
@@ -2163,6 +2221,28 @@ public class JMainFrame extends JFrame {
         };
     }
 
+    private ActionListener loadClassifierFromUrlActionListener() {
+        return event -> {
+            String url = (String) JOptionPane.showInputDialog(JMainFrame.this,
+                    EXPERIMENT_URL_FILE_TEXT, DOWNLOAD_CLASSIFIER_MODEL_TITLE, JOptionPane.INFORMATION_MESSAGE, null,
+                    null, null);
+            if (url != null) {
+                if (!isValidUrl(url)) {
+                    showFormattedErrorMessageDialog(JMainFrame.this, INVALID_FILE_URL_MESSAGE);
+                } else {
+                    try {
+                        URL modelUrl = new URL(url.trim());
+                        ClassifierModelLoader loader = new ClassifierModelLoader(new UrlResource(modelUrl));
+                        processClassifierModelLoading(loader);
+                    } catch (Exception ex) {
+                        LoggerUtils.error(log, ex);
+                        showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
+                    }
+                }
+            }
+        };
+    }
+
     private ActionListener dataGeneratorActionListener() {
         return event -> {
             DataGeneratorDialog dialog = new DataGeneratorDialog(JMainFrame.this);
@@ -2172,7 +2252,7 @@ public class JMainFrame extends JFrame {
                     DataGeneratorCallback loader = new DataGeneratorCallback(dialog.getDataGenerator());
                     LoadDialog progress = new LoadDialog(JMainFrame.this, loader,
                             DATA_GENERATION_LOADING_MESSAGE);
-                    processAsyncTask(progress, () -> createDataFrame(loader.getResult(), maximumFractionDigits));
+                    processAsyncTask(progress, () -> createDataFrameAsync(loader.getResult()));
                 } catch (Exception ex) {
                     LoggerUtils.error(log, ex);
                     showFormattedErrorMessageDialog(JMainFrame.this, ex.getMessage());
@@ -2180,6 +2260,21 @@ public class JMainFrame extends JFrame {
             }
             dialog.dispose();
         };
+    }
+
+    private void createDataFrameAsync(Instances data) throws Exception {
+        AbstractCallback<DataInternalFrame> action = new AbstractCallback<>() {
+            @Override
+            protected DataInternalFrame performAndGetResult() {
+                return createDataFrame(data);
+            }
+        };
+        LoadDialog loadDialog = new LoadDialog(JMainFrame.this, action, PREPARE_DATA_FRAME_TEXT_MESSAGE, false);
+        processAsyncTask(loadDialog, () -> {
+            action.getResult().setVisible(true);
+            System.gc();
+        });
+
     }
 
     private void processExperimentLoading(ExperimentLoader loader) throws Exception {
@@ -2194,10 +2289,19 @@ public class JMainFrame extends JFrame {
         });
     }
 
-    private ClassificationModel downloadModel(EvaluationResponse evaluationResponse) throws IOException {
-        URL modelUrl = new URL(evaluationResponse.getModelUrl());
-        UrlResource urlResource = new UrlResource(modelUrl);
-        return ModelSerializationHelper.deserialize(urlResource, ClassificationModel.class);
+    private void processClassifierModelLoading(ClassifierModelLoader loader) throws Exception {
+        LoadDialog progress = new LoadDialog(JMainFrame.this,
+                loader, MODEL_LOADING_MESSAGE);
+
+        processAsyncTask(progress, () -> {
+            ClassificationModel classificationModel = loader.getResult();
+            int digits = Optional.ofNullable(classificationModel.getMaximumFractionDigits())
+                    .orElse(maximumFractionDigits);
+            String title = getClassifierName(classificationModel.getClassifier());
+            createEvaluationResultsAsync(title, new ReferenceWrapper<>(classificationModel.getClassifier()),
+                    classificationModel.getEvaluation().getData(), classificationModel.getEvaluation(),
+                    digits);
+        });
     }
 
     private void addEcaServiceTrack(EcaServiceTrack ecaServiceTrack) {

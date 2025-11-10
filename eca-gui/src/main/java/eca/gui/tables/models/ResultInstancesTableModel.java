@@ -14,7 +14,7 @@ import weka.core.Instances;
 public class ResultInstancesTableModel extends InstancesTableModel {
 
     public ResultInstancesTableModel(Instances data) {
-        super(data, CommonDictionary.MAXIMUM_FRACTION_DIGITS);
+        super(data);
     }
 
     @Override
