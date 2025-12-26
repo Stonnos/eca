@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -28,7 +29,7 @@ public class InstancesConverter {
         DataSetList dataSetList = new DataSetList();
         List<String> attributes = IntStream.range(0, data.numAttributes())
                 .mapToObj(i -> data.attribute(i).name())
-                .toList();
+                .collect(Collectors.toList());
         dataSetList.setAttributes(attributes);
         dataSetList.setValues(convertValues(data));
         dataSetList.setAttributesCodes(convertAttributesCodes(data));

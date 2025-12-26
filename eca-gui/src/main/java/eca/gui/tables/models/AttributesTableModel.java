@@ -13,6 +13,7 @@ import java.util.Objects;
  */
 public class AttributesTableModel extends AbstractTableModel {
 
+    private static final String DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT = "Атрибут с именем '%s' уже существует!";
     private static final String[] TITLES = {"№", StringUtils.EMPTY, "Атрибут", "Тип"};
 
     public static final int EDIT_INDEX = 1;
@@ -131,6 +132,9 @@ public class AttributesTableModel extends AbstractTableModel {
 
     public void renameAttribute(int index, String newName) {
         if (!Objects.equals(attrNames.get(index), newName)) {
+            if (attrNames.stream().anyMatch(name -> name.equals(newName))) {
+                throw new IllegalArgumentException(String.format(DUPLICATE_ATTR_ERROR_MESSAGE_FORMAT, newName));
+            }
             attrNames.set(index, newName);
             fireTableRowsUpdated(index, index);
             modificationCount++;

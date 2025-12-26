@@ -251,6 +251,12 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         this.getTableHeader().setComponentPopupMenu(popMenu);
     }
 
+    public void renameAttribute(int attrIndex, String newName) {
+        getColumnModel().getColumn(attrIndex + 1).setHeaderValue(newName);
+        getDataSetList().getAttributes().set(attrIndex, newName);
+        getRootPane().repaint();
+    }
+
     /**
      * Creates filtered instances taking into selected attributes with assigned class attribute.
      *
