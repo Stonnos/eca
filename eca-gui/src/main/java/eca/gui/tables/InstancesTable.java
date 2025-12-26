@@ -433,20 +433,22 @@ public class InstancesTable extends JDataTableBase implements Cleanable {
         for (int i = 0; i < dataSetList.size(); i++) {
             Instance obj = new DenseInstance(newDataSet.numAttributes());
             obj.setDataset(newDataSet);
-            for (int j = 0; j < newDataSet.numAttributes(); j++) {
-                Attribute attribute = newDataSet.attribute(j);
-                Object valueAt = dataSetList.getTypedValue(i, j);
-                if (valueAt == null) {
-                    obj.setValue(attribute, Utils.missingValue());
-                } else if (attribute.isDate()) {
-                    Date date = (Date) valueAt;
-                    obj.setValue(attribute, date.getTime());
-                } else if (attribute.isNumeric()) {
-                    Double doubleValue = (Double) valueAt;
-                    obj.setValue(attribute, doubleValue);
-                } else {
-                    String strValue = dataSetList.getStringValue(valueAt, j);
-                    obj.setValue(attribute, strValue);
+            for (int j = 0; j < dataSetList.getAttributes().size(); j++) {
+                if (attributesTable.isSelected(j)) {
+                    Attribute attribute = newDataSet.attribute(dataSetList.getAttributes().get(j));
+                    Object valueAt = dataSetList.getTypedValue(i, j);
+                    if (valueAt == null) {
+                        obj.setValue(attribute, Utils.missingValue());
+                    } else if (attribute.isDate()) {
+                        Date date = (Date) valueAt;
+                        obj.setValue(attribute, date.getTime());
+                    } else if (attribute.isNumeric()) {
+                        Double doubleValue = (Double) valueAt;
+                        obj.setValue(attribute, doubleValue);
+                    } else {
+                        String strValue = dataSetList.getStringValue(valueAt, j);
+                        obj.setValue(attribute, strValue);
+                    }
                 }
             }
             newDataSet.add(obj);
